@@ -58,7 +58,7 @@ void MainWindow::redrawHeaderFooter() const
 
   move(2, 0);
   clrtoeol();
-  printToEol("Filter: " + _filter);
+  printToEol("Showing: " + _filter);
   refresh();
 
   // Draw footer
@@ -123,7 +123,7 @@ Constructor
 *******************************************************************************/
 MainWindow::MainWindow()
 {
-  _title = "sboui";
+  _title = "SlackBuilds Browser";
   _filter = "All";
   _info = "F1: Help";
 }
