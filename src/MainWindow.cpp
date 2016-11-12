@@ -1,3 +1,4 @@
+#include <vector>
 #include <string>
 #include <sstream>
 #include <cmath>     // floor
@@ -51,8 +52,10 @@ void MainWindow::redrawHeaderFooter() const
   move(0, 0);
   clrtoeol();
   if (colors::title != -1) { attron(COLOR_PAIR(colors::title)); }
+  attron(A_BOLD);
   printToEol(_title);
   if (colors::title != -1) { attroff(COLOR_PAIR(colors::title)); }
+  attroff(A_BOLD);
 
   // Print filter selection
 
@@ -100,8 +103,7 @@ void MainWindow::redrawWindows() const
 
   // Redraw windows
 
-  _leftlist->draw();
-  _rightlist->draw();
+  _curlist->draw();
 }
 
 /*******************************************************************************
@@ -126,6 +128,9 @@ MainWindow::MainWindow()
   _title = "SlackBuilds Browser";
   _filter = "All";
   _info = "F1: Help";
+  _win1 = NULL;
+  _win2 = NULL;
+  _curlist = NULL;
 }
 
 /*******************************************************************************
@@ -135,28 +140,31 @@ First time window setup
 *******************************************************************************/
 void MainWindow::initialize()
 {
-  unsigned int i;
+  unsigned int i, j;
+  std::vector<std::string> builds;
 
   // Create windows (note: geometry gets set in redrawWindows);
 
   _win1 = newwin(4, 0, 10, 10);
   _win2 = newwin(4, 11,10, 10);
+  _allcategories.setWindow(_win1);
+  _allcategories.setBuildListWindow(_win2);
 
   // Create lists and set pointers
 
   for ( i = 0; i < 10; i++ ) 
-                           { _allcategories.addItem("Category " + int2str(i)); }
-  _allcategories.setWindow(_win1);
+  { 
+    builds.resize(0);
+    for ( j = 0; j < 30; j++ )
+    {
+      builds.push_back("Category " + int2str(i) + ", SlackBuild " + int2str(j));
+    }
+    _allcategories.addCategory("Category " + int2str(i), builds);
+  }
   _allcategories.setName("Categories");
   _allcategories.setActivated(true);
 
-  for ( i = 0; i < 30; i++ ) { _allbuilds.addItem("SlackBuild " + int2str(i)); }
-  _allbuilds.setWindow(_win2);
-  _allbuilds.setName("SlackBuilds");
-  _allbuilds.setActivated(false);
-
-  _leftlist = &_allcategories;
-  _rightlist = &_allbuilds;
+  _curlist = &_allcategories;
 }
 
 /*******************************************************************************
@@ -175,39 +183,16 @@ Shows the main window
 void MainWindow::show()
 {
   bool display;
-  unsigned int curlist;
   std::string selection;
 
   redrawAll();
 
   // Main event loop
 
-  curlist = 0;
   display = true;
   while (display)
   {
-    if (curlist == 0)
-    {
-      selection = _leftlist->exec();
-      if (selection == ListBox::keyRightSignal)
-      {
-        _leftlist->setActivated(false);
-        _leftlist->draw();
-        _rightlist->setActivated(true);
-        curlist = 1; 
-      }
-    }
-    else if (curlist == 1)
-    {
-      selection = _rightlist->exec();
-      if (selection == ListBox::keyLeftSignal)
-      {
-        _leftlist->setActivated(true);
-        _rightlist->setActivated(false);
-        _rightlist->draw();
-        curlist = 0; 
-      }
-    }
+    selection = _curlist->exec();
     if (selection == ListBox::quitSignal) { display = false; }
     else if (selection == ListBox::resizeSignal) { redrawAll(); }
   }

@@ -1,6 +1,6 @@
 CXX=g++
 CXXFLAGS=-g -Wall
-OBJ=ListBox.o MainWindow.o sboui.o
+OBJ=ListBox.o CategoryList.o MainWindow.o sboui.o
 SRCDIR=src
 CPPFLAGS=-Iinclude
 EXE=sboui
@@ -16,6 +16,9 @@ clean:
 
 ListBox.o: $(SRCDIR)/ListBox.cpp
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/ListBox.cpp
+
+CategoryList.o: $(SRCDIR)/CategoryList.cpp
+	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/CategoryList.cpp
 
 MainWindow.o: $(SRCDIR)/MainWindow.cpp
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/MainWindow.cpp

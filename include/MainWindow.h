@@ -2,7 +2,7 @@
 
 #include <curses.h>
 #include <string>
-#include "ListBox.h"
+#include "CategoryList.h"
 
 /*******************************************************************************
 
@@ -14,8 +14,8 @@ class MainWindow {
   private:
 
     WINDOW *_win1, *_win2;;
-    ListBox _allcategories, _allbuilds;
-    ListBox *_leftlist, *_rightlist;
+    CategoryList _allcategories;
+    CategoryList *_curlist;
     std::string _title, _filter, _info;
 
     void printToEol(const std::string & msg) const;

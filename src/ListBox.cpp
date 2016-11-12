@@ -202,7 +202,9 @@ void ListBox::redrawFrame() const
   left = std::floor(int(mid) - double(namelen)/2);
   right = left + namelen;
   wmove(_win, 0, left);
+  wattron(_win, A_BOLD);
   wprintw(_win, _name.c_str());
+  wattroff(_win, A_BOLD);
 
   // Corners
 
@@ -384,9 +386,8 @@ ListBox::ListBox()
 
 ListBox::ListBox(WINDOW *win, const std::string & name)
 {
-  _name = name;
   _win = win;
-  _name = "";
+  _name = name;
   _items.resize(0);
   _highlight = 0;
   _firstprint = 0;

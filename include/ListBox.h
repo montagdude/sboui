@@ -86,5 +86,5 @@ class ListBox {
 
     /* User interaction loop */
 
-    std::string exec();
+    virtual std::string exec();
 };
