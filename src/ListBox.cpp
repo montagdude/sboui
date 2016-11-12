@@ -5,6 +5,10 @@
 #include "ListBox.h"
 
 std::string ListBox::resizeSignal = "__RESIZE__";
+std::string ListBox::quitSignal = "__QUIT___";
+std::string ListBox::keyRightSignal = "__RIGHT___";
+std::string ListBox::keyLeftSignal = "__LEFT___";
+std::string ListBox::tagSignal = "__TAG___";
 
 /*******************************************************************************
 
@@ -445,6 +449,7 @@ Draws list box (frame, items, etc.)
 *******************************************************************************/
 void ListBox::draw()
 {
+  wclear(_win);
   redrawFrame();
   redrawAllItems();
   wrefresh(_win);
@@ -476,7 +481,7 @@ std::string ListBox::exec()
 
   // Handle key input events
 
-  while (getting_input)
+  while (1)
   {
     // Redraw menu elements as needed
 
@@ -489,6 +494,8 @@ std::string ListBox::exec()
                                                               redrawAllItems(); }
     else if (redraw_type == "changed") { redrawChangedItems(); }
     wrefresh(_win);
+
+    if (! getting_input) { break; }
 
     // Get user input
 
@@ -508,14 +515,16 @@ std::string ListBox::exec()
 
       case KEY_LEFT:
         getting_input = false;
-        retval = "KEY_LEFT";
+        retval = keyLeftSignal;
+        redraw_type = "none";
         break;
       case KEY_RIGHT:
         getting_input = false;
-        retval = "KEY_RIGHT";
+        retval = keyRightSignal;
+        redraw_type = "none";
         break;
  
-      // Up and down keys: change highlighted value
+      // Arrows/Home/End/PgUp/Dn: change highlighted value
       // FIXME: should check for redrawing just the arrows
 
       case KEY_UP:
@@ -528,22 +537,49 @@ std::string ListBox::exec()
         if (check_redraw == 1) { redraw_type = "all"; }
         else { redraw_type = "changed"; }
         break;
-
-      // Toggle item tag
-
-      case 't':
-        toggleItemTag(_highlight);
-        check_redraw = highlightNext();
+      case KEY_PPAGE:
+        check_redraw = highlightPreviousPage();
+        if (check_redraw == 1) { redraw_type = "all"; }
+        else { redraw_type = "changed"; }
+        break;
+      case KEY_NPAGE:
+        check_redraw = highlightNextPage();
+        if (check_redraw == 1) { redraw_type = "all"; }
+        else { redraw_type = "changed"; }
+        break;
+      case KEY_HOME:
+        check_redraw = highlightFirst();
+        if (check_redraw == 1) { redraw_type = "all"; }
+        else { redraw_type = "changed"; }
+        break;
+      case KEY_END:
+        check_redraw = highlightLast();
         if (check_redraw == 1) { redraw_type = "all"; }
         else { redraw_type = "changed"; }
         break;
 
+      // Resize signal: redraw (may not work with some curses implementations)
+
+      case KEY_RESIZE:
+        getting_input = false;
+        retval = resizeSignal;
+        break;
+
+      // Toggle item tag
+
+      case 't':
+        getting_input = false;
+        retval = tagSignal;
+        toggleItemTag(_highlight);
+        check_redraw = highlightNext();
+        break;
+
       // Quit key
-      //FIXME: store quit signal somewhere
 
       case MY_ESC:
         getting_input = false;
-        retval = "__QUIT__";
+        retval = quitSignal;
+        redraw_type = "none";
         break;
 
       default:

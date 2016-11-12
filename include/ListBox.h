@@ -55,9 +55,13 @@ class ListBox {
     ListBox();
     ListBox(WINDOW *win, const std::string & name);
 
-    /* Signal returned by show() when window is resized */
+    /* Signals returned by different keystrokes */
 
     static std::string resizeSignal;
+    static std::string quitSignal;
+    static std::string keyRightSignal;
+    static std::string keyLeftSignal;
+    static std::string tagSignal;
 
     /* Edit list */
 
