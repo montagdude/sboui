@@ -2,7 +2,9 @@
 
 #include <curses.h>
 #include <string>
-#include "CategoryList.h"
+#include "CategoryListBox.h"
+#include "ListBox.h"
+#include "SlackBuildListItem.h"
 
 /*******************************************************************************
 
@@ -13,9 +15,11 @@ class MainWindow {
 
   private:
 
-    WINDOW *_win1, *_win2;;
-    CategoryList _allcategories;
-    CategoryList *_curlist;
+    WINDOW *_win1, *_win2;
+    CategoryListBox _clist;
+    std::vector<ListBox> _blists;
+    std::vector<SlackBuildListItem> _slackbuilds;
+    std::vector<CategoryListItem> _categories;
     std::string _title, _filter, _info;
 
     void printToEol(const std::string & msg) const;

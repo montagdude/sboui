@@ -2,6 +2,7 @@
 #include <curses.h>
 #include <cmath>    // floor
 #include "colors.h"
+#include "ListItem.h"
 #include "ListBox.h"
 
 std::string ListBox::resizeSignal = "__RESIZE__";
@@ -261,10 +262,6 @@ void ListBox::redrawSingleItem(unsigned int idx)
 
   wmove(_win, idx-_firstprint+1, 1);
 
-  // Turn on bold text for tagged items
-
-  if (_items[idx].tagged) { wattron(_win, A_BOLD); }
-
   // Turn on highlight color
 
   if (idx == _highlight)
@@ -291,12 +288,7 @@ void ListBox::redrawSingleItem(unsigned int idx)
 
   // Print item
 
-  if (_items[idx].tagged) { printToEol("*" + _items[idx].name); }
-  else { printToEol(_items[idx].name); }
-
-  // Turn off bold text for tagged items
-                                   
-  if (_items[idx].tagged) { wattroff(_win, A_BOLD); }
+  printToEol(_items[idx]->name());
 
   // Turn off highlight color
 
@@ -370,13 +362,14 @@ void ListBox::redrawAllItems()
 
 /*******************************************************************************
 
-Constructors
+Constructors and destructor
 
 *******************************************************************************/
 ListBox::ListBox()
 {
   _win = NULL;
   _name = "";
+  _redraw_type = "all";
   _items.resize(0);
   _highlight = 0;
   _firstprint = 0;
@@ -388,6 +381,7 @@ ListBox::ListBox(WINDOW *win, const std::string & name)
 {
   _win = win;
   _name = name;
+  _redraw_type = "all";
   _items.resize(0);
   _highlight = 0;
   _firstprint = 0;
@@ -400,23 +394,10 @@ ListBox::ListBox(WINDOW *win, const std::string & name)
 Edit list items
 
 *******************************************************************************/
-void ListBox::addItem(const std::string & name, bool tagged)
-{
-  listitem item;
-
-  item.name = name;
-  item.tagged = tagged;
-  _items.push_back(item);
-}
-
+void ListBox::addItem(ListItem *item) { _items.push_back(item); }
 void ListBox::removeItem(unsigned int idx)
 {
   if (idx <= _items.size()) { _items.erase(_items.begin()+idx); }
-}
-
-void ListBox::toggleItemTag(unsigned int idx)
-{
-  if (idx <= _items.size()) { _items[idx].tagged = !_items[idx].tagged; }
 }
 
 void ListBox::clearList()
@@ -458,14 +439,13 @@ void ListBox::draw()
 
 /*******************************************************************************
 
-User interaction loop
+User interaction: returns key stroke or selected item name
 
 *******************************************************************************/
 std::string ListBox::exec()
 {
   int ch, check_redraw;
-  bool getting_input;
-  std::string redraw_type, retval;
+  std::string retval;
 
   const int MY_ESC = 27;
 
@@ -473,116 +453,92 @@ std::string ListBox::exec()
 
   if (_items.size() == 0) { return "EMPTY"; }
 
-  getting_input = true;
-  redraw_type = "all";
-
   // Highlight first entry on first display
 
   if (_highlight == 0) { highlightFirst(); }
 
-  // Handle key input events
+  // Draw list elements
 
-  while (1)
-  {
-    // Normally redraw the frame, since scroll indicators can change
+  if (_redraw_type == "all") { wclear(_win); }
+  if (_redraw_type != "none") { redrawFrame(); }
+  if ( (_redraw_type == "all") || (_redraw_type == "items") ) { 
+                                                            redrawAllItems(); }
+  else if (_redraw_type == "changed") { redrawChangedItems(); }
+  wrefresh(_win);
 
-    if (redraw_type == "all") { wclear(_win); }
-    if (redraw_type != "none") { redrawFrame(); }
-    if ( (redraw_type == "all") || (redraw_type == "items") ) { 
-                                                              redrawAllItems(); }
-    else if (redraw_type == "changed") { redrawChangedItems(); }
-    wrefresh(_win);
+  // Get user input
 
-    if (! getting_input) { break; }
+  switch (ch = getch()) {
 
-    // Get user input
+    // Enter key: return name of highlighted item
 
-    switch (ch = getch()) {
+    case '\n':
+    case '\r':
+    case KEY_ENTER:
+      retval = _items[_highlight]->name();
+      _redraw_type = "none";
+      break;
 
-      // Enter key: return name of highlighted item
+    // Left or right key: return to calling function to decide what to do next
 
-      case '\n':
-      case '\r':
-      case KEY_ENTER:
-        getting_input = false;
-        retval = _items[_highlight].name; 
-        redraw_type = "none";
-        break;
+    case KEY_LEFT:
+      retval = keyLeftSignal;
+      _redraw_type = "changed";
+      break;
+    case KEY_RIGHT:
+      retval = keyRightSignal;
+      _redraw_type = "changed";
+      break;
 
-      // Left or right key: return to calling function to decide what to do next
+    // Arrows/Home/End/PgUp/Dn: change highlighted value
 
-      case KEY_LEFT:
-        getting_input = false;
-        retval = keyLeftSignal;
-        redraw_type = "none";
-        break;
-      case KEY_RIGHT:
-        getting_input = false;
-        retval = keyRightSignal;
-        redraw_type = "none";
-        break;
- 
-      // Arrows/Home/End/PgUp/Dn: change highlighted value
+    case KEY_UP:
+      check_redraw = highlightPrevious();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+    case KEY_DOWN:
+      check_redraw = highlightNext();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+    case KEY_PPAGE:
+      check_redraw = highlightPreviousPage();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+    case KEY_NPAGE:
+      check_redraw = highlightNextPage();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+    case KEY_HOME:
+      check_redraw = highlightFirst();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+    case KEY_END:
+      check_redraw = highlightLast();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
 
-      case KEY_UP:
-        check_redraw = highlightPrevious();
-        if (check_redraw == 1) { redraw_type = "all"; }
-        else { redraw_type = "changed"; }
-        break;
-      case KEY_DOWN:
-        check_redraw = highlightNext();
-        if (check_redraw == 1) { redraw_type = "all"; }
-        else { redraw_type = "changed"; }
-        break;
-      case KEY_PPAGE:
-        check_redraw = highlightPreviousPage();
-        if (check_redraw == 1) { redraw_type = "all"; }
-        else { redraw_type = "changed"; }
-        break;
-      case KEY_NPAGE:
-        check_redraw = highlightNextPage();
-        if (check_redraw == 1) { redraw_type = "all"; }
-        else { redraw_type = "changed"; }
-        break;
-      case KEY_HOME:
-        check_redraw = highlightFirst();
-        if (check_redraw == 1) { redraw_type = "all"; }
-        else { redraw_type = "changed"; }
-        break;
-      case KEY_END:
-        check_redraw = highlightLast();
-        if (check_redraw == 1) { redraw_type = "all"; }
-        else { redraw_type = "changed"; }
-        break;
+    // Resize signal: redraw (may not work with some curses implementations)
 
-      // Resize signal: redraw (may not work with some curses implementations)
+    case KEY_RESIZE:
+      retval = resizeSignal;
+      break;
 
-      case KEY_RESIZE:
-        getting_input = false;
-        retval = resizeSignal;
-        break;
+    // Quit key
 
-      // Toggle item tag
+    case MY_ESC:
+      retval = quitSignal;
+      _redraw_type = "none";
+      break;
 
-      case 't':
-        getting_input = false;
-        retval = tagSignal;
-        toggleItemTag(_highlight);
-        check_redraw = highlightNext();
-        break;
-
-      // Quit key
-
-      case MY_ESC:
-        getting_input = false;
-        retval = quitSignal;
-        redraw_type = "none";
-        break;
-
-      default:
-        redraw_type = "none";
-        break;
-    }
+    default:
+      _redraw_type = "none";
+      break;
   }
   return retval;
 }

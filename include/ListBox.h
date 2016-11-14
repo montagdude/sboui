@@ -4,10 +4,7 @@
 #include <vector>
 #include <curses.h>
 
-struct listitem {
-  std::string name;
-  bool tagged;
-};
+class ListItem;
 
 /*******************************************************************************
 
@@ -19,8 +16,8 @@ class ListBox {
   protected:
 
     WINDOW *_win;
-    std::string _name;
-    std::vector<listitem> _items;
+    std::string _name, _redraw_type;
+    std::vector<ListItem *> _items;
     unsigned int _highlight, _firstprint, _prevhighlight;
     bool _activated;
 
@@ -43,14 +40,14 @@ class ListBox {
 
     /* Drawing */
     
-    void redrawFrame() const;
-    void redrawSingleItem(unsigned int idx);
+    virtual void redrawFrame() const;
+    virtual void redrawSingleItem(unsigned int idx);
     void redrawChangedItems();
     void redrawAllItems();
 
   public:
 
-    /* Constructor */
+    /* Constructors */
 
     ListBox();
     ListBox(WINDOW *win, const std::string & name);
@@ -65,9 +62,8 @@ class ListBox {
 
     /* Edit list */
 
-    void addItem(const std::string & name, bool tagged=false);
+    void addItem(ListItem *item);
     void removeItem(unsigned int idx);
-    void toggleItemTag(unsigned int idx);
     void clearList();
 
     /* Set attributes */
