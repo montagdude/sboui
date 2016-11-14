@@ -19,6 +19,7 @@ CategoryList::CategoryList()
   _prevhighlight = 0;
   _activated = true;
   _buildlists.resize(0);
+  _activelist = 0;
 }
 
 CategoryList::CategoryList(WINDOW *win, WINDOW *buildlistwin,
@@ -33,6 +34,7 @@ CategoryList::CategoryList(WINDOW *win, WINDOW *buildlistwin,
   _prevhighlight = 0;
   _activated = true;
   _buildlists.resize(0);
+  _activelist = 0;
 }
 
 /*******************************************************************************
@@ -54,7 +56,7 @@ void CategoryList::addCategory(const std::string & name,
   addItem(name);
   nbuilds = builds.size();
   buildlist.setWindow(_buildlistwin);
-  buildlist.setName("SlackBuilds");
+  buildlist.setName(name);
   buildlist.setActivated(false);
   for ( i = 0; i < nbuilds; i++ ) { buildlist.addItem(builds[i]); }
   _buildlists.push_back(buildlist);
@@ -68,8 +70,8 @@ User interaction loop
 std::string CategoryList::exec()
 {
   int ch, check_redraw;
-  bool getting_input, getting_input_right;
-  std::string redraw_type, retval, selection;
+  bool getting_input;
+  std::string redraw_type, retval;
 
   const int MY_ESC = 27;
 
@@ -77,146 +79,150 @@ std::string CategoryList::exec()
 
   if (_items.size() == 0) { return "EMPTY"; }
 
-  getting_input = true;
-  redraw_type = "all";
+  // Handle key input events for left window
 
-  // Highlight first entry on first display
-
-  if (_highlight == 0) { highlightFirst(); }
-
-  // Handle key input events
-
-  while (getting_input)
+  if (_activelist == 0)
   {
-    // Redraw menu elements as needed
+    getting_input = true;
+    redraw_type = "all";
 
-    if (redraw_type == "all")
+    // Highlight first entry on first display
+
+    if (_highlight == 0) { highlightFirst(); }
+
+    // Handle key input events
+
+    while (1)
     {
-      wclear(_win);
-      redrawFrame();
-    }
-    if ( (redraw_type == "all") || (redraw_type == "items") ) { 
-                                                              redrawAllItems(); }
-    else if (redraw_type == "changed") { redrawChangedItems(); }
-    wrefresh(_win);
+      // Normally redraw the frame, since scroll indicators can change
 
-    // The SlackBuilds list normally changes, so we'll just always redraw it
+      if (redraw_type == "all") { wclear(_win); }
+      if (redraw_type != "none") { redrawFrame(); }
+      if ( (redraw_type == "all") || (redraw_type == "items") ) { 
+                                                             redrawAllItems(); }
+      else if (redraw_type == "changed") { redrawChangedItems(); }
+      wrefresh(_win);
 
-    _buildlists[_highlight].draw();
+      // The SlackBuilds list normally changes, so always redraw it
 
-    if (! getting_input) { break; }
+      _buildlists[_highlight].draw();
 
-    // Get user input
+      if (! getting_input) { break; }
 
-    switch (ch = getch()) {
+      // Get user input
 
-      // Enter key: return name of highlighted item
+      switch (ch = getch()) {
 
-      case '\n':
-      case '\r':
-      case KEY_ENTER:
-        getting_input = false;
-        retval = _items[_highlight].name; 
-        redraw_type = "none";
-        break;
+        // Enter key: return name of highlighted item
 
-      // Right key: activate ListBox for highlighted category
+        case '\n':
+        case '\r':
+        case KEY_ENTER:
+          getting_input = false;
+          retval = _items[_highlight].name; 
+          redraw_type = "none";
+          break;
 
-      case KEY_RIGHT:
-        redraw_type = "all";
-        setActivated(false);
-        draw();
-        _buildlists[_highlight].setActivated(true);
-        getting_input_right = true;
+        // Right key: activate ListBox for highlighted category
 
-        // Enter user input loop for SlackBuild list
+        case KEY_RIGHT:
+          redraw_type = "all";
+          getting_input = false;
+          setActivated(false);
+          draw();
+          _buildlists[_highlight].setActivated(true);
+          _activelist = 1;
+          retval = _buildlists[_highlight].exec();
 
-        while (getting_input_right)
-        {
-          selection = _buildlists[_highlight].exec();
+          // Left key in SlackBuilds list: switch back to category list
 
-          // Left key: switch back to category list
-
-          if (selection == ListBox::keyLeftSignal)
+          if (retval == ListBox::keyLeftSignal)
           {
             _buildlists[_highlight].setActivated(false);
             _buildlists[_highlight].draw();
-            getting_input_right = false;
             setActivated(true);
-            redraw_type = "changed";
+            _activelist = 0;
           }
+          break;
 
-          // Other inputs: pass back to caller for action
+        // Arrows/Home/End/PgUp/Dn: change highlighted value
 
-          else
-          {
-            getting_input = false;
-            retval = selection;
-          }
-        }
-        break;
+        case KEY_UP:
+          check_redraw = highlightPrevious();
+          if (check_redraw == 1) { redraw_type = "all"; }
+          else { redraw_type = "changed"; }
+          break;
+        case KEY_DOWN:
+          check_redraw = highlightNext();
+          if (check_redraw == 1) { redraw_type = "all"; }
+          else { redraw_type = "changed"; }
+          break;
+        case KEY_PPAGE:
+          check_redraw = highlightPreviousPage();
+          if (check_redraw == 1) { redraw_type = "all"; }
+          else { redraw_type = "changed"; }
+          break;
+        case KEY_NPAGE:
+          check_redraw = highlightNextPage();
+          if (check_redraw == 1) { redraw_type = "all"; }
+          else { redraw_type = "changed"; }
+          break;
+        case KEY_HOME:
+          check_redraw = highlightFirst();
+          if (check_redraw == 1) { redraw_type = "all"; }
+          else { redraw_type = "changed"; }
+          break;
+        case KEY_END:
+          check_redraw = highlightLast();
+          if (check_redraw == 1) { redraw_type = "all"; }
+          else { redraw_type = "changed"; }
+          break;
 
-      // Arrows/Home/End/PgUp/Dn: change highlighted value
-      // FIXME: should check for redrawing just the arrows
+        // Resize signal: redraw (may not work with some curses implementations)
 
-      case KEY_UP:
-        check_redraw = highlightPrevious();
-        if (check_redraw == 1) { redraw_type = "all"; }
-        else { redraw_type = "changed"; }
-        break;
-      case KEY_DOWN:
-        check_redraw = highlightNext();
-        if (check_redraw == 1) { redraw_type = "all"; }
-        else { redraw_type = "changed"; }
-        break;
-      case KEY_PPAGE:
-        check_redraw = highlightPreviousPage();
-        if (check_redraw == 1) { redraw_type = "all"; }
-        else { redraw_type = "changed"; }
-        break;
-      case KEY_NPAGE:
-        check_redraw = highlightNextPage();
-        if (check_redraw == 1) { redraw_type = "all"; }
-        else { redraw_type = "changed"; }
-        break;
-      case KEY_HOME:
-        check_redraw = highlightFirst();
-        if (check_redraw == 1) { redraw_type = "all"; }
-        else { redraw_type = "changed"; }
-        break;
-      case KEY_END:
-        check_redraw = highlightLast();
-        if (check_redraw == 1) { redraw_type = "all"; }
-        else { redraw_type = "changed"; }
-        break;
+        case KEY_RESIZE:
+          getting_input = false;
+          retval = resizeSignal;
+          break;
 
-      // Resize signal: redraw (may not work with some curses implementations)
+        // Toggle item tag
 
-      case KEY_RESIZE:
-        getting_input = false;
-        retval = resizeSignal;
-        break;
+        case 't':
+          getting_input = false;
+          retval = tagSignal;
+          toggleItemTag(_highlight);
+          check_redraw = highlightNext();
+          break;
 
-      // Toggle item tag
+        // Quit key
 
-      case 't':
-        getting_input = false;
-        retval = tagSignal;
-        toggleItemTag(_highlight);
-        check_redraw = highlightNext();
-        break;
+        case MY_ESC:
+          getting_input = false;
+          retval = quitSignal;
+          redraw_type = "none";
+          break;
 
-      // Quit key
+        default:
+          redraw_type = "none";
+          break;
+      }
+    }
+  }
 
-      case MY_ESC:
-        getting_input = false;
-        retval = quitSignal;
-        redraw_type = "none";
-        break;
+  // Get input from SlackBuilds list
 
-      default:
-        redraw_type = "none";
-        break;
+  else  /* _activelist == 1 */
+  {
+    retval = _buildlists[_highlight].exec();
+
+    // Left key: activate Category list
+
+    if (retval == ListBox::keyLeftSignal)
+    {
+      _buildlists[_highlight].setActivated(false);
+      _buildlists[_highlight].draw();
+      setActivated(true);
+      _activelist = 0;
     }
   }
   return retval;

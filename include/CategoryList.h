@@ -15,6 +15,7 @@ class CategoryList: public ListBox {
 
     WINDOW *_buildlistwin;
     std::vector<ListBox> _buildlists;
+    unsigned int _activelist;
 
   public:
 

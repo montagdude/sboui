@@ -484,13 +484,10 @@ std::string ListBox::exec()
 
   while (1)
   {
-    // Redraw menu elements as needed
+    // Normally redraw the frame, since scroll indicators can change
 
-    if (redraw_type == "all")
-    {
-      wclear(_win);
-      redrawFrame();
-    }
+    if (redraw_type == "all") { wclear(_win); }
+    if (redraw_type != "none") { redrawFrame(); }
     if ( (redraw_type == "all") || (redraw_type == "items") ) { 
                                                               redrawAllItems(); }
     else if (redraw_type == "changed") { redrawChangedItems(); }
@@ -526,7 +523,6 @@ std::string ListBox::exec()
         break;
  
       // Arrows/Home/End/PgUp/Dn: change highlighted value
-      // FIXME: should check for redrawing just the arrows
 
       case KEY_UP:
         check_redraw = highlightPrevious();
