@@ -59,6 +59,7 @@ class ListBox {
     static std::string keyRightSignal;
     static std::string keyLeftSignal;
     static std::string tagSignal;
+    static std::string highlightSignal;
 
     /* Edit list */
 
@@ -75,6 +76,7 @@ class ListBox {
     /* Get attributes */
 
     const std::string & name() const;
+    unsigned int highlight() const;
 
     /* Draws list box and all items */
  

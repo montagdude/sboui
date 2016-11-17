@@ -5,6 +5,8 @@
 #include "curses.h"
 #include "colors.h"
 #include "ListBox.h"
+#include "SlackBuildListItem.h"
+#include "CategoryListItem.h"
 #include "MainWindow.h"
 
 std::string int2str(int inval)
@@ -69,8 +71,10 @@ void MainWindow::redrawHeaderFooter() const
   move(rows-1, 0);
   clrtoeol();
   if (colors::info != -1) { attron(COLOR_PAIR(colors::info)); }
+  attron(A_BOLD);
   printToEol(_info);
   if (colors::info != -1) { attroff(COLOR_PAIR(colors::info)); }
+  attron(A_BOLD);
 }
 
 /*******************************************************************************
@@ -78,7 +82,7 @@ void MainWindow::redrawHeaderFooter() const
 Redraws windows
 
 *******************************************************************************/
-void MainWindow::redrawWindows() const
+void MainWindow::redrawWindows()
 {
   int rows, cols;
   int listrows, leftlistcols, rightlistcols, xrightlist;
@@ -103,7 +107,8 @@ void MainWindow::redrawWindows() const
 
   // Redraw windows
 
-  _curlist->draw();
+  _clistbox.draw();
+  _blistboxes[_category_idx].draw();
 }
 
 /*******************************************************************************
@@ -111,7 +116,7 @@ void MainWindow::redrawWindows() const
 Redraws window
 
 *******************************************************************************/
-void MainWindow::redrawAll() const
+void MainWindow::redrawAll()
 {
   clear();
   redrawHeaderFooter(); 
@@ -125,12 +130,16 @@ Constructor
 *******************************************************************************/
 MainWindow::MainWindow()
 {
+  _win1 = NULL;
+  _win2 = NULL;
+  _blistboxes.resize(0);
+  _slackbuilds.resize(0);
+  _categories.resize(0);
   _title = "SlackBuilds Browser";
   _filter = "All";
   _info = "F1: Help";
-  _win1 = NULL;
-  _win2 = NULL;
-  _curlist = NULL;
+  _category_idx = 0;
+  _activated_listbox = 0;
 }
 
 /*******************************************************************************
@@ -140,31 +149,52 @@ First time window setup
 *******************************************************************************/
 void MainWindow::initialize()
 {
-  unsigned int i, j;
+  unsigned int i, j, nbuilds;
   std::vector<std::string> builds;
 
   // Create windows (note: geometry gets set in redrawWindows);
 
   _win1 = newwin(4, 0, 10, 10);
   _win2 = newwin(4, 11,10, 10);
-  _allcategories.setWindow(_win1);
-  _allcategories.setBuildListWindow(_win2);
 
-  // Create lists and set pointers
+  // Create master lists
 
-  for ( i = 0; i < 10; i++ ) 
-  { 
-    builds.resize(0);
+  for ( i = 0; i < 10; i++ )
+  {
+    CategoryListItem citem;
+    citem.setName("Category " + int2str(i));
+    _categories.push_back(citem);
     for ( j = 0; j < 30; j++ )
     {
-      builds.push_back("Category " + int2str(i) + ", SlackBuild " + int2str(j));
+      SlackBuildListItem bitem;
+      bitem.setCategory(citem.name());
+      bitem.setName(bitem.category() + ", SlackBuild " + int2str(j));
+      _slackbuilds.push_back(bitem);
     }
-    _allcategories.addCategory("Category " + int2str(i), builds);
   }
-  _allcategories.setName("Categories");
-  _allcategories.setActivated(true);
 
-  _curlist = &_allcategories;
+  // Create list boxes (Careful! If you use push_back, etc. later on the lists,
+  // the list boxes must be regenerated because their pointers will become
+  // invalid.)
+
+  nbuilds = 0;
+  _clistbox.setWindow(_win1);
+  _clistbox.setActivated(true);
+  _clistbox.setName("Categories");
+  for ( i = 0; i < 10; i++ )
+  {
+    _clistbox.addCategory(&_categories[i]);
+    ListBox blistbox;
+    blistbox.setWindow(_win2);
+    blistbox.setName(_categories[i].name());
+    blistbox.setActivated(false);
+    for ( j = 0; j < 30; j++ )
+    {
+      blistbox.addItem(&_slackbuilds[nbuilds]);
+      nbuilds++;
+    }
+    _blistboxes.push_back(blistbox);
+  }
 }
 
 /*******************************************************************************
@@ -182,18 +212,52 @@ Shows the main window
 *******************************************************************************/
 void MainWindow::show()
 {
-  bool display;
   std::string selection;
+  bool getting_input;
 
   redrawAll();
 
   // Main event loop
 
-  display = true;
-  while (display)
+  getting_input = true;
+  while (getting_input)
   {
-    selection = _curlist->exec();
-    if (selection == ListBox::quitSignal) { display = false; }
+    // Get input from Categories list box
+
+    if (_activated_listbox == 0)
+    {
+      selection = _clistbox.exec();
+      if (selection == ListBox::highlightSignal)
+      {
+        _category_idx = _clistbox.highlight(); 
+        _blistboxes[_category_idx].draw();
+      }
+      else if (selection == ListBox::keyRightSignal)
+      {
+        _clistbox.setActivated(false);
+        _clistbox.draw();
+        _blistboxes[_category_idx].setActivated(true);
+        _activated_listbox = 1;
+      }
+    }
+
+    // Get input from SlackBuilds list box
+
+    else if (_activated_listbox == 1)
+    {
+      selection = _blistboxes[_category_idx].exec();
+      if (selection == ListBox::keyLeftSignal)
+      {
+        _blistboxes[_category_idx].setActivated(false);
+        _blistboxes[_category_idx].draw();
+        _clistbox.setActivated(true);
+        _activated_listbox = 0;
+      }
+    }
+
+    // Key signals with the same action w/ either type of list box
+
+    if (selection == ListBox::quitSignal) { getting_input = false; }
     else if (selection == ListBox::resizeSignal) { redrawAll(); }
   }
 }

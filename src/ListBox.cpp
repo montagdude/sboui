@@ -6,10 +6,11 @@
 #include "ListBox.h"
 
 std::string ListBox::resizeSignal = "__RESIZE__";
-std::string ListBox::quitSignal = "__QUIT___";
-std::string ListBox::keyRightSignal = "__RIGHT___";
-std::string ListBox::keyLeftSignal = "__LEFT___";
-std::string ListBox::tagSignal = "__TAG___";
+std::string ListBox::quitSignal = "__QUIT__";
+std::string ListBox::keyRightSignal = "__RIGHT__";
+std::string ListBox::keyLeftSignal = "__LEFT__";
+std::string ListBox::tagSignal = "__TAG__";
+std::string ListBox::highlightSignal = "__HIGHLIGHT__";
 
 /*******************************************************************************
 
@@ -423,6 +424,7 @@ Get attributes
 
 *******************************************************************************/
 const std::string & ListBox::name() const { return _name; }
+unsigned int ListBox::highlight() const { return _highlight; }
 
 /*******************************************************************************
 
@@ -432,6 +434,7 @@ Draws list box (frame, items, etc.)
 void ListBox::draw()
 {
   wclear(_win);
+  if (colors::normal != -1) { wbkgd(_win, COLOR_PAIR(colors::normal)); }
   redrawFrame();
   redrawAllItems();
   wrefresh(_win);
@@ -493,31 +496,37 @@ std::string ListBox::exec()
     // Arrows/Home/End/PgUp/Dn: change highlighted value
 
     case KEY_UP:
+      retval = highlightSignal;
       check_redraw = highlightPrevious();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
       break;
     case KEY_DOWN:
+      retval = highlightSignal;
       check_redraw = highlightNext();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
       break;
     case KEY_PPAGE:
+      retval = highlightSignal;
       check_redraw = highlightPreviousPage();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
       break;
     case KEY_NPAGE:
+      retval = highlightSignal;
       check_redraw = highlightNextPage();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
       break;
     case KEY_HOME:
+      retval = highlightSignal;
       check_redraw = highlightFirst();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
       break;
     case KEY_END:
+      retval = highlightSignal;
       check_redraw = highlightLast();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }

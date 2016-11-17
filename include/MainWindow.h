@@ -5,6 +5,7 @@
 #include "CategoryListBox.h"
 #include "ListBox.h"
 #include "SlackBuildListItem.h"
+#include "CategoryListItem.h"
 
 /*******************************************************************************
 
@@ -16,17 +17,18 @@ class MainWindow {
   private:
 
     WINDOW *_win1, *_win2;
-    CategoryListBox _clist;
-    std::vector<ListBox> _blists;
+    CategoryListBox _clistbox;
+    std::vector<ListBox> _blistboxes;
     std::vector<SlackBuildListItem> _slackbuilds;
     std::vector<CategoryListItem> _categories;
     std::string _title, _filter, _info;
+    unsigned int _category_idx, _activated_listbox;
 
     void printToEol(const std::string & msg) const;
 
     void redrawHeaderFooter() const;
-    void redrawWindows() const;
-    void redrawAll() const;
+    void redrawWindows();
+    void redrawAll();
 
   public:
 

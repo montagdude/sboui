@@ -39,9 +39,10 @@ int main()
     start_color();
     init_pair(colors::normal, COLOR_WHITE, COLOR_BLACK);
     init_pair(colors::title, COLOR_WHITE, COLOR_BLUE);
-    init_pair(colors::info, COLOR_GREEN, COLOR_BLACK);
-    init_pair(colors::highlighted_active, COLOR_BLACK, COLOR_GREEN);
+    init_pair(colors::info, COLOR_WHITE, COLOR_BLUE);
+    init_pair(colors::highlighted_active, COLOR_BLACK, COLOR_CYAN);
     init_pair(colors::highlighted_inactive, COLOR_BLACK, COLOR_WHITE);
+    bkgd(COLOR_PAIR(colors::normal));
   } 
 
   // User interaction loop
