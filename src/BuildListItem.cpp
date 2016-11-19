@@ -1,13 +1,13 @@
 #include <string>
 #include "ListItem.h"
-#include "SlackBuildListItem.h"
+#include "BuildListItem.h"
 
 /*******************************************************************************
 
 Constructor
 
 *******************************************************************************/
-SlackBuildListItem::SlackBuildListItem() 
+BuildListItem::BuildListItem() 
 { 
   _name = ""; 
   _category = "";
@@ -22,25 +22,23 @@ SlackBuildListItem::SlackBuildListItem()
 Set properties
 
 *******************************************************************************/
-void SlackBuildListItem::setCategory(const std::string & category) 
+void BuildListItem::setCategory(const std::string & category) 
 { 
   _category = category;
 }
 
-void SlackBuildListItem::setInstalledVersion(
-                                          const std::string & installed_version)
+void BuildListItem::setInstalledVersion(const std::string & installed_version)
 { 
   _installed_version = installed_version;
 }
 
-void SlackBuildListItem::setAvailableVersion(
-                                          const std::string & available_version)
+void BuildListItem::setAvailableVersion(const std::string & available_version)
 { 
   _available_version = available_version;
 }
 
-void SlackBuildListItem::setTagged(bool tagged) { _tagged = tagged; }
-void SlackBuildListItem::setInstalled(bool installed) 
+void BuildListItem::setTagged(bool tagged) { _tagged = tagged; }
+void BuildListItem::setInstalled(bool installed) 
 { 
   _installed = installed; 
 }
@@ -50,15 +48,15 @@ void SlackBuildListItem::setInstalled(bool installed)
 Get properties
 
 *******************************************************************************/
-const std::string & SlackBuildListItem::category() const { return _category; }
-const std::string & SlackBuildListItem::installedVersion() const
+const std::string & BuildListItem::category() const { return _category; }
+const std::string & BuildListItem::installedVersion() const
 { 
   return _installed_version;
 }
 
-const std::string & SlackBuildListItem::availableVersion() const
+const std::string & BuildListItem::availableVersion() const
 { 
   return _available_version;
 }
-bool SlackBuildListItem::tagged() const { return _tagged; }
-bool SlackBuildListItem::installed() const { return _installed; }
+bool BuildListItem::tagged() const { return _tagged; }
+bool BuildListItem::installed() const { return _installed; }

@@ -78,7 +78,7 @@ class ListBox {
     const std::string & name() const;
     unsigned int highlight() const;
 
-    /* Draws list box and all items */
+    /* Draws frame, items, etc. as needed */
  
     void draw();
 

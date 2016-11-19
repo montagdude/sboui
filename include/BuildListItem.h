@@ -9,7 +9,7 @@ List item that describes a SlackBuild. Populates most of the different ListBoxes
 in sboui.
 
 *******************************************************************************/
-class SlackBuildListItem: public ListItem {
+class BuildListItem: public ListItem {
 
   private:
 
@@ -20,7 +20,7 @@ class SlackBuildListItem: public ListItem {
 
     // Constructor
 
-    SlackBuildListItem();
+    BuildListItem();
 
     // Set properties
 

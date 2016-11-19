@@ -6,7 +6,7 @@
 #include "Color.h"
 #include "color_settings.h"
 #include "ListBox.h"
-#include "SlackBuildListItem.h"
+#include "BuildListItem.h"
 #include "CategoryListItem.h"
 #include "MainWindow.h"
 
@@ -172,7 +172,7 @@ void MainWindow::initialize()
     _categories.push_back(citem);
     for ( j = 0; j < 30; j++ )
     {
-      SlackBuildListItem bitem;
+      BuildListItem bitem;
       bitem.setCategory(citem.name());
       bitem.setName(bitem.category() + ", SlackBuild " + int2str(j));
       _slackbuilds.push_back(bitem);
@@ -189,7 +189,7 @@ void MainWindow::initialize()
   _clistbox.setName("Categories");
   for ( i = 0; i < 10; i++ )
   {
-    _clistbox.addCategory(&_categories[i]);
+    _clistbox.addItem(&_categories[i]);
     ListBox blistbox;
     blistbox.setWindow(_win2);
     blistbox.setName(_categories[i].name());

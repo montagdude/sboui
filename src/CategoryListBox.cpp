@@ -182,13 +182,6 @@ CategoryListBox::CategoryListBox(WINDOW *win, const std::string & name)
 
 /*******************************************************************************
 
-Set attributes
-
-*******************************************************************************/
-void CategoryListBox::addCategory(CategoryListItem *item) { addItem(item); }
-
-/*******************************************************************************
-
 User interaction: returns key stroke or selected item name
 
 *******************************************************************************/
@@ -209,12 +202,7 @@ std::string CategoryListBox::exec()
 
   // Draw list elements
 
-  if (_redraw_type == "all") { wclear(_win); }
-  if (_redraw_type != "none") { redrawFrame(); }
-  if ( (_redraw_type == "all") || (_redraw_type == "items") ) { 
-                                                            redrawAllItems(); }
-  else if (_redraw_type == "changed") { redrawChangedItems(); }
-  wrefresh(_win);
+  draw();
 
   // Get user input
 

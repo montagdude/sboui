@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <vector>
 #include "CategoryListItem.h"
 #include "ListBox.h"
 
@@ -23,10 +22,6 @@ class CategoryListBox: public ListBox {
 
     CategoryListBox();
     CategoryListBox(WINDOW *win, const std::string & name);
-
-    /* Set attributes */
-
-    void addCategory(CategoryListItem *item);
 
     /* User interaction loop */
 

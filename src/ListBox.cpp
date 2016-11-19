@@ -421,19 +421,27 @@ unsigned int ListBox::highlight() const { return _highlight; }
 
 /*******************************************************************************
 
-Draws list box (frame, items, etc.)
+Draws list box (frame, items, etc.) as needed
 
 *******************************************************************************/
 void ListBox::draw()
 {
   int pair_normal;
 
-  wclear(_win);
-  pair_normal = colors.pair(fg_normal, bg_normal);
-  if (pair_normal != -1) { wbkgd(_win, COLOR_PAIR(pair_normal)); }
-  redrawFrame();
-  redrawAllItems();
+  // Draw list elements
+
+  if (_redraw_type == "all") 
+  { 
+    wclear(_win); 
+    pair_normal = colors.pair(fg_normal, bg_normal);
+    if (pair_normal != -1) { wbkgd(_win, COLOR_PAIR(pair_normal)); }
+  }
+  if (_redraw_type != "none") { redrawFrame(); }
+  if ( (_redraw_type == "all") || (_redraw_type == "items") ) { 
+                                                            redrawAllItems(); }
+  else if (_redraw_type == "changed") { redrawChangedItems(); }
   wrefresh(_win);
+
 }
 
 /*******************************************************************************
@@ -458,12 +466,7 @@ std::string ListBox::exec()
 
   // Draw list elements
 
-  if (_redraw_type == "all") { wclear(_win); }
-  if (_redraw_type != "none") { redrawFrame(); }
-  if ( (_redraw_type == "all") || (_redraw_type == "items") ) { 
-                                                            redrawAllItems(); }
-  else if (_redraw_type == "changed") { redrawChangedItems(); }
-  wrefresh(_win);
+  draw();
 
   // Get user input
 
