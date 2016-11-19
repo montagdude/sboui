@@ -3,11 +3,14 @@
 #include <sstream>
 #include <cmath>     // floor
 #include "curses.h"
-#include "colors.h"
+#include "Color.h"
+#include "color_settings.h"
 #include "ListBox.h"
 #include "SlackBuildListItem.h"
 #include "CategoryListItem.h"
 #include "MainWindow.h"
+
+using namespace color;
 
 std::string int2str(int inval)
 {
@@ -46,6 +49,7 @@ Redraws header and footer
 void MainWindow::redrawHeaderFooter() const
 {
   int rows, cols;
+  int pair_title, pair_info;
 
   getmaxyx(stdscr, rows, cols);
 
@@ -53,10 +57,11 @@ void MainWindow::redrawHeaderFooter() const
 
   move(0, 0);
   clrtoeol();
-  if (colors::title != -1) { attron(COLOR_PAIR(colors::title)); }
+  pair_title = colors.pair(fg_title, bg_title);
+  if (pair_title != -1) { attron(COLOR_PAIR(pair_title)); }
   attron(A_BOLD);
   printToEol(_title);
-  if (colors::title != -1) { attroff(COLOR_PAIR(colors::title)); }
+  if (pair_title != -1) { attroff(COLOR_PAIR(pair_title)); }
   attroff(A_BOLD);
 
   // Print filter selection
@@ -70,10 +75,11 @@ void MainWindow::redrawHeaderFooter() const
 
   move(rows-1, 0);
   clrtoeol();
-  if (colors::info != -1) { attron(COLOR_PAIR(colors::info)); }
+  pair_info = colors.pair(fg_info, bg_info);
+  if (pair_info != -1) { attron(COLOR_PAIR(pair_info)); }
   attron(A_BOLD);
   printToEol(_info);
-  if (colors::info != -1) { attroff(COLOR_PAIR(colors::info)); }
+  if (pair_info != -1) { attroff(COLOR_PAIR(pair_info)); }
   attron(A_BOLD);
 }
 

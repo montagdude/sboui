@@ -1,9 +1,12 @@
 #include <string>
 #include <curses.h>
 #include <cmath>    // floor
-#include "colors.h"
+#include "Color.h"
+#include "color_settings.h"
 #include "ListItem.h"
 #include "ListBox.h"
+
+using namespace color;
 
 std::string ListBox::resizeSignal = "__RESIZE__";
 std::string ListBox::quitSignal = "__QUIT__";
@@ -86,7 +89,7 @@ int ListBox::highlightNextPage()
   unsigned int nitems;
 
   getmaxyx(_win, rows, cols);
-  rowsavail = rows-2;
+  rowsavail = rows-_reserved_rows;
 
   // Determine how far to page and which item to highlight
 
@@ -116,7 +119,7 @@ int ListBox::highlightPreviousPage()
   int rows, cols, rowsavail;
 
   getmaxyx(_win, rows, cols);
-  rowsavail = rows-2;
+  rowsavail = rows-_reserved_rows;
 
   // Determine how far to page
 
@@ -147,7 +150,7 @@ int ListBox::determineFirstPrint()
   getmaxyx(_win, rows, cols);
   firstprintstore = _firstprint;
 
-  rowsavail = rows-2;
+  rowsavail = rows-_reserved_rows;
   if (_highlight < _firstprint) { _firstprint = _highlight; }
   else if (_highlight >= _firstprint + rowsavail)
   {
@@ -248,7 +251,6 @@ void ListBox::redrawFrame() const
   // Rest of right border
   
   for ( i = 2; i < rows-2; i++ ) { mvwaddch(_win, i, cols-1, ACS_VLINE); }
-
 }
 
 /*******************************************************************************
@@ -259,6 +261,9 @@ screen or not.
 *******************************************************************************/
 void ListBox::redrawSingleItem(unsigned int idx)
 {
+  std::string fg, bg;
+  int color_pair;
+
   // Go to item location, optionally highlight, and print item
 
   wmove(_win, idx-_firstprint+1, 1);
@@ -267,25 +272,25 @@ void ListBox::redrawSingleItem(unsigned int idx)
 
   if (idx == _highlight)
   {
-    if (_activated)
-    {
-      if (colors::highlighted_active != -1) 
-      { 
-        wattron(_win, COLOR_PAIR(colors::highlighted_active));
-      }
-      else { wattron(_win, A_REVERSE); }
+    if (_activated) 
+    { 
+      fg = fg_highlight_active; 
+      bg = bg_highlight_active; 
     }
     else
     {
-      if (colors::highlighted_inactive != -1) 
-      { 
-        wattron(_win, COLOR_PAIR(colors::highlighted_inactive));
-      }
-      else { wattron(_win, A_REVERSE); }
+      fg = fg_highlight_inactive; 
+      bg = bg_highlight_inactive; 
     }
-    _prevhighlight = _highlight; // Save highlight idx for redrawing later
-                                 // Note: prevents this method from being const
+    color_pair = colors.pair(fg, bg);
+    if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
+    else { wattron(_win, A_REVERSE); }
   } 
+
+  // Save highlight idx for redrawing later.
+  // Note: prevents this method from being const.
+  
+  if (idx == _highlight) { _prevhighlight = _highlight; }
 
   // Print item
 
@@ -295,23 +300,9 @@ void ListBox::redrawSingleItem(unsigned int idx)
 
   if (idx == _highlight)
   {
-    if (_activated)
-    {
-      if (colors::highlighted_active != -1) 
-      { 
-        wattroff(_win, COLOR_PAIR(colors::highlighted_active));
-      }
-      else { wattroff(_win, A_REVERSE); }
-    }
-    else
-    {
-      if (colors::highlighted_inactive != -1) 
-      { 
-        wattroff(_win, COLOR_PAIR(colors::highlighted_inactive));
-      }
-      else { wattroff(_win, A_REVERSE); }
-    }
-  } 
+    if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); }
+    else { wattroff(_win, A_REVERSE); }
+  }
 }
 
 /*******************************************************************************
@@ -324,7 +315,7 @@ void ListBox::redrawChangedItems()
   int rows, cols, rowsavail;
 
   getmaxyx(_win, rows, cols);
-  rowsavail = rows-2;
+  rowsavail = rows-_reserved_rows;
 
   // Draw previously and currently highlighted items
 
@@ -347,7 +338,7 @@ void ListBox::redrawAllItems()
   int rows, cols, rowsavail;
 
   getmaxyx(_win, rows, cols);
-  rowsavail = rows-2;
+  rowsavail = rows-_reserved_rows;
 
   if (_items.size() == 0)
   {
@@ -363,7 +354,7 @@ void ListBox::redrawAllItems()
 
 /*******************************************************************************
 
-Constructors and destructor
+Constructors
 
 *******************************************************************************/
 ListBox::ListBox()
@@ -376,6 +367,7 @@ ListBox::ListBox()
   _firstprint = 0;
   _prevhighlight = 0;
   _activated = true;
+  _reserved_rows = 2;
 }
 
 ListBox::ListBox(WINDOW *win, const std::string & name)
@@ -388,6 +380,7 @@ ListBox::ListBox(WINDOW *win, const std::string & name)
   _firstprint = 0;
   _prevhighlight = 0;
   _activated = true;
+  _reserved_rows = 2;
 }
 
 /*******************************************************************************
@@ -433,8 +426,11 @@ Draws list box (frame, items, etc.)
 *******************************************************************************/
 void ListBox::draw()
 {
+  int pair_normal;
+
   wclear(_win);
-  if (colors::normal != -1) { wbkgd(_win, COLOR_PAIR(colors::normal)); }
+  pair_normal = colors.pair(fg_normal, bg_normal);
+  if (pair_normal != -1) { wbkgd(_win, COLOR_PAIR(pair_normal)); }
   redrawFrame();
   redrawAllItems();
   wrefresh(_win);

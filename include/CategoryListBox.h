@@ -10,6 +10,11 @@ ListBox for categories
 
 *******************************************************************************/
 class CategoryListBox: public ListBox {
+  
+  private:
+
+    void redrawFrame() const;
+    void redrawSingleItem(unsigned int idx);
 
   public:
 

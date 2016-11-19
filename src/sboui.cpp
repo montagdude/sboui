@@ -1,19 +1,21 @@
+#include <string>
 #include "curses.h"
-#include "colors.h"
+#include "Color.h"
+#include "color_settings.h"
 #include "MainWindow.h"
 
-namespace colors
+namespace color
 {
-  int normal = -1;
-  int title = -1;
-  int info = -1;
-  int highlighted_active = -1;
-  int highlighted_inactive = -1;
-  int disabled = -1;
-  int disabled_highlighted = -1;
-  int description = -1;
-  int error = -1;
-}
+  Color colors;
+  std::string fg_normal, bg_normal;
+  std::string fg_title, bg_title;
+  std::string fg_info, bg_info;
+  std::string fg_highlight_active, bg_highlight_active;
+  std::string fg_highlight_inactive, bg_highlight_inactive;
+  std::string header;
+} 
+
+using namespace color;
 
 int main()
 {
@@ -30,19 +32,25 @@ int main()
 
   if (has_colors())
   {
-    colors::normal = 1;
-    colors::title = 2;
-    colors::info = 3;
-    colors::highlighted_active = 4;
-    colors::highlighted_inactive = 5;
-  
-    start_color();
-    init_pair(colors::normal, COLOR_WHITE, COLOR_BLACK);
-    init_pair(colors::title, COLOR_WHITE, COLOR_BLUE);
-    init_pair(colors::info, COLOR_WHITE, COLOR_BLUE);
-    init_pair(colors::highlighted_active, COLOR_BLACK, COLOR_CYAN);
-    init_pair(colors::highlighted_inactive, COLOR_BLACK, COLOR_WHITE);
-    bkgd(COLOR_PAIR(colors::normal));
+    fg_normal = "white";     
+    bg_normal = "black";     
+    fg_title = "white";
+    bg_title = "blue";
+    fg_info = "white";
+    bg_info = "blue";
+    fg_highlight_active = "black";
+    bg_highlight_active = "cyan";
+    fg_highlight_inactive = "black";
+    bg_highlight_inactive = "white";
+    header = "yellow";
+
+    colors.addPair(fg_normal, bg_normal);
+    colors.addPair(fg_title, bg_title);
+    colors.addPair(fg_info, bg_info);
+    colors.addPair(fg_highlight_active, bg_highlight_active);
+    colors.addPair(fg_highlight_inactive, bg_highlight_inactive);
+    colors.addPair(header, bg_normal); 
+    bkgd(COLOR_PAIR(colors.pair(fg_normal, bg_normal)));
   } 
 
   // User interaction loop

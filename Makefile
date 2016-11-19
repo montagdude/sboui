@@ -1,6 +1,6 @@
 CXX=g++
 CXXFLAGS=-g -Wall
-OBJ=ListItem.o CategoryListItem.o SlackBuildListItem.o ListBox.o CategoryListBox.o MainWindow.o sboui.o
+OBJ=Color.o ListItem.o CategoryListItem.o SlackBuildListItem.o ListBox.o CategoryListBox.o MainWindow.o sboui.o
 SRCDIR=src
 CPPFLAGS=-Iinclude
 EXE=sboui
@@ -13,6 +13,9 @@ $(EXE): $(OBJ)
 clean:
 	rm *.o
 	rm $(EXE)
+
+Color.o: $(SRCDIR)/Color.cpp
+	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/Color.cpp
 
 ListItem.o: $(SRCDIR)/ListItem.cpp
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/ListItem.cpp
