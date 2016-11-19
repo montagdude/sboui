@@ -80,7 +80,7 @@ class ListBox {
 
     /* Draws frame, items, etc. as needed */
  
-    void draw();
+    void draw(bool force=false);
 
     /* User interaction loop */
 

@@ -237,7 +237,7 @@ void MainWindow::show()
       if (selection == ListBox::highlightSignal)
       {
         _category_idx = _clistbox.highlight(); 
-        _blistboxes[_category_idx].draw();
+        _blistboxes[_category_idx].draw(true);
       }
       else if (selection == ListBox::keyRightSignal)
       {
