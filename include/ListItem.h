@@ -17,6 +17,14 @@ class ListItem {
   public:
 
     ListItem();
-    void setName(const std::string & name);
-    const std::string & name() const;
+
+    // Set attributes
+
+    virtual void setName(const std::string & name);
+    virtual void setTagged(bool tagged) = 0;
+
+    // Get properties
+
+    virtual const std::string & name() const;
+    virtual bool tagged() const = 0;
 };

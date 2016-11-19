@@ -13,6 +13,7 @@ namespace color
   std::string fg_highlight_active, bg_highlight_active;
   std::string fg_highlight_inactive, bg_highlight_inactive;
   std::string header;
+  std::string tagged;
 } 
 
 using namespace color;
@@ -43,6 +44,7 @@ int main()
     fg_highlight_inactive = "black";
     bg_highlight_inactive = "white";
     header = "yellow";
+    tagged = "green";
 
     colors.addPair(fg_normal, bg_normal);
     colors.addPair(fg_title, bg_title);
@@ -50,6 +52,9 @@ int main()
     colors.addPair(fg_highlight_active, bg_highlight_active);
     colors.addPair(fg_highlight_inactive, bg_highlight_inactive);
     colors.addPair(header, bg_normal); 
+    colors.addPair(tagged, bg_normal); 
+    colors.addPair(tagged, bg_highlight_active); 
+    colors.addPair(tagged, bg_highlight_inactive); 
     bkgd(COLOR_PAIR(colors.pair(fg_normal, bg_normal)));
   } 
 

@@ -63,7 +63,7 @@ class ListBox {
 
     /* Edit list */
 
-    void addItem(ListItem *item);
+    virtual void addItem(ListItem *item);
     void removeItem(unsigned int idx);
     void clearList();
 

@@ -107,18 +107,30 @@ void CategoryListBox::redrawSingleItem(unsigned int idx)
   {
     if (_activated) 
     { 
-      fg = fg_highlight_active; 
+      if (_items[idx]->tagged()) { fg = tagged; }
+      else { fg = fg_highlight_active; }
       bg = bg_highlight_active; 
     }
     else
     {
-      fg = fg_highlight_inactive; 
+      if (_items[idx]->tagged()) { fg = tagged; }
+      else { fg = fg_highlight_inactive; }
       bg = bg_highlight_inactive; 
     }
     color_pair = colors.pair(fg, bg);
     if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
     else { wattron(_win, A_REVERSE); }
   } 
+  else
+  {
+    if (_items[idx]->tagged()) { fg = tagged; }
+    else { fg = fg_normal; }
+    bg = bg_normal;
+    color_pair = colors.pair(fg, bg);
+    if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
+  }
+
+  if (_items[idx]->tagged()) { wattron(_win, A_BOLD); }
 
   // Save highlight idx for redrawing later.
   // Note: prevents this method from being const.
@@ -131,11 +143,12 @@ void CategoryListBox::redrawSingleItem(unsigned int idx)
 
   // Turn off highlight color
 
-  if (idx == _highlight)
+  if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); }
+  else
   {
-    if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); }
-    else { wattroff(_win, A_REVERSE); }
+    if (idx == _highlight) { wattroff(_win, A_REVERSE); }
   }
+  if (_items[idx]->tagged()) { wattroff(_win, A_BOLD); }
 }
 
 /*******************************************************************************
@@ -173,3 +186,125 @@ Set attributes
 
 *******************************************************************************/
 void CategoryListBox::addCategory(CategoryListItem *item) { addItem(item); }
+
+/*******************************************************************************
+
+User interaction: returns key stroke or selected item name
+
+*******************************************************************************/
+std::string CategoryListBox::exec()
+{
+  int ch, check_redraw;
+  std::string retval;
+
+  const int MY_ESC = 27;
+
+  // Don't bother if there are no items
+
+  if (_items.size() == 0) { return "EMPTY"; }
+
+  // Highlight first entry on first display
+
+  if (_highlight == 0) { highlightFirst(); }
+
+  // Draw list elements
+
+  if (_redraw_type == "all") { wclear(_win); }
+  if (_redraw_type != "none") { redrawFrame(); }
+  if ( (_redraw_type == "all") || (_redraw_type == "items") ) { 
+                                                            redrawAllItems(); }
+  else if (_redraw_type == "changed") { redrawChangedItems(); }
+  wrefresh(_win);
+
+  // Get user input
+
+  switch (ch = getch()) {
+
+    // Enter key: return name of highlighted item
+
+    case '\n':
+    case '\r':
+    case KEY_ENTER:
+      retval = _items[_highlight]->name();
+      _redraw_type = "none";
+      break;
+
+    // Left or right key: return to calling function to decide what to do next
+
+    case KEY_LEFT:
+      retval = keyLeftSignal;
+      _redraw_type = "changed";
+      break;
+    case KEY_RIGHT:
+      retval = keyRightSignal;
+      _redraw_type = "changed";
+      break;
+
+    // Arrows/Home/End/PgUp/Dn: change highlighted value
+
+    case KEY_UP:
+      retval = highlightSignal;
+      check_redraw = highlightPrevious();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+    case KEY_DOWN:
+      retval = highlightSignal;
+      check_redraw = highlightNext();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+    case KEY_PPAGE:
+      retval = highlightSignal;
+      check_redraw = highlightPreviousPage();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+    case KEY_NPAGE:
+      retval = highlightSignal;
+      check_redraw = highlightNextPage();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+    case KEY_HOME:
+      retval = highlightSignal;
+      check_redraw = highlightFirst();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+    case KEY_END:
+      retval = highlightSignal;
+      check_redraw = highlightLast();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+
+    // Resize signal: redraw (may not work with some curses implementations)
+
+    case KEY_RESIZE:
+      retval = resizeSignal;
+      break;
+
+    // Quit key
+
+    case MY_ESC:
+      retval = quitSignal;
+      _redraw_type = "none";
+      break;
+
+    // t: tag item
+
+    case 't':
+      retval = tagSignal;
+      _items[_highlight]->setTagged(! _items[_highlight]->tagged());
+      check_redraw = highlightNext();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+
+    default:
+      _redraw_type = "none";
+      break;
+  }
+  return retval;
+}
