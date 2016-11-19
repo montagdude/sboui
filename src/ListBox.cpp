@@ -233,24 +233,22 @@ void ListBox::redrawFrame() const
 
   for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, 0, ACS_VLINE); }
 
+  // Right border
+
+  for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, cols-1, ACS_VLINE); }
+
   // Bottom border
 
   wmove(_win, rows-1, 1);
   for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
 
-  // Arrows on right border to indicate scrolling
+  // Symbols on right border to indicate scrolling
 
-  if (_firstprint == 0) { mvwaddch(_win, 1, cols-1, ACS_VLINE); }
-  else { mvwaddch(_win, 1, cols-1, ACS_DIAMOND); }
-  if (_items.size() <= _firstprint + rows-2)
+  if (_firstprint != 0) { mvwaddch(_win, 1, cols-1, ACS_DIAMOND); }
+  if (_items.size() > _firstprint + rows-2)
   {
-    mvwaddch(_win, rows-2, cols-1, ACS_VLINE);
+    mvwaddch(_win, rows-2, cols-1, ACS_DIAMOND);
   }
-  else { mvwaddch(_win, rows-2, cols-1, ACS_DIAMOND); }
-
-  // Rest of right border
-  
-  for ( i = 2; i < rows-2; i++ ) { mvwaddch(_win, i, cols-1, ACS_VLINE); }
 }
 
 /*******************************************************************************

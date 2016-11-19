@@ -4,7 +4,7 @@
 #include "Color.h"
 #include "color_settings.h"
 #include "ListBox.h"
-#include "CategoryListBox.h"
+#include "BuildListBox.h"
 
 using namespace color;
 
@@ -13,9 +13,9 @@ using namespace color;
 Draws window border, title, and header
 
 *******************************************************************************/
-void CategoryListBox::redrawFrame() const
+void BuildListBox::redrawFrame() const
 {
-  unsigned int rows, cols, namelen, left, right, i;
+  unsigned int rows, cols, namelen, left, right, i, nspaces, vlineloc;
   double mid;
   int pair_header;
 
@@ -73,20 +73,38 @@ void CategoryListBox::redrawFrame() const
 
   // Draw header
 
-  wmove(_win, 1, 1);
   pair_header = colors.pair(header, bg_normal);
+
+  wmove(_win, 1, 1);
   if (pair_header != -1) { wattron(_win, COLOR_PAIR(pair_header)); }
   wattron(_win, A_BOLD);
-  printToEol("Name");
+  wprintw(_win, "Name");
   if (pair_header != -1) { wattroff(_win, COLOR_PAIR(pair_header)); }
   wattroff(_win, A_BOLD);
+
+  vlineloc = cols-2 - std::string("Installed").size();
+  nspaces = vlineloc - std::string("Name").size();
+  for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
+
+  if (pair_header != -1) { wattron(_win, COLOR_PAIR(pair_header)); }
+  wattron(_win, A_BOLD);
+  printToEol("Installed");
   wmove(_win, 2, 1);
+  if (pair_header != -1) { wattroff(_win, COLOR_PAIR(pair_header)); }
+  wattroff(_win, A_BOLD);
+
+  // Draw horizontal and then vertical line
+
   for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
+  for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, vlineloc, ACS_VLINE); }
 
   // Draw connections between horizontal and vertical lines
 
   mvwaddch(_win, 2, 0, ACS_LTEE);
   mvwaddch(_win, 2, cols-1, ACS_RTEE);
+  mvwaddch(_win, 0, vlineloc, ACS_TTEE);
+  mvwaddch(_win, 2, vlineloc, ACS_PLUS);
+  mvwaddch(_win, rows-1, vlineloc, ACS_BTEE);
 }
 
 /*******************************************************************************
@@ -95,10 +113,13 @@ Redraws a single item. Note: doesn't check if the item is actually on the
 screen or not.
 
 *******************************************************************************/
-void CategoryListBox::redrawSingleItem(unsigned int idx)
+void BuildListBox::redrawSingleItem(unsigned int idx)
 {
   std::string fg, bg;
   int color_pair;
+  unsigned int rows, cols, nspaces, i, vlineloc;
+
+  getmaxyx(_win, rows, cols);
 
   // Go to item location, optionally highlight, and print item
 
@@ -142,7 +163,13 @@ void CategoryListBox::redrawSingleItem(unsigned int idx)
 
   // Print item
 
-  printToEol(_items[idx]->name());
+  wprintw(_win, _items[idx]->name().c_str());
+  vlineloc = cols-2 - std::string("Installed").size() - 1;
+  nspaces = vlineloc - _items[idx]->name().size();
+  for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
+  waddch(_win, ACS_VLINE);
+  if (_items[idx]->installed()) { printToEol("    x    "); }
+  else { printToEol("         "); }
 
   // Turn off highlight color
 
@@ -159,7 +186,7 @@ void CategoryListBox::redrawSingleItem(unsigned int idx)
 Constructors
 
 *******************************************************************************/
-CategoryListBox::CategoryListBox()
+BuildListBox::BuildListBox()
 {
   _win = NULL;
   _name = "";
@@ -171,7 +198,7 @@ CategoryListBox::CategoryListBox()
   _reserved_rows = 4;
 }
 
-CategoryListBox::CategoryListBox(WINDOW *win, const std::string & name)
+BuildListBox::BuildListBox(WINDOW *win, const std::string & name)
 {
   _win = win;
   _name = name;
@@ -188,7 +215,7 @@ CategoryListBox::CategoryListBox(WINDOW *win, const std::string & name)
 User interaction: returns key stroke or selected item name
 
 *******************************************************************************/
-std::string CategoryListBox::exec()
+std::string BuildListBox::exec()
 {
   int ch, check_redraw;
   std::string retval;

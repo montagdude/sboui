@@ -22,9 +22,11 @@ class ListItem {
 
     virtual void setName(const std::string & name);
     virtual void setTagged(bool tagged) = 0;
+    virtual void setInstalled(bool installed) = 0;
 
     // Get properties
 
     virtual const std::string & name() const;
     virtual bool tagged() const = 0;
+    virtual bool installed() const = 0;
 };

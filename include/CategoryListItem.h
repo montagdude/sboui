@@ -19,8 +19,13 @@ class CategoryListItem: public ListItem {
 
     CategoryListItem();
 
-    // Set/get properties
+    // Set/get attributes
 
     void setTagged(bool tagged);
     bool tagged() const;
+
+    // The following are included to satisfy the compiler only
+
+    void setInstalled(bool installed);
+    bool installed() const;
 };

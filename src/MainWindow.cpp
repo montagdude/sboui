@@ -5,9 +5,10 @@
 #include "curses.h"
 #include "Color.h"
 #include "color_settings.h"
-#include "ListBox.h"
-#include "BuildListItem.h"
 #include "CategoryListItem.h"
+#include "CategoryListBox.h"
+#include "BuildListBox.h"
+#include "BuildListItem.h"
 #include "MainWindow.h"
 
 using namespace color;
@@ -190,7 +191,7 @@ void MainWindow::initialize()
   for ( i = 0; i < 10; i++ )
   {
     _clistbox.addItem(&_categories[i]);
-    ListBox blistbox;
+    BuildListBox blistbox;
     blistbox.setWindow(_win2);
     blistbox.setName(_categories[i].name());
     blistbox.setActivated(false);
