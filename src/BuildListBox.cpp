@@ -241,6 +241,67 @@ BuildListBox::BuildListBox(WINDOW *win, const std::string & name)
 
 /*******************************************************************************
 
+Checks if all items are tagged
+
+*******************************************************************************/
+bool BuildListBox::allTagged() const
+{
+  unsigned int i, nitems;
+  bool all_tagged;
+
+  nitems = _items.size();
+  all_tagged = true;
+  for ( i = 0; i < nitems; i++ )
+  {
+    if (! _items[i]->tagged()) 
+    {
+      all_tagged = false;
+      break;
+    }
+  }
+
+  return all_tagged;
+}
+
+/*******************************************************************************
+
+Tags or untags (if everything is already tagged) items. Returns 0 if the
+operation tags everything, and 1 if it untags everything.
+
+*******************************************************************************/
+unsigned int BuildListBox::tagAll()
+{
+  unsigned int i, nitems, retval;
+
+  // First check if everything is tagged
+
+  nitems = _items.size();
+  if (! allTagged())
+  {
+    for ( i = 0; i < nitems; i++ ) 
+    { 
+      if (! _items[i]->tagged()) { _items[i]->setTagged(true); }
+    }
+    retval = 0;
+  }
+  else
+  {
+    for ( i = 0; i < nitems; i++ ) 
+    { 
+      if (_items[i]->tagged()) { _items[i]->setTagged(false); }
+    }
+    retval = 1;
+  }
+
+  // Set all items to be redrawn
+
+  _redraw_type = "items";
+
+  return retval;
+}
+
+/*******************************************************************************
+
 User interaction: returns key stroke or selected item name
 
 *******************************************************************************/
@@ -341,9 +402,7 @@ std::string BuildListBox::exec()
     case 't':
       retval = tagSignal;
       _items[_highlight]->setTagged(! _items[_highlight]->tagged());
-      check_redraw = highlightNext();
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
+      _redraw_type = "changed";
       break;
 
     default:

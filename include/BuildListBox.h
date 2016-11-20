@@ -22,6 +22,14 @@ class BuildListBox: public ListBox {
     BuildListBox();
     BuildListBox(WINDOW *win, const std::string & name);
 
+    /* Setting properties */
+
+    unsigned int tagAll();
+
+    /* Accessing properties */
+
+    bool allTagged() const;
+
     /* User interaction loop */
 
     std::string exec();

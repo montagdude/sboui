@@ -220,7 +220,7 @@ Shows the main window
 void MainWindow::show()
 {
   std::string selection;
-  bool getting_input;
+  bool getting_input, all_tagged;
 
   redrawAll();
 
@@ -246,6 +246,11 @@ void MainWindow::show()
         _blistboxes[_category_idx].setActivated(true);
         _activated_listbox = 1;
       }
+      else if (selection == ListBox::tagSignal)
+      {
+        _blistboxes[_category_idx].tagAll();
+        _blistboxes[_category_idx].draw();
+      }
     }
 
     // Get input from SlackBuilds list box
@@ -259,6 +264,29 @@ void MainWindow::show()
         _blistboxes[_category_idx].draw();
         _clistbox.setActivated(true);
         _activated_listbox = 0;
+      }
+
+      // Tag signal: see if we need to change tag for category
+
+      else if (selection == ListBox::tagSignal)
+      {
+        all_tagged = _blistboxes[_category_idx].allTagged();
+        if (_categories[_category_idx].tagged())
+        {
+          if (! all_tagged) 
+          { 
+            _categories[_category_idx].setTagged(false); 
+            _clistbox.draw();
+          }
+        }
+        else 
+        {
+          if (all_tagged) 
+          { 
+            _categories[_category_idx].setTagged(true); 
+            _clistbox.draw();
+          }
+        }
       }
     }
 
