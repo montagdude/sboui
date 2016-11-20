@@ -249,6 +249,7 @@ std::string BuildListBox::exec()
   std::string retval;
 
   const int MY_ESC = 27;
+  const int MY_TAB = 9;
 
   // Don't bother if there are no items
 
@@ -275,14 +276,10 @@ std::string BuildListBox::exec()
       _redraw_type = "none";
       break;
 
-    // Left or right key: return to calling function to decide what to do next
+    // Tab key: return keyTabSignal
 
-    case KEY_LEFT:
-      retval = keyLeftSignal;
-      _redraw_type = "changed";
-      break;
-    case KEY_RIGHT:
-      retval = keyRightSignal;
+    case MY_TAB:
+      retval = keyTabSignal;
       _redraw_type = "changed";
       break;
 

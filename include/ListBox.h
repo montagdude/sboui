@@ -56,10 +56,9 @@ class ListBox {
 
     static std::string resizeSignal;
     static std::string quitSignal;
-    static std::string keyRightSignal;
-    static std::string keyLeftSignal;
     static std::string tagSignal;
     static std::string highlightSignal;
+    static std::string keyTabSignal;
 
     /* Edit list */
 

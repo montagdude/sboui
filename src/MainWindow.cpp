@@ -239,7 +239,7 @@ void MainWindow::show()
         _category_idx = _clistbox.highlight(); 
         _blistboxes[_category_idx].draw(true);
       }
-      else if (selection == ListBox::keyRightSignal)
+      else if (selection == ListBox::keyTabSignal)
       {
         _clistbox.setActivated(false);
         _clistbox.draw();
@@ -253,7 +253,7 @@ void MainWindow::show()
     else if (_activated_listbox == 1)
     {
       selection = _blistboxes[_category_idx].exec();
-      if (selection == ListBox::keyLeftSignal)
+      if (selection == ListBox::keyTabSignal)
       {
         _blistboxes[_category_idx].setActivated(false);
         _blistboxes[_category_idx].draw();

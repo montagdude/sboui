@@ -10,10 +10,9 @@ using namespace color;
 
 std::string ListBox::resizeSignal = "__RESIZE__";
 std::string ListBox::quitSignal = "__QUIT__";
-std::string ListBox::keyRightSignal = "__RIGHT__";
-std::string ListBox::keyLeftSignal = "__LEFT__";
 std::string ListBox::tagSignal = "__TAG__";
 std::string ListBox::highlightSignal = "__HIGHLIGHT__";
+std::string ListBox::keyTabSignal = "__TAB__";
 
 /*******************************************************************************
 
@@ -453,6 +452,7 @@ std::string ListBox::exec()
   std::string retval;
 
   const int MY_ESC = 27;
+  const int MY_TAB = 9;
 
   // Don't bother if there are no items
 
@@ -479,14 +479,10 @@ std::string ListBox::exec()
       _redraw_type = "none";
       break;
 
-    // Left or right key: return to calling function to decide what to do next
+    // Tab key: return keyTabSignal
 
-    case KEY_LEFT:
-      retval = keyLeftSignal;
-      _redraw_type = "changed";
-      break;
-    case KEY_RIGHT:
-      retval = keyRightSignal;
+    case MY_TAB:
+      retval = keyTabSignal;
       _redraw_type = "changed";
       break;
 
