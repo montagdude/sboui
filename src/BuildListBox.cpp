@@ -161,9 +161,38 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
   
   if (idx == _highlight) { _prevhighlight = _highlight; }
 
-  // Print item
+  // Print item and turn off tag color
 
   wprintw(_win, _items[idx]->name().c_str());
+  if (_items[idx]->tagged()) 
+  { 
+    wattroff(_win, A_BOLD); 
+    if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); }
+    if (idx == _highlight)
+    {
+      if (_activated) 
+      {
+        fg = fg_highlight_active;
+        bg = bg_highlight_active;
+      }
+      else
+      {
+        fg = fg_highlight_inactive;
+        bg = bg_highlight_inactive;
+      }
+    }
+    else
+    {
+      fg = fg_normal;
+      bg = bg_normal;
+    }
+    color_pair = colors.pair(fg, bg);
+    if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
+    else { wattron(_win, A_REVERSE); }
+  }
+
+  // Print spaces, divider, install status
+
   vlineloc = cols-2 - std::string("Installed").size() - 1;
   nspaces = vlineloc - _items[idx]->name().size();
   for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
@@ -171,14 +200,13 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
   if (_items[idx]->installed()) { printToEol("    x    "); }
   else { printToEol("         "); }
 
-  // Turn off highlight color
+  // Turn off color
 
   if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); }
   else
   {
     if (idx == _highlight) { wattroff(_win, A_REVERSE); }
   }
-  if (_items[idx]->tagged()) { wattroff(_win, A_BOLD); }
 }
 
 /*******************************************************************************
