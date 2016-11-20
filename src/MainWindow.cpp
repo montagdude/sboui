@@ -5,7 +5,6 @@
 #include "curses.h"
 #include "Color.h"
 #include "color_settings.h"
-#include "CategoryListItem.h"
 #include "CategoryListBox.h"
 #include "BuildListBox.h"
 #include "BuildListItem.h"
@@ -144,7 +143,7 @@ MainWindow::MainWindow()
   _categories.resize(0);
   _title = "SlackBuilds Browser";
   _filter = "All";
-  _info = "F1: Help";
+  _info = "Tab: Switch list | F1: Help";
   _category_idx = 0;
   _activated_listbox = 0;
 }
@@ -168,8 +167,9 @@ void MainWindow::initialize()
 
   for ( i = 0; i < 10; i++ )
   {
-    CategoryListItem citem;
+    BuildListItem citem;
     citem.setName("Category " + int2str(i));
+    citem.setCategory("Category " + int2str(i));
     _categories.push_back(citem);
     for ( j = 0; j < 30; j++ )
     {

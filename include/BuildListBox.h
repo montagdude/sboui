@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include "CategoryListItem.h"
 #include "ListBox.h"
 
 /*******************************************************************************

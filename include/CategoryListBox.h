@@ -1,15 +1,14 @@
 #pragma once
 
 #include <string>
-#include "CategoryListItem.h"
-#include "ListBox.h"
+#include "BuildListBox.h"
 
 /*******************************************************************************
 
 ListBox for categories
 
 *******************************************************************************/
-class CategoryListBox: public ListBox {
+class CategoryListBox: public BuildListBox {
   
   private:
 
@@ -22,8 +21,4 @@ class CategoryListBox: public ListBox {
 
     CategoryListBox();
     CategoryListBox(WINDOW *win, const std::string & name);
-
-    /* User interaction loop */
-
-    std::string exec();
 };

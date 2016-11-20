@@ -3,6 +3,7 @@
 #include <cmath>   // floor
 #include "Color.h"
 #include "color_settings.h"
+#include "BuildListItem.h"
 #include "ListBox.h"
 #include "BuildListBox.h"
 
