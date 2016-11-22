@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <string>
-#include <sstream>
 #include <cmath>     // floor
 #include "curses.h"
 #include "Color.h"
@@ -14,13 +13,6 @@
 #include "MainWindow.h"
 
 using namespace color;
-
-std::string int2str(int inval)
-{
-  std::stringstream ss;
-  ss << inval;
-  return ss.str();
-}
 
 /*******************************************************************************
 
@@ -42,6 +34,32 @@ void MainWindow::printToEol(const std::string & msg) const
     printw(msg.c_str());
     for ( i = 0; i < nspaces; i++ ) { printw(" "); }
   }
+}
+
+/*******************************************************************************
+
+Prints/clears status message
+
+*******************************************************************************/
+void MainWindow::printStatus(const std::string & msg) const
+{
+  int rows, cols;
+
+  getmaxyx(stdscr, rows, cols);
+  move(rows-2, 0);
+  clrtoeol();
+  printToEol(msg);
+  refresh();
+}
+
+void MainWindow::clearStatus() const
+{
+  int rows, cols;
+
+  getmaxyx(stdscr, rows, cols);
+  move(rows-2, 0);
+  clrtoeol();
+  refresh();
 }
 
 /*******************************************************************************
@@ -83,7 +101,7 @@ void MainWindow::redrawHeaderFooter() const
   attron(A_BOLD);
   printToEol(_info);
   if (pair_info != -1) { attroff(COLOR_PAIR(pair_info)); }
-  attron(A_BOLD);
+  attroff(A_BOLD);
 }
 
 /*******************************************************************************
@@ -127,9 +145,26 @@ Redraws window
 *******************************************************************************/
 void MainWindow::redrawAll()
 {
-  clear();
+  int rows, cols, i;
+
+  getmaxyx(stdscr, rows, cols);
+
+  // Clear everything except status line
+
+  for ( i = 0; i < rows; i++ )
+  {
+    if ( i != rows-2 )
+    {
+      move(i, 0);
+      clrtoeol();
+    }
+  }
+
+  // Draw stuff
+
   redrawHeaderFooter(); 
   redrawWindows();
+  refresh();
 }
 
 /*******************************************************************************
@@ -144,7 +179,7 @@ MainWindow::MainWindow()
   _blistboxes.resize(0);
   _slackbuilds.resize(0);
   _categories.resize(0);
-  _title = "sboui Main Window";
+  _title = "sboui Development Version";
   _filter = "All";
   _info = "f: Filter | s: Search | o: Options | F1: Help";
   _category_idx = 0;
@@ -158,15 +193,46 @@ First time window setup
 *******************************************************************************/
 int MainWindow::initialize()
 {
-  unsigned int i, j, nbuilds, ncategories;
-  std::vector<std::string> builds;
-  int check;
-  bool new_category;
+  BuildListBox initlistbox;
+  int retval;
 
   // Create windows (note: geometry gets set in redrawWindows);
 
   _win1 = newwin(4, 0, 10, 10);
   _win2 = newwin(4, 11,10, 10);
+
+  _clistbox.setWindow(_win1);
+  _clistbox.setActivated(true);
+  _clistbox.setName("Categories");
+  initlistbox.setWindow(_win2);
+  initlistbox.setActivated(false);
+  initlistbox.setName("SlackBuilds");
+  _blistboxes.push_back(initlistbox);
+
+  redrawAll();
+
+  printStatus("Reading SlackBuilds repository ...");
+  retval = readLists();
+  if (retval != 0) { printStatus("Error reading SlackBuilds repository."); }
+  else
+  {
+    rebuildListBoxes();
+    clearStatus();
+  }
+
+  return retval;
+}
+
+/*******************************************************************************
+
+Creates master list of SlackBuilds
+
+*******************************************************************************/
+int MainWindow::readLists()
+{
+  int check;
+  unsigned int i, j, nbuilds, ncategories;
+  bool new_category;
 
   // Get list of SlackBuilds
 
@@ -197,14 +263,25 @@ int MainWindow::initialize()
     } 
   }
 
+  return 0;
+}
+
+/*******************************************************************************
+
+Populates list boxes
+
+*******************************************************************************/
+void MainWindow::rebuildListBoxes()
+{
+  unsigned int i,j, nbuilds, ncategories;
+
   // Create list boxes (Careful! If you use push_back, etc. later on the lists,
   // the list boxes must be regenerated because their pointers will become
   // invalid.)
 
-  _clistbox.setWindow(_win1);
-  _clistbox.setActivated(true);
-  _clistbox.setName("Categories");
+  nbuilds = _slackbuilds.size();
   ncategories = _categories.size();
+  _blistboxes.resize(0);
   for ( j = 0; j < ncategories; j++ )
   {
     _clistbox.addItem(&_categories[j]);
@@ -224,8 +301,6 @@ int MainWindow::initialize()
       }
     }
   }
-
-  return 0;
 }
 
 /*******************************************************************************

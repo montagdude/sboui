@@ -62,14 +62,7 @@ int main()
   // User interaction loop
 
   check = mainwindow.initialize();
-  if (check != 0)
-  {
-    clear();
-    printw("Error: unable to read SlackBuilds repository.");
-    refresh();
-    getch();
-  }
-  else { mainwindow.show(); }
+  mainwindow.show();
 
   endwin();
 }

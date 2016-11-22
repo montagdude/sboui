@@ -18,7 +18,8 @@ class ListBox {
     WINDOW *_win;
     std::string _name, _redraw_type;
     std::vector<ListItem *> _items;
-    unsigned int _highlight, _firstprint, _prevhighlight, _reserved_rows;
+    unsigned int _reserved_rows;
+    int _highlight, _firstprint, _prevhighlight;
     bool _activated;
 
     /* Setting item to be highlighted */

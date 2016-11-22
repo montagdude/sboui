@@ -107,7 +107,7 @@ void CategoryListBox::redrawSingleItem(unsigned int idx)
 
   // Turn on highlight color
 
-  if (idx == _highlight)
+  if (int(idx) == _highlight)
   {
     if (_activated) 
     { 
@@ -139,7 +139,7 @@ void CategoryListBox::redrawSingleItem(unsigned int idx)
   // Save highlight idx for redrawing later.
   // Note: prevents this method from being const.
   
-  if (idx == _highlight) { _prevhighlight = _highlight; }
+  if (int(idx) == _highlight) { _prevhighlight = _highlight; }
 
   // Print item
 
@@ -150,7 +150,7 @@ void CategoryListBox::redrawSingleItem(unsigned int idx)
   if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); }
   else
   {
-    if (idx == _highlight) { wattroff(_win, A_REVERSE); }
+    if (int(idx) == _highlight) { wattroff(_win, A_REVERSE); }
   }
   if (_items[idx]->tagged()) { wattroff(_win, A_BOLD); }
 }

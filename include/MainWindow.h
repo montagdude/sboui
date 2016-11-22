@@ -24,6 +24,8 @@ class MainWindow {
     unsigned int _category_idx, _activated_listbox;
 
     void printToEol(const std::string & msg) const;
+    void printStatus(const std::string & msg) const;
+    void clearStatus() const;
 
     void redrawHeaderFooter() const;
     void redrawWindows();
@@ -35,9 +37,11 @@ class MainWindow {
 
     MainWindow();
 
-    /* First time window setup */
+    /* Window setup */
 
     int initialize();
+    int readLists();
+    void rebuildListBoxes();
 
     /* Set properties */
 

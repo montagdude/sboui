@@ -1,6 +1,7 @@
 #include <string>
 #include <curses.h>
-#include <cmath>    // floor
+#include <cmath>     // floor
+#include <algorithm> // max
 #include "Color.h"
 #include "color_settings.h"
 #include "ListItem.h"
@@ -24,6 +25,8 @@ int ListBox::highlightFirst()
 {
   unsigned int retval;
 
+  if (_items.size() == 0) { return 0; }
+
   _highlight = 0;
   if (_firstprint == 0) { retval = 0; }
   else { retval = 1; }
@@ -40,7 +43,9 @@ changed, 1 if it has.
 *******************************************************************************/
 int ListBox::highlightLast()
 {
-  _highlight = _items.size() - 1;
+  if (_items.size() == 0) { return 0; }
+
+  _highlight = std::max(int(_items.size()) - 1, 0);
   return determineFirstPrint();
 }
 
@@ -52,6 +57,8 @@ changed, 1 if it has.
 *******************************************************************************/
 int ListBox::highlightPrevious()
 {
+  if (_items.size() == 0) { return 0; }
+
   if (_highlight == 0) { return 0; }
   else
   {
@@ -68,7 +75,9 @@ changed, 1 if it has.
 *******************************************************************************/
 int ListBox::highlightNext()
 {
-  if (_highlight == _items.size()-1) { return 0; }
+  if (_items.size() == 0) { return 0; }
+
+  if (_highlight == int(_items.size())-1) { return 0; }
   else
   {
     _highlight += 1;
@@ -84,8 +93,9 @@ Scrolls 1 page down. Return value of 0 means that _firstprint hasn't changed;
 *******************************************************************************/
 int ListBox::highlightNextPage()
 {
-  int rows, cols, rowsavail;
-  unsigned int nitems;
+  int rows, cols, rowsavail, nitems;
+
+  if (_items.size() == 0) { return 0; }
 
   getmaxyx(_win, rows, cols);
   rowsavail = rows-_reserved_rows;
@@ -117,14 +127,16 @@ int ListBox::highlightPreviousPage()
 {
   int rows, cols, rowsavail;
 
+  if (_items.size() == 0) { return 0; }
+
   getmaxyx(_win, rows, cols);
   rowsavail = rows-_reserved_rows;
 
   // Determine how far to page
 
-  if (int(_firstprint) - rowsavail <= 0)
+  if (_firstprint - rowsavail <= 0)
   {
-    if (int(_highlight) - rowsavail <= 0) { return highlightFirst(); }
+    if (_highlight - rowsavail <= 0) { return highlightFirst(); }
     _firstprint = 0;
   }
   else { _firstprint -= rowsavail; }
@@ -143,8 +155,9 @@ available rows. Returns 1 if this number has changed; 0 if not.
 *******************************************************************************/
 int ListBox::determineFirstPrint()
 {
-  int rows, cols, rowsavail;
-  unsigned int firstprintstore;
+  int rows, cols, rowsavail, firstprintstore;
+
+  if (_items.size() == 0) { return 0; }
 
   getmaxyx(_win, rows, cols);
   firstprintstore = _firstprint;
@@ -268,7 +281,7 @@ void ListBox::redrawSingleItem(unsigned int idx)
 
   // Turn on highlight color
 
-  if (idx == _highlight)
+  if (int(idx) == _highlight)
   {
     if (_activated) 
     { 
@@ -288,7 +301,7 @@ void ListBox::redrawSingleItem(unsigned int idx)
   // Save highlight idx for redrawing later.
   // Note: prevents this method from being const.
   
-  if (idx == _highlight) { _prevhighlight = _highlight; }
+  if (int(idx) == _highlight) { _prevhighlight = _highlight; }
 
   // Print item
 
@@ -299,7 +312,7 @@ void ListBox::redrawSingleItem(unsigned int idx)
   if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); } 
   else
   { 
-    if (idx == _highlight) { wattroff(_win, A_REVERSE); }
+    if (int(idx) == _highlight) { wattroff(_win, A_REVERSE); }
   }
 }
 
@@ -320,9 +333,15 @@ void ListBox::redrawChangedItems()
   if ( (_prevhighlight >= _firstprint) &&
        (_prevhighlight < _firstprint+rowsavail) )
   {
-    redrawSingleItem(_prevhighlight);
+    if (_prevhighlight < int(_items.size())) 
+    { 
+      redrawSingleItem(_prevhighlight); 
+    }
   }
-  redrawSingleItem(_highlight);
+  if (_highlight < int(_items.size())) 
+  { 
+    redrawSingleItem(_highlight); 
+  }
 }
 
 /******************************************************************************
@@ -332,8 +351,7 @@ Redraws all items
 *******************************************************************************/
 void ListBox::redrawAllItems()
 {
-  unsigned int i;
-  int rows, cols, rowsavail;
+  int rows, cols, rowsavail, i;
 
   getmaxyx(_win, rows, cols);
   rowsavail = rows-_reserved_rows;
@@ -346,7 +364,7 @@ void ListBox::redrawAllItems()
   for ( i = _firstprint; i < _firstprint+rowsavail; i++ )
   {
     redrawSingleItem(i);
-    if (i == _items.size()-1) { break; }
+    if (i == int(_items.size())-1) { break; }
   }
 }
 
