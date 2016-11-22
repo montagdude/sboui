@@ -16,9 +16,9 @@ Draws window border, title, and header
 *******************************************************************************/
 void CategoryListBox::redrawFrame() const
 {
-  unsigned int rows, cols, namelen, left, right, i;
+  unsigned int rows, cols, namelen, i;
   double mid;
-  int pair_header;
+  int pair_header, left, right;
 
   getmaxyx(_win, rows, cols);
 
@@ -47,7 +47,7 @@ void CategoryListBox::redrawFrame() const
   // Top border
 
   wmove(_win, 0, 1);
-  for ( i = 1; i < left-1; i++ ) { waddch(_win, ACS_HLINE); }
+  for ( i = 1; int(i) < left-1; i++ ) { waddch(_win, ACS_HLINE); }
   wmove(_win, 0, right+1);
   for ( i = right+1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
   

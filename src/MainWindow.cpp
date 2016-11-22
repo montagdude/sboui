@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <vector>
 #include <string>
 #include <sstream>
@@ -5,6 +7,7 @@
 #include "curses.h"
 #include "Color.h"
 #include "color_settings.h"
+#include "backend.h"
 #include "CategoryListBox.h"
 #include "BuildListBox.h"
 #include "BuildListItem.h"
@@ -141,9 +144,9 @@ MainWindow::MainWindow()
   _blistboxes.resize(0);
   _slackbuilds.resize(0);
   _categories.resize(0);
-  _title = "SlackBuilds Browser";
+  _title = "sboui Main Window";
   _filter = "All";
-  _info = "Tab: Switch list | F1: Help";
+  _info = "f: Filter | s: Search | o: Options | F1: Help";
   _category_idx = 0;
   _activated_listbox = 0;
 }
@@ -153,55 +156,76 @@ MainWindow::MainWindow()
 First time window setup
 
 *******************************************************************************/
-void MainWindow::initialize()
+int MainWindow::initialize()
 {
-  unsigned int i, j, nbuilds;
+  unsigned int i, j, nbuilds, ncategories;
   std::vector<std::string> builds;
+  int check;
+  bool new_category;
 
   // Create windows (note: geometry gets set in redrawWindows);
 
   _win1 = newwin(4, 0, 10, 10);
   _win2 = newwin(4, 11,10, 10);
 
-  // Create master lists
+  // Get list of SlackBuilds
 
-  for ( i = 0; i < 10; i++ )
-  {
-    BuildListItem citem;
-    citem.setName("Category " + int2str(i));
-    citem.setCategory("Category " + int2str(i));
-    _categories.push_back(citem);
-    for ( j = 0; j < 30; j++ )
+  check = read_repo(_slackbuilds); 
+  if (check != 0) { return check; }
+
+  // Create list of categories
+
+  nbuilds = _slackbuilds.size();
+  for ( i = 0; i < nbuilds; i++ )
+  { 
+    ncategories = _categories.size();
+    new_category = true;
+    for ( j = 0; j < ncategories; j++ )
     {
-      BuildListItem bitem;
-      bitem.setCategory(citem.name());
-      bitem.setName(bitem.category() + ", SlackBuild " + int2str(j));
-      _slackbuilds.push_back(bitem);
+      if (_categories[j].name() == _slackbuilds[i].category())
+      {
+        new_category = false;
+        break;
+      }
     }
+    if (new_category)
+    {
+      BuildListItem citem;
+      citem.setName(_slackbuilds[i].category());
+      citem.setCategory(_slackbuilds[i].category());
+      _categories.push_back(citem);
+    } 
   }
 
   // Create list boxes (Careful! If you use push_back, etc. later on the lists,
   // the list boxes must be regenerated because their pointers will become
   // invalid.)
 
-  nbuilds = 0;
   _clistbox.setWindow(_win1);
   _clistbox.setActivated(true);
   _clistbox.setName("Categories");
-  for ( i = 0; i < 10; i++ )
+  ncategories = _categories.size();
+  for ( j = 0; j < ncategories; j++ )
   {
-    _clistbox.addItem(&_categories[i]);
+    _clistbox.addItem(&_categories[j]);
     BuildListBox blistbox;
     blistbox.setWindow(_win2);
-    blistbox.setName(_categories[i].name());
+    blistbox.setName(_categories[j].name());
     blistbox.setActivated(false);
-    for ( j = 0; j < 30; j++ )
-    {
-      blistbox.addItem(&_slackbuilds[nbuilds]);
-      nbuilds++;
-    }
     _blistboxes.push_back(blistbox);
   }
+  for ( i = 0; i < nbuilds; i++ )
+  {
+    for ( j = 0; j < ncategories; j++ )
+    {
+      if (_slackbuilds[i].category() == _categories[j].name())
+      {
+        _blistboxes[j].addItem(&_slackbuilds[i]);
+      }
+    }
+  }
+
+  return 0;
 }
 
 /*******************************************************************************

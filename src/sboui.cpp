@@ -21,6 +21,7 @@ using namespace color;
 int main()
 {
   MainWindow mainwindow;
+  int check;
 
   initscr();
   curs_set(0);
@@ -44,7 +45,7 @@ int main()
     fg_highlight_inactive = "black";
     bg_highlight_inactive = "white";
     header = "yellow";
-    tagged = "green";
+    tagged = "yellow";
 
     colors.addPair(fg_normal, bg_normal);
     colors.addPair(fg_title, bg_title);
@@ -59,8 +60,16 @@ int main()
   } 
 
   // User interaction loop
-  
-  mainwindow.initialize();
-  mainwindow.show();
+
+  check = mainwindow.initialize();
+  if (check != 0)
+  {
+    clear();
+    printw("Error: unable to read SlackBuilds repository.");
+    refresh();
+    getch();
+  }
+  else { mainwindow.show(); }
+
   endwin();
 }

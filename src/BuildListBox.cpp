@@ -16,8 +16,8 @@ Draws window border, title, and header
 *******************************************************************************/
 void BuildListBox::redrawFrame() const
 {
-  unsigned int rows, cols, namelen, left, right, i, nspaces, vlineloc;
-  double mid;
+  unsigned int rows, cols, namelen, i, nspaces, vlineloc;
+  double mid, left, right;
   int pair_header;
 
   getmaxyx(_win, rows, cols);
@@ -47,7 +47,7 @@ void BuildListBox::redrawFrame() const
   // Top border
 
   wmove(_win, 0, 1);
-  for ( i = 1; i < left-1; i++ ) { waddch(_win, ACS_HLINE); }
+  for ( i = 1; int(i) < left-1; i++ ) { waddch(_win, ACS_HLINE); }
   wmove(_win, 0, right+1);
   for ( i = right+1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
   
@@ -117,8 +117,8 @@ screen or not.
 void BuildListBox::redrawSingleItem(unsigned int idx)
 {
   std::string fg, bg;
-  int color_pair;
-  unsigned int rows, cols, nspaces, i, vlineloc;
+  int color_pair, nspaces, vlineloc, printlen;
+  unsigned int rows, cols, i; 
 
   getmaxyx(_win, rows, cols);
 
@@ -164,7 +164,15 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
 
   // Print item and turn off tag color
 
-  wprintw(_win, _items[idx]->name().c_str());
+  vlineloc = cols-2 - std::string("Installed").size() - 1;
+  if (_items[idx]->name().size() > vlineloc)
+  {
+    wprintw(_win, _items[idx]->name().substr(0,vlineloc).c_str());
+  }
+  else
+  {
+    wprintw(_win, _items[idx]->name().c_str());
+  }
   if (_items[idx]->tagged()) 
   { 
     wattroff(_win, A_BOLD); 
@@ -194,9 +202,8 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
 
   // Print spaces, divider, install status
 
-  vlineloc = cols-2 - std::string("Installed").size() - 1;
   nspaces = vlineloc - _items[idx]->name().size();
-  for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
+  for ( i = 0; int(i) < nspaces; i++ ) { waddch(_win, ' '); }
   waddch(_win, ACS_VLINE);
   if (_items[idx]->installed()) { printToEol("    x    "); }
   else { printToEol("         "); }
@@ -312,10 +319,6 @@ std::string BuildListBox::exec()
 
   const int MY_ESC = 27;
   const int MY_TAB = 9;
-
-  // Don't bother if there are no items
-
-  if (_items.size() == 0) { return "EMPTY"; }
 
   // Highlight first entry on first display
 

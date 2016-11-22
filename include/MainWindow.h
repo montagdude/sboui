@@ -37,7 +37,7 @@ class MainWindow {
 
     /* First time window setup */
 
-    void initialize();
+    int initialize();
 
     /* Set properties */
 

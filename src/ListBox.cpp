@@ -194,7 +194,8 @@ Draws window border and title
 *******************************************************************************/
 void ListBox::redrawFrame() const
 {
-  unsigned int rows, cols, namelen, left, right, i;
+  unsigned int rows, cols, namelen, i;
+  int left, right;
   double mid;
 
   getmaxyx(_win, rows, cols);
@@ -224,7 +225,7 @@ void ListBox::redrawFrame() const
   // Top border
 
   wmove(_win, 0, 1);
-  for ( i = 1; i < left-1; i++ ) { waddch(_win, ACS_HLINE); }
+  for ( i = 1; int(i) < left-1; i++ ) { waddch(_win, ACS_HLINE); }
   wmove(_win, 0, right+1);
   for ( i = right+1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
   
@@ -453,10 +454,6 @@ std::string ListBox::exec()
 
   const int MY_ESC = 27;
   const int MY_TAB = 9;
-
-  // Don't bother if there are no items
-
-  if (_items.size() == 0) { return "EMPTY"; }
 
   // Highlight first entry on first display
 
