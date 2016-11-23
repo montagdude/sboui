@@ -201,7 +201,7 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
   nspaces = vlineloc - _items[idx]->name().size();
   for ( i = 0; int(i) < nspaces; i++ ) { waddch(_win, ' '); }
   waddch(_win, ACS_VLINE);
-  if (_items[idx]->installed()) { printToEol("    x    "); }
+  if (_items[idx]->installed()) { printToEol("    X    "); }
   else { printToEol("         "); }
 
   // Turn off color

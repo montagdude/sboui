@@ -233,6 +233,7 @@ int MainWindow::readLists()
   int check;
   unsigned int i, j, nbuilds, ncategories;
   bool new_category;
+std::string version;
 
   // Get list of SlackBuilds
 
@@ -244,6 +245,14 @@ int MainWindow::readLists()
   nbuilds = _slackbuilds.size();
   for ( i = 0; i < nbuilds; i++ )
   { 
+//FIXME: don't do it this way -- it's too slow
+version = check_installed(_slackbuilds[i]);
+if (version != "not_installed")
+{
+  printStatus(version);
+  _slackbuilds[i].setInstalled(true);
+  _slackbuilds[i].setInstalledVersion(version);
+}
     ncategories = _categories.size();
     new_category = true;
     for ( j = 0; j < ncategories; j++ )

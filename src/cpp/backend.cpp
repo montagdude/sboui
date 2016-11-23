@@ -1,14 +1,21 @@
+#include <stdio.h>
 #include <vector>
 #include <string>
+#include <sstream>
 #include "DirListing.h"
 #include "BuildListItem.h"
 #include "backend.h"
+
+#include <iostream>
 
 std::string repo_dir = "/var/cache/packages/SBo";
 std::string package_manager = "sbomgr";
 std::string sync_cmd = "sbomgr update";
 std::string install_cmd = "sbomgr install -n";
 std::string upgrade_cmd = "sbomgr upgrade";
+
+// Bash script with functions to query the repo and installed packages
+std::string sboutil = "/usr/libexec/sboui/sboutil.sh";
 
 /*******************************************************************************
 
@@ -55,3 +62,25 @@ int read_repo(std::vector<BuildListItem> & slackbuilds)
 
   return 0;
 } 
+
+/*******************************************************************************
+
+Checks whether the specified SlackBuild is installed. Returns installed version
+if so; otherwise returns "not installed".
+
+*******************************************************************************/
+std::string check_installed(const BuildListItem & build)
+{
+  char buffer[128];
+  FILE* fp;
+  std::string cmd, version;
+  std::stringstream ss;
+
+  cmd = sboutil + " check_installed " + build.name();
+  fp = popen(cmd.c_str(), "r");
+  while (fgets(buffer, sizeof(buffer), fp) != NULL) { ss << buffer; }
+  pclose(fp);
+
+  ss >> version;
+  return version;
+}
