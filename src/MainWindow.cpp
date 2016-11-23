@@ -109,7 +109,7 @@ void MainWindow::redrawHeaderFooter() const
 Redraws windows
 
 *******************************************************************************/
-void MainWindow::redrawWindows()
+void MainWindow::redrawWindows(bool force)
 {
   int rows, cols;
   int listrows, leftlistcols, rightlistcols, xrightlist;
@@ -134,8 +134,8 @@ void MainWindow::redrawWindows()
 
   // Redraw windows
 
-  _clistbox.draw();
-  _blistboxes[_category_idx].draw();
+  _clistbox.draw(force);
+  _blistboxes[_category_idx].draw(force);
 }
 
 /*******************************************************************************
@@ -143,7 +143,7 @@ void MainWindow::redrawWindows()
 Redraws window
 
 *******************************************************************************/
-void MainWindow::redrawAll()
+void MainWindow::redrawAll(bool force)
 {
   int rows, cols, i;
 
@@ -163,7 +163,7 @@ void MainWindow::redrawAll()
   // Draw stuff
 
   redrawHeaderFooter(); 
-  redrawWindows();
+  redrawWindows(force);
   refresh();
 }
 
@@ -392,6 +392,10 @@ void MainWindow::show()
     // Key signals with the same action w/ either type of list box
 
     if (selection == ListBox::quitSignal) { getting_input = false; }
-    else if (selection == ListBox::resizeSignal) { redrawAll(); }
+    else if (selection == ListBox::resizeSignal) 
+    { 
+      redrawAll(true); 
+      clearStatus();
+    }
   }
 }

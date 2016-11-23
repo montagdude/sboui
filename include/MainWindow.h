@@ -28,8 +28,8 @@ class MainWindow {
     void clearStatus() const;
 
     void redrawHeaderFooter() const;
-    void redrawWindows();
-    void redrawAll();
+    void redrawWindows(bool force=false);
+    void redrawAll(bool force=false);
 
   public:
 
