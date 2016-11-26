@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <sstream>
 #include <cmath>     // floor
 #include "curses.h"
 #include "Color.h"
@@ -13,6 +14,16 @@
 #include "MainWindow.h"
 
 using namespace color;
+
+std::string int2String(int inval)
+{
+  std::string outstr;
+  std::stringstream ss;
+
+  ss << inval;
+  ss >> outstr;
+  return outstr;
+}
 
 /*******************************************************************************
 
@@ -174,9 +185,10 @@ Displays all SlackBuilds
 *******************************************************************************/
 void MainWindow::filterAll()
 {
-  unsigned int i,j, nbuilds, ncategories;
+  unsigned int i, j, nbuilds, ncategories;
 
   _filter = "All";
+  printStatus("Filtering by all SlackBuilds ...");
 
   // Create list boxes (Careful! If you use push_back, etc. later on the lists,
   // the list boxes must be regenerated because their pointers will become
@@ -214,7 +226,73 @@ Displays installed SlackBuilds
 *******************************************************************************/
 void MainWindow::filterInstalled()
 {
+  unsigned int i, j, nbuilds, ncategories, nfiltered_categories, ninstalled;
+  std::vector<std::string> filtered_categories;
+  bool category_found;
+  BuildListBox initlistbox;
+
   _filter = "Installed";
+  printStatus("Filtering by installed SlackBuilds ...");
+
+  // Create list boxes (Careful! If you use push_back, etc. later on the lists,
+  // the list boxes must be regenerated because their pointers will become
+  // invalid.)
+
+  nbuilds = _slackbuilds.size();
+  ncategories = _categories.size();
+  _blistboxes.resize(0);
+  _clistbox.clearList();
+  _clistbox.setActivated(true);
+  filtered_categories.resize(0);
+  ninstalled = 0;
+
+  for ( i = 0; i < nbuilds; i++ )
+  {
+    if (_slackbuilds[i].installed())
+    {
+      category_found = false;
+      nfiltered_categories = filtered_categories.size();
+      for ( j = 0; j < nfiltered_categories; j++ )
+      {
+        if (_slackbuilds[i].category() == filtered_categories[j])
+        {
+          _blistboxes[j].addItem(&_slackbuilds[i]);
+          category_found = true;
+          break;
+        } 
+      }
+      if (! category_found)
+      {
+        for ( j = 0; j < ncategories; j++ )
+        {
+          if ( _slackbuilds[i].category() == _categories[j].name())
+          {
+            _clistbox.addItem(&_categories[j]);
+            BuildListBox blistbox;
+            blistbox.setWindow(_win2);
+            blistbox.setName(_categories[j].name());
+            blistbox.setActivated(false);
+            blistbox.addItem(&_slackbuilds[i]);
+            _blistboxes.push_back(blistbox); 
+            filtered_categories.push_back(_slackbuilds[i].category());
+            break;
+          }
+        }
+      }
+      ninstalled++;
+    }
+  } 
+
+  if (ninstalled == 0) 
+  { 
+    printStatus("No installed SlackBuilds."); 
+    initlistbox.setWindow(_win2);
+    initlistbox.setActivated(false);
+    initlistbox.setName("SlackBuilds");
+    _blistboxes.push_back(initlistbox);
+  }
+  else if (ninstalled == 1) { printStatus("1 installed SlackBuild."); }
+  else { printStatus(int2String(ninstalled) + " installed SlackBuilds."); }
 }
 
 /*******************************************************************************
@@ -224,7 +302,79 @@ Displays upgradable SlackBuilds
 *******************************************************************************/
 void MainWindow::filterUpgradable()
 {
+  unsigned int i, j, nbuilds, ncategories, nfiltered_categories, nupgradable;
+  unsigned int len;
+  std::vector<std::string> filtered_categories;
+  bool category_found;
+  BuildListBox initlistbox;
+
   _filter = "Upgradable";
+  printStatus("Filtering by upgradable SlackBuilds ...");
+
+  // Create list boxes (Careful! If you use push_back, etc. later on the lists,
+  // the list boxes must be regenerated because their pointers will become
+  // invalid.)
+
+  nbuilds = _slackbuilds.size();
+  ncategories = _categories.size();
+  _blistboxes.resize(0);
+  _clistbox.clearList();
+  _clistbox.setActivated(true);
+  filtered_categories.resize(0);
+  nupgradable = 0;
+
+  for ( i = 0; i < nbuilds; i++ )
+  {
+    if (_slackbuilds[i].installed())
+    {
+      len = _slackbuilds[i].availableVersion().size();
+      if (_slackbuilds[i].installedVersion().substr(0, len) != 
+          _slackbuilds[i].availableVersion()) 
+      {
+        category_found = false;
+        nfiltered_categories = filtered_categories.size();
+        for ( j = 0; j < nfiltered_categories; j++ )
+        {
+          if (_slackbuilds[i].category() == filtered_categories[j])
+          {
+            _blistboxes[j].addItem(&_slackbuilds[i]);
+            category_found = true;
+            break;
+          } 
+        }
+        if (! category_found)
+        {
+          for ( j = 0; j < ncategories; j++ )
+          {
+            if ( _slackbuilds[i].category() == _categories[j].name())
+            {
+              _clistbox.addItem(&_categories[j]);
+              BuildListBox blistbox;
+              blistbox.setWindow(_win2);
+              blistbox.setName(_categories[j].name());
+              blistbox.setActivated(false);
+              blistbox.addItem(&_slackbuilds[i]);
+              _blistboxes.push_back(blistbox); 
+              filtered_categories.push_back(_slackbuilds[i].category());
+              break;
+            }
+          }
+        }
+        nupgradable++;
+      }
+    }
+  } 
+
+  if (nupgradable == 0) 
+  { 
+    printStatus("No upgradable SlackBuilds."); 
+    initlistbox.setWindow(_win2);
+    initlistbox.setActivated(false);
+    initlistbox.setName("SlackBuilds");
+    _blistboxes.push_back(initlistbox);
+  }
+  else if (nupgradable == 1) { printStatus("1 upgradable SlackBuild."); }
+  else { printStatus(int2String(nupgradable) + " upgradable SlackBuilds."); }
 }
 
 /*******************************************************************************
@@ -359,6 +509,7 @@ void MainWindow::setFilter(const std::string & filter)
   if (filter == "all") { filterAll(); }
   else if (filter == "installed") { filterInstalled(); }
   else if (filter == "upgradable") { filterUpgradable(); }
+  redrawAll(true);
 }
 
 void MainWindow::setInfo(const std::string & info) { _info = info; }
