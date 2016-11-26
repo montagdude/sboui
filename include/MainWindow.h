@@ -31,6 +31,10 @@ class MainWindow {
     void redrawWindows(bool force=false);
     void redrawAll(bool force=false);
 
+    void filterAll();
+    void filterInstalled();
+    void filterUpgradable();
+
   public:
 
     /* Constructor */
@@ -41,7 +45,6 @@ class MainWindow {
 
     int initialize();
     int readLists();
-    void rebuildListBoxes();
 
     /* Set properties */
 

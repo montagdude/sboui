@@ -1,12 +1,9 @@
 #include <stdio.h>
 #include <vector>
 #include <string>
-#include <sstream>
 #include "DirListing.h"
 #include "BuildListItem.h"
 #include "backend.h"
-
-#include <iostream>
 
 std::string repo_dir = "/var/cache/packages/SBo";
 std::string package_manager = "sbomgr";
@@ -65,8 +62,54 @@ int read_repo(std::vector<BuildListItem> & slackbuilds)
 
 /*******************************************************************************
 
+Trims white space, line ending characters, etc. from end of string
+
+*******************************************************************************/
+std::string trim(std::string instr)
+{
+  int i, trimlen, len;
+
+  len = instr.size();
+  for ( i = len-1; i >= 0; i-- )
+  {
+    if ( (instr[i] != ' ') && (instr[i] != '\n') && (instr[i] != '\0') )
+    {
+      trimlen = i+1;
+      break;
+    }
+  }
+
+  return instr.substr(0, trimlen);
+}
+
+/*******************************************************************************
+
+Returns list of installed SlackBuilds
+
+*******************************************************************************/
+std::vector<std::string> list_installed()
+{
+  std::vector<std::string> pkglist;
+  char buffer[128];
+  FILE* fp;
+  std::string cmd, pkg;
+
+  pkglist.resize(0);
+  cmd = sboutil + " list_installed";
+  fp = popen(cmd.c_str(), "r");
+  while (fgets(buffer, sizeof(buffer), fp) != NULL)
+  {
+    pkg = buffer;
+    pkglist.push_back(trim(pkg));
+  } 
+
+  return pkglist;
+}
+
+/*******************************************************************************
+
 Checks whether the specified SlackBuild is installed. Returns installed version
-if so; otherwise returns "not installed".
+if so; otherwise returns "not_installed".
 
 *******************************************************************************/
 std::string check_installed(const BuildListItem & build)
@@ -74,13 +117,31 @@ std::string check_installed(const BuildListItem & build)
   char buffer[128];
   FILE* fp;
   std::string cmd, version;
-  std::stringstream ss;
 
   cmd = sboutil + " check_installed " + build.name();
   fp = popen(cmd.c_str(), "r");
-  while (fgets(buffer, sizeof(buffer), fp) != NULL) { ss << buffer; }
+  while (fgets(buffer, sizeof(buffer), fp) != NULL) { version = buffer; }  
   pclose(fp);
 
-  ss >> version;
-  return version;
+  return trim(version);
+}
+
+/*******************************************************************************
+
+Gets available version of a SlackBuild from the repository
+
+*******************************************************************************/
+std::string get_available_version(const BuildListItem & build)
+{
+  char buffer[128];
+  FILE* fp;
+  std::string cmd, version;
+
+  cmd = sboutil + " get_available_version " + build.name() + " "
+                                            + build.category();
+  fp = popen(cmd.c_str(), "r");
+  while (fgets(buffer, sizeof(buffer), fp) != NULL) { version = buffer; }
+  pclose(fp);
+
+  return trim(version);
 }

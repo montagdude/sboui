@@ -89,7 +89,7 @@ void MainWindow::redrawHeaderFooter() const
 
   move(2, 0);
   clrtoeol();
-  printToEol("Showing: " + _filter);
+  printToEol("Filter: " + _filter);
   refresh();
 
   // Draw footer
@@ -169,6 +169,66 @@ void MainWindow::redrawAll(bool force)
 
 /*******************************************************************************
 
+Displays all SlackBuilds
+
+*******************************************************************************/
+void MainWindow::filterAll()
+{
+  unsigned int i,j, nbuilds, ncategories;
+
+  _filter = "All";
+
+  // Create list boxes (Careful! If you use push_back, etc. later on the lists,
+  // the list boxes must be regenerated because their pointers will become
+  // invalid.)
+
+  nbuilds = _slackbuilds.size();
+  ncategories = _categories.size();
+  _blistboxes.resize(0);
+  _clistbox.clearList();
+  for ( j = 0; j < ncategories; j++ )
+  {
+    _clistbox.addItem(&_categories[j]);
+    BuildListBox blistbox;
+    blistbox.setWindow(_win2);
+    blistbox.setName(_categories[j].name());
+    blistbox.setActivated(false);
+    _blistboxes.push_back(blistbox);
+  }
+  for ( i = 0; i < nbuilds; i++ )
+  {
+    for ( j = 0; j < ncategories; j++ )
+    {
+      if (_slackbuilds[i].category() == _categories[j].name())
+      {
+        _blistboxes[j].addItem(&_slackbuilds[i]);
+      }
+    }
+  }
+}
+
+/*******************************************************************************
+
+Displays installed SlackBuilds
+
+*******************************************************************************/
+void MainWindow::filterInstalled()
+{
+  _filter = "Installed";
+}
+
+/*******************************************************************************
+
+Displays upgradable SlackBuilds
+
+*******************************************************************************/
+void MainWindow::filterUpgradable()
+{
+  _filter = "Upgradable";
+}
+
+/*******************************************************************************
+
 Constructor
 
 *******************************************************************************/
@@ -203,7 +263,7 @@ int MainWindow::initialize()
 
   _clistbox.setWindow(_win1);
   _clistbox.setActivated(true);
-  _clistbox.setName("Categories");
+  _clistbox.setName("Groups");
   initlistbox.setWindow(_win2);
   initlistbox.setActivated(false);
   initlistbox.setName("SlackBuilds");
@@ -216,7 +276,7 @@ int MainWindow::initialize()
   if (retval != 0) { printStatus("Error reading SlackBuilds repository."); }
   else
   {
-    rebuildListBoxes();
+    filterAll();
     clearStatus();
   }
 
@@ -231,9 +291,10 @@ Creates master list of SlackBuilds
 int MainWindow::readLists()
 {
   int check;
-  unsigned int i, j, nbuilds, ncategories;
+  unsigned int i, j, nbuilds, ncategories, ninstalled;
   bool new_category;
-std::string version;
+  std::vector<std::string> installedlist;
+  std::string installed_version, available_version;
 
   // Get list of SlackBuilds
 
@@ -245,14 +306,6 @@ std::string version;
   nbuilds = _slackbuilds.size();
   for ( i = 0; i < nbuilds; i++ )
   { 
-//FIXME: don't do it this way -- it's too slow
-version = check_installed(_slackbuilds[i]);
-if (version != "not_installed")
-{
-  printStatus(version);
-  _slackbuilds[i].setInstalled(true);
-  _slackbuilds[i].setInstalledVersion(version);
-}
     ncategories = _categories.size();
     new_category = true;
     for ( j = 0; j < ncategories; j++ )
@@ -272,44 +325,27 @@ if (version != "not_installed")
     } 
   }
 
-  return 0;
-}
+  // Determine which are installed and their versions
 
-/*******************************************************************************
-
-Populates list boxes
-
-*******************************************************************************/
-void MainWindow::rebuildListBoxes()
-{
-  unsigned int i,j, nbuilds, ncategories;
-
-  // Create list boxes (Careful! If you use push_back, etc. later on the lists,
-  // the list boxes must be regenerated because their pointers will become
-  // invalid.)
-
-  nbuilds = _slackbuilds.size();
-  ncategories = _categories.size();
-  _blistboxes.resize(0);
-  for ( j = 0; j < ncategories; j++ )
+  installedlist = list_installed();
+  ninstalled = installedlist.size();
+  for ( j = 0; j < ninstalled; j++ )
   {
-    _clistbox.addItem(&_categories[j]);
-    BuildListBox blistbox;
-    blistbox.setWindow(_win2);
-    blistbox.setName(_categories[j].name());
-    blistbox.setActivated(false);
-    _blistboxes.push_back(blistbox);
-  }
-  for ( i = 0; i < nbuilds; i++ )
-  {
-    for ( j = 0; j < ncategories; j++ )
+    for ( i = 0; i < nbuilds; i++ )
     {
-      if (_slackbuilds[i].category() == _categories[j].name())
+      if (installedlist[j] == _slackbuilds[i].name())
       {
-        _blistboxes[j].addItem(&_slackbuilds[i]);
+        _slackbuilds[i].setInstalled(true);
+        installed_version = check_installed(_slackbuilds[i]);
+        available_version = get_available_version(_slackbuilds[i]);
+        _slackbuilds[i].setInstalledVersion(installed_version);
+        _slackbuilds[i].setAvailableVersion(available_version);
+        break;
       }
     }
   }
+
+  return 0;
 }
 
 /*******************************************************************************
@@ -318,6 +354,13 @@ Sets properties
 
 *******************************************************************************/
 void MainWindow::setTitle(const std::string & title) { _title = title; }
+void MainWindow::setFilter(const std::string & filter)
+{
+  if (filter == "all") { filterAll(); }
+  else if (filter == "installed") { filterInstalled(); }
+  else if (filter == "upgradable") { filterUpgradable(); }
+}
+
 void MainWindow::setInfo(const std::string & info) { _info = info; }
 
 /*******************************************************************************
@@ -327,8 +370,9 @@ Shows the main window
 *******************************************************************************/
 void MainWindow::show()
 {
-  std::string selection;
+  std::string selection, statusmsg;
   bool getting_input, all_tagged;
+  ListItem *build;
 
   redrawAll();
 
@@ -342,18 +386,38 @@ void MainWindow::show()
     if (_activated_listbox == 0)
     {
       selection = _clistbox.exec();
+
+      // Highlighted item changed
+
       if (selection == ListBox::highlightSignal)
       {
         _category_idx = _clistbox.highlight(); 
         _blistboxes[_category_idx].draw(true);
       }
+
+      // Tab signal
+
       else if (selection == ListBox::keyTabSignal)
       {
         _clistbox.setActivated(false);
         _clistbox.draw();
         _blistboxes[_category_idx].setActivated(true);
         _activated_listbox = 1;
+
+        // Display status message for installed SlackBuild
+
+        build = _blistboxes[_category_idx].highlightedItem();
+        if (build->installed())
+        {
+          statusmsg = "Installed: " + build->installedVersion() +
+            " -> Available: " + build->availableVersion();
+          printStatus(statusmsg);
+        }
+        else { clearStatus(); }
       }
+
+      // Tag signal: tag/untag all items in category
+
       else if (selection == ListBox::tagSignal)
       {
         _blistboxes[_category_idx].tagAll();
@@ -366,12 +430,32 @@ void MainWindow::show()
     else if (_activated_listbox == 1)
     {
       selection = _blistboxes[_category_idx].exec();
-      if (selection == ListBox::keyTabSignal)
+
+      // Highlighted item changed
+
+      if (selection == ListBox::highlightSignal)
+      {
+        // Display status message for installed SlackBuild
+
+        build = _blistboxes[_category_idx].highlightedItem();
+        if (build->installed())
+        {
+          statusmsg = "Installed: " + build->installedVersion() +
+            " -> Available: " + build->availableVersion();
+          printStatus(statusmsg);
+        }
+        else { clearStatus(); }
+      }
+
+      // Tab signal
+      
+      else if (selection == ListBox::keyTabSignal)
       {
         _blistboxes[_category_idx].setActivated(false);
         _blistboxes[_category_idx].draw();
         _clistbox.setActivated(true);
         _activated_listbox = 0;
+        clearStatus();
       }
 
       // Tag signal: see if we need to change tag for category

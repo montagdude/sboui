@@ -3,6 +3,8 @@
 #include <string>
 #include "ListBox.h"
 
+class BuildListItem;
+
 /*******************************************************************************
 
 ListBox for categories

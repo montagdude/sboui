@@ -78,6 +78,10 @@ class ListBox {
     const std::string & name() const;
     unsigned int highlight() const;
 
+    /* Returns pointer to highlighted item */
+
+    ListItem * highlightedItem();
+
     /* Draws frame, items, etc. as needed */
  
     void draw(bool force=false);

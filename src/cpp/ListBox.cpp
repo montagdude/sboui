@@ -437,6 +437,17 @@ unsigned int ListBox::highlight() const { return _highlight; }
 
 /*******************************************************************************
 
+Returns pointer to highlighted item
+
+*******************************************************************************/
+ListItem * ListBox::highlightedItem()
+{
+  if (_items.size() == 0) { return NULL; }
+  else { return _items[_highlight]; }
+}
+
+/*******************************************************************************
+
 Draws list box (frame, items, etc.) as needed
 
 *******************************************************************************/

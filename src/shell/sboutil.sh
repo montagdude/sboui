@@ -91,12 +91,29 @@ function get_available_version ()
   echo $VERSION
 }
 
+################################################################################
+# Lists installed SlackBuilds
+function list_installed ()
+{
+  local PKGLIST=$(find /var/log/packages -maxdepth 1 -name "$BUILD*_$TAG" | sort)
+  local PKG
+
+  for PKG in $PKGLIST
+  do
+    PKG=$(basename "$PKG")
+    echo $(get_pkg_name "$PKG")
+  done
+}
+
 case $1 in
     "check_installed")
         check_installed $2
         ;;
     "get_available_version")
         get_available_version $2 $3
+        ;;
+    "list_installed")
+        list_installed
         ;;
     *)
         ;;

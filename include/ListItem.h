@@ -22,6 +22,8 @@ class ListItem {
 
     virtual void setName(const std::string & name);
     virtual void setCategory(const std::string & category) = 0;
+    virtual void setInstalledVersion(const std::string & installed_version) = 0;
+    virtual void setAvailableVersion(const std::string & available_version) = 0;
     virtual void setTagged(bool tagged) = 0;
     virtual void setInstalled(bool installed) = 0;
 
@@ -29,6 +31,8 @@ class ListItem {
 
     virtual const std::string & name() const;
     virtual const std::string & category() const = 0;
+    virtual const std::string & installedVersion() const = 0;
+    virtual const std::string & availableVersion() const = 0;
     virtual bool tagged() const = 0;
     virtual bool installed() const = 0;
 };
