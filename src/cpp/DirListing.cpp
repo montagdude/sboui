@@ -15,7 +15,7 @@
 std::string DirListing::name_order = "0123456789" + 
                          std::string(" !@#$%^&*()+-=_~`[]\\;',/{}|:\"<>?") +
                          std::string("ABCDEFGHIJKLMNOPQRSTUVWXYZ") +
-                         std::string("abcdefghijklmnopqrstuvqxyz") + 
+                         std::string("abcdefghijklmnopqrstuvwxyz") + 
                          std::string(".");
 std::vector<std::string> DirListing::type_order(9,"");
 
