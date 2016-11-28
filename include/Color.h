@@ -3,11 +3,6 @@
 #include <string>
 #include <vector>
 
-struct color_entry {
-  std::string fg, bg;
-  int pair;
-};
-
 /*******************************************************************************
 
 Manages colors for ncurses, making color pairs easy to reference by foreground
@@ -17,6 +12,11 @@ and background color.
 class Color {
 
   private:
+
+    struct color_entry {
+      std::string fg, bg;
+      int pair;
+    };
 
     std::vector<color_entry> _colors;
 

@@ -101,7 +101,6 @@ void MainWindow::redrawHeaderFooter() const
   move(2, 0);
   clrtoeol();
   printToEol("Filter: " + _filter);
-  refresh();
 
   // Draw footer
 
@@ -113,6 +112,8 @@ void MainWindow::redrawHeaderFooter() const
   printToEol(_info);
   if (pair_info != -1) { attroff(COLOR_PAIR(pair_info)); }
   attroff(A_BOLD);
+
+  refresh();
 }
 
 /*******************************************************************************
@@ -211,7 +212,7 @@ void MainWindow::filterAll()
   {
     for ( j = 0; j < ncategories; j++ )
     {
-      if (_slackbuilds[i].category() == _categories[j].name())
+      if (_slackbuilds[i].getProp("category") == _categories[j].name())
       {
         _blistboxes[j].addItem(&_slackbuilds[i]);
       }
@@ -248,13 +249,13 @@ void MainWindow::filterInstalled()
 
   for ( i = 0; i < nbuilds; i++ )
   {
-    if (_slackbuilds[i].installed())
+    if (_slackbuilds[i].getBoolProp("installed"))
     {
       category_found = false;
       nfiltered_categories = filtered_categories.size();
       for ( j = 0; j < nfiltered_categories; j++ )
       {
-        if (_slackbuilds[i].category() == filtered_categories[j])
+        if (_slackbuilds[i].getProp("category") == filtered_categories[j])
         {
           _blistboxes[j].addItem(&_slackbuilds[i]);
           category_found = true;
@@ -265,7 +266,7 @@ void MainWindow::filterInstalled()
       {
         for ( j = 0; j < ncategories; j++ )
         {
-          if ( _slackbuilds[i].category() == _categories[j].name())
+          if ( _slackbuilds[i].getProp("category") == _categories[j].name())
           {
             _clistbox.addItem(&_categories[j]);
             BuildListBox blistbox;
@@ -274,7 +275,7 @@ void MainWindow::filterInstalled()
             blistbox.setActivated(false);
             blistbox.addItem(&_slackbuilds[i]);
             _blistboxes.push_back(blistbox); 
-            filtered_categories.push_back(_slackbuilds[i].category());
+            filtered_categories.push_back(_slackbuilds[i].getProp("category"));
             break;
           }
         }
@@ -325,17 +326,17 @@ void MainWindow::filterUpgradable()
 
   for ( i = 0; i < nbuilds; i++ )
   {
-    if (_slackbuilds[i].installed())
+    if (_slackbuilds[i].getBoolProp("installed"))
     {
-      len = _slackbuilds[i].availableVersion().size();
-      if (_slackbuilds[i].installedVersion().substr(0, len) != 
-          _slackbuilds[i].availableVersion()) 
+      len = _slackbuilds[i].getProp("available_version").size();
+      if (_slackbuilds[i].getProp("installed_version").substr(0, len) != 
+          _slackbuilds[i].getProp("available_version")) 
       {
         category_found = false;
         nfiltered_categories = filtered_categories.size();
         for ( j = 0; j < nfiltered_categories; j++ )
         {
-          if (_slackbuilds[i].category() == filtered_categories[j])
+          if (_slackbuilds[i].getProp("category") == filtered_categories[j])
           {
             _blistboxes[j].addItem(&_slackbuilds[i]);
             category_found = true;
@@ -346,7 +347,7 @@ void MainWindow::filterUpgradable()
         {
           for ( j = 0; j < ncategories; j++ )
           {
-            if ( _slackbuilds[i].category() == _categories[j].name())
+            if ( _slackbuilds[i].getProp("category") == _categories[j].name())
             {
               _clistbox.addItem(&_categories[j]);
               BuildListBox blistbox;
@@ -355,7 +356,8 @@ void MainWindow::filterUpgradable()
               blistbox.setActivated(false);
               blistbox.addItem(&_slackbuilds[i]);
               _blistboxes.push_back(blistbox); 
-              filtered_categories.push_back(_slackbuilds[i].category());
+              filtered_categories.push_back(
+                                           _slackbuilds[i].getProp("category"));
               break;
             }
           }
@@ -379,7 +381,7 @@ void MainWindow::filterUpgradable()
 
 /*******************************************************************************
 
-Constructor
+Constructor and destructor
 
 *******************************************************************************/
 MainWindow::MainWindow()
@@ -394,6 +396,12 @@ MainWindow::MainWindow()
   _info = "f: Filter | s: Search | o: Options | F1: Help";
   _category_idx = 0;
   _activated_listbox = 0;
+}
+
+MainWindow::~MainWindow()
+{
+  if (_win1) { delwin(_win1); }
+  if (_win2) { delwin(_win2); }
 }
 
 /*******************************************************************************
@@ -460,7 +468,7 @@ int MainWindow::readLists()
     new_category = true;
     for ( j = 0; j < ncategories; j++ )
     {
-      if (_categories[j].name() == _slackbuilds[i].category())
+      if (_categories[j].name() == _slackbuilds[i].getProp("category"))
       {
         new_category = false;
         break;
@@ -469,8 +477,8 @@ int MainWindow::readLists()
     if (new_category)
     {
       BuildListItem citem;
-      citem.setName(_slackbuilds[i].category());
-      citem.setCategory(_slackbuilds[i].category());
+      citem.setName(_slackbuilds[i].getProp("category"));
+      citem.setProp("category", _slackbuilds[i].getProp("category"));
       _categories.push_back(citem);
     } 
   }
@@ -485,11 +493,11 @@ int MainWindow::readLists()
     {
       if (installedlist[j] == _slackbuilds[i].name())
       {
-        _slackbuilds[i].setInstalled(true);
+        _slackbuilds[i].setBoolProp("installed", true);
         installed_version = check_installed(_slackbuilds[i]);
         available_version = get_available_version(_slackbuilds[i]);
-        _slackbuilds[i].setInstalledVersion(installed_version);
-        _slackbuilds[i].setAvailableVersion(available_version);
+        _slackbuilds[i].setProp("installed_version", installed_version);
+        _slackbuilds[i].setProp("available_version", available_version);
         break;
       }
     }
@@ -558,10 +566,10 @@ void MainWindow::show()
         // Display status message for installed SlackBuild
 
         build = _blistboxes[_category_idx].highlightedItem();
-        if (build->installed())
+        if (build->getBoolProp("installed"))
         {
-          statusmsg = "Installed: " + build->installedVersion() +
-            " -> Available: " + build->availableVersion();
+          statusmsg = "Installed: " + build->getProp("installed_version") +
+            " -> Available: " + build->getProp("available_version");
           printStatus(statusmsg);
         }
         else { clearStatus(); }
@@ -589,10 +597,10 @@ void MainWindow::show()
         // Display status message for installed SlackBuild
 
         build = _blistboxes[_category_idx].highlightedItem();
-        if (build->installed())
+        if (build->getBoolProp("installed"))
         {
-          statusmsg = "Installed: " + build->installedVersion() +
-            " -> Available: " + build->availableVersion();
+          statusmsg = "Installed: " + build->getProp("installed_version") +
+            " -> Available: " + build->getProp("available_version");
           printStatus(statusmsg);
         }
         else { clearStatus(); }
@@ -614,11 +622,11 @@ void MainWindow::show()
       else if (selection == ListBox::tagSignal)
       {
         all_tagged = _blistboxes[_category_idx].allTagged();
-        if (_categories[_category_idx].tagged())
+        if (_categories[_category_idx].getBoolProp("tagged"))
         {
           if (! all_tagged) 
           { 
-            _categories[_category_idx].setTagged(false); 
+            _categories[_category_idx].setBoolProp("tagged", false); 
             _clistbox.draw();
           }
         }
@@ -626,7 +634,7 @@ void MainWindow::show()
         {
           if (all_tagged) 
           { 
-            _categories[_category_idx].setTagged(true); 
+            _categories[_category_idx].setBoolProp("tagged", true); 
             _clistbox.draw();
           }
         }

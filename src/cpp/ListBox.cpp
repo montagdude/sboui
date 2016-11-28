@@ -217,7 +217,7 @@ void ListBox::redrawFrame() const
 
   namelen = _name.size();
   mid = double(cols)/2.0;
-  left = std::floor(int(mid) - double(namelen)/2);
+  left = std::floor(mid - double(namelen)/2.0);
   right = left + namelen;
   wmove(_win, 0, left);
   wattron(_win, A_BOLD);

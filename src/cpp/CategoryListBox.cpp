@@ -111,13 +111,13 @@ void CategoryListBox::redrawSingleItem(unsigned int idx)
   {
     if (_activated) 
     { 
-      if (_items[idx]->tagged()) { fg = tagged; }
+      if (_items[idx]->getBoolProp("tagged")) { fg = tagged; }
       else { fg = fg_highlight_active; }
       bg = bg_highlight_active; 
     }
     else
     {
-      if (_items[idx]->tagged()) { fg = tagged; }
+      if (_items[idx]->getBoolProp("tagged")) { fg = tagged; }
       else { fg = fg_highlight_inactive; }
       bg = bg_highlight_inactive; 
     }
@@ -127,14 +127,14 @@ void CategoryListBox::redrawSingleItem(unsigned int idx)
   } 
   else
   {
-    if (_items[idx]->tagged()) { fg = tagged; }
+    if (_items[idx]->getBoolProp("tagged")) { fg = tagged; }
     else { fg = fg_normal; }
     bg = bg_normal;
     color_pair = colors.pair(fg, bg);
     if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
   }
 
-  if (_items[idx]->tagged()) { wattron(_win, A_BOLD); }
+  if (_items[idx]->getBoolProp("tagged")) { wattron(_win, A_BOLD); }
 
   // Save highlight idx for redrawing later.
   // Note: prevents this method from being const.
@@ -143,7 +143,7 @@ void CategoryListBox::redrawSingleItem(unsigned int idx)
 
   // Print item
 
-  printToEol(_items[idx]->category());
+  printToEol(_items[idx]->name());
 
   // Turn off highlight color
 
@@ -152,7 +152,7 @@ void CategoryListBox::redrawSingleItem(unsigned int idx)
   {
     if (int(idx) == _highlight) { wattroff(_win, A_REVERSE); }
   }
-  if (_items[idx]->tagged()) { wattroff(_win, A_BOLD); }
+  if (_items[idx]->getBoolProp("tagged")) { wattroff(_win, A_BOLD); }
 }
 
 /*******************************************************************************

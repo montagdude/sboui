@@ -1,6 +1,7 @@
 #pragma once
 
 #include <curses.h>
+#include <vector>
 #include <string>
 #include "CategoryListBox.h"
 #include "BuildListBox.h"
@@ -37,9 +38,10 @@ class MainWindow {
 
   public:
 
-    /* Constructor */
+    /* Constructor and destructor */
 
     MainWindow();
+    ~MainWindow();
 
     /* Window setup */
 

@@ -5,14 +5,16 @@
 #include "BuildListItem.h"
 #include "backend.h"
 
-std::string repo_dir = "/var/cache/packages/SBo";
+//std::string repo_dir = "/var/cache/packages/SBo";
+std::string repo_dir = "/data/dprosser/software/sboui_files/SBo";
 std::string package_manager = "sbomgr";
 std::string sync_cmd = "sbomgr update";
 std::string install_cmd = "sbomgr install -n";
 std::string upgrade_cmd = "sbomgr upgrade";
 
 // Bash script with functions to query the repo and installed packages
-std::string sboutil = "/usr/libexec/sboui/sboutil.sh";
+//std::string sboutil = "/usr/libexec/sboui/sboutil.sh";
+std::string sboutil = "/data/dprosser/software/sboui_files/sboui/src/shell/sboutil.sh";
 
 /*******************************************************************************
 
@@ -50,7 +52,7 @@ int read_repo(std::vector<BuildListItem> & slackbuilds)
         {
           BuildListItem build;
           build.setName(build_entry.name);
-          build.setCategory(cat_entry.name);
+          build.setProp("category", cat_entry.name);
           slackbuilds.push_back(build);
         }
       }
@@ -138,7 +140,7 @@ std::string get_available_version(const BuildListItem & build)
   std::string cmd, version;
 
   cmd = sboutil + " get_available_version " + build.name() + " "
-                                            + build.category();
+                                            + build.getProp("category");
   fp = popen(cmd.c_str(), "r");
   while (fgets(buffer, sizeof(buffer), fp) != NULL) { version = buffer; }
   pclose(fp);

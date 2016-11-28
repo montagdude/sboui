@@ -133,13 +133,13 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
   {
     if (_activated) 
     { 
-      if (_items[idx]->tagged()) { fg = tagged; }
+      if (_items[idx]->getBoolProp("tagged")) { fg = tagged; }
       else { fg = fg_highlight_active; }
       bg = bg_highlight_active; 
     }
     else
     {
-      if (_items[idx]->tagged()) { fg = tagged; }
+      if (_items[idx]->getBoolProp("tagged")) { fg = tagged; }
       else { fg = fg_highlight_inactive; }
       bg = bg_highlight_inactive; 
     }
@@ -149,14 +149,14 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
   } 
   else
   {
-    if (_items[idx]->tagged()) { fg = tagged; }
+    if (_items[idx]->getBoolProp("tagged")) { fg = tagged; }
     else { fg = fg_normal; }
     bg = bg_normal;
     color_pair = colors.pair(fg, bg);
     if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
   }
 
-  if (_items[idx]->tagged()) { wattron(_win, A_BOLD); }
+  if (_items[idx]->getBoolProp("tagged")) { wattron(_win, A_BOLD); }
 
   // Save highlight idx for redrawing later.
   // Note: prevents this method from being const.
@@ -169,7 +169,7 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
   printlen = std::min(int(_items[idx]->name().size()), vlineloc);
   wprintw(_win, _items[idx]->name().substr(0,printlen).c_str());
 
-  if (_items[idx]->tagged()) 
+  if (_items[idx]->getBoolProp("tagged")) 
   { 
     wattroff(_win, A_BOLD); 
     if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); }
@@ -201,7 +201,7 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
   nspaces = vlineloc - _items[idx]->name().size();
   for ( i = 0; int(i) < nspaces; i++ ) { waddch(_win, ' '); }
   waddch(_win, ACS_VLINE);
-  if (_items[idx]->installed()) { printToEol("    X    "); }
+  if (_items[idx]->getBoolProp("installed")) { printToEol("    X    "); }
   else { printToEol("         "); }
 
   // Turn off color
@@ -256,7 +256,7 @@ bool BuildListBox::allTagged() const
   all_tagged = true;
   for ( i = 0; i < nitems; i++ )
   {
-    if (! _items[i]->tagged()) 
+    if (! _items[i]->getBoolProp("tagged")) 
     {
       all_tagged = false;
       break;
@@ -283,7 +283,10 @@ unsigned int BuildListBox::tagAll()
   {
     for ( i = 0; i < nitems; i++ ) 
     { 
-      if (! _items[i]->tagged()) { _items[i]->setTagged(true); }
+      if (! _items[i]->getBoolProp("tagged")) 
+      { 
+        _items[i]->setBoolProp("tagged", true); 
+      }
     }
     retval = 0;
   }
@@ -291,7 +294,10 @@ unsigned int BuildListBox::tagAll()
   {
     for ( i = 0; i < nitems; i++ ) 
     { 
-      if (_items[i]->tagged()) { _items[i]->setTagged(false); }
+      if (_items[i]->getBoolProp("tagged")) 
+      { 
+        _items[i]->setBoolProp("tagged", false); 
+      }
     }
     retval = 1;
   }
@@ -400,7 +406,8 @@ std::string BuildListBox::exec()
 
     case 't':
       retval = tagSignal;
-      _items[_highlight]->setTagged(! _items[_highlight]->tagged());
+      _items[_highlight]->setBoolProp("tagged", 
+                                 (! _items[_highlight]->getBoolProp("tagged")));
       _redraw_type = "changed";
       break;
 
