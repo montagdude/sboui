@@ -103,6 +103,7 @@ int ListBox::highlightNextPage()
   // Determine how far to page and which item to highlight
 
   nitems = _items.size();
+  if (_highlight + rowsavail >= nitems-1) { return highlightLast(); }
   if (_firstprint + rowsavail >= nitems-1) { return highlightLast(); }
   else if (_firstprint + 2*rowsavail >= nitems-1)
   {
@@ -144,6 +145,7 @@ int ListBox::highlightPreviousPage()
   // Determine which choice to highlight
 
   _highlight -= rowsavail;
+
   return 1;
 }
 

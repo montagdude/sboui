@@ -8,9 +8,10 @@
 #include "Color.h"
 #include "color_settings.h"
 #include "backend.h"
+#include "CategoryListItem.h"
 #include "CategoryListBox.h"
-#include "BuildListBox.h"
 #include "BuildListItem.h"
+#include "BuildListBox.h"
 #include "MainWindow.h"
 
 using namespace color;
@@ -476,7 +477,7 @@ int MainWindow::readLists()
     }
     if (new_category)
     {
-      BuildListItem citem;
+      CategoryListItem citem;
       citem.setName(_slackbuilds[i].getProp("category"));
       citem.setProp("category", _slackbuilds[i].getProp("category"));
       _categories.push_back(citem);

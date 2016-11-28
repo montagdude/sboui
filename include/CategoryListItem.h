@@ -5,14 +5,14 @@
 
 /*******************************************************************************
 
-List item that describes a SlackBuild
+List item that describes a group of SlackBuilds
 
 *******************************************************************************/
-class BuildListItem: public ListItem {
+class CategoryListItem: public ListItem {
 
   public:
 
     // Constructor
 
-    BuildListItem();
+    CategoryListItem();
 };

@@ -3,9 +3,10 @@
 #include <curses.h>
 #include <vector>
 #include <string>
+#include "CategoryListItem.h"
 #include "CategoryListBox.h"
-#include "BuildListBox.h"
 #include "BuildListItem.h"
+#include "BuildListBox.h"
 
 /*******************************************************************************
 
@@ -20,7 +21,7 @@ class MainWindow {
     CategoryListBox _clistbox;
     std::vector<BuildListBox> _blistboxes;
     std::vector<BuildListItem> _slackbuilds;
-    std::vector<BuildListItem> _categories;
+    std::vector<CategoryListItem> _categories;
     std::string _title, _filter, _info;
     unsigned int _category_idx, _activated_listbox;
 

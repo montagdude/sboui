@@ -183,3 +183,114 @@ CategoryListBox::CategoryListBox(WINDOW *win, const std::string & name)
   _activated = true;
   _reserved_rows = 4;
 }
+
+/*******************************************************************************
+
+User interaction: returns key stroke or selected item name. This is the same
+as the one for BuildListBox, except that tagging doesn't highlight the next
+entry.
+
+*******************************************************************************/
+std::string CategoryListBox::exec()
+{
+  int ch, check_redraw;
+  std::string retval;
+
+  const int MY_ESC = 27;
+  const int MY_TAB = 9;
+
+  // Highlight first entry on first display
+
+  if (_highlight == 0) { highlightFirst(); }
+
+  // Draw list elements
+
+  draw();
+
+  // Get user input
+
+  switch (ch = getch()) {
+
+    // Enter key: return name of highlighted item
+
+    case '\n':
+    case '\r':
+    case KEY_ENTER:
+      retval = _items[_highlight]->name();
+      _redraw_type = "none";
+      break;
+
+    // Tab key: return keyTabSignal
+
+    case MY_TAB:
+      retval = keyTabSignal;
+      _redraw_type = "changed";
+      break;
+
+    // Arrows/Home/End/PgUp/Dn: change highlighted value
+
+    case KEY_UP:
+      retval = highlightSignal;
+      check_redraw = highlightPrevious();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+    case KEY_DOWN:
+      retval = highlightSignal;
+      check_redraw = highlightNext();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+    case KEY_PPAGE:
+      retval = highlightSignal;
+      check_redraw = highlightPreviousPage();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+    case KEY_NPAGE:
+      retval = highlightSignal;
+      check_redraw = highlightNextPage();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+    case KEY_HOME:
+      retval = highlightSignal;
+      check_redraw = highlightFirst();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+    case KEY_END:
+      retval = highlightSignal;
+      check_redraw = highlightLast();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+
+    // Resize signal: redraw (may not work with some curses implementations)
+
+    case KEY_RESIZE:
+      retval = resizeSignal;
+      break;
+
+    // Quit key
+
+    case MY_ESC:
+      retval = quitSignal;
+      _redraw_type = "none";
+      break;
+
+    // t: tag item
+
+    case 't':
+      retval = tagSignal;
+      _items[_highlight]->setBoolProp("tagged", 
+                                 (! _items[_highlight]->getBoolProp("tagged")));
+      _redraw_type = "changed";
+      break;
+
+    default:
+      _redraw_type = "none";
+      break;
+  }
+  return retval;
+}

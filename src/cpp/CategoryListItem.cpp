@@ -1,18 +1,15 @@
-#pragma once
-
 #include <string>
 #include "ListItem.h"
+#include "CategoryListItem.h"
 
 /*******************************************************************************
 
-List item that describes a SlackBuild
+Constructor
 
 *******************************************************************************/
-class BuildListItem: public ListItem {
-
-  public:
-
-    // Constructor
-
-    BuildListItem();
-};
+CategoryListItem::CategoryListItem() 
+{ 
+  _name = ""; 
+  addProp("category", "");
+  addBoolProp("tagged", false);
+}
