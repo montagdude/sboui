@@ -220,7 +220,7 @@ std::string SelectionBox::exec()
       case '\r':
       case KEY_ENTER:
         retval = _items[_highlight]->name();
-        _redraw_type = "none";
+        _redraw_type = "all";
         getting_input = false;
         break;
   
@@ -267,7 +267,7 @@ std::string SelectionBox::exec()
   
       case MY_ESC:
         retval = quitSignal;
-        _redraw_type = "none";
+        _redraw_type = "all";
         getting_input = false;
         break;
   

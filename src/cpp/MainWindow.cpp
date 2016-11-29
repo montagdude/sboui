@@ -532,7 +532,6 @@ Sets properties
 void MainWindow::setTitle(const std::string & title) { _title = title; }
 void MainWindow::selectFilter()
 {
-  FilterBox filterbox;
   WINDOW *filterwin;
   std::string selection;
   int left, top, width, height, rows, cols;
@@ -546,11 +545,11 @@ void MainWindow::selectFilter()
   left = std::floor(double(cols)/2. - double(width)/2.);
   top = std::floor(double(rows)/2. - double(height)/2.);
   filterwin = newwin(height, width, top, left);
-  filterbox.setWindow(filterwin);
+  _fbox.setWindow(filterwin);
 
   // Get filter selection
 
-  selection = filterbox.exec();
+  selection = _fbox.exec();
   if (selection == "All") { filterAll(); }
   else if (selection == "Installed") { filterInstalled(); }
   else if (selection == "Upgradable") { filterUpgradable(); }
@@ -565,7 +564,7 @@ void MainWindow::selectFilter()
   _clistbox.setActivated(true);
   _blistboxes[_category_idx].setActivated(false);
   _activated_listbox = 0;
-  redrawAll(true);
+  redrawAll();
 }
 
 void MainWindow::setInfo(const std::string & info) { _info = info; }
@@ -694,7 +693,7 @@ void MainWindow::show()
     if (selection == ListBox::quitSignal) { getting_input = false; }
     else if (selection == ListBox::resizeSignal) 
     { 
-      redrawAll(true); 
+      redrawAll(); 
       clearStatus();
     }
     else if (selection == "f") { selectFilter(); }

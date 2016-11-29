@@ -7,6 +7,7 @@
 #include "CategoryListBox.h"
 #include "BuildListItem.h"
 #include "BuildListBox.h"
+#include "FilterBox.h"
 
 /*******************************************************************************
 
@@ -22,6 +23,7 @@ class MainWindow {
     std::vector<BuildListBox> _blistboxes;
     std::vector<BuildListItem> _slackbuilds;
     std::vector<CategoryListItem> _categories;
+    FilterBox _fbox;
     std::string _title, _filter, _info;
     unsigned int _category_idx, _activated_listbox;
 

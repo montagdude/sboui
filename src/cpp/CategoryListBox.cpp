@@ -217,7 +217,7 @@ std::string CategoryListBox::exec()
     case '\r':
     case KEY_ENTER:
       retval = _items[_highlight]->name();
-      _redraw_type = "none";
+      _redraw_type = "all";
       break;
 
     // Tab key: return keyTabSignal
@@ -270,13 +270,14 @@ std::string CategoryListBox::exec()
 
     case KEY_RESIZE:
       retval = resizeSignal;
+      _redraw_type = "all";
       break;
 
     // Quit key
 
     case MY_ESC:
       retval = quitSignal;
-      _redraw_type = "none";
+      _redraw_type = "all";
       break;
 
     // t: tag item
