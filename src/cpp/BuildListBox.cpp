@@ -67,10 +67,10 @@ void BuildListBox::redrawFrame() const
 
   // Symbols on right border to indicate scrolling
 
-  if (_firstprint != 0) { mvwaddch(_win, 3, cols-1, ACS_DIAMOND); }
+  if (_firstprint != 0) { mvwaddch(_win, 3, cols-1, ACS_UARROW); }
   if (_items.size() > _firstprint + rows-4)
   {
-    mvwaddch(_win, rows-2, cols-1, ACS_DIAMOND);
+    mvwaddch(_win, rows-2, cols-1, ACS_DARROW);
   }
 
   // Draw header

@@ -12,6 +12,7 @@
 #include "CategoryListBox.h"
 #include "BuildListItem.h"
 #include "BuildListBox.h"
+#include "SelectionBox.h"
 #include "MainWindow.h"
 
 using namespace color;
@@ -188,6 +189,7 @@ Displays all SlackBuilds
 void MainWindow::filterAll()
 {
   unsigned int i, j, nbuilds, ncategories;
+  BuildListBox initlistbox;
 
   _filter = "All";
   printStatus("Filtering by all SlackBuilds ...");
@@ -219,6 +221,17 @@ void MainWindow::filterAll()
       }
     }
   }
+
+  if (nbuilds == 0) 
+  { 
+    printStatus("No SlackBuilds. Run the sync command first."); 
+    initlistbox.setWindow(_win2);
+    initlistbox.setActivated(false);
+    initlistbox.setName("SlackBuilds");
+    _blistboxes.push_back(initlistbox);
+  }
+  else if (nbuilds == 1) { printStatus("1 SlackBuild in repository."); }
+  else { printStatus(int2String(nbuilds) + " SlackBuilds in repository."); }
 }
 
 /*******************************************************************************
@@ -520,6 +533,50 @@ void MainWindow::setFilter(const std::string & filter)
   else if (filter == "upgradable") { filterUpgradable(); }
   redrawAll(true);
 }
+void MainWindow::selectFilter()
+{
+//FIXME: it would be better to make FilterBox a subclass of SelectionBox
+  SelectionBox filterbox;
+  WINDOW *filterwin;
+  std::vector<ListItem> choices;
+  std::string selection;
+  unsigned int i;
+  int left, top, width, height, rows, cols, pair_info;
+
+  filterbox.setName("Filter selection");
+
+  // Filter choices
+
+  choices.resize(3);
+  choices[0].setName("All SlackBuilds"); 
+  choices[1].setName("Installed SlackBuilds"); 
+  choices[2].setName("Upgradable SlackBuilds"); 
+  for ( i = 0; i < 3; i++ ) { filterbox.addItem(&choices[i]); }
+
+  // Set up window
+//FIXME: window sizing should be smarter
+
+  getmaxyx(stdscr, rows, cols);
+  height = std::floor(double(rows)/2.);
+  width = std::floor(double(cols)/2.);
+  left = std::floor(double(cols)/2. - double(width)/2.);
+  top = std::floor(double(rows)/2. - double(height)/2.);
+  filterwin = newwin(height, width, top, left);
+  filterbox.setWindow(filterwin);
+
+  // Get filter selection
+
+  selection = filterbox.exec();
+  if (selection == choices[0].name()) { setFilter("all"); }
+  else if (selection == choices[1].name()) { setFilter("installed"); }
+  else if (selection == choices[2].name()) { setFilter("upgradable"); }
+
+  // Get rid of window
+
+  wclear(filterwin);
+  delwin(filterwin);
+  redrawAll(true);
+}
 
 void MainWindow::setInfo(const std::string & info) { _info = info; }
 
@@ -538,6 +595,7 @@ void MainWindow::show()
 
   // Main event loop
 
+unsigned int esc_count = 0;
   getting_input = true;
   while (getting_input)
   {
@@ -644,7 +702,13 @@ void MainWindow::show()
 
     // Key signals with the same action w/ either type of list box
 
-    if (selection == ListBox::quitSignal) { getting_input = false; }
+//    if (selection == ListBox::quitSignal) { getting_input = false; }
+if (selection == ListBox::quitSignal) 
+{ 
+  if (esc_count < 2) { selectFilter(); }
+  else { getting_input = false; }
+  esc_count++;
+}
     else if (selection == ListBox::resizeSignal) 
     { 
       redrawAll(true); 

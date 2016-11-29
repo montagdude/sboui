@@ -5,12 +5,14 @@
 
 /*******************************************************************************
 
-ListBox for SlackBuilds
+ListBox for making a selection
 
 *******************************************************************************/
-class BuildListBox: public ListBox {
+class SelectionBox: public ListBox {
   
   private:
+
+    std::string _info;
 
     void redrawFrame() const;
     void redrawSingleItem(unsigned int idx);
@@ -19,16 +21,12 @@ class BuildListBox: public ListBox {
 
     /* Constructors */
 
-    BuildListBox();
-    BuildListBox(WINDOW *win, const std::string & name);
+    SelectionBox();
+    SelectionBox(WINDOW *win, const std::string & name);
 
-    /* Setting properties */
+    /* Set attributes */
 
-    unsigned int tagAll();
-
-    /* Accessing properties */
-
-    bool allTagged() const;
+    void setInfo(const std::string & info);
 
     /* User interaction loop */
 

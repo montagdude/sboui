@@ -259,10 +259,10 @@ void ListBox::redrawFrame() const
 
   // Symbols on right border to indicate scrolling
 
-  if (_firstprint != 0) { mvwaddch(_win, 1, cols-1, ACS_DIAMOND); }
+  if (_firstprint != 0) { mvwaddch(_win, 1, cols-1, ACS_UARROW); }
   if (_items.size() > _firstprint + rows-2)
   {
-    mvwaddch(_win, rows-2, cols-1, ACS_DIAMOND);
+    mvwaddch(_win, rows-2, cols-1, ACS_DARROW);
   }
 }
 
