@@ -465,7 +465,7 @@ void ListBox::draw(bool force)
     pair_normal = colors.pair(fg_normal, bg_normal);
     if (pair_normal != -1) { wbkgd(_win, COLOR_PAIR(pair_normal)); }
   }
-  if (_redraw_type != "none") { redrawFrame(); }
+  if ( (_redraw_type != "none") || force ) { redrawFrame(); }
   if ( (_redraw_type == "all") || (_redraw_type == "items") || force ) { 
                                                             redrawAllItems(); }
   else if (_redraw_type == "changed") { redrawChangedItems(); }
