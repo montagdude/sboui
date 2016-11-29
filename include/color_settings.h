@@ -15,4 +15,5 @@ namespace color
   extern std::string fg_highlight_inactive, bg_highlight_inactive;
   extern std::string header;
   extern std::string tagged;
+  extern std::string fg_popup, bg_popup;
 }

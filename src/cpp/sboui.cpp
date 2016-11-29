@@ -14,6 +14,7 @@ namespace color
   std::string fg_highlight_inactive, bg_highlight_inactive;
   std::string header;
   std::string tagged;
+  std::string fg_popup, bg_popup;
 } 
 
 using namespace color;
@@ -46,6 +47,8 @@ int main()
     bg_highlight_inactive = "white";
     header = "yellow";
     tagged = "yellow";
+    fg_popup = "white";
+    bg_popup = "blue";
 
     colors.addPair(fg_normal, bg_normal);
     colors.addPair(fg_title, bg_title);
@@ -56,6 +59,7 @@ int main()
     colors.addPair(tagged, bg_normal); 
     colors.addPair(tagged, bg_highlight_active); 
     colors.addPair(tagged, bg_highlight_inactive); 
+    colors.addPair(fg_popup, bg_popup); 
     bkgd(COLOR_PAIR(colors.pair(fg_normal, bg_normal)));
   } 
 

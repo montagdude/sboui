@@ -69,7 +69,7 @@ class ListBox {
 
     /* Set attributes */
 
-    void setWindow(WINDOW *win);
+    virtual void setWindow(WINDOW *win);
     void setName(const std::string & name);
     void setActivated(bool activated);
 
@@ -84,7 +84,7 @@ class ListBox {
 
     /* Draws frame, items, etc. as needed */
  
-    void draw(bool force=false);
+    virtual void draw(bool force=false);
 
     /* User interaction loop */
 

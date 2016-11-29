@@ -10,7 +10,7 @@ ListBox for making a selection
 *******************************************************************************/
 class SelectionBox: public ListBox {
   
-  private:
+  protected:
 
     std::string _info;
 

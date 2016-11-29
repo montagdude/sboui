@@ -470,7 +470,6 @@ void ListBox::draw(bool force)
                                                             redrawAllItems(); }
   else if (_redraw_type == "changed") { redrawChangedItems(); }
   wrefresh(_win);
-
 }
 
 /*******************************************************************************

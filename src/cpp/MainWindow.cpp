@@ -12,7 +12,7 @@
 #include "CategoryListBox.h"
 #include "BuildListItem.h"
 #include "BuildListBox.h"
-#include "SelectionBox.h"
+#include "FilterBox.h"
 #include "MainWindow.h"
 
 using namespace color;
@@ -538,23 +538,10 @@ void MainWindow::setFilter(const std::string & filter)
 }
 void MainWindow::selectFilter()
 {
-//FIXME: it would be better to make FilterBox a subclass of SelectionBox
-  SelectionBox filterbox;
+  FilterBox filterbox;
   WINDOW *filterwin;
-  std::vector<ListItem> choices;
   std::string selection;
-  unsigned int i;
-  int left, top, width, height, rows, cols, pair_info;
-
-  filterbox.setName("Filter selection");
-
-  // Filter choices
-
-  choices.resize(3);
-  choices[0].setName("All SlackBuilds"); 
-  choices[1].setName("Installed SlackBuilds"); 
-  choices[2].setName("Upgradable SlackBuilds"); 
-  for ( i = 0; i < 3; i++ ) { filterbox.addItem(&choices[i]); }
+  int left, top, width, height, rows, cols;
 
   // Set up window
 //FIXME: window sizing should be smarter
@@ -570,14 +557,15 @@ void MainWindow::selectFilter()
   // Get filter selection
 
   selection = filterbox.exec();
-  if (selection == choices[0].name()) { setFilter("all"); }
-  else if (selection == choices[1].name()) { setFilter("installed"); }
-  else if (selection == choices[2].name()) { setFilter("upgradable"); }
+  if (selection == "All SlackBuilds") { setFilter("all"); }
+  else if (selection == "Installed SlackBuilds") { setFilter("installed"); }
+  else if (selection == "Upgradable SlackBuilds") { setFilter("upgradable"); }
 
   // Get rid of window
 
   wclear(filterwin);
   delwin(filterwin);
+  redrawAll(true);
 }
 
 void MainWindow::setInfo(const std::string & info) { _info = info; }
