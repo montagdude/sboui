@@ -282,13 +282,14 @@ std::string CategoryListBox::exec()
     // t: tag item
 
     case 't':
-      retval = tagSignal;
+      retval = "t";
       _items[_highlight]->setBoolProp("tagged", 
                                  (! _items[_highlight]->getBoolProp("tagged")));
       _redraw_type = "changed";
       break;
 
     default:
+      retval = char(ch);
       _redraw_type = "none";
       break;
   }

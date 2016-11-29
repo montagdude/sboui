@@ -405,7 +405,7 @@ std::string BuildListBox::exec()
     // t: tag item
 
     case 't':
-      retval = tagSignal;
+      retval = "t";
       _items[_highlight]->setBoolProp("tagged", 
                                  (! _items[_highlight]->getBoolProp("tagged")));
       check_redraw = highlightNext();
@@ -414,6 +414,7 @@ std::string BuildListBox::exec()
       break;
 
     default:
+      retval = char(ch);
       _redraw_type = "none";
       break;
   }

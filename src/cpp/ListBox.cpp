@@ -11,7 +11,6 @@ using namespace color;
 
 std::string ListBox::resizeSignal = "__RESIZE__";
 std::string ListBox::quitSignal = "__QUIT__";
-std::string ListBox::tagSignal = "__TAG__";
 std::string ListBox::highlightSignal = "__HIGHLIGHT__";
 std::string ListBox::keyTabSignal = "__TAB__";
 
@@ -571,6 +570,7 @@ std::string ListBox::exec()
       break;
 
     default:
+      retval = char(ch);
       _redraw_type = "none";
       break;
   }

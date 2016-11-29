@@ -19,7 +19,7 @@ FilterBox::FilterBox()
   unsigned int i;
 
   _win = NULL;
-  _name = "Filter selection";
+  _name = "Select a filter";
   _info = "Enter: Ok | Esc: Cancel";
   _redraw_type = "all";
   _items.resize(0);
@@ -29,11 +29,12 @@ FilterBox::FilterBox()
   _activated = true;
   _reserved_rows = 6;
 
-  _choices.resize(3);
-  _choices[0].setName("All SlackBuilds");
-  _choices[1].setName("Installed SlackBuilds");
-  _choices[2].setName("Upgradable SlackBuilds");
-  for ( i = 0; i < 3; i++ ) { addItem(&_choices[i]); }
+  _choices.resize(4);
+  _choices[0].setName("All");
+  _choices[1].setName("Installed");
+  _choices[2].setName("Upgradable");
+  _choices[3].setName("Non-dependencies");
+  for ( i = 0; i < 4; i++ ) { addItem(&_choices[i]); }
 }
 
 FilterBox::FilterBox(WINDOW *win, const std::string & name)
@@ -51,11 +52,12 @@ FilterBox::FilterBox(WINDOW *win, const std::string & name)
   _activated = true;
   _reserved_rows = 6;
 
-  _choices.resize(3);
-  _choices[0].setName("All SlackBuilds");
-  _choices[1].setName("Installed SlackBuilds");
-  _choices[2].setName("Upgradable SlackBuilds");
-  for ( i = 0; i < 3; i++ ) { addItem(&_choices[i]); }
+  _choices.resize(4);
+  _choices[0].setName("All");
+  _choices[1].setName("Installed");
+  _choices[2].setName("Upgradable");
+  _choices[3].setName("Non-dependencies");
+  for ( i = 0; i < 4; i++ ) { addItem(&_choices[i]); }
 }
 
 /*******************************************************************************

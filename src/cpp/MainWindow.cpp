@@ -551,9 +551,9 @@ void MainWindow::selectFilter()
   // Get filter selection
 
   selection = filterbox.exec();
-  if (selection == "All SlackBuilds") { filterAll(); }
-  else if (selection == "Installed SlackBuilds") { filterInstalled(); }
-  else if (selection == "Upgradable SlackBuilds") { filterUpgradable(); }
+  if (selection == "All") { filterAll(); }
+  else if (selection == "Installed") { filterInstalled(); }
+  else if (selection == "Upgradable") { filterUpgradable(); }
 
   // Get rid of window
 
@@ -585,7 +585,6 @@ void MainWindow::show()
 
   // Main event loop
 
-unsigned int esc_count = 0;
   getting_input = true;
   while (getting_input)
   {
@@ -626,7 +625,7 @@ unsigned int esc_count = 0;
 
       // Tag signal: tag/untag all items in category
 
-      else if (selection == ListBox::tagSignal)
+      else if (selection == "t")
       {
         _blistboxes[_category_idx].tagAll();
         _blistboxes[_category_idx].draw();
@@ -668,7 +667,7 @@ unsigned int esc_count = 0;
 
       // Tag signal: see if we need to change tag for category
 
-      else if (selection == ListBox::tagSignal)
+      else if (selection == "t")
       {
         all_tagged = _blistboxes[_category_idx].allTagged();
         if (_categories[_category_idx].getBoolProp("tagged"))
@@ -692,17 +691,12 @@ unsigned int esc_count = 0;
 
     // Key signals with the same action w/ either type of list box
 
-//    if (selection == ListBox::quitSignal) { getting_input = false; }
-if (selection == ListBox::quitSignal) 
-{ 
-  if (esc_count < 2) { selectFilter(); }
-  else { getting_input = false; }
-  esc_count++;
-}
+    if (selection == ListBox::quitSignal) { getting_input = false; }
     else if (selection == ListBox::resizeSignal) 
     { 
       redrawAll(true); 
       clearStatus();
     }
+    else if (selection == "f") { selectFilter(); }
   }
 }
