@@ -531,6 +531,9 @@ void MainWindow::setFilter(const std::string & filter)
   if (filter == "all") { filterAll(); }
   else if (filter == "installed") { filterInstalled(); }
   else if (filter == "upgradable") { filterUpgradable(); }
+  _clistbox.setActivated(true);
+  _blistboxes[_category_idx].setActivated(false);
+  _activated_listbox = 0;
   redrawAll(true);
 }
 void MainWindow::selectFilter()
@@ -575,7 +578,6 @@ void MainWindow::selectFilter()
 
   wclear(filterwin);
   delwin(filterwin);
-  redrawAll(true);
 }
 
 void MainWindow::setInfo(const std::string & info) { _info = info; }
