@@ -202,6 +202,8 @@ void MainWindow::filterAll()
   ncategories = _categories.size();
   _blistboxes.resize(0);
   _clistbox.clearList();
+  _clistbox.setActivated(true);
+  _category_idx = 0;
   for ( j = 0; j < ncategories; j++ )
   {
     _clistbox.addItem(&_categories[j]);
@@ -258,6 +260,7 @@ void MainWindow::filterInstalled()
   _blistboxes.resize(0);
   _clistbox.clearList();
   _clistbox.setActivated(true);
+  _category_idx = 0;
   filtered_categories.resize(0);
   ninstalled = 0;
 
@@ -335,6 +338,7 @@ void MainWindow::filterUpgradable()
   _blistboxes.resize(0);
   _clistbox.clearList();
   _clistbox.setActivated(true);
+  _category_idx = 0;
   filtered_categories.resize(0);
   nupgradable = 0;
 
@@ -526,16 +530,6 @@ Sets properties
 
 *******************************************************************************/
 void MainWindow::setTitle(const std::string & title) { _title = title; }
-void MainWindow::setFilter(const std::string & filter)
-{
-  if (filter == "all") { filterAll(); }
-  else if (filter == "installed") { filterInstalled(); }
-  else if (filter == "upgradable") { filterUpgradable(); }
-  _clistbox.setActivated(true);
-  _blistboxes[_category_idx].setActivated(false);
-  _activated_listbox = 0;
-  redrawAll(true);
-}
 void MainWindow::selectFilter()
 {
   FilterBox filterbox;
@@ -557,14 +551,20 @@ void MainWindow::selectFilter()
   // Get filter selection
 
   selection = filterbox.exec();
-  if (selection == "All SlackBuilds") { setFilter("all"); }
-  else if (selection == "Installed SlackBuilds") { setFilter("installed"); }
-  else if (selection == "Upgradable SlackBuilds") { setFilter("upgradable"); }
+  if (selection == "All SlackBuilds") { filterAll(); }
+  else if (selection == "Installed SlackBuilds") { filterInstalled(); }
+  else if (selection == "Upgradable SlackBuilds") { filterUpgradable(); }
 
   // Get rid of window
 
   wclear(filterwin);
   delwin(filterwin);
+
+  // Reset list boxes and redraw
+
+  _clistbox.setActivated(true);
+  _blistboxes[_category_idx].setActivated(false);
+  _activated_listbox = 0;
   redrawAll(true);
 }
 

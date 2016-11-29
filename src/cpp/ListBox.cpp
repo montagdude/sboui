@@ -410,6 +410,10 @@ void ListBox::addItem(ListItem *item) { _items.push_back(item); }
 void ListBox::removeItem(unsigned int idx)
 {
   if (idx <= _items.size()) { _items.erase(_items.begin()+idx); }
+  _highlight = 0;
+  _firstprint = 0;
+  _prevhighlight = 0;
+  _redraw_type = "all";
 }
 
 void ListBox::clearList()
@@ -418,6 +422,7 @@ void ListBox::clearList()
   _highlight = 0;
   _firstprint = 0;
   _prevhighlight = 0;
+  _redraw_type = "all";
 }
 
 /*******************************************************************************

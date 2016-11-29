@@ -52,7 +52,6 @@ class MainWindow {
     /* Set properties */
 
     void setTitle(const std::string & title);
-    void setFilter(const std::string & filter);
     void selectFilter();
     void setInfo(const std::string & info);
 
