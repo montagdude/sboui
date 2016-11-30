@@ -581,7 +581,7 @@ void MainWindow::selectFilter()
   _clistbox.setActivated(true);
   _blistboxes[_category_idx].setActivated(false);
   _activated_listbox = 0;
-  redrawAll();
+  redrawAll(true);
 }
 
 void MainWindow::setInfo(const std::string & info) { _info = info; }

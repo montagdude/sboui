@@ -234,7 +234,7 @@ void SelectionBox::preferredSize(int & height, int & width) const
 
   // Preferred width: minimum usable + some padding
 
-  widthpadding = 4;
+  widthpadding = 6;
   reserved_cols = 2;
   width = _name.size();
   if (int(_info.size()) > width) { width = _info.size(); }

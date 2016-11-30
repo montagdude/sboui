@@ -486,7 +486,7 @@ void ListBox::preferredSize(int & height, int & width) const
 
   // Preferred width: minimum usable + some padding
 
-  widthpadding = 4;
+  widthpadding = 6;
   reserved_cols = 2;
   width = _name.size();
   for ( i = 0; i < nitems; i++ )
