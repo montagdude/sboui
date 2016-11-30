@@ -570,9 +570,11 @@ void MainWindow::selectFilter()
   // Get filter selection
 
   selection = _fbox.exec();
-  if (selection == "All") { filterAll(); }
-  else if (selection == "Installed") { filterInstalled(); }
-  else if (selection == "Upgradable") { filterUpgradable(); }
+  if ( (selection == "All") && (_filter != "all SlackBuilds") ) { filterAll(); } 
+  else if ( (selection == "Installed") && 
+            (_filter != "installed SlackBuilds") ) { filterInstalled(); }
+  else if ( (selection == "Upgradable") && 
+            (_filter != "upgradable SlackBuilds") ) { filterUpgradable(); } 
 
   // Get rid of window
 
