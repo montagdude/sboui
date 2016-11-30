@@ -16,7 +16,7 @@ Draws window border, title, and info
 void SelectionBox::redrawFrame() const
 {
   unsigned int rows, cols, namelen, i;
-  int left;
+  int left, pair_title, pair_info;
   double mid;
 
   getmaxyx(_win, rows, cols);
@@ -26,19 +26,28 @@ void SelectionBox::redrawFrame() const
   namelen = _name.size();
   mid = double(cols)/2.0;
   left = std::floor(mid - double(namelen)/2.0);
-  wmove(_win, 1, left);
+  wmove(_win, 1, 0);
+  wclrtoeol(_win);
+  pair_title = colors.pair(fg_title, bg_title);
+  if (pair_title != -1) { wattron(_win, COLOR_PAIR(pair_title)); }
   wattron(_win, A_BOLD);
-  wprintw(_win, _name.c_str());
+  printSpaces(left-1);
+  printToEol(_name);
+  if (pair_title != -1) { wattroff(_win, COLOR_PAIR(pair_title)); }
   wattroff(_win, A_BOLD);
 
   // Info on bottom of window
 
   namelen = _info.size();
   left = std::floor(mid - double(namelen)/2.0);
-  wmove(_win, rows-2, left);
+  wmove(_win, rows-2, 1);
   wclrtoeol(_win);
+  pair_info = colors.pair(fg_info, bg_info);
+  if (pair_title != -1) { wattron(_win, COLOR_PAIR(pair_title)); }
   wattron(_win, A_BOLD);
-  wprintw(_win, _info.c_str());
+  printSpaces(left-1);
+  printToEol(_info);
+  if (pair_title != -1) { wattroff(_win, COLOR_PAIR(pair_title)); }
   wattroff(_win, A_BOLD);
 
   // Corners

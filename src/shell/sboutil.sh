@@ -3,8 +3,8 @@
 #
 # Load configuration
 #
-#CONF=${CONF:-/etc/sboui/sboui.conf}
-CONF=${CONF:-/data/dprosser/software/sboui_files/sboui/sboui.conf}
+CONF=${CONF:-/etc/sboui/sboui.conf}
+#CONF=${CONF:-/data/dprosser/software/sboui_files/sboui/sboui.conf}
 . $CONF
 
 ################################################################################
@@ -54,8 +54,8 @@ function get_pkg_version ()
 function check_installed ()
 {
   local BUILD=$1
-  #local PKGLIST=$(find /var/log/packages -maxdepth 1 -name "$BUILD*_$TAG")
-  local PKGLIST=$(find /data/dprosser/software/sboui_files/packages -maxdepth 1 -name "$BUILD*_$TAG")
+  local PKGLIST=$(find /var/log/packages -maxdepth 1 -name "$BUILD*_$TAG")
+  #local PKGLIST=$(find /data/dprosser/software/sboui_files/packages -maxdepth 1 -name "$BUILD*_$TAG")
   local INSTALLED="not_installed"
   local PKG BUILDNAME
 
@@ -97,8 +97,8 @@ function get_available_version ()
 # Lists installed SlackBuilds
 function list_installed ()
 {
-  #local PKGLIST=$(find /var/log/packages -maxdepth 1 -name "$BUILD*_$TAG" | sort)
-  local PKGLIST=$(find /data/dprosser/software/sboui_files/packages -maxdepth 1 -name "$BUILD*_$TAG" | sort)
+  local PKGLIST=$(find /var/log/packages -maxdepth 1 -name "$BUILD*_$TAG" | sort)
+  #local PKGLIST=$(find /data/dprosser/software/sboui_files/packages -maxdepth 1 -name "$BUILD*_$TAG" | sort)
   local PKG
 
   for PKG in $PKGLIST

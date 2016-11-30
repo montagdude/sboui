@@ -5,16 +5,16 @@
 #include "BuildListItem.h"
 #include "backend.h"
 
-//std::string repo_dir = "/var/cache/packages/SBo";
-std::string repo_dir = "/data/dprosser/software/sboui_files/SBo";
+std::string repo_dir = "/var/cache/packages/SBo";
+//std::string repo_dir = "/data/dprosser/software/sboui_files/SBo";
 std::string package_manager = "sbomgr";
 std::string sync_cmd = "sbomgr update";
 std::string install_cmd = "sbomgr install -n";
 std::string upgrade_cmd = "sbomgr upgrade";
 
 // Bash script with functions to query the repo and installed packages
-//std::string sboutil = "/usr/libexec/sboui/sboutil.sh";
-std::string sboutil = "/data/dprosser/software/sboui_files/sboui/src/shell/sboutil.sh";
+std::string sboutil = "/usr/libexec/sboui/sboutil.sh";
+//std::string sboutil = "/data/dprosser/software/sboui_files/sboui/src/shell/sboutil.sh";
 
 /*******************************************************************************
 

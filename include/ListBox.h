@@ -38,6 +38,7 @@ class ListBox {
     /* Prints to end of line, padding with spaces and avoiding borders */
 
     void printToEol(const std::string & msg) const;
+    void printSpaces(unsigned int nspaces) const;
 
     /* Drawing */
     
@@ -76,6 +77,8 @@ class ListBox {
 
     const std::string & name() const;
     unsigned int highlight() const;
+    virtual void minimumSize(int & height, int & width) const;
+    //virtual void preferredSize(int & height, int & width) const;
 
     /* Returns pointer to highlighted item */
 

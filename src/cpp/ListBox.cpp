@@ -203,6 +203,18 @@ void ListBox::printToEol(const std::string & msg) const
 
 /*******************************************************************************
 
+Prints a given number of spaces
+
+*******************************************************************************/
+void ListBox::printSpaces(unsigned int nspaces) const
+{
+  unsigned int i;
+
+  for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
+}
+
+/*******************************************************************************
+
 Draws window border and title
 
 *******************************************************************************/
@@ -440,6 +452,25 @@ Get attributes
 *******************************************************************************/
 const std::string & ListBox::name() const { return _name; }
 unsigned int ListBox::highlight() const { return _highlight; }
+void ListBox::minimumSize(int & height, int & width) const
+{
+  int namelen;
+  unsigned int i, nitems;
+
+  // Minimum usable height
+
+  height = _reserved_rows + 1;
+
+  // Minimum usable width
+
+  width = _name.size();
+  nitems = _items.size();
+  for ( i = 0; i < nitems; i++ )
+  {
+    namelen = _items[i]->name().size();
+    if (namelen < width) { width = namelen; }
+  }
+}
 
 /*******************************************************************************
 

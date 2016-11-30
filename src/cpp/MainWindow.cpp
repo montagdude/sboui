@@ -191,7 +191,7 @@ void MainWindow::filterAll()
   unsigned int i, j, nbuilds, ncategories;
   BuildListBox initlistbox;
 
-  _filter = "All";
+  _filter = "All SlackBuilds";
   printStatus("Filtering by all SlackBuilds ...");
 
   // Create list boxes (Careful! If you use push_back, etc. later on the lists,
@@ -248,7 +248,7 @@ void MainWindow::filterInstalled()
   bool category_found;
   BuildListBox initlistbox;
 
-  _filter = "Installed";
+  _filter = "Installed SlackBuilds";
   printStatus("Filtering by installed SlackBuilds ...");
 
   // Create list boxes (Careful! If you use push_back, etc. later on the lists,
@@ -326,7 +326,7 @@ void MainWindow::filterUpgradable()
   bool category_found;
   BuildListBox initlistbox;
 
-  _filter = "Upgradable";
+  _filter = "Upgradable SlackBuilds";
   printStatus("Filtering by upgradable SlackBuilds ...");
 
   // Create list boxes (Careful! If you use push_back, etc. later on the lists,
@@ -410,7 +410,7 @@ MainWindow::MainWindow()
   _slackbuilds.resize(0);
   _categories.resize(0);
   _title = "sboui Development Version";
-  _filter = "All";
+  _filter = "All SlackBuilds";
   _info = "f: Filter | s: Search | o: Options | F1: Help";
   _category_idx = 0;
   _activated_listbox = 0;
@@ -450,11 +450,7 @@ int MainWindow::initialize()
   printStatus("Reading SlackBuilds repository ...");
   retval = readLists();
   if (retval != 0) { printStatus("Error reading SlackBuilds repository."); }
-  else
-  {
-    filterAll();
-    clearStatus();
-  }
+  else { filterAll(); }
 
   return retval;
 }

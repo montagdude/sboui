@@ -47,8 +47,8 @@ int main()
     bg_highlight_inactive = "white";
     header = "yellow";
     tagged = "yellow";
-    fg_popup = "white";
-    bg_popup = "blue";
+    fg_popup = "blue";
+    bg_popup = "white";
 
     colors.addPair(fg_normal, bg_normal);
     colors.addPair(fg_title, bg_title);
