@@ -203,6 +203,7 @@ void MainWindow::filterAll()
   _blistboxes.resize(0);
   _clistbox.clearList();
   _clistbox.setActivated(true);
+  _activated_listbox = 0;
   _category_idx = 0;
   for ( j = 0; j < ncategories; j++ )
   {
@@ -261,6 +262,7 @@ void MainWindow::filterInstalled()
   _clistbox.clearList();
   _clistbox.setActivated(true);
   _category_idx = 0;
+  _activated_listbox = 0;
   filtered_categories.resize(0);
   ninstalled = 0;
 
@@ -339,6 +341,7 @@ void MainWindow::filterUpgradable()
   _clistbox.clearList();
   _clistbox.setActivated(true);
   _category_idx = 0;
+  _activated_listbox = 0;
   filtered_categories.resize(0);
   nupgradable = 0;
 
@@ -576,12 +579,9 @@ void MainWindow::selectFilter()
   wclear(filterwin);
   delwin(filterwin);
 
-  // Reset list boxes and redraw
+  // Redraw
 
-  _clistbox.setActivated(true);
-  _blistboxes[_category_idx].setActivated(false);
-  _activated_listbox = 0;
-  redrawAll(true);
+  redrawAll();
 }
 
 void MainWindow::setInfo(const std::string & info) { _info = info; }
