@@ -271,7 +271,7 @@ void ListBox::redrawFrame() const
   // Symbols on right border to indicate scrolling
 
   if (_firstprint != 0) { mvwaddch(_win, 1, cols-1, ACS_UARROW); }
-  if (_items.size() > _firstprint + rows-2)
+  if (_items.size() > _firstprint + rows-_reserved_rows)
   {
     mvwaddch(_win, rows-2, cols-1, ACS_DARROW);
   }
@@ -454,22 +454,47 @@ const std::string & ListBox::name() const { return _name; }
 unsigned int ListBox::highlight() const { return _highlight; }
 void ListBox::minimumSize(int & height, int & width) const
 {
-  int namelen;
+  int namelen, reserved_cols;
   unsigned int i, nitems;
 
   // Minimum usable height
 
-  height = _reserved_rows + 1;
+  height = _reserved_rows + 2;
 
   // Minimum usable width
 
   width = _name.size();
+  reserved_cols = 2;
   nitems = _items.size();
   for ( i = 0; i < nitems; i++ )
   {
     namelen = _items[i]->name().size();
-    if (namelen < width) { width = namelen; }
+    if (namelen > width) { width = namelen; }
   }
+  width += reserved_cols;
+}
+
+void ListBox::preferredSize(int & height, int & width) const
+{
+  int namelen, reserved_cols, widthpadding;
+  unsigned int i, nitems;
+
+  // Preferred height: no scrolling
+
+  nitems = _items.size();
+  height = _reserved_rows + nitems;
+
+  // Preferred width: minimum usable + some padding
+
+  widthpadding = 4;
+  reserved_cols = 2;
+  width = _name.size();
+  for ( i = 0; i < nitems; i++ )
+  {
+    namelen = _items[i]->name().size();
+    if (namelen > width) { width = namelen; }
+  }
+  width += reserved_cols + widthpadding;
 }
 
 /*******************************************************************************

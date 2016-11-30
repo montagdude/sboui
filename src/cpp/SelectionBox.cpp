@@ -43,11 +43,11 @@ void SelectionBox::redrawFrame() const
   wmove(_win, rows-2, 1);
   wclrtoeol(_win);
   pair_info = colors.pair(fg_info, bg_info);
-  if (pair_title != -1) { wattron(_win, COLOR_PAIR(pair_title)); }
+  if (pair_info != -1) { wattron(_win, COLOR_PAIR(pair_info)); }
   wattron(_win, A_BOLD);
   printSpaces(left-1);
   printToEol(_info);
-  if (pair_title != -1) { wattroff(_win, COLOR_PAIR(pair_title)); }
+  if (pair_info != -1) { wattroff(_win, COLOR_PAIR(pair_info)); }
   wattroff(_win, A_BOLD);
 
   // Corners
@@ -82,7 +82,7 @@ void SelectionBox::redrawFrame() const
   // Symbols on right border to indicate scrolling
 
   if (_firstprint != 0) { mvwaddch(_win, 3, cols-1, ACS_UARROW); }
-  if (_items.size() > _firstprint + rows-3)
+  if (_items.size() > _firstprint + rows-_reserved_rows)
   {
     mvwaddch(_win, rows-4, cols-1, ACS_DARROW);
   }
@@ -193,6 +193,58 @@ Set attributes
 
 *******************************************************************************/
 void SelectionBox::setInfo(const std::string & info) { _info = info; }
+
+/*******************************************************************************
+
+Get attributes
+
+*******************************************************************************/
+void SelectionBox::minimumSize(int & height, int & width) const
+{
+  int namelen, reserved_cols;
+  unsigned int i, nitems;
+
+  // Minimum usable height
+
+  height = _reserved_rows + 2;
+
+  // Minimum usable width
+
+  reserved_cols = 2;
+  width = _name.size();
+  if (int(_info.size()) > width) { width = _info.size(); }
+  nitems = _items.size();
+  for ( i = 0; i < nitems; i++ )
+  {
+    namelen = _items[i]->name().size();
+    if (namelen > width) { width = namelen; }
+  }
+  width += reserved_cols;
+}
+
+void SelectionBox::preferredSize(int & height, int & width) const
+{
+  int namelen, reserved_cols, widthpadding;
+  unsigned int i, nitems;
+
+  // Preferred height: no scrolling
+
+  nitems = _items.size();
+  height = _reserved_rows + nitems;
+
+  // Preferred width: minimum usable + some padding
+
+  widthpadding = 4;
+  reserved_cols = 2;
+  width = _name.size();
+  if (int(_info.size()) > width) { width = _info.size(); }
+  for ( i = 0; i < nitems; i++ )
+  {
+    namelen = _items[i]->name().size();
+    if (namelen > width) { width = namelen; }
+  }
+  width += reserved_cols + widthpadding;
+}
 
 /*******************************************************************************
 

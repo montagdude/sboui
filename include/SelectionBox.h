@@ -28,6 +28,11 @@ class SelectionBox: public ListBox {
 
     void setInfo(const std::string & info);
 
+    /* Get attributes */
+
+    void minimumSize(int & height, int & width) const;
+    void preferredSize(int & height, int & width) const;
+
     /* User interaction loop */
 
     std::string exec();

@@ -39,6 +39,10 @@ class MainWindow {
     void filterInstalled();
     void filterUpgradable();
 
+    /* Sets size of popup box */
+
+    void popupSize(int & height, int & width, ListBox * popup) const;
+
   public:
 
     /* Constructor and destructor */

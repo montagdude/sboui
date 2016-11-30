@@ -78,7 +78,7 @@ class ListBox {
     const std::string & name() const;
     unsigned int highlight() const;
     virtual void minimumSize(int & height, int & width) const;
-    //virtual void preferredSize(int & height, int & width) const;
+    virtual void preferredSize(int & height, int & width) const;
 
     /* Returns pointer to highlighted item */
 

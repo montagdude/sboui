@@ -399,6 +399,29 @@ void MainWindow::filterUpgradable()
 
 /*******************************************************************************
 
+Sets size of popup box
+
+*******************************************************************************/
+void MainWindow::popupSize(int & height, int & width, ListBox * popup) const
+{
+  int minheight, minwidth, prefheight, prefwidth, maxheight, maxwidth;
+  int rows, cols;
+
+  getmaxyx(stdscr, rows, cols);
+
+  popup->minimumSize(minheight, minwidth);
+  popup->preferredSize(prefheight, prefwidth);
+  maxheight = rows-4;
+  maxwidth = cols-4;
+
+  if (prefheight < maxheight) { height = prefheight; }
+  else { height = minheight; }
+  if (prefwidth < maxwidth) { width = prefwidth; }
+  else { width = minwidth; }
+} 
+
+/*******************************************************************************
+
 Constructor and destructor
 
 *******************************************************************************/
@@ -533,11 +556,9 @@ void MainWindow::selectFilter()
   int left, top, width, height, rows, cols;
 
   // Set up window
-//FIXME: window sizing should be smarter
 
   getmaxyx(stdscr, rows, cols);
-  height = std::floor(double(rows)/2.);
-  width = std::floor(double(cols)/2.);
+  popupSize(height, width, &_fbox);
   left = std::floor(double(cols)/2. - double(width)/2.);
   top = std::floor(double(rows)/2. - double(height)/2.);
   filterwin = newwin(height, width, top, left);
