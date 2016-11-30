@@ -26,7 +26,7 @@ void CategoryListBox::redrawFrame() const
 
   namelen = _name.size();
   mid = double(cols)/2.0;
-  left = std::floor(int(mid) - double(namelen)/2);
+  left = std::floor(mid - double(namelen)/2.0);
   right = left + namelen;
   wmove(_win, 0, left);
   wattron(_win, A_BOLD);
@@ -74,8 +74,9 @@ void CategoryListBox::redrawFrame() const
 
   // Draw header
 
-  wmove(_win, 1, 1);
   pair_header = colors.pair(header, bg_normal);
+
+  wmove(_win, 1, 1);
   if (pair_header != -1) { wattron(_win, COLOR_PAIR(pair_header)); }
   wattron(_win, A_BOLD);
   printToEol("Name");
