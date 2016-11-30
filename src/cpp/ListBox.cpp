@@ -308,7 +308,10 @@ void ListBox::redrawSingleItem(unsigned int idx)
     }
     color_pair = colors.pair(fg, bg);
     if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
-    else { wattron(_win, A_REVERSE); }
+    else 
+    { 
+      if (_activated) { wattron(_win, A_REVERSE); }
+    }
   } 
 
   // Save highlight idx for redrawing later.
@@ -325,7 +328,7 @@ void ListBox::redrawSingleItem(unsigned int idx)
   if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); } 
   else
   { 
-    if (int(idx) == _highlight) { wattroff(_win, A_REVERSE); }
+    if ( (int(idx) == _highlight) && _activated ) { wattroff(_win, A_REVERSE); }
   }
 }
 

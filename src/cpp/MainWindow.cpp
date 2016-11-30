@@ -102,7 +102,7 @@ void MainWindow::redrawHeaderFooter() const
 
   move(2, 0);
   clrtoeol();
-  printToEol("Filter: " + _filter);
+  printToEol("Showing: " + _filter);
 
   // Draw footer
 
@@ -191,7 +191,7 @@ void MainWindow::filterAll()
   unsigned int i, j, nbuilds, ncategories;
   BuildListBox initlistbox;
 
-  _filter = "All SlackBuilds";
+  _filter = "all SlackBuilds";
   printStatus("Filtering by all SlackBuilds ...");
 
   // Create list boxes (Careful! If you use push_back, etc. later on the lists,
@@ -249,7 +249,7 @@ void MainWindow::filterInstalled()
   bool category_found;
   BuildListBox initlistbox;
 
-  _filter = "Installed SlackBuilds";
+  _filter = "installed SlackBuilds";
   printStatus("Filtering by installed SlackBuilds ...");
 
   // Create list boxes (Careful! If you use push_back, etc. later on the lists,
@@ -328,7 +328,7 @@ void MainWindow::filterUpgradable()
   bool category_found;
   BuildListBox initlistbox;
 
-  _filter = "Upgradable SlackBuilds";
+  _filter = "upgradable SlackBuilds";
   printStatus("Filtering by upgradable SlackBuilds ...");
 
   // Create list boxes (Careful! If you use push_back, etc. later on the lists,
@@ -436,7 +436,7 @@ MainWindow::MainWindow()
   _slackbuilds.resize(0);
   _categories.resize(0);
   _title = "sboui Development Version";
-  _filter = "All SlackBuilds";
+  _filter = "all SlackBuilds";
   _info = "f: Filter | s: Search | o: Options | F1: Help";
   _category_idx = 0;
   _activated_listbox = 0;
