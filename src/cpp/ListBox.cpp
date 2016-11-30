@@ -502,13 +502,22 @@ void ListBox::preferredSize(int & height, int & width) const
 
 /*******************************************************************************
 
-Returns pointer to highlighted item
+Returns pointer to item
 
 *******************************************************************************/
 ListItem * ListBox::highlightedItem()
 {
   if (_items.size() == 0) { return NULL; }
   else { return _items[_highlight]; }
+}
+
+ListItem * ListBox::itemByIdx(unsigned int idx)
+{
+  unsigned int nitems;
+
+  nitems = _items.size();
+  if (idx >= nitems) { return NULL; }
+  else { return _items[idx]; }
 }
 
 /*******************************************************************************

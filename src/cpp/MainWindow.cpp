@@ -225,6 +225,15 @@ void MainWindow::filterAll()
     }
   }
 
+  // Check whether categories should be tagged
+
+  for ( j = 0; j < ncategories; j++ )
+  {
+    if (_blistboxes[j].allTagged()) { _clistbox.itemByIdx(j)->
+                                                  setBoolProp("tagged", true); }
+    else { _clistbox.itemByIdx(j)->setBoolProp("tagged", false); }
+  }
+
   if (nbuilds == 0) 
   { 
     printStatus("No SlackBuilds. Run the sync command first."); 
@@ -302,6 +311,16 @@ void MainWindow::filterInstalled()
       ninstalled++;
     }
   } 
+
+  // Check whether categories should be tagged
+
+  nfiltered_categories = filtered_categories.size();
+  for ( j = 0; j < nfiltered_categories; j++ )
+  {
+    if (_blistboxes[j].allTagged()) { _clistbox.itemByIdx(j)->
+                                                  setBoolProp("tagged", true); }
+    else { _clistbox.itemByIdx(j)->setBoolProp("tagged", false); }
+  }
 
   if (ninstalled == 0) 
   { 
@@ -387,6 +406,16 @@ void MainWindow::filterUpgradable()
       }
     }
   } 
+
+  // Check whether categories should be tagged
+
+  nfiltered_categories = filtered_categories.size();
+  for ( j = 0; j < nfiltered_categories; j++ )
+  {
+    if (_blistboxes[j].allTagged()) { _clistbox.itemByIdx(j)->
+                                                  setBoolProp("tagged", true); }
+    else { _clistbox.itemByIdx(j)->setBoolProp("tagged", false); }
+  }
 
   if (nupgradable == 0) 
   { 

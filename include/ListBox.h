@@ -80,9 +80,10 @@ class ListBox {
     virtual void minimumSize(int & height, int & width) const;
     virtual void preferredSize(int & height, int & width) const;
 
-    /* Returns pointer to highlighted item */
+    /* Returns pointer to item */
 
     ListItem * highlightedItem();
+    ListItem * itemByIdx(unsigned int idx);
 
     /* Draws frame, items, etc. as needed */
  
