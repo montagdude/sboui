@@ -517,16 +517,18 @@ void ListBox::draw(bool force)
 {
   int pair_normal;
 
+  if (force) { _redraw_type = "all"; }
+
   // Draw list elements
 
-  if ( (_redraw_type == "all") || force )
+  if (_redraw_type == "all")
   { 
     wclear(_win); 
     pair_normal = colors.pair(fg_normal, bg_normal);
     if (pair_normal != -1) { wbkgd(_win, COLOR_PAIR(pair_normal)); }
   }
-  if ( (_redraw_type != "none") || force ) { redrawFrame(); }
-  if ( (_redraw_type == "all") || (_redraw_type == "items") || force ) { 
+  if (_redraw_type != "none") { redrawFrame(); }
+  if ( (_redraw_type == "all") || (_redraw_type == "items")) { 
                                                             redrawAllItems(); }
   else if (_redraw_type == "changed") { redrawChangedItems(); }
   wrefresh(_win);

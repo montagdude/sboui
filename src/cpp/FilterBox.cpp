@@ -69,16 +69,18 @@ void FilterBox::draw(bool force)
 {
   int pair_popup;
 
+  if (force) { _redraw_type = "all"; }
+
   // Draw list elements
 
-  if ( (_redraw_type == "all") || force )
+  if (_redraw_type == "all")
   {
     wclear(_win);
     pair_popup = colors.pair(fg_popup, bg_popup);
     if (pair_popup != -1) { wbkgd(_win, COLOR_PAIR(pair_popup)); }
   }
-  if ( (_redraw_type != "none") || force ) { redrawFrame(); }
-  if ( (_redraw_type == "all") || (_redraw_type == "items") || force ) {
+  if (_redraw_type != "none") { redrawFrame(); }
+  if ( (_redraw_type == "all") || (_redraw_type == "items") ) {
                                                             redrawAllItems(); }
   else if (_redraw_type == "changed") { redrawChangedItems(); }
   wrefresh(_win);
