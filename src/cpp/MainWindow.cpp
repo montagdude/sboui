@@ -665,11 +665,11 @@ void MainWindow::show()
       else if (selection == "t")
       {
         all_tagged = _blistboxes[_category_idx].allTagged();
-        if (_categories[_category_idx].getBoolProp("tagged"))
+        if (_clistbox.highlightedItem()->getBoolProp("tagged"))
         {
           if (! all_tagged) 
           { 
-            _categories[_category_idx].setBoolProp("tagged", false); 
+            _clistbox.highlightedItem()->setBoolProp("tagged", false);
             _clistbox.draw();
           }
         }
@@ -677,7 +677,7 @@ void MainWindow::show()
         {
           if (all_tagged) 
           { 
-            _categories[_category_idx].setBoolProp("tagged", true); 
+            _clistbox.highlightedItem()->setBoolProp("tagged", true);
             _clistbox.draw();
           }
         }
