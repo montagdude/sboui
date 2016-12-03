@@ -253,7 +253,7 @@ Displays installed SlackBuilds
 *******************************************************************************/
 void MainWindow::filterInstalled()
 {
-  unsigned int i, j, nbuilds, ncategories, nfiltered_categories, ninstalled;
+  unsigned int i, j, ncategories, nfiltered_categories, ninstalled;
   std::vector<std::string> filtered_categories;
   bool category_found;
   BuildListBox initlistbox;
@@ -261,11 +261,16 @@ void MainWindow::filterInstalled()
   _filter = "installed SlackBuilds";
   printStatus("Filtering by installed SlackBuilds ...");
 
+  if (_installedlist.size() == 0) 
+  { 
+    list_installed(_slackbuilds, _installedlist); 
+  }
+
   // Create list boxes (Careful! If you use push_back, etc. later on the lists,
   // the list boxes must be regenerated because their pointers will become
   // invalid.)
 
-  nbuilds = _slackbuilds.size();
+  ninstalled = _installedlist.size();
   ncategories = _categories.size();
   _blistboxes.resize(0);
   _clistbox.clearList();
@@ -273,42 +278,37 @@ void MainWindow::filterInstalled()
   _category_idx = 0;
   _activated_listbox = 0;
   filtered_categories.resize(0);
-  ninstalled = 0;
 
-  for ( i = 0; i < nbuilds; i++ )
+  for ( i = 0; i < ninstalled; i++ )
   {
-    if (_slackbuilds[i].getBoolProp("installed"))
+    category_found = false;
+    nfiltered_categories = filtered_categories.size();
+    for ( j = 0; j < nfiltered_categories; j++ )
     {
-      category_found = false;
-      nfiltered_categories = filtered_categories.size();
-      for ( j = 0; j < nfiltered_categories; j++ )
+      if (_installedlist[i]->getProp("category") == filtered_categories[j])
       {
-        if (_slackbuilds[i].getProp("category") == filtered_categories[j])
+        _blistboxes[j].addItem(_installedlist[i]);
+        category_found = true;
+        break;
+      } 
+    }
+    if (! category_found)
+    {
+      for ( j = 0; j < ncategories; j++ )
+      {
+        if ( _installedlist[i]->getProp("category") == _categories[j].name())
         {
-          _blistboxes[j].addItem(&_slackbuilds[i]);
-          category_found = true;
+          _clistbox.addItem(&_categories[j]);
+          BuildListBox blistbox;
+          blistbox.setWindow(_win2);
+          blistbox.setName(_categories[j].name());
+          blistbox.setActivated(false);
+          blistbox.addItem(_installedlist[i]);
+          _blistboxes.push_back(blistbox); 
+          filtered_categories.push_back(_installedlist[i]->getProp("category"));
           break;
-        } 
-      }
-      if (! category_found)
-      {
-        for ( j = 0; j < ncategories; j++ )
-        {
-          if ( _slackbuilds[i].getProp("category") == _categories[j].name())
-          {
-            _clistbox.addItem(&_categories[j]);
-            BuildListBox blistbox;
-            blistbox.setWindow(_win2);
-            blistbox.setName(_categories[j].name());
-            blistbox.setActivated(false);
-            blistbox.addItem(&_slackbuilds[i]);
-            _blistboxes.push_back(blistbox); 
-            filtered_categories.push_back(_slackbuilds[i].getProp("category"));
-            break;
-          }
         }
       }
-      ninstalled++;
     }
   } 
 
@@ -341,7 +341,7 @@ Displays upgradable SlackBuilds
 *******************************************************************************/
 void MainWindow::filterUpgradable()
 {
-  unsigned int i, j, nbuilds, ncategories, nfiltered_categories, nupgradable;
+  unsigned int i, j, ncategories, nfiltered_categories, ninstalled, nupgradable;
   unsigned int len;
   std::vector<std::string> filtered_categories;
   bool category_found;
@@ -350,11 +350,16 @@ void MainWindow::filterUpgradable()
   _filter = "upgradable SlackBuilds";
   printStatus("Filtering by upgradable SlackBuilds ...");
 
+  if (_installedlist.size() == 0) 
+  { 
+    list_installed(_slackbuilds, _installedlist); 
+  }
+
   // Create list boxes (Careful! If you use push_back, etc. later on the lists,
   // the list boxes must be regenerated because their pointers will become
   // invalid.)
 
-  nbuilds = _slackbuilds.size();
+  ninstalled = _installedlist.size();
   ncategories = _categories.size();
   _blistboxes.resize(0);
   _clistbox.clearList();
@@ -364,46 +369,43 @@ void MainWindow::filterUpgradable()
   filtered_categories.resize(0);
   nupgradable = 0;
 
-  for ( i = 0; i < nbuilds; i++ )
+  for ( i = 0; i < ninstalled; i++ )
   {
-    if (_slackbuilds[i].getBoolProp("installed"))
+    len = _installedlist[i]->getProp("available_version").size();
+    if (_installedlist[i]->getProp("installed_version").substr(0, len) != 
+        _installedlist[i]->getProp("available_version")) 
     {
-      len = _slackbuilds[i].getProp("available_version").size();
-      if (_slackbuilds[i].getProp("installed_version").substr(0, len) != 
-          _slackbuilds[i].getProp("available_version")) 
+      category_found = false;
+      nfiltered_categories = filtered_categories.size();
+      for ( j = 0; j < nfiltered_categories; j++ )
       {
-        category_found = false;
-        nfiltered_categories = filtered_categories.size();
-        for ( j = 0; j < nfiltered_categories; j++ )
+        if (_installedlist[i]->getProp("category") == filtered_categories[j])
         {
-          if (_slackbuilds[i].getProp("category") == filtered_categories[j])
+          _blistboxes[j].addItem(_installedlist[i]);
+          category_found = true;
+          break;
+        } 
+      }
+      if (! category_found)
+      {
+        for ( j = 0; j < ncategories; j++ )
+        {
+          if ( _installedlist[i]->getProp("category") == _categories[j].name())
           {
-            _blistboxes[j].addItem(&_slackbuilds[i]);
-            category_found = true;
+            _clistbox.addItem(&_categories[j]);
+            BuildListBox blistbox;
+            blistbox.setWindow(_win2);
+            blistbox.setName(_categories[j].name());
+            blistbox.setActivated(false);
+            blistbox.addItem(_installedlist[i]);
+            _blistboxes.push_back(blistbox); 
+            filtered_categories.push_back(
+                                        _installedlist[i]->getProp("category"));
             break;
-          } 
-        }
-        if (! category_found)
-        {
-          for ( j = 0; j < ncategories; j++ )
-          {
-            if ( _slackbuilds[i].getProp("category") == _categories[j].name())
-            {
-              _clistbox.addItem(&_categories[j]);
-              BuildListBox blistbox;
-              blistbox.setWindow(_win2);
-              blistbox.setName(_categories[j].name());
-              blistbox.setActivated(false);
-              blistbox.addItem(&_slackbuilds[i]);
-              _blistboxes.push_back(blistbox); 
-              filtered_categories.push_back(
-                                           _slackbuilds[i].getProp("category"));
-              break;
-            }
           }
         }
-        nupgradable++;
       }
+      nupgradable++;
     }
   } 
 
@@ -463,6 +465,7 @@ MainWindow::MainWindow()
   _win2 = NULL;
   _blistboxes.resize(0);
   _slackbuilds.resize(0);
+  _installedlist.resize(0);
   _categories.resize(0);
   _title = "sboui Development Version";
   _filter = "all SlackBuilds";
@@ -518,10 +521,8 @@ Creates master list of SlackBuilds
 int MainWindow::readLists()
 {
   int check;
-  unsigned int i, j, nbuilds, ncategories, ninstalled;
+  unsigned int i, j, nbuilds, ncategories; 
   bool new_category;
-  std::vector<std::string> installedlist;
-  std::string installed_version, available_version;
 
   // Get list of SlackBuilds
 
@@ -554,23 +555,7 @@ int MainWindow::readLists()
 
   // Determine which are installed and their versions
 
-  installedlist = list_installed();
-  ninstalled = installedlist.size();
-  for ( j = 0; j < ninstalled; j++ )
-  {
-    for ( i = 0; i < nbuilds; i++ )
-    {
-      if (installedlist[j] == _slackbuilds[i].name())
-      {
-        _slackbuilds[i].setBoolProp("installed", true);
-        installed_version = check_installed(_slackbuilds[i]);
-        available_version = get_available_version(_slackbuilds[i]);
-        _slackbuilds[i].setProp("installed_version", installed_version);
-        _slackbuilds[i].setProp("available_version", available_version);
-        break;
-      }
-    }
-  }
+  list_installed(_slackbuilds, _installedlist);
 
   return 0;
 }
@@ -604,6 +589,8 @@ void MainWindow::selectFilter()
             (_filter != "installed SlackBuilds") ) { filterInstalled(); }
   else if ( (selection == "Upgradable") && 
             (_filter != "upgradable SlackBuilds") ) { filterUpgradable(); } 
+//  else if ( (selection == "Non-dependencies") && 
+//            (_filter != "non-dependencies") ) { filterNonDeps(); } 
 
   // Get rid of window
 

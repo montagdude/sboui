@@ -22,6 +22,7 @@ class MainWindow {
     CategoryListBox _clistbox;
     std::vector<BuildListBox> _blistboxes;
     std::vector<BuildListItem> _slackbuilds;
+    std::vector<BuildListItem *> _installedlist, _nondeplist;
     std::vector<CategoryListItem> _categories;
     FilterBox _fbox;
     std::string _title, _filter, _info;
@@ -38,6 +39,7 @@ class MainWindow {
     void filterAll();
     void filterInstalled();
     void filterUpgradable();
+    void filterNonDeps();
 
     /* Sets size of popup boxes */
 

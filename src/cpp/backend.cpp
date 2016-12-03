@@ -5,16 +5,16 @@
 #include "BuildListItem.h"
 #include "backend.h"
 
-//std::string repo_dir = "/var/cache/packages/SBo";
-std::string repo_dir = "/data/dprosser/software/sboui_files/SBo";
+std::string repo_dir = "/var/cache/packages/SBo";
+//std::string repo_dir = "/data/dprosser/software/sboui_files/SBo";
 std::string package_manager = "sbomgr";
 std::string sync_cmd = "sbomgr update";
 std::string install_cmd = "sbomgr install -n";
 std::string upgrade_cmd = "sbomgr upgrade";
 
 // Bash script with functions to query the repo and installed packages
-//std::string sboutil = "/usr/libexec/sboui/sboutil.sh";
-std::string sboutil = "/data/dprosser/software/sboui_files/sboui/src/shell/sboutil.sh";
+std::string sboutil = "/usr/libexec/sboui/sboutil.sh";
+//std::string sboutil = "/data/dprosser/software/sboui_files/sboui/src/shell/sboutil.sh";
 
 /*******************************************************************************
 
@@ -86,10 +86,10 @@ std::string trim(std::string instr)
 
 /*******************************************************************************
 
-Returns list of installed SlackBuilds
+Returns list of installed SlackBuilds' names
 
 *******************************************************************************/
-std::vector<std::string> list_installed()
+std::vector<std::string> list_installed_names()
 {
   std::vector<std::string> pkglist;
   char buffer[128];
@@ -146,4 +146,81 @@ std::string get_available_version(const BuildListItem & build)
   pclose(fp);
 
   return trim(version);
+}
+
+/*******************************************************************************
+
+Populates list of installed SlackBuilds. Also determines installed version
+and available version for installed SlackBuilds.
+
+*******************************************************************************/
+void list_installed(std::vector<BuildListItem> & slackbuilds,
+                    std::vector<BuildListItem *> & installedlist)
+{
+  std::vector<std::string> installednames;
+  unsigned int ninstalled, i, j, nbuilds;
+  std::string installed_version, available_version;
+
+  installedlist.resize(0);
+  installednames = list_installed_names();
+  ninstalled = installednames.size();
+  nbuilds = slackbuilds.size();
+  for ( j = 0; j < ninstalled; j++ )
+  {
+    for ( i = 0; i < nbuilds; i++ )
+    {
+      if (installednames[j] == slackbuilds[i].name())
+      {
+        slackbuilds[i].setBoolProp("installed", true);
+        installed_version = check_installed(slackbuilds[i]);
+        available_version = get_available_version(slackbuilds[i]);
+        slackbuilds[i].setProp("installed_version", installed_version);
+        slackbuilds[i].setProp("available_version", available_version);
+        installedlist.push_back(&slackbuilds[i]);
+        break;
+      }
+    }
+  } 
+}
+
+/*******************************************************************************
+
+Populates list of installed SlackBuilds that are not required by any other 
+installed SlackBuild
+
+*******************************************************************************/
+void list_nondeps(const std::vector<BuildListItem *> & installedlist,
+                        std::vector<BuildListItem *> & nondeplist)
+{
+  char buffer[128];
+  FILE* fp;
+  std::string cmd, check;
+  unsigned int i, j, ninstalled;
+  bool isdep;
+
+  nondeplist.resize(0);
+
+  // N^2 loop through installed packages to see which are required by others
+
+  ninstalled = installedlist.size();
+  for ( i = 0; i < ninstalled; i++ )
+  {
+    isdep = false;
+    for ( j = 0; j < ninstalled; j++ )
+    {
+      if (j == i) { continue; }
+      cmd = sboutil + " is_dep " + installedlist[i]->name() + " "
+                                 + installedlist[j]->name() + " " 
+                                 + installedlist[j]->getProp("category");
+      fp = popen(cmd.c_str(), "r");
+      while (fgets(buffer, sizeof(buffer), fp) != NULL) { check = buffer; }
+      pclose(fp);
+      if (trim(check) == "1") 
+      { 
+        isdep = true;
+        break; 
+      }
+    }
+    if (! isdep) { nondeplist.push_back(installedlist[i]); }
+  } 
 }

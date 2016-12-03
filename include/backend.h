@@ -13,9 +13,10 @@ extern std::string sync_cmd, install_cmd, upgrade_cmd;
 /* Backend operations */
 
 int read_repo(std::vector<BuildListItem> & slackbuilds);
-std::vector<std::string> list_installed();
-std::string check_installed(const BuildListItem & build);
-std::string get_available_version(const BuildListItem & build);
+void list_installed(std::vector<BuildListItem> & slackbuilds,
+                    std::vector<BuildListItem *> & installedlist);
+void list_nondeps(const std::vector<BuildListItem *> & installedlist,
+                        std::vector<BuildListItem *> & nondeplist);
 void install_slackbuilds(std::vector<BuildListItem> & slackbuilds, 
                   const std::string & opts = "", const std::string & vars = "");
 void upgrade_slackbuilds(std::vector<BuildListItem> & slackbuilds, 
