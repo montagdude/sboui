@@ -433,6 +433,96 @@ void MainWindow::filterUpgradable()
 
 /*******************************************************************************
 
+Displays installed SlackBuilds that are not a dependency of any other installed
+SlackBuild
+
+*******************************************************************************/
+void MainWindow::filterNonDeps()
+{
+  unsigned int i, j, ncategories, nfiltered_categories, nnondeps;
+  std::vector<std::string> filtered_categories;
+  bool category_found;
+  BuildListBox initlistbox;
+
+  _filter = "non-dependencies";
+  printStatus("Filtering by non-dependencies (first time may be slow) ...");
+
+  if (_installedlist.size() == 0) 
+  { 
+    list_installed(_slackbuilds, _installedlist); 
+  }
+  if (_nondeplist.size() == 0) { list_nondeps(_installedlist, _nondeplist); }
+
+  // Create list boxes (Careful! If you use push_back, etc. later on the lists,
+  // the list boxes must be regenerated because their pointers will become
+  // invalid.)
+
+  nnondeps = _nondeplist.size();
+  ncategories = _categories.size();
+  _blistboxes.resize(0);
+  _clistbox.clearList();
+  _clistbox.setActivated(true);
+  _category_idx = 0;
+  _activated_listbox = 0;
+  filtered_categories.resize(0);
+
+  for ( i = 0; i < nnondeps; i++ )
+  {
+    category_found = false;
+    nfiltered_categories = filtered_categories.size();
+    for ( j = 0; j < nfiltered_categories; j++ )
+    {
+      if (_nondeplist[i]->getProp("category") == filtered_categories[j])
+      {
+        _blistboxes[j].addItem(_nondeplist[i]);
+        category_found = true;
+        break;
+      } 
+    }
+    if (! category_found)
+    {
+      for ( j = 0; j < ncategories; j++ )
+      {
+        if ( _nondeplist[i]->getProp("category") == _categories[j].name())
+        {
+          _clistbox.addItem(&_categories[j]);
+          BuildListBox blistbox;
+          blistbox.setWindow(_win2);
+          blistbox.setName(_categories[j].name());
+          blistbox.setActivated(false);
+          blistbox.addItem(_nondeplist[i]);
+          _blistboxes.push_back(blistbox); 
+          filtered_categories.push_back(_nondeplist[i]->getProp("category"));
+          break;
+        }
+      }
+    }
+  } 
+
+  // Check whether categories should be tagged
+
+  nfiltered_categories = filtered_categories.size();
+  for ( j = 0; j < nfiltered_categories; j++ )
+  {
+    if (_blistboxes[j].allTagged()) { _clistbox.itemByIdx(j)->
+                                                  setBoolProp("tagged", true); }
+    else { _clistbox.itemByIdx(j)->setBoolProp("tagged", false); }
+  }
+
+  if (nnondeps == 0) 
+  { 
+    printStatus("No non-dependencies."); 
+    initlistbox.setWindow(_win2);
+    initlistbox.setActivated(false);
+    initlistbox.setName("SlackBuilds");
+    _blistboxes.push_back(initlistbox);
+  }
+  else if (nnondeps == 1) { printStatus("1 non-dependency."); }
+  else { printStatus(int2String(nnondeps) + " non-dependencies."); }
+}
+
+/*******************************************************************************
+
 Sets size of popup box
 
 *******************************************************************************/
@@ -589,8 +679,8 @@ void MainWindow::selectFilter()
             (_filter != "installed SlackBuilds") ) { filterInstalled(); }
   else if ( (selection == "Upgradable") && 
             (_filter != "upgradable SlackBuilds") ) { filterUpgradable(); } 
-//  else if ( (selection == "Non-dependencies") && 
-//            (_filter != "non-dependencies") ) { filterNonDeps(); } 
+  else if ( (selection == "Non-dependencies") && 
+            (_filter != "non-dependencies") ) { filterNonDeps(); } 
 
   // Get rid of window
 
