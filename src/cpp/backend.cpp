@@ -200,7 +200,7 @@ void list_nondeps(const std::vector<BuildListItem *> & installedlist,
 
   nondeplist.resize(0);
 
-  // N^2 loop through installed packages to see which are required by others
+  // N^2 (max) loop through installed packages to see which are dependencies
 
   ninstalled = installedlist.size();
   for ( i = 0; i < ninstalled; i++ )
