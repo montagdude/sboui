@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "BuildListItem.h"
+#include "ListItem.h"
 
 /* Backend settings */
 

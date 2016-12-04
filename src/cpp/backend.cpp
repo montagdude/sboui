@@ -3,6 +3,7 @@
 #include <string>
 #include "DirListing.h"
 #include "BuildListItem.h"
+#include "sorting.h"
 #include "backend.h"
 
 std::string repo_dir = "/var/cache/packages/SBo";
@@ -181,6 +182,11 @@ void list_installed(std::vector<BuildListItem> & slackbuilds,
       }
     }
   } 
+
+  // Sort by name and then by category
+
+  sort_list(installedlist, "name", compare_by_prop);
+  sort_list(installedlist, "category", compare_by_prop);
 }
 
 /*******************************************************************************

@@ -138,8 +138,12 @@ const std::string & ListItem::getProp(const std::string & propname) const
 {
   int propidx;
   
-  propidx = propByName(propname);
-  return _props[propidx].value;
+  if (propname == "name") { return _name; }
+  else
+  {
+    propidx = propByName(propname);
+    return _props[propidx].value;
+  }
 }
 
 bool ListItem::getBoolProp(const std::string & propname) const

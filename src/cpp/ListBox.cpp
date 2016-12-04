@@ -1,7 +1,7 @@
 #include <string>
 #include <curses.h>
 #include <cmath>     // floor
-#include <algorithm> // max
+#include <algorithm> // max, min
 #include "Color.h"
 #include "color_settings.h"
 #include "ListItem.h"

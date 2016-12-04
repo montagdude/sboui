@@ -1,6 +1,6 @@
 CXX=g++
 CXXFLAGS=-g -Wall
-OBJ=Color.o ListItem.o CategoryListItem.o BuildListItem.o DirListing.o backend.o ListBox.o CategoryListBox.o BuildListBox.o SelectionBox.o FilterBox.o MainWindow.o sboui.o
+OBJ=Color.o ListItem.o CategoryListItem.o BuildListItem.o sorting.o DirListing.o backend.o ListBox.o CategoryListBox.o BuildListBox.o SelectionBox.o FilterBox.o MainWindow.o sboui.o
 SRCDIR=src/cpp
 CPPFLAGS=-Iinclude
 EXE=sboui
@@ -25,6 +25,9 @@ CategoryListItem.o: $(SRCDIR)/CategoryListItem.cpp
 
 BuildListItem.o: $(SRCDIR)/BuildListItem.cpp
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/BuildListItem.cpp
+
+sorting.o: $(SRCDIR)/sorting.cpp
+	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/sorting.cpp
 
 DirListing.o: $(SRCDIR)/DirListing.cpp
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/DirListing.cpp

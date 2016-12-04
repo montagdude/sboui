@@ -85,6 +85,10 @@ class ListBox {
     ListItem * highlightedItem();
     ListItem * itemByIdx(unsigned int idx);
 
+    /* Sorts list */
+
+    void sortByProp(const std::string & prop);
+
     /* Draws frame, items, etc. as needed */
  
     virtual void draw(bool force=false);

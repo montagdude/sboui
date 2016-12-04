@@ -27,15 +27,6 @@ class DirListing {
     std::string nameFromDirent(dirent *pent) const;
     std::string typeFromDirent(dirent *pent) const;
 
-    /* Sorting routines and data */
-
-    static std::string name_order;
-    static std::vector<std::string> type_order;
-    static int compareByName(const direntry & entry1, const direntry & entry2); 
-    static int compareByType(const direntry & entry1, const direntry & entry2); 
-    void bubbleSort(int (*comparison_func)(const direntry & entry1,
-                                           const direntry & entry2));
-
   public:
 
     static std::string separator;
