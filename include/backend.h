@@ -14,6 +14,7 @@ extern std::string sync_cmd, install_cmd, upgrade_cmd;
 /* Backend operations */
 
 int read_repo(std::vector<BuildListItem> & slackbuilds);
+std::vector<std::string> split(const std::string & instr, char delim=' ');
 void list_installed(std::vector<BuildListItem> & slackbuilds,
                     std::vector<BuildListItem *> & installedlist);
 void list_nondeps(const std::vector<BuildListItem *> & installedlist,

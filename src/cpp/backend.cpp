@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <vector>
 #include <string>
+#include <sstream>
 #include "DirListing.h"
 #include "BuildListItem.h"
 #include "sorting.h"
@@ -151,8 +152,45 @@ std::string get_available_version(const BuildListItem & build)
 
 /*******************************************************************************
 
-Populates list of installed SlackBuilds. Also determines installed version
-and available version for installed SlackBuilds.
+Gets SlackBuild requirements (dependencies) as string
+
+*******************************************************************************/
+std::string get_reqs(const BuildListItem & build)
+{
+  char buffer[1024];
+  FILE* fp;
+  std::string cmd, reqs;
+
+  cmd = sboutil + " get_reqs " + build.name() + " "
+                               + build.getProp("category");
+  fp = popen(cmd.c_str(), "r");
+  while (fgets(buffer, sizeof(buffer), fp) != NULL) { reqs = buffer; }
+  pclose(fp);
+
+  return reqs;
+}
+
+/*******************************************************************************
+
+Splits a string into a vector of strings. Adapted from the answer here:
+http://stackoverflow.com/questions/236129/split-a-string-in-c#236803
+
+*******************************************************************************/
+std::vector<std::string> split(const std::string & instr, char delim)
+{
+  std::stringstream ss(instr);
+  std::vector<std::string> splitstr;
+  std::string item;
+
+  while (std::getline(ss, item, delim)) { splitstr.push_back(trim(item)); }
+
+  return splitstr;
+}
+
+/*******************************************************************************
+
+Populates list of installed SlackBuilds. Also determines installed version,
+available version, and dependencies for installed SlackBuilds.
 
 *******************************************************************************/
 void list_installed(std::vector<BuildListItem> & slackbuilds,
@@ -160,7 +198,7 @@ void list_installed(std::vector<BuildListItem> & slackbuilds,
 {
   std::vector<std::string> installednames;
   unsigned int ninstalled, i, j, nbuilds;
-  std::string installed_version, available_version;
+  std::string installed_version, available_version, reqs;
 
   installedlist.resize(0);
   installednames = list_installed_names();
@@ -175,8 +213,10 @@ void list_installed(std::vector<BuildListItem> & slackbuilds,
         slackbuilds[i].setBoolProp("installed", true);
         installed_version = check_installed(slackbuilds[i]);
         available_version = get_available_version(slackbuilds[i]);
+        reqs = get_reqs(slackbuilds[i]);
         slackbuilds[i].setProp("installed_version", installed_version);
         slackbuilds[i].setProp("available_version", available_version);
+        slackbuilds[i].setProp("requires", reqs);
         installedlist.push_back(&slackbuilds[i]);
         break;
       }
@@ -198,11 +238,9 @@ installed SlackBuild
 void list_nondeps(const std::vector<BuildListItem *> & installedlist,
                         std::vector<BuildListItem *> & nondeplist)
 {
-  char buffer[128];
-  FILE* fp;
-  std::string cmd, check;
-  unsigned int i, j, ninstalled;
+  unsigned int i, j, k, ninstalled, ndeps;
   bool isdep;
+  std::vector<std::string> deplist;
 
   nondeplist.resize(0);
 
@@ -215,18 +253,18 @@ void list_nondeps(const std::vector<BuildListItem *> & installedlist,
     for ( j = 0; j < ninstalled; j++ )
     {
       if (j == i) { continue; }
-      cmd = sboutil + " is_dep " + installedlist[i]->name() + " "
-                                 + installedlist[j]->name() + " " 
-                                 + installedlist[j]->getProp("category");
-      fp = popen(cmd.c_str(), "r");
-      while (fgets(buffer, sizeof(buffer), fp) != NULL) { check = buffer; }
-      pclose(fp);
-      if (trim(check) == "1") 
-      { 
-        isdep = true;
-        break; 
+      deplist = split(installedlist[j]->getProp("requires"));
+      ndeps = deplist.size();
+      for ( k = 0; k < ndeps; k++ )
+      {
+        if (deplist[k] == installedlist[i]->name())
+        {
+          isdep = true;
+          break;
+        }
       }
-    }
+      if (isdep) { break; }
+    } 
     if (! isdep) { nondeplist.push_back(installedlist[i]); }
   } 
 }

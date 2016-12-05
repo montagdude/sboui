@@ -83,12 +83,8 @@ function get_available_version ()
   local BUILD=$1
   local CATEGORY=$2
 
-  # Get path of SlackBuild.info
-  local INFILE=$REPO_DIR/$CATEGORY/$BUILD/$BUILD.info
-
-  # Get version number
-  local VERSION=$(grep VERSION "$INFILE" | sed 's/VERSION=//')
-  VERSION=$(remove_quotes "$VERSION")
+  # Read .info file
+  . $REPO_DIR/$CATEGORY/$BUILD/$BUILD.info
 
   echo $VERSION
 }
@@ -109,31 +105,16 @@ function list_installed ()
 }
 
 ################################################################################
-# Checks whether SlackBuild 1 is required by SlackBuild 2
-function is_dep()
+# Gets SlackBuild dependencies from string in .info file
+function get_reqs ()
 {
-  local BUILD1=$1
-  local BUILD2=$2
-  local CATEGORY2=$3
+  local BUILD=$1
+  local CATEGORY=$2
 
-  local REQ ISREQ
+  # Read .info file
+  . $REPO_DIR/$CATEGORY/$BUILD/$BUILD.info
 
-  # Read requirements from .info file
-  . "$REPO_DIR/$CATEGORY2/$BUILD2/$BUILD2.info"
-
-  # Loop through and see if specified SlackBuild is mentioned
-  ISREQ=0
-  if [ -n "$REQUIRES" ]; then
-    for REQ in $REQUIRES
-    do
-      if [ "$REQ" == "$BUILD1" ]; then
-        ISREQ=1
-        break
-      fi
-    done
-  fi
-
-  echo $ISREQ
+  echo $REQUIRES
 }
 
 case $1 in
@@ -146,8 +127,8 @@ case $1 in
     "list_installed")
         list_installed
         ;;
-    "is_dep")
-        is_dep $2 $3 $4
+    "get_reqs")
+        get_reqs $2 $3
         ;;
     *)
         ;;

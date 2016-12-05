@@ -13,6 +13,7 @@ BuildListItem::BuildListItem()
   addProp("category", "");
   addProp("installed_version", "");
   addProp("available_version", "");
+  addProp("requires", "");
   addBoolProp("tagged", false);
   addBoolProp("installed", false);
 }

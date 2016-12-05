@@ -445,7 +445,7 @@ void MainWindow::filterNonDeps()
   BuildListBox initlistbox;
 
   _filter = "non-dependencies";
-  printStatus("Filtering by non-dependencies (first time may be slow) ...");
+  printStatus("Filtering by non-dependencies ...");
 
   if (_installedlist.size() == 0) 
   { 
