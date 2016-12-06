@@ -1,12 +1,5 @@
 #!/bin/bash
 
-#
-# Load configuration
-#
-CONF=${CONF:-/etc/sboui/sboui.conf}
-#CONF=${CONF:-/data/dprosser/software/sboui_files/sboui/sboui.conf}
-. $CONF
-
 ################################################################################
 # Removes quotes around string
 function remove_quotes ()

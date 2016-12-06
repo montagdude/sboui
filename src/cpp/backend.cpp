@@ -18,6 +18,9 @@ std::string upgrade_cmd = "sbomgr upgrade";
 std::string sboutil = "/usr/libexec/sboui/sboutil.sh";
 //std::string sboutil = "/data/dprosser/software/sboui_files/sboui/src/shell/sboutil.sh";
 
+// Config variables to always pass to sboutil
+std::string env = "REPO_DIR=" + repo_dir + " TAG=SBo ";
+
 /*******************************************************************************
 
 Gets list of SlackBuilds by reading repo directory. Returns 0 if successful,
@@ -99,7 +102,7 @@ std::vector<std::string> list_installed_names()
   std::string cmd, pkg;
 
   pkglist.resize(0);
-  cmd = sboutil + " list_installed";
+  cmd = env + sboutil + " list_installed";
   fp = popen(cmd.c_str(), "r");
   while (fgets(buffer, sizeof(buffer), fp) != NULL)
   {
@@ -122,7 +125,7 @@ std::string check_installed(const BuildListItem & build)
   FILE* fp;
   std::string cmd, version;
 
-  cmd = sboutil + " check_installed " + build.name();
+  cmd = env + sboutil + " check_installed " + build.name();
   fp = popen(cmd.c_str(), "r");
   while (fgets(buffer, sizeof(buffer), fp) != NULL) { version = buffer; }  
   pclose(fp);
@@ -141,8 +144,8 @@ std::string get_available_version(const BuildListItem & build)
   FILE* fp;
   std::string cmd, version;
 
-  cmd = sboutil + " get_available_version " + build.name() + " "
-                                            + build.getProp("category");
+  cmd = env + sboutil + " get_available_version " + build.name() + " "
+                                                  + build.getProp("category");
   fp = popen(cmd.c_str(), "r");
   while (fgets(buffer, sizeof(buffer), fp) != NULL) { version = buffer; }
   pclose(fp);
@@ -161,8 +164,8 @@ std::string get_reqs(const BuildListItem & build)
   FILE* fp;
   std::string cmd, reqs;
 
-  cmd = sboutil + " get_reqs " + build.name() + " "
-                               + build.getProp("category");
+  cmd = env + sboutil + " get_reqs " + build.name() + " "
+                                     + build.getProp("category");
   fp = popen(cmd.c_str(), "r");
   while (fgets(buffer, sizeof(buffer), fp) != NULL) { reqs = buffer; }
   pclose(fp);
