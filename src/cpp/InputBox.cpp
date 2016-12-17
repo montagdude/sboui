@@ -1,9 +1,10 @@
 #include <string>
 #include <curses.h>
 #include <cmath>     // floor
-#include <algorithm> // max
+#include <algorithm> // max, min
 #include "Color.h"
 #include "color_settings.h"
+#include "ListBox.h" // quitSignal
 #include "InputBox.h"
 
 using namespace color;
@@ -49,20 +50,28 @@ void InputBox::printSpaces(unsigned int nspaces) const
 
 /*******************************************************************************
 
-Determine first character to print in text entry
+Determine first character to print in text entry. Returns 0 if it has not
+changed; 1 if it has.
 
 *******************************************************************************/
-unsigned int InputBox::determineFirstText(const std::string & entry,
-                                          unsigned int idx) const
+unsigned int InputBox::determineFirstText()
 {
   int rows, cols;
-  unsigned int firsttext;
+  unsigned int firsttextstore;
 
   getmaxyx(_win, rows, cols);
-  if (int(entry.size()) < cols-2) { firsttext = 0; }
-  else { firsttext = idx - (cols-2) + 1; }
+  firsttextstore = _firsttext;
+  if (int(_entry.size()) < cols-3) { _firsttext = 0; }
+  else 
+  { 
+    if (int(_cursidx) - int(_firsttext) > cols-3)
+    {
+      _firsttext = _cursidx - cols + 3;
+    }
+  }
 
-  return firsttext;
+  if (firsttextstore == _firsttext) { return 0; }
+  else { return 1; }
 }
 
 /*******************************************************************************
@@ -156,20 +165,18 @@ void InputBox::redrawFrame() const
 Redraws user input
 
 *******************************************************************************/
-void InputBox::redrawInput() const
+void InputBox::redrawInput()
 {
-  int rows, cols, pair_input;
+  int rows, cols, pair_input, numprint;
 
   getmaxyx(_win, rows, cols);
+  numprint = std::min(cols-1, int(_entry.size() - _firsttext));
   
   wmove(_win, 3, 1);
   pair_input = colors.pair(fg_highlight_active, bg_highlight_active);
   if (pair_input != -1) { wattron(_win, COLOR_PAIR(pair_input)); }
-  printToEol(_entry.substr(_firsttext, cols-1));
+  printToEol(_entry.substr(_firsttext, numprint));
   if (pair_input != -1) { wattroff(_win, COLOR_PAIR(pair_input)); }
-
-//FIXME: obv don't hardcode the cursor position
-wmove(_win, 3, 12);
 }
 
 /*******************************************************************************
@@ -185,6 +192,7 @@ InputBox::InputBox()
   _redraw_type = "all";
   _entry = "";
   _firsttext = 0;
+  _cursidx = 0;
 }
 
 InputBox::InputBox(WINDOW *win, const std::string & msg)
@@ -195,6 +203,7 @@ InputBox::InputBox(WINDOW *win, const std::string & msg)
   _redraw_type = "all";
   _entry = "";
   _firsttext = 0;
+  _cursidx = 0;
 }
 
 /*******************************************************************************
@@ -264,6 +273,7 @@ void InputBox::draw(bool force)
   }
   if (_redraw_type != "none") { redrawFrame(); }
   if ( (_redraw_type == "all") || (_redraw_type == "input") ) { redrawInput(); }
+  wmove(_win, 3, _cursidx - _firsttext + 1);
   wrefresh(_win);
 }
 
@@ -274,15 +284,106 @@ User interaction: returns key stroke or selected item name
 *******************************************************************************/
 std::string InputBox::exec()
 {
-  std::string entry;
+  int ch, rows, cols;
+  bool getting_input;
+  std::string retval;
+  unsigned int check_redraw;
+
+  const int MY_DELETE = 330;
+  const int MY_ESC = 27;
 
   curs_set(1);
-  _entry = "search term";
+  getmaxyx(_win, rows, cols);
+  determineFirstText();
 
-  draw();
+  getting_input = true;
+  while (getting_input)
+  {
 
-  getch();
+    // Draw input box elements
+  
+    draw();
+    _redraw_type = "input";
+
+    // Get user input
+
+    switch (ch = getch()) {
+
+      // Enter key: return entry
+
+      case '\n':
+      case '\r':
+      case KEY_ENTER: 
+        retval = _entry;
+        _redraw_type = "all";
+        getting_input = false;
+        break;
+
+      // Backspace key pressed: delete previous character.
+      // Note: some terminals define it as 8, others as 127
+
+      case 8:
+      case 127:
+      case KEY_BACKSPACE:
+        if (_cursidx > 0)
+        {
+          _entry.erase(_cursidx-1,1);
+          _cursidx--;
+          if (_cursidx < _firsttext)
+          {
+            if (int(_cursidx) > cols-3) { _firsttext = _cursidx - cols + 3; }
+            else { _firsttext = 0; }
+          }
+        }
+        break;
+
+      // Delete key pressed: delete current character
+
+      case MY_DELETE:
+        if (_cursidx < _entry.size()) { _entry.erase(_cursidx,1); }
+        break;      
+
+      // Navigation keys
+
+      case KEY_LEFT:
+        if (_cursidx > 0) { _cursidx--; }
+        if (_cursidx < _firsttext) { _firsttext = _cursidx; }
+        else { _redraw_type = "none"; }
+        break;
+      case KEY_RIGHT:
+        if (_cursidx < _entry.size()) { _cursidx++; }
+        check_redraw = determineFirstText();
+        if (check_redraw == 0) { _redraw_type = "none"; }
+        break;
+      case KEY_HOME:
+        if (_cursidx == 0) { _redraw_type = "none"; }
+        _cursidx = 0;
+        _firsttext = 0;
+        break;
+      case KEY_END:
+        _cursidx = _entry.size();
+        check_redraw = determineFirstText();
+        if (check_redraw == 0) { _redraw_type = "none"; }
+        break;
+
+      // Quit key
+
+      case MY_ESC:
+        retval = ListBox::quitSignal;
+        _redraw_type = "all";
+        getting_input = false;
+        break;
+
+      // Add character to entry
+
+      default:
+        _entry.insert(_cursidx, 1, ch);
+        _cursidx++;
+        determineFirstText();
+        break;
+    }
+  }
 
   curs_set(0);
-  return _entry;
+  return retval;
 }

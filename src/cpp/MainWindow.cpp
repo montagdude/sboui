@@ -524,42 +524,6 @@ void MainWindow::filterNonDeps()
 
 /*******************************************************************************
 
-Filters SlackBuilds by a case-insensitive search
-
-*******************************************************************************/
-void MainWindow::search()
-{
-  WINDOW *searchwin;
-  std::string searchterm;
-  int left, top, width, height, rows, cols;
-  InputBox searchbox;
-
-  // Set up window
-
-  getmaxyx(stdscr, rows, cols);
-  searchbox.setMessage("Search SlackBuilds");
-  popupSize(height, width, &searchbox);
-  left = std::floor(double(cols)/2. - double(width)/2.);
-  top = std::floor(double(rows)/2. - double(height)/2.);
-  searchwin = newwin(height, width, top, left);
-  searchbox.setWindow(searchwin);
-
-  // Get search term from user
-
-  searchterm = searchbox.exec();
-
-  // Get rid of window
-
-  wclear(searchwin);
-  delwin(searchwin);
-
-  // Redraw
-
-  redrawAll();
-}
-
-/*******************************************************************************
-
 Sets size of popup box (list box)
 
 *******************************************************************************/
@@ -580,6 +544,15 @@ void MainWindow::popupSize(int & height, int & width, ListBox * popup) const
   if (prefwidth < maxwidth) { width = prefwidth; }
   else { width = minwidth; }
 } 
+
+/*******************************************************************************
+
+Filters SlackBuilds by search term
+
+*******************************************************************************/
+void MainWindow::filterSearch(const std::string & searchterm)
+{
+}
 
 /*******************************************************************************
 
@@ -753,6 +726,38 @@ void MainWindow::selectFilter()
 }
 
 void MainWindow::setInfo(const std::string & info) { _info = info; }
+void MainWindow::search()
+{
+  WINDOW *searchwin;
+  std::string searchterm;
+  int left, top, width, height, rows, cols;
+  InputBox searchbox;
+
+  // Set up window
+
+  getmaxyx(stdscr, rows, cols);
+  searchbox.setMessage("Search SlackBuilds");
+  popupSize(height, width, &searchbox);
+  left = std::floor(double(cols)/2. - double(width)/2.);
+  top = std::floor(double(rows)/2. - double(height)/2.);
+  searchwin = newwin(height, width, top, left);
+  searchbox.setWindow(searchwin);
+
+  // Get search term from user
+
+  searchterm = searchbox.exec();
+  filterSearch(searchterm);
+
+  // Get rid of window
+
+  wclear(searchwin);
+  delwin(searchwin);
+
+  // Redraw
+
+  redrawAll();
+}
+
 
 /*******************************************************************************
 

@@ -14,7 +14,7 @@ class InputBox {
 
     WINDOW *_win;
     std::string _msg, _info, _redraw_type, _entry;
-    unsigned int _firsttext;
+    unsigned int _firsttext, _cursidx;
 
     /* Prints to end of line, padding with spaces and avoiding borders */
 
@@ -23,13 +23,12 @@ class InputBox {
 
     /* Determines first character to print in input box */
 
-    unsigned int determineFirstText(const std::string & entry,
-                                    unsigned int idx) const;
+    unsigned int determineFirstText();
 
     /* Drawing */
     
     virtual void redrawFrame() const;
-    void redrawInput() const;
+    void redrawInput();
 
   public:
 
