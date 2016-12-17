@@ -13,6 +13,7 @@
 #include "BuildListItem.h"
 #include "BuildListBox.h"
 #include "FilterBox.h"
+#include "InputBox.h"
 #include "MainWindow.h"
 
 using namespace color;
@@ -523,10 +524,69 @@ void MainWindow::filterNonDeps()
 
 /*******************************************************************************
 
-Sets size of popup box
+Filters SlackBuilds by a case-insensitive search
+
+*******************************************************************************/
+void MainWindow::search()
+{
+  WINDOW *searchwin;
+  std::string searchterm;
+  int left, top, width, height, rows, cols;
+  InputBox searchbox;
+
+  // Set up window
+
+  getmaxyx(stdscr, rows, cols);
+  searchbox.setMessage("Search SlackBuilds");
+  popupSize(height, width, &searchbox);
+  left = std::floor(double(cols)/2. - double(width)/2.);
+  top = std::floor(double(rows)/2. - double(height)/2.);
+  searchwin = newwin(height, width, top, left);
+  searchbox.setWindow(searchwin);
+
+  // Get search term from user
+
+  searchterm = searchbox.exec();
+
+  // Get rid of window
+
+  wclear(searchwin);
+  delwin(searchwin);
+
+  // Redraw
+
+  redrawAll();
+}
+
+/*******************************************************************************
+
+Sets size of popup box (list box)
 
 *******************************************************************************/
 void MainWindow::popupSize(int & height, int & width, ListBox * popup) const
+{
+  int minheight, minwidth, prefheight, prefwidth, maxheight, maxwidth;
+  int rows, cols;
+
+  getmaxyx(stdscr, rows, cols);
+
+  popup->minimumSize(minheight, minwidth);
+  popup->preferredSize(prefheight, prefwidth);
+  maxheight = rows-4;
+  maxwidth = cols-4;
+
+  if (prefheight < maxheight) { height = prefheight; }
+  else { height = minheight; }
+  if (prefwidth < maxwidth) { width = prefwidth; }
+  else { width = minwidth; }
+} 
+
+/*******************************************************************************
+
+Sets size of popup box (input box)
+
+*******************************************************************************/
+void MainWindow::popupSize(int & height, int & width, InputBox * popup) const
 {
   int minheight, minwidth, prefheight, prefwidth, maxheight, maxwidth;
   int rows, cols;
@@ -822,5 +882,6 @@ void MainWindow::show()
       clearStatus();
     }
     else if (selection == "f") { selectFilter(); }
+    else if (selection == "s") { search(); }
   }
 }

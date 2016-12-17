@@ -8,6 +8,7 @@
 #include "BuildListItem.h"
 #include "BuildListBox.h"
 #include "FilterBox.h"
+#include "InputBox.h"
 
 /*******************************************************************************
 
@@ -40,10 +41,12 @@ class MainWindow {
     void filterInstalled();
     void filterUpgradable();
     void filterNonDeps();
+    void filterBySearch(const std::string searchterm);
 
     /* Sets size of popup boxes */
 
     void popupSize(int & height, int & width, ListBox * popup) const;
+    void popupSize(int & height, int & width, InputBox * popup) const;
 
   public:
 
@@ -62,6 +65,7 @@ class MainWindow {
     void setTitle(const std::string & title);
     void selectFilter();
     void setInfo(const std::string & info);
+    void search();
 
     /* Shows the main window */
 
