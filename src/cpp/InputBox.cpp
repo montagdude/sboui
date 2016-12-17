@@ -366,6 +366,13 @@ std::string InputBox::exec()
         if (check_redraw == 0) { _redraw_type = "none"; }
         break;
 
+      // Resize signal
+    
+      case KEY_RESIZE:
+        retval = ListBox::resizeSignal;
+        _redraw_type = "all";
+        break;
+
       // Quit key
 
       case MY_ESC:

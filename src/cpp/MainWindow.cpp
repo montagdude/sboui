@@ -552,6 +552,7 @@ Filters SlackBuilds by search term
 *******************************************************************************/
 void MainWindow::filterSearch(const std::string & searchterm)
 {
+  _filter = "search for " + searchterm;
 }
 
 /*******************************************************************************

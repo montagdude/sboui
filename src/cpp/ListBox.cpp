@@ -626,7 +626,7 @@ std::string ListBox::exec()
       else { _redraw_type = "changed"; }
       break;
 
-    // Resize signal: redraw (may not work with some curses implementations)
+    // Resize signal
 
     case KEY_RESIZE:
       retval = resizeSignal;
