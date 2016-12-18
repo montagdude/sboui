@@ -371,6 +371,7 @@ std::string InputBox::exec()
       case KEY_RESIZE:
         retval = ListBox::resizeSignal;
         _redraw_type = "all";
+        getting_input = false;
         break;
 
       // Quit key

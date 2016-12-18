@@ -36,36 +36,36 @@ int main()
   if (has_colors())
   {
     // Dark color scheme
-    fg_normal = "white";     
-    bg_normal = "black";     
-    fg_title = "white";
-    bg_title = "blue";
-    fg_info = "white";
-    bg_info = "blue";
-    fg_highlight_active = "black";
-    bg_highlight_active = "cyan";
-    fg_highlight_inactive = "black";
-    bg_highlight_inactive = "white";
-    header = "yellow";
-    tagged = "yellow";
-    fg_popup = "blue";
-    bg_popup = "white";
-
-    // Light color scheme
-    //fg_normal = "black";
-    //bg_normal = "white";
+    //fg_normal = "white";     
+    //bg_normal = "black";     
     //fg_title = "white";
     //bg_title = "blue";
     //fg_info = "white";
     //bg_info = "blue";
     //fg_highlight_active = "black";
     //bg_highlight_active = "cyan";
-    //fg_highlight_inactive = "white";
-    //bg_highlight_inactive = "black";
-    //header = "red";
-    //tagged = "red";
-    //fg_popup = "white";
-    //bg_popup = "black";
+    //fg_highlight_inactive = "black";
+    //bg_highlight_inactive = "white";
+    //header = "yellow";
+    //tagged = "yellow";
+    //fg_popup = "blue";
+    //bg_popup = "white";
+
+    // Light color scheme
+    fg_normal = "black";
+    bg_normal = "white";
+    fg_title = "white";
+    bg_title = "blue";
+    fg_info = "white";
+    bg_info = "blue";
+    fg_highlight_active = "black";
+    bg_highlight_active = "cyan";
+    fg_highlight_inactive = "white";
+    bg_highlight_inactive = "black";
+    header = "red";
+    tagged = "red";
+    fg_popup = "white";
+    bg_popup = "black";
 
     colors.addPair(fg_normal, bg_normal);
     colors.addPair(fg_title, bg_title);

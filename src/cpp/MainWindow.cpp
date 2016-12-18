@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <vector>
 #include <string>
 #include <sstream>
@@ -524,29 +522,6 @@ void MainWindow::filterNonDeps()
 
 /*******************************************************************************
 
-Sets size of popup box (list box)
-
-*******************************************************************************/
-void MainWindow::popupSize(int & height, int & width, ListBox * popup) const
-{
-  int minheight, minwidth, prefheight, prefwidth, maxheight, maxwidth;
-  int rows, cols;
-
-  getmaxyx(stdscr, rows, cols);
-
-  popup->minimumSize(minheight, minwidth);
-  popup->preferredSize(prefheight, prefwidth);
-  maxheight = rows-4;
-  maxwidth = cols-4;
-
-  if (prefheight < maxheight) { height = prefheight; }
-  else { height = minheight; }
-  if (prefwidth < maxwidth) { width = prefwidth; }
-  else { width = minwidth; }
-} 
-
-/*******************************************************************************
-
 Filters SlackBuilds by search term
 
 *******************************************************************************/
@@ -557,10 +532,11 @@ void MainWindow::filterSearch(const std::string & searchterm)
 
 /*******************************************************************************
 
-Sets size of popup box (input box)
+Sets size and position of popup boxes
+FIXME: use templates instead of overloading?
 
 *******************************************************************************/
-void MainWindow::popupSize(int & height, int & width, InputBox * popup) const
+void MainWindow::popupSize(int & height, int & width, ListBox *popup) const
 {
   int minheight, minwidth, prefheight, prefwidth, maxheight, maxwidth;
   int rows, cols;
@@ -577,6 +553,48 @@ void MainWindow::popupSize(int & height, int & width, InputBox * popup) const
   if (prefwidth < maxwidth) { width = prefwidth; }
   else { width = minwidth; }
 } 
+
+void MainWindow::popupSize(int & height, int & width, InputBox *popup) const
+{
+  int minheight, minwidth, prefheight, prefwidth, maxheight, maxwidth;
+  int rows, cols;
+
+  getmaxyx(stdscr, rows, cols);
+
+  popup->minimumSize(minheight, minwidth);
+  popup->preferredSize(prefheight, prefwidth);
+  maxheight = rows-4;
+  maxwidth = cols-4;
+
+  if (prefheight < maxheight) { height = prefheight; }
+  else { height = minheight; }
+  if (prefwidth < maxwidth) { width = prefwidth; }
+  else { width = minwidth; }
+} 
+
+void MainWindow::placePopup(ListBox *popup, WINDOW *win) const
+{
+  int rows, cols, height, width, top, left;
+
+  getmaxyx(stdscr, rows, cols);
+  popupSize(height, width, popup);
+  left = std::floor(double(cols)/2. - double(width)/2.);
+  top = std::floor(double(rows)/2. - double(height)/2.);
+  mvwin(win, top, left);
+  wresize(win, height, width);
+}
+
+void MainWindow::placePopup(InputBox *popup, WINDOW *win) const
+{
+  int rows, cols, height, width, top, left;
+
+  getmaxyx(stdscr, rows, cols);
+  popupSize(height, width, popup);
+  left = std::floor(double(cols)/2. - double(width)/2.);
+  top = std::floor(double(rows)/2. - double(height)/2.);
+  mvwin(win, top, left);
+  wresize(win, height, width);
+}
 
 /*******************************************************************************
 
@@ -694,27 +712,37 @@ void MainWindow::selectFilter()
 {
   WINDOW *filterwin;
   std::string selection;
-  int left, top, width, height, rows, cols;
+  bool getting_selection;
 
   // Set up window
 
-  getmaxyx(stdscr, rows, cols);
-  popupSize(height, width, &_fbox);
-  left = std::floor(double(cols)/2. - double(width)/2.);
-  top = std::floor(double(rows)/2. - double(height)/2.);
-  filterwin = newwin(height, width, top, left);
+  filterwin = newwin(10, 10, 4, 4);
   _fbox.setWindow(filterwin);
+  placePopup(&_fbox, filterwin);
 
   // Get filter selection
 
-  selection = _fbox.exec();
-  if ( (selection == "All") && (_filter != "all SlackBuilds") ) { filterAll(); } 
-  else if ( (selection == "Installed") && 
-            (_filter != "installed SlackBuilds") ) { filterInstalled(); }
-  else if ( (selection == "Upgradable") && 
-            (_filter != "upgradable SlackBuilds") ) { filterUpgradable(); } 
-  else if ( (selection == "Non-dependencies") && 
-            (_filter != "non-dependencies") ) { filterNonDeps(); } 
+  getting_selection = true;
+  while (getting_selection)
+  {
+    selection = _fbox.exec();
+    getting_selection = false;
+    if ( (selection == "All") && (_filter != "all SlackBuilds") ) { filterAll(); } 
+    else if ( (selection == "Installed") && 
+              (_filter != "installed SlackBuilds") ) { filterInstalled(); }
+    else if ( (selection == "Upgradable") && 
+              (_filter != "upgradable SlackBuilds") ) { filterUpgradable(); } 
+    else if ( (selection == "Non-dependencies") && 
+              (_filter != "non-dependencies") ) { filterNonDeps(); } 
+    else if (selection == ListBox::resizeSignal)
+    {
+      getting_selection = true;
+      placePopup(&_fbox, filterwin);
+      redrawAll(true);
+      clearStatus();
+      _fbox.draw(true);
+    }
+  }
 
   // Get rid of window
 
@@ -731,23 +759,34 @@ void MainWindow::search()
 {
   WINDOW *searchwin;
   std::string searchterm;
-  int left, top, width, height, rows, cols;
+  bool getting_input;
   InputBox searchbox;
 
   // Set up window
 
-  getmaxyx(stdscr, rows, cols);
+  searchwin = newwin(10, 10, 4, 4);
   searchbox.setMessage("Search SlackBuilds");
-  popupSize(height, width, &searchbox);
-  left = std::floor(double(cols)/2. - double(width)/2.);
-  top = std::floor(double(rows)/2. - double(height)/2.);
-  searchwin = newwin(height, width, top, left);
   searchbox.setWindow(searchwin);
+  placePopup(&searchbox, searchwin);
 
   // Get search term from user
 
-  searchterm = searchbox.exec();
-  filterSearch(searchterm);
+  getting_input = true;
+  while (getting_input)
+  {
+    getting_input = false;
+    searchterm = searchbox.exec();
+    if (searchterm == ListBox::resizeSignal)
+    {
+      getting_input = true;
+      placePopup(&searchbox, searchwin);
+      redrawAll(true);
+      clearStatus();
+      searchbox.draw(true);
+    }
+    else if ( (searchterm != ListBox::quitSignal) &&
+              (searchterm.size() > 0) ) { filterSearch(searchterm); }
+  }
 
   // Get rid of window
 
