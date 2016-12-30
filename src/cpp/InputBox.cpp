@@ -244,10 +244,10 @@ void InputBox::preferredSize(int & height, int & width) const
  
   height = 7;
 
-  // Preferred width (at least 27 characters visible in entry)
+  // Preferred width (at least 30 characters visible in entry)
 
   width = std::max(_msg.size(), _info.size());
-  width = std::max(width, 27);
+  width = std::max(width, 30);
   reserved_cols = 2;
   width += reserved_cols;
 }

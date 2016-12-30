@@ -3,11 +3,6 @@
 #include "DirListing.h"
 #include "BuildListItem.h"
 
-std::string name_order = "0123456789" +
-                         std::string(" !@#$%^&*()+-=_~`[]\\;',/{}|:\"<>?") +
-                         std::string("ABCDEFGHIJKLMNOPQRSTUVWXYZ") +
-                         std::string("abcdefghijklmnopqrstuvwxyz") +
-                         std::string(".");
 std::vector<std::string> type_order(9,"");
 
 /*******************************************************************************
@@ -18,32 +13,9 @@ first in the sort order, or -1 if they are the same.
 *******************************************************************************/
 int compare_by_name(const direntry & entry1, const direntry & entry2)
 { 
-  unsigned int i, len, rank1, rank2;
-  char c1, c2;
-  
-  if (entry1.name == entry2.name) { return -1; }
-  
-  // Loop through each string until a difference is found
-  
-  len = std::min(entry1.name.size(), entry2.name.size());
-  for ( i = 0; i < len; i++ )
-  { 
-    c1 = entry1.name[i];
-    rank1 = name_order.find(c1);
-    if (rank1 == std::string::npos) { rank1 = 95; }
-    c2 = entry2.name[i];
-    rank2 = name_order.find(c2);
-    if (rank2 == std::string::npos) { rank2 = 95; }
-    if (rank1 < rank2) { return 0; } 
-    else if (rank1 > rank2) { return 1; }
-  }
-  
-  // If we got this far, that means the the two strings are the same up until
-  // the length of the shorter one, but the lengths are not equal. The shorter
-  // one is ranked first.
-  
-  if (entry1.name.size() < entry2.name.size()) { return 0; }
-  else { return 1; }
+  if (entry1.name < entry2.name) { return 0; }
+  else if (entry1.name > entry2.name) { return 1; } 
+  else { return -1; }
 }
 
 /*******************************************************************************
@@ -157,32 +129,9 @@ comes first in the sort order, or -1 if they are the same.
 int compare_by_prop(const BuildListItem *item1, const BuildListItem *item2,
                     const std::string & prop)
 {
-  unsigned int i, len, rank1, rank2;
-  char c1, c2;
-
-  if (item1->getProp(prop) == item2->getProp(prop)) { return -1; }
-
-  // Loop through each string until a difference is found
-
-  len = std::min(item1->getProp(prop).size(), item2->getProp(prop).size());
-  for ( i = 0; i < len; i++ )
-  {
-    c1 = item1->getProp(prop)[i];
-    rank1 = name_order.find(c1);
-    if (rank1 == std::string::npos) { rank1 = 95; }
-    c2 = item2->getProp(prop)[i];
-    rank2 = name_order.find(c2);
-    if (rank2 == std::string::npos) { rank2 = 95; }
-    if (rank1 < rank2) { return 0; }
-    else if (rank1 > rank2) { return 1; }
-  }
-
-  // If we got this far, that means the the two strings are the same up until
-  // the length of the shorter one, but the lengths are not equal. The shorter
-  // one is ranked first.
-
-  if (item1->getProp(prop).size() < item2->getProp(prop).size()) { return 0; }
-  else { return 1; }
+  if (item1->getProp(prop) < item2->getProp(prop)) { return 0; }
+  else if (item1->getProp(prop) > item2->getProp(prop)) { return 1; }
+  else { return -1; }
 }
 
 /*******************************************************************************
