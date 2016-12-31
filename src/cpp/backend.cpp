@@ -53,7 +53,7 @@ int read_repo(std::vector<BuildListItem> & slackbuilds)
       for ( j = 0; j < nbuilds; j++ )
       {
         build_entry = category_dir(j);
-        if (build_entry.type == "dir");
+        if (build_entry.type == "dir")
         {
           BuildListItem build;
           build.setName(build_entry.name);
@@ -77,6 +77,7 @@ std::string trim(std::string instr)
   int i, trimlen, len;
 
   len = instr.size();
+  trimlen = len;
   for ( i = len-1; i >= 0; i-- )
   {
     if ( (instr[i] != ' ') && (instr[i] != '\n') && (instr[i] != '\0') )

@@ -294,6 +294,7 @@ void ListBox::redrawSingleItem(unsigned int idx)
 
   // Turn on highlight color
 
+  color_pair = -1;
   if (int(idx) == _highlight)
   {
     if (_activated) 
