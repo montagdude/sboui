@@ -3,6 +3,7 @@
 #include <cmath>   // floor
 #include "Color.h"
 #include "color_settings.h"
+#include "signals.h"
 #include "BuildListItem.h"
 #include "BuildListBox.h"
 #include "CategoryListBox.h"
@@ -227,44 +228,44 @@ std::string CategoryListBox::exec()
     // Tab key: return keyTabSignal
 
     case MY_TAB:
-      retval = keyTabSignal;
+      retval = signals::keyTabSignal;
       _redraw_type = "changed";
       break;
 
     // Arrows/Home/End/PgUp/Dn: change highlighted value
 
     case KEY_UP:
-      retval = highlightSignal;
+      retval = signals::highlightSignal;
       check_redraw = highlightPrevious();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
       break;
     case KEY_DOWN:
-      retval = highlightSignal;
+      retval = signals::highlightSignal;
       check_redraw = highlightNext();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
       break;
     case KEY_PPAGE:
-      retval = highlightSignal;
+      retval = signals::highlightSignal;
       check_redraw = highlightPreviousPage();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
       break;
     case KEY_NPAGE:
-      retval = highlightSignal;
+      retval = signals::highlightSignal;
       check_redraw = highlightNextPage();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
       break;
     case KEY_HOME:
-      retval = highlightSignal;
+      retval = signals::highlightSignal;
       check_redraw = highlightFirst();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
       break;
     case KEY_END:
-      retval = highlightSignal;
+      retval = signals::highlightSignal;
       check_redraw = highlightLast();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
@@ -273,14 +274,14 @@ std::string CategoryListBox::exec()
     // Resize signal: redraw (may not work with some curses implementations)
 
     case KEY_RESIZE:
-      retval = resizeSignal;
+      retval = signals::resizeSignal;
       _redraw_type = "all";
       break;
 
     // Quit key
 
     case MY_ESC:
-      retval = quitSignal;
+      retval = signals::quitSignal;
       _redraw_type = "all";
       break;
 

@@ -4,7 +4,7 @@
 #include <algorithm> // max, min
 #include "Color.h"
 #include "color_settings.h"
-#include "ListBox.h" // quitSignal
+#include "signals.h"
 #include "InputBox.h"
 
 using namespace color;
@@ -369,7 +369,7 @@ std::string InputBox::exec()
       // Resize signal
     
       case KEY_RESIZE:
-        retval = ListBox::resizeSignal;
+        retval = signals::resizeSignal;
         _redraw_type = "all";
         getting_input = false;
         break;
@@ -377,7 +377,7 @@ std::string InputBox::exec()
       // Quit key
 
       case MY_ESC:
-        retval = ListBox::quitSignal;
+        retval = signals::quitSignal;
         _redraw_type = "all";
         getting_input = false;
         break;

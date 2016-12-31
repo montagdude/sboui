@@ -5,6 +5,7 @@
 #include "curses.h"
 #include "Color.h"
 #include "color_settings.h"
+#include "signals.h"
 #include "backend.h"
 #include "CategoryListItem.h"
 #include "CategoryListBox.h"
@@ -734,7 +735,7 @@ void MainWindow::selectFilter()
               (_filter != "upgradable SlackBuilds") ) { filterUpgradable(); } 
     else if ( (selection == "Non-dependencies") && 
               (_filter != "non-dependencies") ) { filterNonDeps(); } 
-    else if (selection == ListBox::resizeSignal)
+    else if (selection == signals::resizeSignal)
     {
       getting_selection = true;
       placePopup(&_fbox, filterwin);
@@ -776,7 +777,7 @@ void MainWindow::search()
   {
     getting_input = false;
     searchterm = searchbox.exec();
-    if (searchterm == ListBox::resizeSignal)
+    if (searchterm == signals::resizeSignal)
     {
       getting_input = true;
       placePopup(&searchbox, searchwin);
@@ -784,7 +785,7 @@ void MainWindow::search()
       clearStatus();
       searchbox.draw(true);
     }
-    else if ( (searchterm != ListBox::quitSignal) &&
+    else if ( (searchterm != signals::quitSignal) &&
               (searchterm.size() > 0) ) { filterSearch(searchterm); }
   }
 
@@ -825,7 +826,7 @@ void MainWindow::show()
 
       // Highlighted item changed
 
-      if (selection == ListBox::highlightSignal)
+      if (selection == signals::highlightSignal)
       {
         _category_idx = _clistbox.highlight(); 
         _blistboxes[_category_idx].draw(true);
@@ -833,7 +834,7 @@ void MainWindow::show()
 
       // Tab signal
 
-      else if (selection == ListBox::keyTabSignal)
+      else if (selection == signals::keyTabSignal)
       {
         _clistbox.setActivated(false);
         _clistbox.draw();
@@ -869,7 +870,7 @@ void MainWindow::show()
 
       // Highlighted item changed
 
-      if (selection == ListBox::highlightSignal)
+      if (selection == signals::highlightSignal)
       {
         // Display status message for installed SlackBuild
 
@@ -885,7 +886,7 @@ void MainWindow::show()
 
       // Tab signal
       
-      else if (selection == ListBox::keyTabSignal)
+      else if (selection == signals::keyTabSignal)
       {
         _blistboxes[_category_idx].setActivated(false);
         _blistboxes[_category_idx].draw();
@@ -920,8 +921,8 @@ void MainWindow::show()
 
     // Key signals with the same action w/ either type of list box
 
-    if (selection == ListBox::quitSignal) { getting_input = false; }
-    else if (selection == ListBox::resizeSignal) 
+    if (selection == signals::quitSignal) { getting_input = false; }
+    else if (selection == signals::resizeSignal) 
     { 
       redrawAll(); 
       clearStatus();

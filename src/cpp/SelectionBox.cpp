@@ -3,6 +3,7 @@
 #include <cmath>    // floor
 #include "Color.h"
 #include "color_settings.h"
+#include "signals.h"
 #include "ListItem.h"
 #include "SelectionBox.h"
 
@@ -325,7 +326,7 @@ std::string SelectionBox::exec()
       // Resize signal
   
       case KEY_RESIZE:
-        retval = resizeSignal;
+        retval = signals::resizeSignal;
         _redraw_type = "all";
         getting_input = false;
         break;
@@ -333,7 +334,7 @@ std::string SelectionBox::exec()
       // Quit key
   
       case MY_ESC:
-        retval = quitSignal;
+        retval = signals::quitSignal;
         _redraw_type = "all";
         getting_input = false;
         break;

@@ -3,8 +3,6 @@
 #include <string>
 #include "Color.h"
 
-/* Stores color settings */
-
 namespace color 
 {
   extern Color colors;

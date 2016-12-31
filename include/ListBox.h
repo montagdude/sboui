@@ -54,13 +54,6 @@ class ListBox {
     ListBox();
     ListBox(WINDOW *win, const std::string & name);
 
-    /* Signals returned by different keystrokes */
-
-    static std::string resizeSignal;
-    static std::string quitSignal;
-    static std::string highlightSignal;
-    static std::string keyTabSignal;
-
     /* Edit list */
 
     virtual void addItem(ListItem *item);
