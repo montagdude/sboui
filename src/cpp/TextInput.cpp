@@ -94,6 +94,7 @@ Constructor
 *******************************************************************************/
 TextInput::TextInput()
 {
+  _redraw_type = "entry";
   _entry = "";
   _firsttext = 0;
   _cursidx = 0;
