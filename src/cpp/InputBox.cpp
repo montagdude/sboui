@@ -1,10 +1,11 @@
 #include <string>
 #include <curses.h>
-#include <cmath>     // floor
-#include <algorithm> // max, min
+#include <cmath>      // floor
+#include <algorithm>  // min, max
 #include "Color.h"
 #include "color_settings.h"
 #include "signals.h"
+#include "InputItem.h"
 #include "InputBox.h"
 
 using namespace color;
@@ -50,28 +51,23 @@ void InputBox::printSpaces(unsigned int nspaces) const
 
 /*******************************************************************************
 
-Determine first character to print in text entry. Returns 0 if it has not
-changed; 1 if it has.
+Setting item to be highlighted
 
 *******************************************************************************/
-unsigned int InputBox::determineFirstText()
+void InputBox::highlightFirst() { _highlight = 0; }
+void InputBox::highlightLast() 
+{ 
+  if (_items.size() > 0) { _highlight = _items.size()-1; }
+}
+
+void InputBox::highlightPrevious()
 {
-  int rows, cols;
-  unsigned int firsttextstore;
+  if ( (_items.size() > 0) && (_highlight > 0) ) { _highlight--; }
+}
 
-  getmaxyx(_win, rows, cols);
-  firsttextstore = _firsttext;
-  if (int(_entry.size()) < cols-3) { _firsttext = 0; }
-  else 
-  { 
-    if (int(_cursidx) - int(_firsttext) > cols-3)
-    {
-      _firsttext = _cursidx - cols + 3;
-    }
-  }
-
-  if (firsttextstore == _firsttext) { return 0; }
-  else { return 1; }
+void InputBox::highlightNext()
+{
+  if ( (_items.size() > 0) && (_highlight < _items.size()-1) ) { _highlight++; }
 }
 
 /*******************************************************************************
@@ -162,25 +158,6 @@ void InputBox::redrawFrame() const
 
 /*******************************************************************************
 
-Redraws user input
-
-*******************************************************************************/
-void InputBox::redrawInput()
-{
-  int rows, cols, pair_input, numprint;
-
-  getmaxyx(_win, rows, cols);
-  numprint = std::min(cols-1, int(_entry.size() - _firsttext));
-  
-  wmove(_win, 3, 1);
-  pair_input = colors.pair(fg_highlight_active, bg_highlight_active);
-  if (pair_input != -1) { wattron(_win, COLOR_PAIR(pair_input)); }
-  printToEol(_entry.substr(_firsttext, numprint));
-  if (pair_input != -1) { wattroff(_win, COLOR_PAIR(pair_input)); }
-}
-
-/*******************************************************************************
-
 Constructors
 
 *******************************************************************************/
@@ -190,9 +167,7 @@ InputBox::InputBox()
   _msg = "";
   _info = "Enter: Ok | Esc: Cancel";
   _redraw_type = "all";
-  _entry = "";
-  _firsttext = 0;
-  _cursidx = 0;
+  _highlight = 0;
 }
 
 InputBox::InputBox(WINDOW *win, const std::string & msg)
@@ -201,9 +176,25 @@ InputBox::InputBox(WINDOW *win, const std::string & msg)
   _msg = msg;
   _info = "Enter: Ok | Esc: Cancel";
   _redraw_type = "all";
-  _entry = "";
-  _firsttext = 0;
-  _cursidx = 0;
+  _highlight = 0;
+}
+
+/*******************************************************************************
+
+Adds item to the input box, setting proper position and size
+
+*******************************************************************************/
+void InputBox::addItem(InputItem *item)
+{
+  int rows, cols;
+  unsigned int nitems;
+
+  getmaxyx(_win, rows, cols);
+  nitems = _items.size();
+  item->setPosition(1, nitems+3);
+  item->setWidth(cols-2);
+  item->setWindow(_win);
+  _items.push_back(item);
 }
 
 /*******************************************************************************
@@ -224,9 +215,9 @@ void InputBox::minimumSize(int & height, int & width) const
 {
   int reserved_cols;
 
-  // No scrolling is required for this - just give the number of rows needed
+  // Scrolling is not implemented for this - just give number of rows needed
 
-  height = 7;
+  height = 6 + _items.size();
 
   // Minimum usable width (at least 2 characters visible in entry)
 
@@ -240,11 +231,11 @@ void InputBox::preferredSize(int & height, int & width) const
 {
   int reserved_cols;
 
-  // No scrolling is required for this - just give the number of rows needed
- 
-  height = 7;
+  // Scrolling is not implemented for this - just give number of rows needed
 
-  // Preferred width (at least 30 characters visible in entry)
+  height = 6 + _items.size();
+
+  // Preferred width (at least 30 characters visible in entries)
 
   width = std::max(_msg.size(), _info.size());
   width = std::max(width, 30);
@@ -254,47 +245,46 @@ void InputBox::preferredSize(int & height, int & width) const
 
 /*******************************************************************************
 
-Draws input box (frame, entry, etc.) as needed
+Redraws box and all input items
 
 *******************************************************************************/
 void InputBox::draw(bool force)
 {
+  int rows, cols;
+  unsigned int i, nitems;
   int pair_popup;
+
+  nitems = _items.size();
+  getmaxyx(_win, rows, cols);
 
   if (force) { _redraw_type = "all"; }
 
-  // Draw input box elements
-
-  if (_redraw_type == "all")
-  {
+  if (_redraw_type == "all") 
+  { 
     wclear(_win);
     pair_popup = colors.pair(fg_popup, bg_popup);
     if (pair_popup != -1) { wbkgd(_win, COLOR_PAIR(pair_popup)); }
+    redrawFrame();
+    for ( i = 0; i < nitems; i++ ) 
+    { 
+      _items[i]->setWidth(cols-2);           // Dimensions may have changed
+      _items[i]->draw(force, i==_highlight);  
+    }
   }
-  if (_redraw_type != "none") { redrawFrame(); }
-  if ( (_redraw_type == "all") || (_redraw_type == "input") ) { redrawInput(); }
-  wmove(_win, 3, _cursidx - _firsttext + 1);
+  else { _items[_highlight]->draw(force, true); }
   wrefresh(_win);
 }
 
 /*******************************************************************************
 
-User interaction: returns key stroke or selected item name
+User interaction with input items in the box
 
 *******************************************************************************/
 std::string InputBox::exec()
 {
-  int ch, rows, cols;
   bool getting_input;
-  std::string retval;
+  std::string selection, retval;
   unsigned int check_redraw;
-
-  const int MY_DELETE = 330;
-  const int MY_ESC = 27;
-
-  curs_set(1);
-  getmaxyx(_win, rows, cols);
-  determineFirstText();
 
   getting_input = true;
   while (getting_input)
@@ -303,95 +293,34 @@ std::string InputBox::exec()
     // Draw input box elements
   
     draw();
-    _redraw_type = "input";
+    _redraw_type = "highlighted";
 
-    // Get user input
+    // Get user input from highlighted item
 
-    switch (ch = getch()) {
-
-      // Enter key: return entry
-
-      case '\n':
-      case '\r':
-      case KEY_ENTER: 
-        retval = _entry;
-        _redraw_type = "all";
-        getting_input = false;
-        break;
-
-      // Backspace key pressed: delete previous character.
-      // Note: some terminals define it as 8, others as 127
-
-      case 8:
-      case 127:
-      case KEY_BACKSPACE:
-        if (_cursidx > 0)
-        {
-          _entry.erase(_cursidx-1,1);
-          _cursidx--;
-          if (_cursidx < _firsttext)
-          {
-            if (int(_cursidx) > cols-3) { _firsttext = _cursidx - cols + 3; }
-            else { _firsttext = 0; }
-          }
-        }
-        break;
-
-      // Delete key pressed: delete current character
-
-      case MY_DELETE:
-        if (_cursidx < _entry.size()) { _entry.erase(_cursidx,1); }
-        break;      
-
-      // Navigation keys
-
-      case KEY_LEFT:
-        if (_cursidx > 0) { _cursidx--; }
-        if (_cursidx < _firsttext) { _firsttext = _cursidx; }
-        else { _redraw_type = "none"; }
-        break;
-      case KEY_RIGHT:
-        if (_cursidx < _entry.size()) { _cursidx++; }
-        check_redraw = determineFirstText();
-        if (check_redraw == 0) { _redraw_type = "none"; }
-        break;
-      case KEY_HOME:
-        if (_cursidx == 0) { _redraw_type = "none"; }
-        _cursidx = 0;
-        _firsttext = 0;
-        break;
-      case KEY_END:
-        _cursidx = _entry.size();
-        check_redraw = determineFirstText();
-        if (check_redraw == 0) { _redraw_type = "none"; }
-        break;
-
-      // Resize signal
-    
-      case KEY_RESIZE:
-        retval = signals::resizeSignal;
-        _redraw_type = "all";
-        getting_input = false;
-        break;
-
-      // Quit key
-
-      case MY_ESC:
-        retval = signals::quitSignal;
-        _redraw_type = "all";
-        getting_input = false;
-        break;
-
-      // Add character to entry
-
-      default:
-        _entry.insert(_cursidx, 1, ch);
-        _cursidx++;
-        determineFirstText();
-        break;
+    selection = _items[_highlight]->exec();
+    if (selection == signals::resize)
+    {
+      retval = selection;
+      _redraw_type = "all";
+      getting_input = false;
+    }
+    else if (selection == signals::quit)
+    {
+      retval = selection;
+      _redraw_type = "all";
+      getting_input = false;
+    }
+    else if (selection == signals::highlightFirst) { highlightFirst(); }
+    else if (selection == signals::highlightLast) { highlightLast(); }
+    else if (selection == signals::highlightPrev) { highlightPrevious(); }
+    else if (selection == signals::highlightNext) { highlightNext(); }
+    else
+    {
+      retval = selection;
+      _redraw_type = "all";
+      getting_input = false;
     }
   }
 
-  curs_set(0);
   return retval;
 }

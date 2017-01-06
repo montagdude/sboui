@@ -1,7 +1,9 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <curses.h>
+#include "InputItem.h"
 
 /*******************************************************************************
 
@@ -13,22 +15,25 @@ class InputBox {
   protected:
 
     WINDOW *_win;
-    std::string _msg, _info, _redraw_type, _entry;
-    unsigned int _firsttext, _cursidx;
+    std::string _msg, _info, _redraw_type;
+    std::vector<InputItem *> _items;    
+    unsigned int _highlight;
 
     /* Prints to end of line, padding with spaces and avoiding borders */
 
     void printToEol(const std::string & msg) const;
     void printSpaces(unsigned int nspaces) const;
 
-    /* Determines first character to print in input box */
+    /* Setting item to be highlighted */
 
-    unsigned int determineFirstText();
+    void highlightFirst();
+    void highlightLast();
+    void highlightPrevious();
+    void highlightNext();
 
     /* Drawing */
     
     virtual void redrawFrame() const;
-    void redrawInput();
 
   public:
 
@@ -37,9 +42,13 @@ class InputBox {
     InputBox();
     InputBox(WINDOW *win, const std::string & msg);
 
+    /* Add items */
+
+    void addItem(InputItem *item);
+
     /* Set attributes */
 
-    virtual void setWindow(WINDOW *win);
+    void setWindow(WINDOW *win);
     void setMessage(const std::string & msg);
     void setInfo(const std::string & info);
 

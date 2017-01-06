@@ -12,8 +12,10 @@
 #include "BuildListItem.h"
 #include "BuildListBox.h"
 #include "FilterBox.h"
-#include "InputBox.h"
 #include "MainWindow.h"
+
+#include "TextInput.h"
+#include "InputBox.h"
 
 using namespace color;
 
@@ -735,7 +737,7 @@ void MainWindow::selectFilter()
               (_filter != "upgradable SlackBuilds") ) { filterUpgradable(); } 
     else if ( (selection == "Non-dependencies") && 
               (_filter != "non-dependencies") ) { filterNonDeps(); } 
-    else if (selection == signals::resizeSignal)
+    else if (selection == signals::resize)
     {
       getting_selection = true;
       placePopup(&_fbox, filterwin);
@@ -762,12 +764,14 @@ void MainWindow::search()
   std::string searchterm;
   bool getting_input;
   InputBox searchbox;
+  TextInput searchinput;
 
-  // Set up window
+  // Set up window and search box
 
   searchwin = newwin(10, 10, 4, 4);
   searchbox.setMessage("Search SlackBuilds");
   searchbox.setWindow(searchwin);
+  searchbox.addItem(&searchinput);
   placePopup(&searchbox, searchwin);
 
   // Get search term from user
@@ -777,7 +781,7 @@ void MainWindow::search()
   {
     getting_input = false;
     searchterm = searchbox.exec();
-    if (searchterm == signals::resizeSignal)
+    if (searchterm == signals::resize)
     {
       getting_input = true;
       placePopup(&searchbox, searchwin);
@@ -785,7 +789,7 @@ void MainWindow::search()
       clearStatus();
       searchbox.draw(true);
     }
-    else if ( (searchterm != signals::quitSignal) &&
+    else if ( (searchterm != signals::quit) &&
               (searchterm.size() > 0) ) { filterSearch(searchterm); }
   }
 
@@ -798,7 +802,6 @@ void MainWindow::search()
 
   redrawAll();
 }
-
 
 /*******************************************************************************
 
@@ -826,7 +829,7 @@ void MainWindow::show()
 
       // Highlighted item changed
 
-      if (selection == signals::highlightSignal)
+      if (selection == signals::highlight)
       {
         _category_idx = _clistbox.highlight(); 
         _blistboxes[_category_idx].draw(true);
@@ -834,7 +837,7 @@ void MainWindow::show()
 
       // Tab signal
 
-      else if (selection == signals::keyTabSignal)
+      else if (selection == signals::keyTab)
       {
         _clistbox.setActivated(false);
         _clistbox.draw();
@@ -870,7 +873,7 @@ void MainWindow::show()
 
       // Highlighted item changed
 
-      if (selection == signals::highlightSignal)
+      if (selection == signals::highlight)
       {
         // Display status message for installed SlackBuild
 
@@ -886,7 +889,7 @@ void MainWindow::show()
 
       // Tab signal
       
-      else if (selection == signals::keyTabSignal)
+      else if (selection == signals::keyTab)
       {
         _blistboxes[_category_idx].setActivated(false);
         _blistboxes[_category_idx].draw();
@@ -921,8 +924,8 @@ void MainWindow::show()
 
     // Key signals with the same action w/ either type of list box
 
-    if (selection == signals::quitSignal) { getting_input = false; }
-    else if (selection == signals::resizeSignal) 
+    if (selection == signals::quit) { getting_input = false; }
+    else if (selection == signals::resize) 
     { 
       redrawAll(); 
       clearStatus();

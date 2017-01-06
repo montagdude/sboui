@@ -15,19 +15,20 @@ Prints to end of line, padding with spaces
 *******************************************************************************/
 void TextInput::printToEol(const std::string & msg) const
 {
-  int i, y, x, rows, cols, nspaces, msglen;
+  int i, y, x, rows, cols, rightspace, nspaces, msglen;
 
   getmaxyx(_win, rows, cols);
   getyx(_win, y, x);
 
   /* Math: Cursor position: x
-           Number of spaces that can be printed to right = _width-x */
+           Number of spaces that can be printed to right = _width-(x-_posx) */
 
   msglen = msg.size();
-  if (msglen > _width-x) { wprintw(_win, msg.substr(0, _width-x).c_str()); }
+  rightspace = _width - (x - _posx);
+  if (msglen > rightspace) { wprintw(_win, msg.substr(0, rightspace).c_str()); }
   else
   {
-    nspaces = std::max(_width-x-msglen, 0);
+    nspaces = std::max(rightspace-msglen, 0);
     wprintw(_win, msg.c_str());
     for ( i = 0; i < nspaces; i++ ) { wprintw(_win, " "); }
   }
@@ -105,7 +106,7 @@ TextInput::TextInput()
 Draws text input
 
 *******************************************************************************/
-void TextInput::draw(bool force)
+void TextInput::draw(bool force, bool highlight)
 {
   if (force) { _redraw_type = "entry"; }
 
@@ -119,7 +120,7 @@ void TextInput::draw(bool force)
 User interaction: returns key stroke or entry
 
 *******************************************************************************/
-std::string TextInput::exec(bool highlight)
+std::string TextInput::exec()
 {
   int ch;
   bool getting_input;
@@ -200,11 +201,19 @@ std::string TextInput::exec(bool highlight)
         check_redraw = determineFirstText();
         if (check_redraw == 0) { _redraw_type = "none"; }
         break;
+      case KEY_UP:
+        retval = signals::highlightPrev;
+        _redraw_type = "entry";
+        getting_input = false;
+      case KEY_DOWN:
+        retval = signals::highlightNext;
+        _redraw_type = "entry";
+        getting_input = false;
 
       // Resize signal
     
       case KEY_RESIZE:
-        retval = signals::resizeSignal;
+        retval = signals::resize;
         _redraw_type = "entry";
         getting_input = false;
         break;
@@ -212,7 +221,7 @@ std::string TextInput::exec(bool highlight)
       // Quit key
 
       case MY_ESC:
-        retval = signals::quitSignal;
+        retval = signals::quit;
         _redraw_type = "entry";
         getting_input = false;
         break;

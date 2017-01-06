@@ -56,13 +56,13 @@ class ListBox {
 
     /* Edit list */
 
-    virtual void addItem(ListItem *item);
+    void addItem(ListItem *item);
     void removeItem(unsigned int idx);
     void clearList();
 
     /* Set attributes */
 
-    virtual void setWindow(WINDOW *win);
+    void setWindow(WINDOW *win);
     void setName(const std::string & name);
     void setActivated(bool activated);
 

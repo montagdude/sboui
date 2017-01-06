@@ -16,7 +16,7 @@ class TextInput: public InputItem {
     std::string _entry;
     unsigned int _firsttext, _cursidx;
 
-    /* Prints to end of line, padding with spaces and avoiding borders */
+    /* Prints to end of line */
 
     void printToEol(const std::string & msg) const;
     void printSpaces(unsigned int nspaces) const;
@@ -37,8 +37,8 @@ class TextInput: public InputItem {
 
     /* User interaction */
 
-    void draw(bool force=false);
-    std::string exec(bool highlight=false);
+    void draw(bool force=false, bool highlight=false);
+    std::string exec();
 
     /* Accessing properties. */
 

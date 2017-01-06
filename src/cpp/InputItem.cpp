@@ -33,6 +33,13 @@ void InputItem::setPosition(int x, int y)
 
 /*******************************************************************************
 
+Get attributes
+
+*******************************************************************************/
+const std::string & InputItem::name() const { return _name; }
+
+/*******************************************************************************
+
 Accessing properties of different types. Derived classes should reimplement 
 these as needed.
 

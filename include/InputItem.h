@@ -28,10 +28,14 @@ class InputItem {
     void setPosition(int x, int y);
     void setWidth(int width);
 
+    // Get attributes
+
+    const std::string & name() const;
+
     // User interaction
 
-    virtual void draw(bool force=false) = 0;
-    virtual std::string exec(bool highlight=false) = 0;
+    virtual void draw(bool force=false, bool highlight=false) = 0;
+    virtual std::string exec() = 0;
 
     // Accessing properties of different types. Derived classes should
     // reimplement these as needed.

@@ -3,8 +3,12 @@
 
 namespace signals
 {
-  std::string resizeSignal = "__RESIZE__";
-  std::string quitSignal = "__QUIT__";
-  std::string highlightSignal = "__HIGHLIGHT__";
-  std::string keyTabSignal = "__TAB__";
+  std::string resize = "__RESIZE__";
+  std::string quit = "__QUIT__";
+  std::string highlight = "__HIGHLIGHT__";
+  std::string highlightFirst = "__HIGHLIGHTFIRST__";
+  std::string highlightLast = "__HIGHLIGHTLAST__";
+  std::string highlightPrev = "__HIGHLIGHTPREV__";
+  std::string highlightNext = "__HIGHLIGHTNEXT__";
+  std::string keyTab = "__TAB__";
 }

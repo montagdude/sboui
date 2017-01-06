@@ -225,47 +225,47 @@ std::string CategoryListBox::exec()
       _redraw_type = "all";
       break;
 
-    // Tab key: return keyTabSignal
+    // Tab key: return keyTab
 
     case MY_TAB:
-      retval = signals::keyTabSignal;
+      retval = signals::keyTab;
       _redraw_type = "changed";
       break;
 
     // Arrows/Home/End/PgUp/Dn: change highlighted value
 
     case KEY_UP:
-      retval = signals::highlightSignal;
+      retval = signals::highlight;
       check_redraw = highlightPrevious();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
       break;
     case KEY_DOWN:
-      retval = signals::highlightSignal;
+      retval = signals::highlight;
       check_redraw = highlightNext();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
       break;
     case KEY_PPAGE:
-      retval = signals::highlightSignal;
+      retval = signals::highlight;
       check_redraw = highlightPreviousPage();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
       break;
     case KEY_NPAGE:
-      retval = signals::highlightSignal;
+      retval = signals::highlight;
       check_redraw = highlightNextPage();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
       break;
     case KEY_HOME:
-      retval = signals::highlightSignal;
+      retval = signals::highlight;
       check_redraw = highlightFirst();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
       break;
     case KEY_END:
-      retval = signals::highlightSignal;
+      retval = signals::highlight;
       check_redraw = highlightLast();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
@@ -274,14 +274,14 @@ std::string CategoryListBox::exec()
     // Resize signal: redraw (may not work with some curses implementations)
 
     case KEY_RESIZE:
-      retval = signals::resizeSignal;
+      retval = signals::resize;
       _redraw_type = "all";
       break;
 
     // Quit key
 
     case MY_ESC:
-      retval = signals::quitSignal;
+      retval = signals::quit;
       _redraw_type = "all";
       break;
 

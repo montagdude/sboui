@@ -326,7 +326,7 @@ std::string SelectionBox::exec()
       // Resize signal
   
       case KEY_RESIZE:
-        retval = signals::resizeSignal;
+        retval = signals::resize;
         _redraw_type = "all";
         getting_input = false;
         break;
@@ -334,7 +334,7 @@ std::string SelectionBox::exec()
       // Quit key
   
       case MY_ESC:
-        retval = signals::quitSignal;
+        retval = signals::quit;
         _redraw_type = "all";
         getting_input = false;
         break;
