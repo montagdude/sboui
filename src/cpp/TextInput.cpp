@@ -167,10 +167,12 @@ std::string TextInput::exec()
         retval = signals::highlightPrev;
         _redraw_type = "entry";
         getting_input = false;
+        break;
       case KEY_DOWN:
         retval = signals::highlightNext;
         _redraw_type = "entry";
         getting_input = false;
+        break;
 
       // Resize signal
     
