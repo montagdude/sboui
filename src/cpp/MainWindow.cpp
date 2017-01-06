@@ -12,10 +12,8 @@
 #include "BuildListItem.h"
 #include "BuildListBox.h"
 #include "FilterBox.h"
+#include "SearchBox.h"
 #include "MainWindow.h"
-
-#include "TextInput.h"
-#include "InputBox.h"
 
 using namespace color;
 
@@ -763,15 +761,11 @@ void MainWindow::search()
   WINDOW *searchwin;
   std::string searchterm;
   bool getting_input;
-  InputBox searchbox;
-  TextInput searchinput;
 
   // Set up window and search box
 
   searchwin = newwin(10, 10, 4, 4);
-  searchbox.setMessage("Search SlackBuilds");
-  searchbox.setWindow(searchwin);
-  searchbox.addItem(&searchinput);
+  SearchBox searchbox(searchwin, "Search SlackBuilds");
   placePopup(&searchbox, searchwin);
 
   // Get search term from user
