@@ -202,9 +202,16 @@ void InputBox::addItem(InputItem *item)
 Set attributes
 
 *******************************************************************************/
-void InputBox::setWindow(WINDOW *win) { _win = win; }
 void InputBox::setMessage(const std::string & msg) { _msg = msg; }
 void InputBox::setInfo(const std::string & info) { _info = info; }
+void InputBox::setWindow(WINDOW *win) 
+{ 
+  unsigned int i, nitems;
+
+  _win = win; 
+  nitems = _items.size();
+  for ( i = 0; i < nitems; i++ ) { _items[i]->setWindow(win); }
+}
 
 /*******************************************************************************
 

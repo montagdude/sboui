@@ -761,11 +761,13 @@ void MainWindow::search()
   WINDOW *searchwin;
   std::string searchterm;
   bool getting_input;
+  SearchBox searchbox;
 
   // Set up window and search box
 
   searchwin = newwin(10, 10, 4, 4);
-  SearchBox searchbox(searchwin, "Search SlackBuilds");
+  searchbox.setWindow(searchwin);
+  searchbox.setMessage("Search SlackBuilds");
   placePopup(&searchbox, searchwin);
 
   // Get search term from user
