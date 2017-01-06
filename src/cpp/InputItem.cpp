@@ -4,6 +4,32 @@
 
 /*******************************************************************************
 
+Prints to end of line, padding with spaces
+
+*******************************************************************************/
+void InputItem::printToEol(const std::string & msg) const
+{
+  int i, y, x, rows, cols, rightspace, nspaces, msglen;
+
+  getmaxyx(_win, rows, cols);
+  getyx(_win, y, x);
+
+  /* Math: Cursor position: x
+           Number of spaces that can be printed to right = _width-(x-_posx) */
+
+  msglen = msg.size();
+  rightspace = _width - (x - _posx);
+  if (msglen > rightspace) { wprintw(_win, msg.substr(0, rightspace).c_str()); }
+  else
+  {
+    nspaces = std::max(rightspace-msglen, 0);
+    wprintw(_win, msg.c_str());
+    for ( i = 0; i < nspaces; i++ ) { wprintw(_win, " "); }
+  }
+}
+
+/*******************************************************************************
+
 Constructor
 
 *******************************************************************************/

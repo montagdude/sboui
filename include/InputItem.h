@@ -17,6 +17,10 @@ class InputItem {
     int _posx, _posy, _width; 
     std::string _name, _redraw_type;
 
+    /* Prints to end of line */
+
+    void printToEol(const std::string & msg) const;
+
   public:
 
     InputItem();

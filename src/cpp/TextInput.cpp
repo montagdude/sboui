@@ -10,44 +10,6 @@ using namespace color;
 
 /*******************************************************************************
 
-Prints to end of line, padding with spaces
-
-*******************************************************************************/
-void TextInput::printToEol(const std::string & msg) const
-{
-  int i, y, x, rows, cols, rightspace, nspaces, msglen;
-
-  getmaxyx(_win, rows, cols);
-  getyx(_win, y, x);
-
-  /* Math: Cursor position: x
-           Number of spaces that can be printed to right = _width-(x-_posx) */
-
-  msglen = msg.size();
-  rightspace = _width - (x - _posx);
-  if (msglen > rightspace) { wprintw(_win, msg.substr(0, rightspace).c_str()); }
-  else
-  {
-    nspaces = std::max(rightspace-msglen, 0);
-    wprintw(_win, msg.c_str());
-    for ( i = 0; i < nspaces; i++ ) { wprintw(_win, " "); }
-  }
-}
-
-/*******************************************************************************
-
-Prints a given number of spaces
-
-*******************************************************************************/
-void TextInput::printSpaces(unsigned int nspaces) const
-{
-  unsigned int i;
-
-  for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
-}
-
-/*******************************************************************************
-
 Determine first character to print in text entry. Returns 0 if it has not
 changed; 1 if it has.
 

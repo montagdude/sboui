@@ -16,11 +16,6 @@ class TextInput: public InputItem {
     std::string _entry;
     unsigned int _firsttext, _cursidx;
 
-    /* Prints to end of line */
-
-    void printToEol(const std::string & msg) const;
-    void printSpaces(unsigned int nspaces) const;
-
     /* Determines first character to print in input box */
 
     unsigned int determineFirstText();
