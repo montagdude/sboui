@@ -17,7 +17,7 @@ class InputBox {
     WINDOW *_win;
     std::string _msg, _info, _redraw_type;
     std::vector<InputItem *> _items;    
-    unsigned int _highlight;
+    unsigned int _highlight, _prevhighlight;
 
     /* Prints to end of line, padding with spaces and avoiding borders */
 

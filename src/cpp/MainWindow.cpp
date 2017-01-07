@@ -761,14 +761,13 @@ void MainWindow::search()
   WINDOW *searchwin;
   std::string searchterm;
   bool getting_input;
-  SearchBox searchbox;
 
   // Set up window and search box
 
   searchwin = newwin(10, 10, 4, 4);
-  searchbox.setWindow(searchwin);
-  searchbox.setMessage("Search SlackBuilds");
-  placePopup(&searchbox, searchwin);
+  _searchbox.setWindow(searchwin);
+  _searchbox.setMessage("Search SlackBuilds");
+  placePopup(&_searchbox, searchwin);
 
   // Get search term from user
 
@@ -776,14 +775,14 @@ void MainWindow::search()
   while (getting_input)
   {
     getting_input = false;
-    searchterm = searchbox.exec();
+    searchterm = _searchbox.exec();
     if (searchterm == signals::resize)
     {
       getting_input = true;
-      placePopup(&searchbox, searchwin);
+      placePopup(&_searchbox, searchwin);
       redrawAll(true);
       clearStatus();
-      searchbox.draw(true);
+      _searchbox.draw(true);
     }
     else if ( (searchterm != signals::quit) &&
               (searchterm.size() > 0) ) { filterSearch(searchterm); }

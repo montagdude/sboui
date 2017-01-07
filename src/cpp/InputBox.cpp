@@ -54,20 +54,37 @@ void InputBox::printSpaces(unsigned int nspaces) const
 Setting item to be highlighted
 
 *******************************************************************************/
-void InputBox::highlightFirst() { _highlight = 0; }
+void InputBox::highlightFirst() 
+{ 
+  _prevhighlight = _highlight;
+  _highlight = 0; 
+}
+
 void InputBox::highlightLast() 
 { 
-  if (_items.size() > 0) { _highlight = _items.size()-1; }
+  if (_items.size() > 0) 
+  { 
+    _prevhighlight = _highlight;
+    _highlight = _items.size()-1; 
+  }
 }
 
 void InputBox::highlightPrevious()
 {
-  if ( (_items.size() > 0) && (_highlight > 0) ) { _highlight--; }
+  if ( (_items.size() > 0) && (_highlight > 0) ) 
+  { 
+    _prevhighlight = _highlight;
+    _highlight--; 
+  }
 }
 
 void InputBox::highlightNext()
 {
-  if ( (_items.size() > 0) && (_highlight < _items.size()-1) ) { _highlight++; }
+  if ( (_items.size() > 0) && (_highlight < _items.size()-1) ) 
+  { 
+    _prevhighlight = _highlight;
+    _highlight++; 
+  }
 }
 
 /*******************************************************************************
@@ -168,6 +185,7 @@ InputBox::InputBox()
   _info = "Enter: Ok | Esc: Cancel";
   _redraw_type = "all";
   _highlight = 0;
+  _prevhighlight = 0;
 }
 
 InputBox::InputBox(WINDOW *win, const std::string & msg)
@@ -177,6 +195,7 @@ InputBox::InputBox(WINDOW *win, const std::string & msg)
   _info = "Enter: Ok | Esc: Cancel";
   _redraw_type = "all";
   _highlight = 0;
+  _prevhighlight = 0;
 }
 
 /*******************************************************************************
@@ -278,7 +297,11 @@ void InputBox::draw(bool force)
       _items[i]->draw(force, i==_highlight);  
     }
   }
-  else { _items[_highlight]->draw(force, true); }
+  else 
+  { 
+    _items[_prevhighlight]->draw(force, false); 
+    _items[_highlight]->draw(force, true); 
+  }
   wrefresh(_win);
 }
 
@@ -291,7 +314,6 @@ std::string InputBox::exec()
 {
   bool getting_input;
   std::string selection, retval;
-  unsigned int check_redraw;
 
   getting_input = true;
   while (getting_input)
@@ -300,7 +322,7 @@ std::string InputBox::exec()
     // Draw input box elements
   
     draw();
-    _redraw_type = "highlighted";
+    _redraw_type = "changed";
 
     // Get user input from highlighted item
 

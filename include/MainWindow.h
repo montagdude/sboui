@@ -8,6 +8,7 @@
 #include "BuildListItem.h"
 #include "BuildListBox.h"
 #include "FilterBox.h"
+#include "SearchBox.h"
 #include "InputBox.h"
 
 /*******************************************************************************
@@ -26,6 +27,7 @@ class MainWindow {
     std::vector<BuildListItem *> _installedlist, _nondeplist;
     std::vector<CategoryListItem> _categories;
     FilterBox _fbox;
+    SearchBox _searchbox;
     std::string _title, _filter, _info;
     unsigned int _category_idx, _activated_listbox;
 

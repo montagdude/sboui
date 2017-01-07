@@ -1,6 +1,6 @@
 CXX=g++
 CXXFLAGS=-g -Wall
-OBJ=Color.o color_settings.o signals.o ListItem.o CategoryListItem.o BuildListItem.o sorting.o DirListing.o backend.o ListBox.o CategoryListBox.o BuildListBox.o SelectionBox.o FilterBox.o InputItem.o TextInput.o InputBox.o SearchBox.o MainWindow.o sboui.o
+OBJ=Color.o color_settings.o signals.o ListItem.o CategoryListItem.o BuildListItem.o sorting.o DirListing.o backend.o ListBox.o CategoryListBox.o BuildListBox.o SelectionBox.o FilterBox.o InputItem.o TextInput.o ToggleInput.o InputBox.o SearchBox.o MainWindow.o sboui.o
 SRCDIR=src/cpp
 CPPFLAGS=-Iinclude
 EXE=sboui
@@ -61,6 +61,9 @@ InputItem.o: $(SRCDIR)/InputItem.cpp
 
 TextInput.o: $(SRCDIR)/TextInput.cpp
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/TextInput.cpp
+
+ToggleInput.o: $(SRCDIR)/ToggleInput.cpp
+	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/ToggleInput.cpp
 
 SearchBox.o: $(SRCDIR)/SearchBox.cpp
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/SearchBox.cpp
