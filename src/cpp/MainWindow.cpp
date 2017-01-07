@@ -625,14 +625,15 @@ void MainWindow::filterSearch(const std::string & searchterm,
 
   if (nsearch== 0)
   {
-    printStatus("No matches.");
+    printStatus("No matches for " + searchterm + ".");
     initlistbox.setWindow(_win2);
     initlistbox.setActivated(false);
     initlistbox.setName("SlackBuilds");
     _blistboxes.push_back(initlistbox);
   }
-  else if (nsearch == 1) { printStatus("1 match."); }
-  else { printStatus(int2String(nsearch) + " matches."); }
+  else if (nsearch == 1) { printStatus("1 match for " + searchterm + "."); }
+  else { printStatus(int2String(nsearch) + " matches for "
+                     + searchterm + "."); }
 }
 
 /*******************************************************************************
