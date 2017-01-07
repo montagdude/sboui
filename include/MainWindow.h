@@ -43,7 +43,8 @@ class MainWindow {
     void filterInstalled();
     void filterUpgradable();
     void filterNonDeps();
-    void filterSearch(const std::string & searchterm);
+    void filterSearch(const std::string & searchterm, bool case_sensitive=false,
+                      bool whole_whord=false);
 
     /* Sets size of popup boxes */
 

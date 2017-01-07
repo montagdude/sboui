@@ -172,3 +172,11 @@ void SearchBox::preferredSize(int & height, int & width) const
   reserved_cols = 2;
   width += reserved_cols;
 }
+
+std::string SearchBox::searchString() const
+{ 
+  return _entryitem.getStringProp(); 
+}
+
+bool SearchBox::caseSensitive() const { return _caseitem.getBoolProp(); }
+bool SearchBox::wholeWord() const { return _wholeitem.getBoolProp(); }

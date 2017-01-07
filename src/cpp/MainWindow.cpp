@@ -526,7 +526,8 @@ void MainWindow::filterNonDeps()
 Filters SlackBuilds by search term
 
 *******************************************************************************/
-void MainWindow::filterSearch(const std::string & searchterm)
+void MainWindow::filterSearch(const std::string & searchterm, 
+                              bool case_sensitive, bool whole_word)
 {
   _filter = "search for " + searchterm;
 }
@@ -784,8 +785,14 @@ void MainWindow::search()
       clearStatus();
       _searchbox.draw(true);
     }
-    else if ( (searchterm != signals::quit) &&
-              (searchterm.size() > 0) ) { filterSearch(searchterm); }
+    else if ( (searchterm != signals::quit) )
+    { 
+      if (_searchbox.searchString().size() > 0)
+      {
+        filterSearch(_searchbox.searchString(), _searchbox.caseSensitive(),
+                     _searchbox.wholeWord());
+      }
+    }
   }
 
   // Get rid of window
