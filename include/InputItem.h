@@ -28,7 +28,7 @@ class InputItem {
     // Set attributes
 
     void setName(const std::string & name);
-    void setPosition(int x, int y);
+    void setPosition(int y, int x);
     void setWidth(int width);
     void setWindow(WINDOW *win);
 

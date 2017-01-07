@@ -18,10 +18,19 @@ class SearchBox: public InputBox {
     TextInput _entryitem;
     ToggleInput _caseitem, _wholeitem;
 
+    /* Drawing */
+
+    void redrawFrame() const;
+
   public:
 
     /* Constructors */
 
     SearchBox();
     SearchBox(WINDOW *win, const std::string & msg);
+
+    /* Get attributes */
+
+    void minimumSize(int & height, int & width) const;
+    void preferredSize(int & height, int & width) const;
 };

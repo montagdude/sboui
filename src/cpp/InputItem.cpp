@@ -51,10 +51,10 @@ Set attributes
 void InputItem::setWindow(WINDOW *win) { _win = win; }
 void InputItem::setName(const std::string & name) { _name = name; }
 void InputItem::setWidth(int width) { _width = width; }
-void InputItem::setPosition(int x, int y)
+void InputItem::setPosition(int y, int x)
 {
-  _posx = x;
   _posy = y;
+  _posx = x;
 }
 
 /*******************************************************************************

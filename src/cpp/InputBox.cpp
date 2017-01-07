@@ -210,7 +210,7 @@ void InputBox::addItem(InputItem *item)
 
   getmaxyx(_win, rows, cols);
   nitems = _items.size();
-  item->setPosition(1, nitems+3);
+  item->setPosition(nitems+3,1);
   item->setWidth(cols-2);
   item->setWindow(_win);
   _items.push_back(item);
