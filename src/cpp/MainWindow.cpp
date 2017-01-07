@@ -27,6 +27,19 @@ std::string int2String(int inval)
   return outstr;
 }
 
+std::string string_to_lower(const std::string & instr)
+{
+  std::string outstr;
+  std::string::size_type k, len;
+
+  len = instr.size();
+  for ( k = 0; k < len; k++ ) 
+  { 
+    outstr.push_back(std::tolower(instr[k]));
+  }
+  return outstr;
+}
+
 /*******************************************************************************
 
 Prints to end of line, padding with spaces
@@ -529,7 +542,97 @@ Filters SlackBuilds by search term
 void MainWindow::filterSearch(const std::string & searchterm, 
                               bool case_sensitive, bool whole_word)
 {
+  unsigned int i, j, nbuilds, ncategories, nsearch_categories, nsearch;
+  std::vector<std::string> search_categories;
+  std::string term, tomatch;
+  bool match, category_found;
+  BuildListBox initlistbox;
+
   _filter = "search for " + searchterm;
+  printStatus("Searching for " + searchterm + " ...");
+
+  // For case insensitive search, we will convert both to lower case
+
+  if (case_sensitive) { term = searchterm; }
+  else { term = string_to_lower(searchterm); }
+
+  // Create list boxes (Careful! If you use push_back, etc. later on the lists,
+  // the list boxes must be regenerated because their pointers will become
+  // invalid.)
+
+  nbuilds = _slackbuilds.size();
+  ncategories = _categories.size();
+  _blistboxes.resize(0);
+  _clistbox.clearList();
+  _clistbox.setActivated(true);
+  _activated_listbox = 0;
+  _category_idx = 0;
+  search_categories.resize(0);
+  nsearch = 0;
+
+  for ( i = 0; i < nbuilds; i++ )
+  {
+    category_found = false;
+
+    // Check for search term in SlackBuild name
+
+    if (case_sensitive) { tomatch = _slackbuilds[i].name(); }
+    else { tomatch = string_to_lower(_slackbuilds[i].name()); }
+    if (whole_word) { match = (term == tomatch); }
+    else { match = (tomatch.find(term) != std::string::npos); }
+    if (! match) { continue; }
+
+    nsearch++;
+    nsearch_categories = search_categories.size();
+    for ( j = 0; j < nsearch_categories; j++ )
+    {
+      if (_slackbuilds[i].getProp("category") == search_categories[j])
+      {
+        _blistboxes[j].addItem(&_slackbuilds[i]);
+        category_found = true;
+        break;
+      }
+    }
+    if (! category_found)
+    {
+      for ( j = 0; j < ncategories; j++ )
+      {
+        if (_slackbuilds[i].getProp("category") == _categories[j].name())
+        {
+          _clistbox.addItem(&_categories[j]);
+          BuildListBox blistbox;
+          blistbox.setWindow(_win2);
+          blistbox.setName(_categories[j].name());
+          blistbox.setActivated(false);
+          blistbox.addItem(&_slackbuilds[i]);
+          _blistboxes.push_back(blistbox);
+          search_categories.push_back(_slackbuilds[i].getProp("category"));
+          break;
+        }
+      }
+    } 
+  }
+
+  // Check whether categories should be tagged
+
+  nsearch_categories = search_categories.size();
+  for ( j = 0; j < nsearch_categories; j++ )
+  {
+    if (_blistboxes[j].allTagged()) { _clistbox.itemByIdx(j)->
+                                                  setBoolProp("tagged", true); }
+    else { _clistbox.itemByIdx(j)->setBoolProp("tagged", false); }
+  }
+
+  if (nsearch== 0)
+  {
+    printStatus("No matches.");
+    initlistbox.setWindow(_win2);
+    initlistbox.setActivated(false);
+    initlistbox.setName("SlackBuilds");
+    _blistboxes.push_back(initlistbox);
+  }
+  else if (nsearch == 1) { printStatus("1 match."); }
+  else { printStatus(int2String(nsearch) + " matches."); }
 }
 
 /*******************************************************************************
