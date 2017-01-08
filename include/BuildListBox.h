@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <curses.h>
 #include "ListBox.h"
 
 /*******************************************************************************

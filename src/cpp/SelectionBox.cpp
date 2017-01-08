@@ -239,6 +239,31 @@ void SelectionBox::preferredSize(int & height, int & width) const
 
 /*******************************************************************************
 
+Draws box (frame, items, etc.) as needed
+
+*******************************************************************************/
+void SelectionBox::draw(bool force)
+{
+  int pair_popup;
+
+  if (force) { _redraw_type = "all"; }
+
+  // Draw list elements
+
+  if (_redraw_type == "all")
+  {
+    wclear(_win);
+    pair_popup = colors.pair(fg_popup, bg_popup);
+    if (pair_popup != -1) { wbkgd(_win, COLOR_PAIR(pair_popup)); }
+  }
+  if (_redraw_type != "none") { redrawFrame(); }
+  if ( (_redraw_type == "all") || (_redraw_type == "items") ) {
+                                                            redrawAllItems(); }
+  else if (_redraw_type == "changed") { redrawChangedItems(); }
+  wrefresh(_win);
+}
+/*******************************************************************************
+
 User interaction: show display until user hits Enter or Esc
 
 *******************************************************************************/

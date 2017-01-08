@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <curses.h>
 #include "ListItem.h"
 #include "SelectionBox.h"
 
@@ -22,8 +23,4 @@ class FilterBox: public SelectionBox {
 
     FilterBox();
     FilterBox(WINDOW *win, const std::string & name);
-
-    /* Draws frame, items, etc. as needed */
-
-    void draw(bool force=false);
 };

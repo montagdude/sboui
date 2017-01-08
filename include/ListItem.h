@@ -36,6 +36,7 @@ class ListItem {
   public:
 
     ListItem();
+    ListItem(const std::string & name);
 
     // Set properties
 

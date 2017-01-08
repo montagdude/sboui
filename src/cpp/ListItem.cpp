@@ -54,12 +54,18 @@ void ListItem::setPropByIdx(unsigned int idx, const std::string & value)
 
 /*******************************************************************************
 
-Constructor
+Constructors
 
 *******************************************************************************/
 ListItem::ListItem() 
 { 
   _name = ""; 
+  _props.resize(0);
+}
+
+ListItem::ListItem(const std::string & name) 
+{ 
+  _name = name; 
   _props.resize(0);
 }
 
