@@ -12,4 +12,5 @@ namespace signals
   extern std::string highlightPrev;
   extern std::string highlightNext;
   extern std::string keyTab;
+  extern std::string keyEnter;
 }

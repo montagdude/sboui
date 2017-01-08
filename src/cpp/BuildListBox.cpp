@@ -302,7 +302,7 @@ unsigned int BuildListBox::tagAll()
 
 /*******************************************************************************
 
-User interaction: returns key stroke or selected item name
+User interaction: returns key stroke or other signal
 
 *******************************************************************************/
 std::string BuildListBox::exec()
@@ -325,12 +325,12 @@ std::string BuildListBox::exec()
 
   switch (ch = getch()) {
 
-    // Enter key: return name of highlighted item
+    // Enter key: accept selection
 
     case '\n':
     case '\r':
     case KEY_ENTER:
-      retval = _items[_highlight]->name();
+      retval = signals::keyEnter;
       _redraw_type = "all";
       break;
 

@@ -11,4 +11,5 @@ namespace signals
   std::string highlightPrev = "__HIGHLIGHTPREV__";
   std::string highlightNext = "__HIGHLIGHTNEXT__";
   std::string keyTab = "__TAB__";
+  std::string keyEnter = "__ENTER__";
 }

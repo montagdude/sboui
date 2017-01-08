@@ -68,9 +68,13 @@ class MainWindow {
     /* Set properties */
 
     void setTitle(const std::string & title);
-    void selectFilter();
     void setInfo(const std::string & info);
+
+    /* Dialogs */
+
+    void selectFilter();
     void search();
+    void showBuildActions(const BuildListItem & build);
 
     /* Shows the main window */
 

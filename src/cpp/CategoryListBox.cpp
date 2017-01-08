@@ -176,7 +176,7 @@ CategoryListBox::CategoryListBox(WINDOW *win, const std::string & name)
 
 /*******************************************************************************
 
-User interaction: returns key stroke or selected item name. This is the same
+User interaction: returns key stroke or other signal. This is the same
 as the one for BuildListBox, except that tagging doesn't highlight the next
 entry.
 
@@ -201,12 +201,12 @@ std::string CategoryListBox::exec()
 
   switch (ch = getch()) {
 
-    // Enter key: return name of highlighted item
+    // Enter key: accept selection
 
     case '\n':
     case '\r':
     case KEY_ENTER:
-      retval = _items[_highlight]->name();
+      retval = signals::keyEnter;
       _redraw_type = "all";
       break;
 

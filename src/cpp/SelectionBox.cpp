@@ -291,12 +291,12 @@ std::string SelectionBox::exec()
   
     switch (ch = getch()) {
   
-      // Enter key: return name of highlighted item
+      // Enter key: accept selection
   
       case '\n':
       case '\r':
       case KEY_ENTER:
-        retval = _items[_highlight]->name();
+        retval = signals::keyEnter;
         _redraw_type = "all";
         getting_input = false;
         break;

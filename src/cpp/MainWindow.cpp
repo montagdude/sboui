@@ -13,6 +13,7 @@
 #include "BuildListBox.h"
 #include "FilterBox.h"
 #include "SearchBox.h"
+#include "BuildActionBox.h"
 #include "MainWindow.h"
 
 using namespace color;
@@ -814,10 +815,17 @@ Sets properties
 
 *******************************************************************************/
 void MainWindow::setTitle(const std::string & title) { _title = title; }
+void MainWindow::setInfo(const std::string & info) { _info = info; }
+
+/*******************************************************************************
+
+Dialogs
+
+*******************************************************************************/
 void MainWindow::selectFilter()
 {
   WINDOW *filterwin;
-  std::string selection;
+  std::string selection, selected;
   bool getting_selection;
 
   // Set up window
@@ -833,13 +841,18 @@ void MainWindow::selectFilter()
   {
     selection = _fbox.exec();
     getting_selection = false;
-    if ( (selection == "All") && (_filter != "all SlackBuilds") ) { filterAll(); } 
-    else if ( (selection == "Installed") && 
-              (_filter != "installed SlackBuilds") ) { filterInstalled(); }
-    else if ( (selection == "Upgradable") && 
-              (_filter != "upgradable SlackBuilds") ) { filterUpgradable(); } 
-    else if ( (selection == "Non-dependencies") && 
-              (_filter != "non-dependencies") ) { filterNonDeps(); } 
+    if (selection == signals::keyEnter)
+    {
+      selected = _fbox.highlightedItem()->name();
+      if ( (selected == "All") &&
+           (_filter != "all SlackBuilds") ){ filterAll(); } 
+      else if ( (selected == "Installed") && 
+                (_filter != "installed SlackBuilds") ) { filterInstalled(); }
+      else if ( (selected == "Upgradable") && 
+                (_filter != "upgradable SlackBuilds") ) { filterUpgradable(); } 
+      else if ( (selected == "Non-dependencies") && 
+                (_filter != "non-dependencies") ) { filterNonDeps(); } 
+    }
     else if (selection == signals::resize)
     {
       getting_selection = true;
@@ -860,7 +873,6 @@ void MainWindow::selectFilter()
   redrawAll();
 }
 
-void MainWindow::setInfo(const std::string & info) { _info = info; }
 void MainWindow::search()
 {
   WINDOW *searchwin;
@@ -903,6 +915,46 @@ void MainWindow::search()
 
   wclear(searchwin);
   delwin(searchwin);
+
+  // Redraw
+
+  redrawAll();
+}
+
+void MainWindow::showBuildActions(const BuildListItem & build)
+{
+  WINDOW *actionwin;
+  std::string selection;
+  bool getting_selection;
+  BuildActionBox actionbox;
+
+  // Set up window and dialog
+
+  actionwin = newwin(10, 10, 4, 4);
+  actionbox.setWindow(actionwin);
+  placePopup(&actionbox, actionwin);
+
+  // Get filter selection
+
+  getting_selection = true;
+  while (getting_selection)
+  {
+    selection = actionbox.exec();
+    getting_selection = false;
+    if (selection == signals::resize)
+    {
+      getting_selection = true;
+      placePopup(&_fbox, actionwin);
+      redrawAll(true);
+      clearStatus();
+      _fbox.draw(true);
+    }
+  }
+
+  // Get rid of window
+
+  wclear(actionwin);
+  delwin(actionwin);
 
   // Redraw
 
