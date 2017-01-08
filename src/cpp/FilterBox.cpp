@@ -18,15 +18,8 @@ FilterBox::FilterBox()
 {
   unsigned int i;
 
-  _win = NULL;
   _name = "Select a filter";
   _info = "Enter: Ok | Esc: Cancel";
-  _redraw_type = "all";
-  _items.resize(0);
-  _highlight = 0;
-  _firstprint = 0;
-  _prevhighlight = 0;
-  _activated = true;
   _reserved_rows = 6;
 
   _choices.resize(4);
@@ -44,12 +37,6 @@ FilterBox::FilterBox(WINDOW *win, const std::string & name)
   _win = win;
   _name = name;
   _info = "Enter: Ok | Esc: Cancel";
-  _redraw_type = "all";
-  _items.resize(0);
-  _highlight = 0;
-  _firstprint = 0;
-  _prevhighlight = 0;
-  _activated = true;
   _reserved_rows = 6;
 
   _choices.resize(4);

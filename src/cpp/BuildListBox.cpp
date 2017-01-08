@@ -224,27 +224,12 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
 Constructors
 
 *******************************************************************************/
-BuildListBox::BuildListBox()
-{
-  _win = NULL;
-  _name = "";
-  _items.resize(0);
-  _highlight = 0;
-  _firstprint = 0;
-  _prevhighlight = 0;
-  _activated = true;
-  _reserved_rows = 4;
-}
+BuildListBox::BuildListBox() { _reserved_rows = 4; }
 
 BuildListBox::BuildListBox(WINDOW *win, const std::string & name)
 {
   _win = win;
   _name = name;
-  _items.resize(0);
-  _highlight = 0;
-  _firstprint = 0;
-  _prevhighlight = 0;
-  _activated = true;
   _reserved_rows = 4;
 }
 

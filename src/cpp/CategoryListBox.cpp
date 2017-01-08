@@ -165,27 +165,12 @@ void CategoryListBox::redrawSingleItem(unsigned int idx)
 Constructors
 
 *******************************************************************************/
-CategoryListBox::CategoryListBox()
-{
-  _win = NULL;
-  _name = "";
-  _items.resize(0);
-  _highlight = 0;
-  _firstprint = 0;
-  _prevhighlight = 0;
-  _activated = true;
-  _reserved_rows = 4;
-}
+CategoryListBox::CategoryListBox() { _reserved_rows = 4; }
 
 CategoryListBox::CategoryListBox(WINDOW *win, const std::string & name)
 {
   _win = win;
   _name = name;
-  _items.resize(0);
-  _highlight = 0;
-  _firstprint = 0;
-  _prevhighlight = 0;
-  _activated = true;
   _reserved_rows = 4;
 }
 
