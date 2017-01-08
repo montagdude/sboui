@@ -74,7 +74,7 @@ class MainWindow {
 
     void selectFilter();
     void search();
-    void showBuildActions(const BuildListItem & build);
+    void showBuildActions(ListItem *build);
 
     /* Shows the main window */
 

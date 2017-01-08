@@ -921,7 +921,7 @@ void MainWindow::search()
   redrawAll();
 }
 
-void MainWindow::showBuildActions(const BuildListItem & build)
+void MainWindow::showBuildActions(ListItem *build)
 {
   WINDOW *actionwin;
   std::string selection;
@@ -932,6 +932,8 @@ void MainWindow::showBuildActions(const BuildListItem & build)
 
   actionwin = newwin(10, 10, 4, 4);
   actionbox.setWindow(actionwin);
+  actionbox.setName("Actions for " + build->name());
+  actionbox.create(build);
   placePopup(&actionbox, actionwin);
 
   // Get filter selection
@@ -1077,6 +1079,13 @@ void MainWindow::show()
             _clistbox.draw();
           }
         }
+      }
+     
+      // Enter signal: show action dialog
+
+      else if (selection == signals::keyEnter)
+      {
+        showBuildActions(_blistboxes[_category_idx].highlightedItem());
       }
     }
 
