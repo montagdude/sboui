@@ -68,7 +68,7 @@ void BuildActionBox::create(ListItem *build)
       _choices.push_back(item4);
     }
   }
-  ListItem item5("List dependencies");
+  ListItem item5("Compute build order");
   _choices.push_back(item5);
   ListItem item6("Browse files");
   _choices.push_back(item6);
