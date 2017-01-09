@@ -1,4 +1,5 @@
-#include <stdio.h>
+#include <stdio.h>  // popen
+#include <stdlib.h> // system
 #include <vector>
 #include <string>
 #include <sstream>
@@ -6,17 +7,20 @@
 #include "BuildListItem.h"
 #include "sorting.h"
 #include "backend.h"
-
-std::string repo_dir = "/var/cache/packages/SBo";
-//std::string repo_dir = "/data/dprosser/software/sboui_files/SBo";
+ 
+//std::string repo_dir = "/var/cache/packages/SBo";
+std::string repo_dir = "/data/dprosser/software/sboui_files/SBo";
 std::string package_manager = "sbomgr";
 std::string sync_cmd = "sbomgr update";
 std::string install_cmd = "sbomgr install -n";
 std::string upgrade_cmd = "sbomgr upgrade";
 
+// Editor for viewing files 
+std::string editor = "vim";
+
 // Bash script with functions to query the repo and installed packages
-std::string sboutil = "/usr/libexec/sboui/sboutil.sh";
-//std::string sboutil = "/data/dprosser/software/sboui_files/sboui/src/shell/sboutil.sh";
+//std::string sboutil = "/usr/libexec/sboui/sboutil.sh";
+std::string sboutil = "/data/dprosser/software/sboui_files/sboui/src/shell/sboutil.sh";
 
 // Config variables to always pass to sboutil
 std::string env = "REPO_DIR=" + repo_dir + " TAG=SBo ";
@@ -271,4 +275,18 @@ void list_nondeps(const std::vector<BuildListItem *> & installedlist,
     } 
     if (! isdep) { nondeplist.push_back(installedlist[i]); }
   } 
+}
+
+/*******************************************************************************
+
+Displays README for a SlackBuild
+
+*******************************************************************************/
+void view_readme(ListItem *build)
+{
+  std::string cmd;
+
+  cmd = editor + " " + repo_dir + "/" + build->getProp("category") + "/"
+                                      + build->name() + "/" + "README";
+  system(cmd.c_str());
 }

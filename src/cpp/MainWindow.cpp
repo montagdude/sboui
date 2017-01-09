@@ -819,7 +819,7 @@ void MainWindow::setInfo(const std::string & info) { _info = info; }
 
 /*******************************************************************************
 
-Dialogs
+Filter dialog
 
 *******************************************************************************/
 void MainWindow::selectFilter()
@@ -873,6 +873,11 @@ void MainWindow::selectFilter()
   redrawAll();
 }
 
+/*******************************************************************************
+
+Search dialog
+
+*******************************************************************************/
 void MainWindow::search()
 {
   WINDOW *searchwin;
@@ -921,10 +926,15 @@ void MainWindow::search()
   redrawAll();
 }
 
+/*******************************************************************************
+
+Dialog for actions pertaining to selected SlackBuild
+
+*******************************************************************************/
 void MainWindow::showBuildActions(ListItem *build)
 {
   WINDOW *actionwin;
-  std::string selection;
+  std::string selection, selected;
   bool getting_selection;
   BuildActionBox actionbox;
 
@@ -943,7 +953,19 @@ void MainWindow::showBuildActions(ListItem *build)
   {
     selection = actionbox.exec();
     getting_selection = false;
-    if (selection == signals::resize)
+    if (selection == signals::keyEnter)
+    {
+      selected = actionbox.highlightedItem()->name();
+      if (selected == "View README") 
+      { 
+        def_prog_mode();
+        endwin();
+        view_readme(build); 
+        reset_prog_mode();
+        redrawAll();
+      }
+    }
+    else if (selection == signals::resize)
     {
       getting_selection = true;
       placePopup(&_fbox, actionwin);
