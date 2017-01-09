@@ -718,7 +718,7 @@ MainWindow::MainWindow()
   _categories.resize(0);
   _title = "sboui Development Version";
   _filter = "all SlackBuilds";
-  _info = "f: Filter | s: Search | o: Options | F1: Help";
+  _info = "f: Filter | s: Search | o: Options | ?: Help";
   _category_idx = 0;
   _activated_listbox = 0;
 }
