@@ -952,12 +952,11 @@ void MainWindow::showBuildActions(BuildListItem & build)
   while (getting_selection)
   {
     selection = actionbox.exec();
-    getting_selection = false;
     if (selection == signals::keyEnter)
     {
       selected = actionbox.highlightedItem()->name();
       if (selected == "View README") 
-      { 
+      {
         def_prog_mode();
         endwin();
         view_readme(build); 
@@ -967,12 +966,12 @@ void MainWindow::showBuildActions(BuildListItem & build)
     }
     else if (selection == signals::resize)
     {
-      getting_selection = true;
       placePopup(&_fbox, actionwin);
       redrawAll(true);
       clearStatus();
       _fbox.draw(true);
     }
+    else { getting_selection = false; }
   }
 
   // Get rid of window
