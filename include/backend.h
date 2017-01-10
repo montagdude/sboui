@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 #include "BuildListItem.h"
-#include "ListItem.h"
 
 /* Backend settings */
 
@@ -25,4 +24,7 @@ void install_slackbuilds(std::vector<BuildListItem> & slackbuilds,
 void upgrade_slackbuilds(std::vector<BuildListItem> & slackbuilds, 
                   const std::string & opts = "", const std::string & vars = "");
 void remove_slackbuilds(std::vector<BuildListItem> & slackbuilds);
-void view_readme(ListItem *build);
+void view_readme(BuildListItem & build);
+void compute_build_order(BuildListItem & build,
+                         std::vector<BuildListItem *> & reqs,
+                         std::vector<BuildListItem> & slackbuilds);

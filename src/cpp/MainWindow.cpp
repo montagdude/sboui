@@ -960,7 +960,7 @@ void MainWindow::showBuildActions(ListItem *build)
       { 
         def_prog_mode();
         endwin();
-        view_readme(build); 
+        view_readme(*(static_cast<BuildListItem*>(build))); 
         reset_prog_mode();
         redrawAll();
       }
