@@ -931,7 +931,7 @@ void MainWindow::search()
 Dialog for actions pertaining to selected SlackBuild
 
 *******************************************************************************/
-void MainWindow::showBuildActions(ListItem *build)
+void MainWindow::showBuildActions(BuildListItem & build)
 {
   WINDOW *actionwin;
   std::string selection, selected;
@@ -942,7 +942,7 @@ void MainWindow::showBuildActions(ListItem *build)
 
   actionwin = newwin(10, 10, 4, 4);
   actionbox.setWindow(actionwin);
-  actionbox.setName("Actions for " + build->name());
+  actionbox.setName("Actions for " + build.name());
   actionbox.create(build);
   placePopup(&actionbox, actionwin);
 
@@ -960,7 +960,7 @@ void MainWindow::showBuildActions(ListItem *build)
       { 
         def_prog_mode();
         endwin();
-        view_readme(*(static_cast<BuildListItem*>(build))); 
+        view_readme(build); 
         reset_prog_mode();
         redrawAll();
       }
@@ -994,7 +994,7 @@ void MainWindow::show()
 {
   std::string selection, statusmsg;
   bool getting_input, all_tagged;
-  ListItem *build;
+  BuildListItem *build;
 
   redrawAll();
 
@@ -1028,7 +1028,8 @@ void MainWindow::show()
 
         // Display status message for installed SlackBuild
 
-        build = _blistboxes[_category_idx].highlightedItem();
+        build = static_cast<BuildListItem*>(
+                                  _blistboxes[_category_idx].highlightedItem());
         if (build->getBoolProp("installed"))
         {
           statusmsg = "Installed: " + build->getProp("installed_version") +
@@ -1059,7 +1060,8 @@ void MainWindow::show()
       {
         // Display status message for installed SlackBuild
 
-        build = _blistboxes[_category_idx].highlightedItem();
+        build = static_cast<BuildListItem*>(
+                                  _blistboxes[_category_idx].highlightedItem());
         if (build->getBoolProp("installed"))
         {
           statusmsg = "Installed: " + build->getProp("installed_version") +
@@ -1107,7 +1109,9 @@ void MainWindow::show()
 
       else if (selection == signals::keyEnter)
       {
-        showBuildActions(_blistboxes[_category_idx].highlightedItem());
+        build = static_cast<BuildListItem*>(
+                                  _blistboxes[_category_idx].highlightedItem());
+        showBuildActions(*build);
       }
     }
 

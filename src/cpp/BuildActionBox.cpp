@@ -30,7 +30,7 @@ BuildActionBox::BuildActionBox(WINDOW *win, const std::string & name)
 }
 
 BuildActionBox::BuildActionBox(WINDOW *win, const std::string & name,
-                               ListItem *build)
+                               BuildListItem & build)
 {
   _win = win;
   _name = name;
@@ -44,14 +44,14 @@ BuildActionBox::BuildActionBox(WINDOW *win, const std::string & name,
 Creates options using info about SlackBuild
 
 *******************************************************************************/
-void BuildActionBox::create(ListItem *build)
+void BuildActionBox::create(BuildListItem & build)
 {
   std::size_t len;
   unsigned int i, nchoices;
 
   ListItem item1("View README");
   _choices.push_back(item1);
-  if (! build->getBoolProp("installed"))
+  if (! build.getBoolProp("installed"))
   {
     ListItem item2("Install");
     _choices.push_back(item2);
@@ -60,9 +60,9 @@ void BuildActionBox::create(ListItem *build)
   {
     ListItem item3("Remove");
     _choices.push_back(item3);
-    len = build->getProp("available_version").size();
-    if (build->getProp("installed_version").substr(0, len) !=
-        build->getProp("available_version"))
+    len = build.getProp("available_version").size();
+    if (build.getProp("installed_version").substr(0, len) !=
+        build.getProp("available_version"))
     {
       ListItem item4("Upgrade");
       _choices.push_back(item4);
