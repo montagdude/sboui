@@ -290,30 +290,3 @@ void view_readme(BuildListItem & build)
                                       + build.name() + "/" + "README";
   system(cmd.c_str());
 }
-
-/*******************************************************************************
-
-Computes build order for a SlackBuild based on required dependencies
-
-*******************************************************************************/
-//void compute_build_order(BuildListItem & build,
-//                         std::vector<BuildListItem *> & reqs,
-//                         std::vector<BuildListItem> & slackbuilds)
-//{
-//  unsigned int i, j, nbuilds, ndeps;
-//  std::string reqs;
-//  std::vector<std::string> deplist;
-//  BuildListItem build;
-//
-//  nbuilds = slackbuilds.size();
-//  if (build.getBoolProp(installed)) { deplist = 
-//                                      split(build.getProp("requires")); }
-//  else
-//  {
-//    reqs = get_reqs(build);
-//    deplist = split(reqs);
-//  }
-//  
-//  ndeps = deplist.size();
-//  for ( i = 0; i < ndeps; i++ )
-//  { 

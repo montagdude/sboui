@@ -7,6 +7,7 @@
 #include "color_settings.h"
 #include "signals.h"
 #include "backend.h"
+#include "requirements.h"
 #include "CategoryListItem.h"
 #include "CategoryListBox.h"
 #include "BuildListItem.h"
@@ -15,6 +16,9 @@
 #include "SearchBox.h"
 #include "BuildActionBox.h"
 #include "MainWindow.h"
+
+//FIXME: remove this (testing)
+#include <iostream>
 
 using namespace color;
 
@@ -934,9 +938,11 @@ Dialog for actions pertaining to selected SlackBuild
 void MainWindow::showBuildActions(BuildListItem & build)
 {
   WINDOW *actionwin;
+  int check;
   std::string selection, selected;
   bool getting_selection;
   BuildActionBox actionbox;
+  std::vector<BuildListItem *> reqlist;
 
   // Set up window and dialog
 
@@ -960,6 +966,21 @@ void MainWindow::showBuildActions(BuildListItem & build)
         def_prog_mode();
         endwin();
         view_readme(build); 
+        reset_prog_mode();
+        redrawAll();
+      }
+      else if (selected == "Compute build order")
+      {
+        def_prog_mode();
+        endwin();
+        check = compute_reqs_order(build, reqlist, _slackbuilds); 
+        if (check == 0)
+        {
+          reqlist.push_back(&build);
+          unsigned int i, nreqs;
+          nreqs = reqlist.size();
+          for ( i = 0; i < nreqs; i++ ) { std::cout << reqlist[i]->name() << std::endl; }
+        }
         reset_prog_mode();
         redrawAll();
       }
@@ -1026,6 +1047,11 @@ void MainWindow::show()
         _activated_listbox = 1;
 
         // Display status message for installed SlackBuild
+        /* Note: use static_cast because it is certain that build is actually a
+           BuildListItem, and the base class (ListItem) has no virtual members
+           (not polymorphic). Otherwise, should use dynamic_cast.
+           http://stackoverflow.com/questions/332030/when-should-static-cast-dynamic-cast-const-cast-and-reinterpret-cast-be-used 
+           http://stackoverflow.com/questions/6322949/downcasting-using-the-static-cast-in-c */
 
         build = static_cast<BuildListItem*>(
                                   _blistboxes[_category_idx].highlightedItem());

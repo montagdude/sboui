@@ -14,6 +14,7 @@ extern std::string editor;
 /* Backend operations */
 
 int read_repo(std::vector<BuildListItem> & slackbuilds);
+std::string get_reqs(const BuildListItem & build);
 std::vector<std::string> split(const std::string & instr, char delim=' ');
 void list_installed(std::vector<BuildListItem> & slackbuilds,
                     std::vector<BuildListItem *> & installedlist);
@@ -25,6 +26,3 @@ void upgrade_slackbuilds(std::vector<BuildListItem> & slackbuilds,
                   const std::string & opts = "", const std::string & vars = "");
 void remove_slackbuilds(std::vector<BuildListItem> & slackbuilds);
 void view_readme(BuildListItem & build);
-void compute_build_order(BuildListItem & build,
-                         std::vector<BuildListItem *> & reqs,
-                         std::vector<BuildListItem> & slackbuilds);
