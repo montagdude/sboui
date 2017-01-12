@@ -25,4 +25,4 @@ void install_slackbuilds(std::vector<BuildListItem> & slackbuilds,
 void upgrade_slackbuilds(std::vector<BuildListItem> & slackbuilds, 
                   const std::string & opts = "", const std::string & vars = "");
 void remove_slackbuilds(std::vector<BuildListItem> & slackbuilds);
-void view_readme(BuildListItem & build);
+void view_readme(const BuildListItem & build);

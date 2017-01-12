@@ -6,6 +6,7 @@
 #include "color_settings.h"
 #include "signals.h"
 #include "ListItem.h"
+#include "AbstractListBox.h"
 #include "ListBox.h"
 
 using namespace color;
@@ -388,28 +389,18 @@ Constructors
 *******************************************************************************/
 ListBox::ListBox()
 {
-  _win = NULL;
-  _name = "";
-  _redraw_type = "all";
-  _items.resize(0);
   _highlight = 0;
-  _firstprint = 0;
   _prevhighlight = 0;
   _activated = true;
-  _reserved_rows = 2;
 }
 
 ListBox::ListBox(WINDOW *win, const std::string & name)
 {
   _win = win;
   _name = name;
-  _redraw_type = "all";
-  _items.resize(0);
   _highlight = 0;
-  _firstprint = 0;
   _prevhighlight = 0;
   _activated = true;
-  _reserved_rows = 2;
 }
 
 /*******************************************************************************
@@ -417,7 +408,6 @@ ListBox::ListBox(WINDOW *win, const std::string & name)
 Edit list items
 
 *******************************************************************************/
-void ListBox::addItem(ListItem *item) { _items.push_back(item); }
 void ListBox::removeItem(unsigned int idx)
 {
   if (idx <= _items.size()) { _items.erase(_items.begin()+idx); }
@@ -441,8 +431,6 @@ void ListBox::clearList()
 Set attributes
 
 *******************************************************************************/
-void ListBox::setWindow(WINDOW *win) { _win = win; }
-void ListBox::setName(const std::string & name) { _name = name; }
 void ListBox::setActivated(bool activated) { _activated = activated; }
 
 /*******************************************************************************
@@ -450,7 +438,6 @@ void ListBox::setActivated(bool activated) { _activated = activated; }
 Get attributes
 
 *******************************************************************************/
-const std::string & ListBox::name() const { return _name; }
 unsigned int ListBox::highlight() const { return _highlight; }
 void ListBox::minimumSize(int & height, int & width) const
 {
@@ -506,15 +493,6 @@ ListItem * ListBox::highlightedItem()
 {
   if (_items.size() == 0) { return NULL; }
   else { return _items[_highlight]; }
-}
-
-ListItem * ListBox::itemByIdx(unsigned int idx)
-{
-  unsigned int nitems;
-
-  nitems = _items.size();
-  if (idx >= nitems) { return NULL; }
-  else { return _items[idx]; }
 }
 
 /*******************************************************************************

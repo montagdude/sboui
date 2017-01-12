@@ -282,7 +282,7 @@ void list_nondeps(const std::vector<BuildListItem *> & installedlist,
 Displays README for a SlackBuild
 
 *******************************************************************************/
-void view_readme(BuildListItem & build)
+void view_readme(const BuildListItem & build)
 {
   std::string cmd;
 

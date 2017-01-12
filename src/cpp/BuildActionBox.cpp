@@ -30,7 +30,7 @@ BuildActionBox::BuildActionBox(WINDOW *win, const std::string & name)
 }
 
 BuildActionBox::BuildActionBox(WINDOW *win, const std::string & name,
-                               BuildListItem & build)
+                               const BuildListItem & build)
 {
   _win = win;
   _name = name;
@@ -44,7 +44,7 @@ BuildActionBox::BuildActionBox(WINDOW *win, const std::string & name,
 Creates options using info about SlackBuild
 
 *******************************************************************************/
-void BuildActionBox::create(BuildListItem & build)
+void BuildActionBox::create(const BuildListItem & build)
 {
   std::size_t len;
   unsigned int i, nchoices;

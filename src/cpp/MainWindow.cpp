@@ -17,9 +17,6 @@
 #include "BuildActionBox.h"
 #include "MainWindow.h"
 
-//FIXME: remove this (testing)
-#include <iostream>
-
 using namespace color;
 
 std::string int2String(int inval)
@@ -935,14 +932,12 @@ void MainWindow::search()
 Dialog for actions pertaining to selected SlackBuild
 
 *******************************************************************************/
-void MainWindow::showBuildActions(BuildListItem & build)
+void MainWindow::showBuildActions(const BuildListItem & build)
 {
   WINDOW *actionwin;
-  int check;
   std::string selection, selected;
   bool getting_selection;
   BuildActionBox actionbox;
-  std::vector<BuildListItem *> reqlist;
 
   // Set up window and dialog
 
@@ -969,21 +964,8 @@ void MainWindow::showBuildActions(BuildListItem & build)
         reset_prog_mode();
         redrawAll();
       }
-      else if (selected == "Compute build order")
-      {
-        def_prog_mode();
-        endwin();
-        check = compute_reqs_order(build, reqlist, _slackbuilds); 
-        if (check == 0)
-        {
-          reqlist.push_back(&build);
-          unsigned int i, nreqs;
-          nreqs = reqlist.size();
-          for ( i = 0; i < nreqs; i++ ) { std::cout << reqlist[i]->name() << std::endl; }
-        }
-        reset_prog_mode();
-        redrawAll();
-      }
+      //else if (selected == "Compute build order") { 
+      //                                      showBuildOrder(build, mode="All"); }
     }
     else if (selection == signals::resize)
     {

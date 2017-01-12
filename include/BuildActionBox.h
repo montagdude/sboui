@@ -24,9 +24,9 @@ class BuildActionBox: public SelectionBox {
     BuildActionBox();
     BuildActionBox(WINDOW *win, const std::string & name);
     BuildActionBox(WINDOW *win, const std::string & name,
-                   BuildListItem & build);
+                   const BuildListItem & build);
 
     /* Sets up actions based on the SlackBuild selected */
 
-    void create(BuildListItem & build);
+    void create(const BuildListItem & build);
 };

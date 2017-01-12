@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <curses.h>
+#include "AbstractListBox.h"
 
 class ListItem;
 
@@ -11,15 +12,11 @@ class ListItem;
 List box with selectable items
 
 *******************************************************************************/
-class ListBox {
+class ListBox: public AbstractListBox {
 
   protected:
 
-    WINDOW *_win;
-    std::string _name, _redraw_type;
-    std::vector<ListItem *> _items;
-    unsigned int _reserved_rows;
-    int _highlight, _firstprint, _prevhighlight;
+    int _highlight, _prevhighlight;
     bool _activated;
 
     /* Setting item to be highlighted */
@@ -56,19 +53,15 @@ class ListBox {
 
     /* Edit list */
 
-    void addItem(ListItem *item);
     void removeItem(unsigned int idx);
     void clearList();
 
     /* Set attributes */
 
-    void setWindow(WINDOW *win);
-    void setName(const std::string & name);
     void setActivated(bool activated);
 
     /* Get attributes */
 
-    const std::string & name() const;
     unsigned int highlight() const;
     virtual void minimumSize(int & height, int & width) const;
     virtual void preferredSize(int & height, int & width) const;
@@ -76,11 +69,6 @@ class ListBox {
     /* Returns pointer to item */
 
     ListItem * highlightedItem();
-    ListItem * itemByIdx(unsigned int idx);
-
-    /* Sorts list */
-
-    void sortByProp(const std::string & prop);
 
     /* Draws frame, items, etc. as needed */
  
