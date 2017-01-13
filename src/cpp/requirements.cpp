@@ -5,8 +5,6 @@
 #include "backend.h"       // get_reqs, split
 #include "requirements.h"
 
-#include <iostream>
-
 /*******************************************************************************
 
 Returns index of correct entry in _slackbuilds vector from given name. Returns
@@ -75,7 +73,6 @@ int get_reqs_recursive(const BuildListItem & build,
   else { deplist = split(get_reqs(build)); }
   
   ndeps = deplist.size();
-std::cout << build.name() << std::endl;
   for ( i = 0; i < ndeps; i++ )
   { 
     if (deplist[i] != "%README%")

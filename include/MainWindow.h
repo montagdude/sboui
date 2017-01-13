@@ -57,7 +57,7 @@ class MainWindow {
 
     void popupSize(int & height, int & width, AbstractListBox *popup) const;
     void popupSize(int & height, int & width, InputBox *popup) const;
-    void placePopup(ListBox *popup, WINDOW *win) const;
+    void placePopup(AbstractListBox *popup, WINDOW *win) const;
     void placePopup(InputBox *popup, WINDOW *win) const;
 
   public:

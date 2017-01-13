@@ -648,20 +648,35 @@ Shows build order for a SlackBuild
 *******************************************************************************/
 void MainWindow::showBuildOrder(const BuildListItem & build, WINDOW *win) const
 {
-  ScrollBox buildorderbox;
   std::vector<BuildListItem> reqlist;
   int check;
+  unsigned int i, nbuildorder;
+  std::string selection;
+  bool getting_input;
+  ScrollBox buildorderbox;
   
   check = compute_reqs_order(build, reqlist, _slackbuilds);
 //FIXME: Make some sort of error message class to show this
-//  if (check != 0) { printStatus("Some requirements of " + build.name() +
-//                                " not found in repository."); }
- printStatus("Some requirements of " + build.name() +
-                                " not found in repository."); 
-refresh();
-  //if (check
-  //buildorderbox.setName("Build order for " + build.name());
-  //buildorderbox.setWindow(win);
+  if (check != 0) 
+  { 
+    printStatus("Some requirements of " + build.name() +
+                " not found in repository."); 
+    return;
+  }
+
+  buildorderbox.setName("Build order for " + build.name());
+  buildorderbox.setWindow(win);
+  nbuildorder = reqlist.size();
+  for ( i = 0; i < nbuildorder; i++ ) { buildorderbox.addItem(&reqlist[i]); } 
+  placePopup(&buildorderbox, win);
+
+  getting_input = true;
+  while (getting_input)
+  {
+    selection = buildorderbox.exec(); 
+    if ( (selection == signals::keyEnter) || 
+         (selection == signals::quit) ) { getting_input = false; }
+  }
 }
 
 /*******************************************************************************
@@ -707,7 +722,7 @@ void MainWindow::popupSize(int & height, int & width, InputBox *popup) const
   else { width = minwidth; }
 } 
 
-void MainWindow::placePopup(ListBox *popup, WINDOW *win) const
+void MainWindow::placePopup(AbstractListBox *popup, WINDOW *win) const
 {
   int rows, cols, height, width, top, left;
 
@@ -991,16 +1006,12 @@ void MainWindow::showBuildActions(const BuildListItem & build)
         reset_prog_mode();
         redrawAll();
       }
-      //else if (selected == "Compute build order") { 
-      //                                       showBuildOrder(build, actionwin); }
-else if (selected == "Compute build order") 
-{ 
-  def_prog_mode();
-  endwin();
-  showBuildOrder(build, actionwin);
-  reset_prog_mode();
-  redrawAll();
-}
+      else if (selected == "Compute build order")
+      { 
+        showBuildOrder(build, actionwin); 
+        placePopup(&actionbox, actionwin);
+        redrawAll();
+      }
     }
     else if (selection == signals::resize)
     {
