@@ -38,14 +38,15 @@ has.
 *******************************************************************************/
 int ScrollBox::scrollLast()
 {
-  int rows, cols, firstprintstore;
+  int rows, cols, firstprintstore, rowsavail;
 
   if (_items.size() == 0) { return 0; }
   
   getmaxyx(_win, rows, cols);
   firstprintstore = _firstprint;
+  rowsavail = rows - _reserved_rows;
   
-  _firstprint = std::max(int(rows-_reserved_rows), 0);
+  _firstprint = std::max(int(_items.size())-rowsavail, 0);
   if (firstprintstore == _firstprint) { return 0; }
   else { return 1; }
 }
@@ -76,9 +77,13 @@ has.
 *******************************************************************************/
 int ScrollBox::scrollDown()
 {
+  int rows, cols, rowsavail;
+
   if (_items.size() == 0) { return 0; }
 
-  if (_firstprint < int(_items.size())-1)
+  getmaxyx(_win, rows, cols);
+  rowsavail = rows - _reserved_rows;
+  if (_firstprint < int(_items.size()) - rowsavail)
   {
     _firstprint++;
     return 1;
@@ -128,7 +133,7 @@ int ScrollBox::scrollNextPage()
 
   firstprintstore = _firstprint;
   nitems = _items.size();
-  if (_firstprint + rowsavail >= nitems-1) { return scrollLast(); }
+  if (_firstprint + 2*rowsavail >= nitems-1) { return scrollLast(); }
   else { _firstprint += rowsavail; }
 
   if (firstprintstore == _firstprint) { return 0; }

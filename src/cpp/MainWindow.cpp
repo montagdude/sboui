@@ -646,7 +646,7 @@ void MainWindow::filterSearch(const std::string & searchterm,
 Shows build order for a SlackBuild
 
 *******************************************************************************/
-void MainWindow::showBuildOrder(const BuildListItem & build, WINDOW *win) const
+void MainWindow::showBuildOrder(const BuildListItem & build, WINDOW *win)
 {
   std::vector<BuildListItem> reqlist;
   int check;
@@ -654,6 +654,7 @@ void MainWindow::showBuildOrder(const BuildListItem & build, WINDOW *win) const
   std::string selection;
   bool getting_input;
   ScrollBox buildorderbox;
+
   
   check = compute_reqs_order(build, reqlist, _slackbuilds);
 //FIXME: Make some sort of error message class to show this
@@ -663,6 +664,9 @@ void MainWindow::showBuildOrder(const BuildListItem & build, WINDOW *win) const
                 " not found in repository."); 
     return;
   }
+
+  wclear(win);
+  redrawAll();
 
   reqlist.push_back(build);
   buildorderbox.setName("Build order for " + build.name());
@@ -678,6 +682,12 @@ void MainWindow::showBuildOrder(const BuildListItem & build, WINDOW *win) const
     selection = buildorderbox.exec(); 
     if ( (selection == signals::keyEnter) || 
          (selection == signals::quit) ) { getting_input = false; }
+    else if (selection == signals::resize) 
+    { 
+      placePopup(&buildorderbox, win);
+      redrawAll(true);
+      clearStatus();
+    }
   }
 }
 
@@ -1022,23 +1032,22 @@ void MainWindow::showBuildActions(const BuildListItem & build)
         endwin();
         view_readme(build); 
         reset_prog_mode();
-        redrawAll();
+        redrawAll(true);
       }
       else if (selected == "Compute build order")
       { 
+        showBuildOrder(build, actionwin);
         wclear(actionwin);
-        redrawAll();
-        showBuildOrder(build, actionwin); 
         placePopup(&actionbox, actionwin);
-        redrawAll();
-      }
+        redrawAll(true);
+      }                                              
     }
     else if (selection == signals::resize)
     {
-      placePopup(&_fbox, actionwin);
+      placePopup(&actionbox, actionwin);
       redrawAll(true);
       clearStatus();
-      _fbox.draw(true);
+      actionbox.draw(true);
     }
     else { getting_selection = false; }
   }
