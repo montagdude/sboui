@@ -699,9 +699,17 @@ void MainWindow::popupSize(int & height, int & width,
   maxwidth = cols-4;
 
   if (prefheight < maxheight) { height = prefheight; }
-  else { height = minheight; }
+  else 
+  { 
+    if (maxheight-1 > minheight) { height = maxheight-1; }
+    else { height = minheight; }
+  }
   if (prefwidth < maxwidth) { width = prefwidth; }
-  else { width = minwidth; }
+  else 
+  { 
+    if (maxwidth-1 > minwidth) { width = minwidth-1; }
+    else { width = minwidth; }
+  }
 } 
 
 void MainWindow::popupSize(int & height, int & width, InputBox *popup) const
@@ -717,9 +725,17 @@ void MainWindow::popupSize(int & height, int & width, InputBox *popup) const
   maxwidth = cols-4;
 
   if (prefheight < maxheight) { height = prefheight; }
-  else { height = minheight; }
+  else 
+  { 
+    if (maxheight-1 > minheight) { height = maxheight-1; }
+    else { height = minheight; }
+  }
   if (prefwidth < maxwidth) { width = prefwidth; }
-  else { width = minwidth; }
+  else 
+  { 
+    if (maxwidth-1 > minwidth) { width = minwidth-1; }
+    else { width = minwidth; }
+  }
 } 
 
 void MainWindow::placePopup(AbstractListBox *popup, WINDOW *win) const
