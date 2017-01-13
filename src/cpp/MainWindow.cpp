@@ -17,6 +17,9 @@
 #include "BuildActionBox.h"
 #include "MainWindow.h"
 
+//FIXME: use a subclass of this instead
+#include "ScrollBox.h"
+
 using namespace color;
 
 std::string int2String(int inval)
@@ -640,11 +643,26 @@ void MainWindow::filterSearch(const std::string & searchterm,
 
 /*******************************************************************************
 
+Shows build order for a SlackBuild
+
+*******************************************************************************/
+void MainWindow::showBuildOrder(const BuildListItem & build, WINDOW *win) const
+{
+  ScrollBox buildorderbox;
+  std::vector<BuildListItem *> reqlist;
+
+  buildorderbox.setName("Build order for " + build.name());
+  buildorderbox.setWindow(win);
+}
+
+/*******************************************************************************
+
 Sets size and position of popup boxes
 FIXME: use templates instead of overloading?
 
 *******************************************************************************/
-void MainWindow::popupSize(int & height, int & width, ListBox *popup) const
+void MainWindow::popupSize(int & height, int & width, 
+                           AbstractListBox *popup) const
 {
   int minheight, minwidth, prefheight, prefwidth, maxheight, maxwidth;
   int rows, cols;
@@ -964,8 +982,8 @@ void MainWindow::showBuildActions(const BuildListItem & build)
         reset_prog_mode();
         redrawAll();
       }
-      //else if (selected == "Compute build order") { 
-      //                                      showBuildOrder(build, mode="All"); }
+      else if (selected == "Compute build order") { 
+                                             showBuildOrder(build, actionwin); }
     }
     else if (selection == signals::resize)
     {

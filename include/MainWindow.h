@@ -3,6 +3,7 @@
 #include <curses.h>
 #include <vector>
 #include <string>
+#include "AbstractListBox.h"
 #include "CategoryListItem.h"
 #include "CategoryListBox.h"
 #include "BuildListItem.h"
@@ -39,6 +40,8 @@ class MainWindow {
     void redrawWindows(bool force=false);
     void redrawAll(bool force=false);
 
+    /* Filters lists */
+
     void filterAll();
     void filterInstalled();
     void filterUpgradable();
@@ -48,11 +51,11 @@ class MainWindow {
 
     /* Displays build order for a given SlackBuild */
 
-    void showBuildOrder(const BuildListItem & build) const;
+    void showBuildOrder(const BuildListItem & build, WINDOW *win) const;
 
     /* Sets size of popup boxes */
 
-    void popupSize(int & height, int & width, ListBox *popup) const;
+    void popupSize(int & height, int & width, AbstractListBox *popup) const;
     void popupSize(int & height, int & width, InputBox *popup) const;
     void placePopup(ListBox *popup, WINDOW *win) const;
     void placePopup(InputBox *popup, WINDOW *win) const;
