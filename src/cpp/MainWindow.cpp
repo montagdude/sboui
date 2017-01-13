@@ -649,10 +649,19 @@ Shows build order for a SlackBuild
 void MainWindow::showBuildOrder(const BuildListItem & build, WINDOW *win) const
 {
   ScrollBox buildorderbox;
-  std::vector<BuildListItem *> reqlist;
-
-  buildorderbox.setName("Build order for " + build.name());
-  buildorderbox.setWindow(win);
+  std::vector<BuildListItem> reqlist;
+  int check;
+  
+  check = compute_reqs_order(build, reqlist, _slackbuilds);
+//FIXME: Make some sort of error message class to show this
+//  if (check != 0) { printStatus("Some requirements of " + build.name() +
+//                                " not found in repository."); }
+ printStatus("Some requirements of " + build.name() +
+                                " not found in repository."); 
+refresh();
+  //if (check
+  //buildorderbox.setName("Build order for " + build.name());
+  //buildorderbox.setWindow(win);
 }
 
 /*******************************************************************************
@@ -982,8 +991,16 @@ void MainWindow::showBuildActions(const BuildListItem & build)
         reset_prog_mode();
         redrawAll();
       }
-      else if (selected == "Compute build order") { 
-                                             showBuildOrder(build, actionwin); }
+      //else if (selected == "Compute build order") { 
+      //                                       showBuildOrder(build, actionwin); }
+else if (selected == "Compute build order") 
+{ 
+  def_prog_mode();
+  endwin();
+  showBuildOrder(build, actionwin);
+  reset_prog_mode();
+  redrawAll();
+}
     }
     else if (selection == signals::resize)
     {
