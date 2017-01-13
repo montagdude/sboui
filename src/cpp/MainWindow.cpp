@@ -664,12 +664,14 @@ void MainWindow::showBuildOrder(const BuildListItem & build, WINDOW *win) const
     return;
   }
 
+  reqlist.push_back(build);
   buildorderbox.setName("Build order for " + build.name());
   buildorderbox.setWindow(win);
   nbuildorder = reqlist.size();
   for ( i = 0; i < nbuildorder; i++ ) { buildorderbox.addItem(&reqlist[i]); } 
   placePopup(&buildorderbox, win);
 
+  redrawHeaderFooter();
   getting_input = true;
   while (getting_input)
   {
@@ -1024,6 +1026,8 @@ void MainWindow::showBuildActions(const BuildListItem & build)
       }
       else if (selected == "Compute build order")
       { 
+        wclear(actionwin);
+        redrawAll();
         showBuildOrder(build, actionwin); 
         placePopup(&actionbox, actionwin);
         redrawAll();
