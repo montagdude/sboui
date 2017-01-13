@@ -21,6 +21,11 @@ class AbstractListBox {
     unsigned int _reserved_rows;
     int _firstprint;
 
+    /* Prints to end of line, padding with spaces and avoiding borders */
+
+    virtual void printToEol(const std::string & msg) const;
+    void printSpaces(unsigned int nspaces) const;
+
     virtual void redrawFrame() const = 0;
     virtual void redrawSingleItem(unsigned int idx) = 0;
 

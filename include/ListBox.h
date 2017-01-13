@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <vector>
 #include <curses.h>
 #include "AbstractListBox.h"
 
@@ -31,11 +30,6 @@ class ListBox: public AbstractListBox {
     /* Determines first item to print (needed for scrolling) */
     
     int determineFirstPrint();
-
-    /* Prints to end of line, padding with spaces and avoiding borders */
-
-    void printToEol(const std::string & msg) const;
-    void printSpaces(unsigned int nspaces) const;
 
     /* Drawing */
     
