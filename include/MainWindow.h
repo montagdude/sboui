@@ -51,7 +51,7 @@ class MainWindow {
 
     /* Displays build order for a given SlackBuild */
 
-    void showBuildOrder(const BuildListItem & build, WINDOW *win);
+    void showBuildOrder(const BuildListItem & build);
 
     /* Sets size of popup boxes */
 
@@ -59,6 +59,10 @@ class MainWindow {
     void popupSize(int & height, int & width, InputBox *popup) const;
     void placePopup(AbstractListBox *popup, WINDOW *win) const;
     void placePopup(InputBox *popup, WINDOW *win) const;
+
+    /* Temporarily hides a window */
+
+    void hideWindow(WINDOW *win) const;
 
   public:
 

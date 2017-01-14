@@ -646,10 +646,11 @@ void MainWindow::filterSearch(const std::string & searchterm,
 Shows build order for a SlackBuild
 
 *******************************************************************************/
-void MainWindow::showBuildOrder(const BuildListItem & build, WINDOW *win)
+void MainWindow::showBuildOrder(const BuildListItem & build)
 {
   std::vector<BuildListItem> reqlist;
   int check;
+  WINDOW *buildorderwin;
   unsigned int i, nbuildorder;
   std::string selection;
   bool getting_input;
@@ -664,18 +665,15 @@ void MainWindow::showBuildOrder(const BuildListItem & build, WINDOW *win)
                 " not found in repository."); 
     return;
   }
-
-  wclear(win);
-  redrawAll();
-
   reqlist.push_back(build);
+
+  buildorderwin = newwin(10, 10, 4, 4);
   buildorderbox.setName("Build order for " + build.name());
-  buildorderbox.setWindow(win);
+  buildorderbox.setWindow(buildorderwin);
   nbuildorder = reqlist.size();
   for ( i = 0; i < nbuildorder; i++ ) { buildorderbox.addItem(&reqlist[i]); } 
-  placePopup(&buildorderbox, win);
+  placePopup(&buildorderbox, buildorderwin);
 
-  redrawHeaderFooter();
   getting_input = true;
   while (getting_input)
   {
@@ -684,11 +682,14 @@ void MainWindow::showBuildOrder(const BuildListItem & build, WINDOW *win)
          (selection == signals::quit) ) { getting_input = false; }
     else if (selection == signals::resize) 
     { 
-      placePopup(&buildorderbox, win);
+      placePopup(&buildorderbox, buildorderwin);
       redrawAll(true);
       clearStatus();
     }
   }
+
+  wclear(buildorderwin);
+  delwin(buildorderwin);
 }
 
 /*******************************************************************************
@@ -772,6 +773,22 @@ void MainWindow::placePopup(InputBox *popup, WINDOW *win) const
   top = std::floor(double(rows)/2. - double(height)/2.);
   mvwin(win, top, left);
   wresize(win, height, width);
+}
+
+/*******************************************************************************
+
+Hides a window by putting it at the center of the screen and giving it 0 size
+
+*******************************************************************************/
+void MainWindow::hideWindow(WINDOW *win) const
+{
+  int rows, cols, left, top;
+
+  getmaxyx(stdscr, rows, cols);
+  left = std::floor(double(cols)/2.);
+  top = std::floor(double(rows)/2.);
+  mvwin(win, top, left);
+  wresize(win, 0, 0);
 }
 
 /*******************************************************************************
@@ -934,14 +951,10 @@ void MainWindow::selectFilter()
     }
   }
 
-  // Get rid of window
+  // Get rid of window and redraw
 
-  wclear(filterwin);
   delwin(filterwin);
-
-  // Redraw
-
-  redrawAll();
+  redrawAll(true);
 }
 
 /*******************************************************************************
@@ -987,14 +1000,10 @@ void MainWindow::search()
     }
   }
 
-  // Get rid of window
+  // Get rid of window and redraw
 
-  wclear(searchwin);
   delwin(searchwin);
-
-  // Redraw
-
-  redrawAll();
+  redrawAll(true);
 }
 
 /*******************************************************************************
@@ -1009,7 +1018,7 @@ void MainWindow::showBuildActions(const BuildListItem & build)
   bool getting_selection;
   BuildActionBox actionbox;
 
-  // Set up window and dialog
+  // Set up windows and dialog
 
   actionwin = newwin(10, 10, 4, 4);
   actionbox.setWindow(actionwin);
@@ -1036,8 +1045,9 @@ void MainWindow::showBuildActions(const BuildListItem & build)
       }
       else if (selected == "Compute build order")
       { 
-        showBuildOrder(build, actionwin);
-        wclear(actionwin);
+        hideWindow(actionwin);
+        redrawAll(true);
+        showBuildOrder(build);
         placePopup(&actionbox, actionwin);
         redrawAll(true);
       }                                              
@@ -1052,14 +1062,10 @@ void MainWindow::showBuildActions(const BuildListItem & build)
     else { getting_selection = false; }
   }
 
-  // Get rid of window
+  // Get rid of window and redraw
 
-  wclear(actionwin);
   delwin(actionwin);
-
-  // Redraw
-
-  redrawAll();
+  redrawAll(true);
 }
 
 /*******************************************************************************
