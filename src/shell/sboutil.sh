@@ -1,16 +1,6 @@
 #!/bin/bash
 
 ################################################################################
-# Removes quotes around string
-function remove_quotes ()
-{
-  local STRING=$1
-  STRING=${STRING#\"}
-  STRING=${STRING%\"}
-  echo $STRING
-}
-
-################################################################################
 # Gets SlackBuild name from installed package name in /var/log/packages
 function get_pkg_name ()
 {
@@ -107,7 +97,9 @@ function get_reqs ()
   # Read .info file
   . $REPO_DIR/$CATEGORY/$BUILD/$BUILD.info
 
-  echo $REQUIRES
+  if [ -n "$REQUIRES" ]; then
+    echo $REQUIRES
+  fi
 }
 
 case $1 in

@@ -656,7 +656,6 @@ void MainWindow::showBuildOrder(const BuildListItem & build)
   bool getting_input;
   ScrollBox buildorderbox;
 
-  
   check = compute_reqs_order(build, reqlist, _slackbuilds);
 //FIXME: Make some sort of error message class to show this
   if (check != 0) 
