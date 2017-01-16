@@ -22,7 +22,7 @@ void BuildOrderBox::redrawFrame() const
 {
   unsigned int rows, cols, namelen, i, nspaces, vlineloc;
   double mid, left, right;
-  int pair_title, pair_info;
+  int pair_title, pair_info, pair_header;
 
   getmaxyx(_win, rows, cols);
 
@@ -47,8 +47,11 @@ void BuildOrderBox::redrawFrame() const
   left = std::floor(mid - double(namelen)/2.0);
   right = left + namelen;
   wmove(_win, 0, left);
+  pair_title = colors.pair(fg_title, bg_title);
+  if (pair_title != -1) { wattron(_win, COLOR_PAIR(pair_title)); }
   wattron(_win, A_BOLD);
   wprintw(_win, _name.c_str());
+  if (pair_title != -1) { wattroff(_win, COLOR_PAIR(pair_title)); }
   wattroff(_win, A_BOLD);
 
   // Corners
@@ -92,10 +95,9 @@ void BuildOrderBox::redrawFrame() const
 
   // Draw header
 
-  pair_title = colors.pair(fg_title, bg_title);
-
   wmove(_win, 1, 1);
-  if (pair_title != -1) { wattron(_win, COLOR_PAIR(pair_title)); }
+  pair_header = colors.pair(header_popup, bg_popup);
+  if (pair_header != -1) { wattron(_win, COLOR_PAIR(pair_header)); }
   wattron(_win, A_BOLD);
   wprintw(_win, "Name");
 
@@ -104,7 +106,7 @@ void BuildOrderBox::redrawFrame() const
   for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
 
   printToEol("Installed");
-  if (pair_title != -1) { wattroff(_win, COLOR_PAIR(pair_title)); }
+  if (pair_header != -1) { wattroff(_win, COLOR_PAIR(pair_header)); }
   wattroff(_win, A_BOLD);
 
   // Draw horizontal and then vertical lines

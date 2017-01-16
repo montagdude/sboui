@@ -652,8 +652,9 @@ void MainWindow::showBuildOrder(const BuildListItem & build)
   BuildOrderBox buildorder;
 
   printStatus("Computing build order for " + build.name() + " ...");
-
   check = buildorder.create(build, _slackbuilds);
+
+  clearStatus();
 //FIXME: Make some sort of error message class to show this
   if (check != 0) 
   { 

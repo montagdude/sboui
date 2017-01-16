@@ -34,6 +34,7 @@ int main()
     //fg_highlight_inactive = "black";
     //bg_highlight_inactive = "white";
     //header = "yellow";
+    //header_popup = "black";
     //tagged = "yellow";
     //fg_popup = "blue";
     //bg_popup = "white";
@@ -50,6 +51,7 @@ int main()
     fg_highlight_inactive = "white";
     bg_highlight_inactive = "black";
     header = "red";
+    header_popup = "white";
     tagged = "red";
     fg_popup = "white";
     bg_popup = "black";
@@ -60,6 +62,7 @@ int main()
     colors.addPair(fg_highlight_active, bg_highlight_active);
     colors.addPair(fg_highlight_inactive, bg_highlight_inactive);
     colors.addPair(header, bg_normal); 
+    colors.addPair(header_popup, bg_popup); 
     colors.addPair(tagged, bg_normal); 
     colors.addPair(tagged, bg_highlight_active); 
     colors.addPair(tagged, bg_highlight_inactive); 

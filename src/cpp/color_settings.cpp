@@ -10,7 +10,7 @@ namespace color
   std::string fg_info, bg_info;
   std::string fg_highlight_active, bg_highlight_active;
   std::string fg_highlight_inactive, bg_highlight_inactive;
-  std::string header;
+  std::string header, header_popup;
   std::string tagged;
   std::string fg_popup, bg_popup;
 }
