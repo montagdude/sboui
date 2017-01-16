@@ -112,7 +112,7 @@ screen or not.
 void SelectionBox::redrawSingleItem(unsigned int idx)
 {
   std::string fg, bg;
-  int color_pair;
+  int color_pair, i, len, hidx;
 
   // Go to item location, optionally highlight, and print item
 
@@ -148,7 +148,19 @@ void SelectionBox::redrawSingleItem(unsigned int idx)
 
   // Print item
 
-  printToEol(_items[idx]->name());
+  len = _items[idx]->name().size();
+  hidx = _items[idx]->hotKey();
+  for ( i = 0; i < len; i++ )
+  {
+    if ( i == hidx )
+    { 
+      wattron(_win, A_BOLD);
+      wprintw(_win, _items[idx]->name().substr(i,1).c_str());
+      wattroff(_win, A_BOLD);
+    }
+    else { wprintw(_win, _items[idx]->name().substr(i,1).c_str()); }
+  }
+  printToEol(std::string(""));
 
   // Turn off highlight color
 

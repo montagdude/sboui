@@ -244,7 +244,7 @@ screen or not.
 void ListBox::redrawSingleItem(unsigned int idx)
 {
   std::string fg, bg;
-  int color_pair;
+  int color_pair, len, i, hidx;
 
   // Go to item location, optionally highlight, and print item
 
@@ -278,9 +278,21 @@ void ListBox::redrawSingleItem(unsigned int idx)
   
   if (int(idx) == _highlight) { _prevhighlight = _highlight; }
 
-  // Print item
+  // Print item, setting hotkey character as bold
 
-  printToEol(_items[idx]->name());
+  len = _items[idx]->name().size();
+  hidx = _items[idx]->hotKey();
+  for ( i = 0; i < len; i++ )
+  {
+    if ( i == hidx )
+    { 
+      wattron(_win, A_BOLD);
+      wprintw(_win, _items[idx]->name().substr(i,1).c_str());
+      wattroff(_win, A_BOLD);
+    }
+    else { wprintw(_win, _items[idx]->name().substr(i,1).c_str()); }
+  }
+  printToEol(std::string(""));
 
   // Turn off highlight color
 

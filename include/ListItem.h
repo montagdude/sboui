@@ -22,6 +22,7 @@ class ListItem {
 
     std::string _name;
     std::vector<listprop> _props;
+    int _hotkey;
 
     // Conversions
 
@@ -41,6 +42,12 @@ class ListItem {
     // Set properties
 
     void setName(const std::string & name);
+
+    /* HotKey can be used to bold or underline a certain character in the name,
+       and the caller can use it to perform a certain action when that keystroke
+       is returned. By default it is set to -1. */
+    void setHotKey(int hotkey); 
+                                   
     void addProp(const std::string & propname, const std::string & value);
     void addBoolProp(const std::string & propname, bool value);
     int setProp(const std::string & propname, const std::string & value);
@@ -49,6 +56,7 @@ class ListItem {
     // Get properties
 
     const std::string & name() const;
+    int hotKey() const;
     const std::string & getProp(const std::string & propname) const;
     bool getBoolProp(const std::string & propname) const;
 };

@@ -61,20 +61,46 @@ Creates options using info about SlackBuild
 void BuildActionBox::create(const BuildListItem & build)
 {
   std::size_t len;
+  unsigned int count;
+
+  count = 0;
 
   addItem(new ListItem("View README"));
-  if (! build.getBoolProp("installed")) { addItem(new ListItem("Install")); }
+  _items[count]->setHotKey(0);
+  count++;
+
+  if (! build.getBoolProp("installed"))
+  { 
+    addItem(new ListItem("Install")); 
+    _items[count]->setHotKey(0);
+    count++;
+  }
+
   else
   {
     addItem(new ListItem ("Remove"));
+    _items[count]->setHotKey(0);
+    count++;
+
     len = build.getProp("available_version").size();
     if (build.getProp("installed_version").substr(0, len) !=
         build.getProp("available_version"))
     {
       addItem(new ListItem("Upgrade"));
     }
+    _items[count]->setHotKey(0);
+    count++;
   }
+
   addItem(new ListItem("Compute build order"));
+  _items[count]->setHotKey(0);
+   count++;
+
   addItem(new ListItem("List inverse reqs"));
+  _items[count]->setHotKey(0);
+   count++;
+
   addItem(new ListItem("Browse files"));
+  _items[count]->setHotKey(0);
+   count++;
 }

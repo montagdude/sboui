@@ -61,12 +61,14 @@ ListItem::ListItem()
 { 
   _name = ""; 
   _props.resize(0);
+  _hotkey = -1;
 }
 
 ListItem::ListItem(const std::string & name) 
 { 
   _name = name; 
   _props.resize(0);
+  _hotkey = -1;
 }
 
 /*******************************************************************************
@@ -75,6 +77,7 @@ Set properties. Methods with return value return 0 for success or 1 for failure.
 
 *******************************************************************************/
 void ListItem::setName(const std::string & name) { _name = name; }
+void ListItem::setHotKey(int hotkey) { _hotkey = hotkey; }
 void ListItem::addProp(const std::string & propname, const std::string & value)
 {
   int propidx;
@@ -140,6 +143,7 @@ Such an attempt will result in a segfault.
 
 *******************************************************************************/
 const std::string & ListItem::name() const { return _name; }
+int ListItem::hotKey() const { return _hotkey; }
 const std::string & ListItem::getProp(const std::string & propname) const
 {
   int propidx;
