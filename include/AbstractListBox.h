@@ -50,6 +50,7 @@ class AbstractListBox {
     /* Get attributes */
 
     const std::string & name() const;
+    unsigned int numItems() const;
     virtual void minimumSize(int & height, int & width) const = 0;
     virtual void preferredSize(int & height, int & width) const = 0;
 

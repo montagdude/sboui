@@ -70,8 +70,10 @@ void BuildActionBox::create(const BuildListItem & build)
   }
   ListItem item5("Compute build order");
   _choices.push_back(item5);
-  ListItem item6("Browse files");
+  ListItem item6("List inverse reqs");
   _choices.push_back(item6);
+  ListItem item7("Browse files");
+  _choices.push_back(item7);
   
   nchoices = _choices.size();
   for ( i = 0; i < nchoices; i++ ) { addItem(&_choices[i]); } 

@@ -98,14 +98,13 @@ void BuildListBox::redrawFrame() const
   // Draw horizontal and then vertical line
 
   for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
-  for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, vlineloc, ACS_VLINE); }
+  for ( i = 3; i < rows-1; i++ ) { mvwaddch(_win, i, vlineloc, ACS_VLINE); }
 
   // Draw connections between horizontal and vertical lines
 
   mvwaddch(_win, 2, 0, ACS_LTEE);
   mvwaddch(_win, 2, cols-1, ACS_RTEE);
-  mvwaddch(_win, 0, vlineloc, ACS_TTEE);
-  mvwaddch(_win, 2, vlineloc, ACS_PLUS);
+  mvwaddch(_win, 2, vlineloc, ACS_TTEE);
   mvwaddch(_win, rows-1, vlineloc, ACS_BTEE);
 }
 

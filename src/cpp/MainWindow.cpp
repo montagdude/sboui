@@ -7,7 +7,6 @@
 #include "color_settings.h"
 #include "signals.h"
 #include "backend.h"
-#include "requirements.h"
 #include "CategoryListItem.h"
 #include "CategoryListBox.h"
 #include "BuildListItem.h"
@@ -15,10 +14,8 @@
 #include "FilterBox.h"
 #include "SearchBox.h"
 #include "BuildActionBox.h"
+#include "BuildOrderBox.h"
 #include "MainWindow.h"
-
-//FIXME: use a subclass of this instead
-#include "ScrollBox.h"
 
 using namespace color;
 
@@ -648,15 +645,15 @@ Shows build order for a SlackBuild
 *******************************************************************************/
 void MainWindow::showBuildOrder(const BuildListItem & build)
 {
-  std::vector<BuildListItem> reqlist;
-  int check;
   WINDOW *buildorderwin;
-  unsigned int i, nbuildorder;
+  int check;
   std::string selection;
   bool getting_input;
-  ScrollBox buildorderbox;
+  BuildOrderBox buildorder;
 
-  check = compute_reqs_order(build, reqlist, _slackbuilds);
+  printStatus("Computing build order for " + build.name() + " ...");
+
+  check = buildorder.create(build, _slackbuilds);
 //FIXME: Make some sort of error message class to show this
   if (check != 0) 
   { 
@@ -664,30 +661,25 @@ void MainWindow::showBuildOrder(const BuildListItem & build)
                 " not found in repository."); 
     return;
   }
-  reqlist.push_back(build);
 
   buildorderwin = newwin(10, 10, 4, 4);
-  buildorderbox.setName("Build order for " + build.name());
-  buildorderbox.setWindow(buildorderwin);
-  nbuildorder = reqlist.size();
-  for ( i = 0; i < nbuildorder; i++ ) { buildorderbox.addItem(&reqlist[i]); } 
-  placePopup(&buildorderbox, buildorderwin);
+  buildorder.setWindow(buildorderwin);
+  placePopup(&buildorder, buildorderwin);
 
   getting_input = true;
   while (getting_input)
   {
-    selection = buildorderbox.exec(); 
+    selection = buildorder.exec(); 
     if ( (selection == signals::keyEnter) || 
          (selection == signals::quit) ) { getting_input = false; }
     else if (selection == signals::resize) 
     { 
-      placePopup(&buildorderbox, buildorderwin);
+      placePopup(&buildorder, buildorderwin);
       redrawAll(true);
       clearStatus();
     }
   }
 
-  wclear(buildorderwin);
   delwin(buildorderwin);
 }
 

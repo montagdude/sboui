@@ -102,6 +102,7 @@ Get attributes
 
 *******************************************************************************/
 const std::string & AbstractListBox::name() const { return _name; }
+unsigned int AbstractListBox::numItems() const { return _items.size(); }
 
 /*******************************************************************************
 
