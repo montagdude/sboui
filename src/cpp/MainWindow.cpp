@@ -919,19 +919,30 @@ void MainWindow::selectFilter()
   getting_selection = true;
   while (getting_selection)
   {
+    selected = "None";
     selection = _fbox.exec();
     getting_selection = false;
-    if (selection == signals::keyEnter)
+    if (selection == signals::keyEnter) { 
+                                   selected = _fbox.highlightedItem()->name(); }
+
+    // Note that upper/lower case checking for hotkeys has already happened in
+    // SelectionBox, so just check the actual character here.
+
+    if ( (selected == "All") || (selection == "A") )
     {
-      selected = _fbox.highlightedItem()->name();
-      if ( (selected == "All") &&
-           (_filter != "all SlackBuilds") ){ filterAll(); } 
-      else if ( (selected == "Installed") && 
-                (_filter != "installed SlackBuilds") ) { filterInstalled(); }
-      else if ( (selected == "Upgradable") && 
-                (_filter != "upgradable SlackBuilds") ) { filterUpgradable(); } 
-      else if ( (selected == "Non-dependencies") && 
-                (_filter != "non-dependencies") ) { filterNonDeps(); } 
+      if (_filter != "all SlackBuilds") { filterAll(); } 
+    }
+    else if ( (selected == "Installed") || (selection == "I") )
+    {
+      if (_filter != "installed SlackBuilds") { filterInstalled(); }
+    }
+    else if ( (selected == "Upgradable") || (selection == "U") )
+    {
+      if (_filter != "upgradable SlackBuilds") { filterUpgradable(); } 
+    }
+    else if ( (selected == "Non-dependencies") || (selection == "N") )
+    {
+      if (_filter != "non-dependencies") { filterNonDeps(); } 
     }
     else if (selection == signals::resize)
     {
@@ -1023,27 +1034,30 @@ void MainWindow::showBuildActions(const BuildListItem & build)
   getting_selection = true;
   while (getting_selection)
   {
+    selected = "None";
     selection = actionbox.exec();
-    if (selection == signals::keyEnter)
+    if (selection == signals::keyEnter) { 
+                               selected = actionbox.highlightedItem()->name(); }
+
+    // Note that upper/lower case checking for hotkeys has already happened in
+    // SelectionBox, so just check the actual character here.
+
+    if ( (selected == "View README") || (selection == "V") )
     {
-      selected = actionbox.highlightedItem()->name();
-      if (selected == "View README") 
-      {
-        def_prog_mode();
-        endwin();
-        view_readme(build); 
-        reset_prog_mode();
-        redrawAll(true);
-      }
-      else if (selected == "Compute build order")
-      { 
-        hideWindow(actionwin);
-        redrawAll(true);
-        showBuildOrder(build);
-        placePopup(&actionbox, actionwin);
-        redrawAll(true);
-      }                                              
+      def_prog_mode();
+      endwin();
+      view_readme(build); 
+      reset_prog_mode();
+      redrawAll(true);
     }
+    else if ( (selected == "Compute build order") || (selection == "C") )
+    { 
+      hideWindow(actionwin);
+      redrawAll(true);
+      showBuildOrder(build);
+      placePopup(&actionbox, actionwin);
+      redrawAll(true);
+    }                                              
     else if (selection == signals::resize)
     {
       placePopup(&actionbox, actionwin);

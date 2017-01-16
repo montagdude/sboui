@@ -7,6 +7,8 @@
 #include "ListItem.h"
 #include "SelectionBox.h"
 
+#include <iostream>
+
 using namespace color;
 
 /*******************************************************************************
@@ -281,9 +283,11 @@ User interaction: show display until user hits Enter or Esc
 *******************************************************************************/
 std::string SelectionBox::exec()
 {
-  int ch, check_redraw;
+  int ch, check_redraw, hotkey;
+  char ch_char, hotcharN, hotcharL;
   std::string retval;
   bool getting_input;
+  unsigned int i;
 
   const int MY_ESC = 27;
 
@@ -361,11 +365,32 @@ std::string SelectionBox::exec()
         _redraw_type = "all";
         getting_input = false;
         break;
-  
+
       default:
         _redraw_type = "none";
         break;
     }
+      
+    // Handle hotkeys (allow upper and lower case)
+
+    ch_char = char(ch);
+    for ( i = 0; i < numItems(); i++ )
+    {
+      hotkey = _items[i]->hotKey();
+      if (hotkey != -1)
+      {
+        hotcharN = _items[i]->name()[hotkey];
+        hotcharL = std::tolower(_items[i]->name()[hotkey]);
+        if ( (ch_char == hotcharN) || (ch_char == hotcharL) )
+        {
+          retval = hotcharN;
+          _redraw_type = "all";
+          getting_input = false;
+          break;
+        }
+      }
+    }
+
   }
   return retval;
 }
