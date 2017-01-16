@@ -13,10 +13,6 @@ SelectionBox for installing/upgrading/removing/etc. a SlackBuild
 *******************************************************************************/
 class BuildActionBox: public SelectionBox {
   
-  private:
-
-    std::vector<ListItem> _choices;
-
   public:
 
     /* Constructors */
@@ -25,6 +21,10 @@ class BuildActionBox: public SelectionBox {
     BuildActionBox(WINDOW *win, const std::string & name);
     BuildActionBox(WINDOW *win, const std::string & name,
                    const BuildListItem & build);
+
+    /* Destructor */
+
+    ~BuildActionBox();
 
     /* Sets up actions based on the SlackBuild selected */
 

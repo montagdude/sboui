@@ -15,33 +15,39 @@ Constructors
 *******************************************************************************/
 FilterBox::FilterBox()
 {
-  unsigned int i;
-
   _name = "Select a filter";
   _info = "Enter: Ok | Esc: Cancel";
   _reserved_rows = 6;
 
-  _choices.resize(4);
-  _choices[0].setName("All");
-  _choices[1].setName("Installed");
-  _choices[2].setName("Upgradable");
-  _choices[3].setName("Non-dependencies");
-  for ( i = 0; i < 4; i++ ) { addItem(&_choices[i]); }
+  addItem(new ListItem("All"));
+  addItem(new ListItem("Installed"));
+  addItem(new ListItem("Upgradable"));
+  addItem(new ListItem("Non-dependencies"));
 }
 
 FilterBox::FilterBox(WINDOW *win, const std::string & name)
 {
-  unsigned int i;
-
   _win = win;
   _name = name;
   _info = "Enter: Ok | Esc: Cancel";
   _reserved_rows = 6;
 
-  _choices.resize(4);
-  _choices[0].setName("All");
-  _choices[1].setName("Installed");
-  _choices[2].setName("Upgradable");
-  _choices[3].setName("Non-dependencies");
-  for ( i = 0; i < 4; i++ ) { addItem(&_choices[i]); }
+  addItem(new ListItem("All"));
+  addItem(new ListItem("Installed"));
+  addItem(new ListItem("Upgradable"));
+  addItem(new ListItem("Non-dependencies"));
+}
+
+/*******************************************************************************
+
+Destructor
+
+*******************************************************************************/
+FilterBox::~FilterBox()
+{
+  unsigned int i, nitems;
+
+  nitems = _items.size();
+  for ( i = 0; i < nitems; i++ ) { delete _items[i]; }
+  _items.resize(0);
 }
