@@ -49,9 +49,10 @@ class MainWindow {
     void filterSearch(const std::string & searchterm, bool case_sensitive=false,
                       bool whole_whord=false);
 
-    /* Displays build order for a given SlackBuild */
+    /* Actions for a selected SlackBuild */
 
     void showBuildOrder(const BuildListItem & build);
+    void showInverseReqs(const BuildListItem & build);
 
     /* Sets size of popup boxes */
 

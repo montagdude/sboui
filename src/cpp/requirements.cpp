@@ -32,6 +32,31 @@ int build_from_name(const std::string & name,
 
 /*******************************************************************************
 
+Returns index of correct entry in installedlist vector from given name. Returns
+-1 if not found.
+
+*******************************************************************************/
+int build_from_name(const std::string & name,
+                    const std::vector<BuildListItem *> & installedlist)
+{
+  int idx, i, ninstalled;
+
+  idx = -1;
+  ninstalled = installedlist.size();
+  for ( i = 0; i < ninstalled; i++ )
+  {
+    if (installedlist[i]->name() == name) 
+    { 
+      idx = i;
+      break;
+    }
+  }
+
+  return idx;
+}
+
+/*******************************************************************************
+
 Adds required SlackBuild to dependency list, removing any instance already
 present in the list
 
@@ -105,3 +130,33 @@ int compute_reqs_order(const BuildListItem & build,
 
   return check;
 }  
+
+/*******************************************************************************
+
+Computes list of installed SlackBuilds that depend on the given SlackBuild
+
+*******************************************************************************/
+void compute_inv_reqs(const BuildListItem & build,
+                      std::vector<BuildListItem *> & invreqlist,
+                      const std::vector<BuildListItem *> & installedlist)
+{
+  unsigned int i, j, ninstalled, ndeps;
+  std::vector<std::string> deplist;
+
+  invreqlist.resize(0);
+
+  ninstalled = installedlist.size();
+  for ( i = 0; i < ninstalled; i++ )
+  {
+    deplist = split(get_reqs(*installedlist[i]));
+    ndeps = deplist.size();
+    for ( j = 0; j < ndeps; j++ )
+    {
+      if (deplist[j] == build.name())
+      {
+        invreqlist.push_back(installedlist[i]);
+        break;
+      }
+    }
+  }
+}

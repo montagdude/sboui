@@ -13,7 +13,7 @@ Displays build order
 *******************************************************************************/
 class BuildOrderBox: public ScrollBox {
 
-  private:
+  protected:
 
     std::string _info;
     std::vector<BuildListItem> _reqlist;
@@ -41,14 +41,14 @@ class BuildOrderBox: public ScrollBox {
 
     /* Creates list based on SlackBuild selected */
 
-    int create(const BuildListItem & build,
-               const std::vector<BuildListItem> & slackbuilds);
+    virtual int create(const BuildListItem & build,
+                       const std::vector<BuildListItem> & slackbuilds);
 
     /* Draws frame, items, etc. as needed */
  
-    virtual void draw(bool force=false);
+    void draw(bool force=false);
 
     /* User interaction loop */
 
-    virtual std::string exec();
+    std::string exec();
 };

@@ -15,6 +15,7 @@
 #include "SearchBox.h"
 #include "BuildActionBox.h"
 #include "BuildOrderBox.h"
+#include "InvReqBox.h"
 #include "MainWindow.h"
 
 using namespace color;
@@ -654,7 +655,6 @@ void MainWindow::showBuildOrder(const BuildListItem & build)
   printStatus("Computing build order for " + build.name() + " ...");
   check = buildorder.create(build, _slackbuilds);
 
-  clearStatus();
 //FIXME: Make some sort of error message class to show this
   if (check != 0) 
   { 
@@ -662,6 +662,9 @@ void MainWindow::showBuildOrder(const BuildListItem & build)
                 " not found in repository."); 
     return;
   }
+
+  printStatus(int2String(buildorder.numItems()) + 
+              " SlackBuilds in build order for " + build.name() + ".");
 
   buildorderwin = newwin(10, 10, 4, 4);
   buildorder.setWindow(buildorderwin);
@@ -682,6 +685,52 @@ void MainWindow::showBuildOrder(const BuildListItem & build)
   }
 
   delwin(buildorderwin);
+}
+
+/*******************************************************************************
+
+Shows installed SlackBuilds depending on a given SlackBuild
+
+*******************************************************************************/
+void MainWindow::showInverseReqs(const BuildListItem & build)
+{
+  WINDOW *invreqwin;
+  std::string selection;
+  bool getting_input;
+  unsigned int ninvreqs;
+  InvReqBox invreqs;
+
+  printStatus("Computing installed SlackBuilds directly depending on "
+              + build.name() + " ...");
+  invreqs.create(build, _installedlist);
+
+  ninvreqs = invreqs.numItems();
+  if (ninvreqs == 0) { printStatus("No installed SlackBuilds directly depend on"
+                                   + build.name() + "."); }
+  else if (ninvreqs == 1) { printStatus(
+          "1 installed SlackBuild directly depends on " + build.name() + "."); }
+  else { printStatus(int2String(ninvreqs) + 
+           " installed SlackBuilds directly depend on " + build.name() + "."); }
+
+  invreqwin = newwin(10, 10, 4, 4);
+  invreqs.setWindow(invreqwin);
+  placePopup(&invreqs, invreqwin);
+
+  getting_input = true;
+  while (getting_input)
+  {
+    selection = invreqs.exec(); 
+    if ( (selection == signals::keyEnter) || 
+         (selection == signals::quit) ) { getting_input = false; }
+    else if (selection == signals::resize) 
+    { 
+      placePopup(&invreqs, invreqwin);
+      redrawAll(true);
+      clearStatus();
+    }
+  }
+
+  delwin(invreqwin);
 }
 
 /*******************************************************************************
@@ -1055,6 +1104,14 @@ void MainWindow::showBuildActions(const BuildListItem & build)
       hideWindow(actionwin);
       redrawAll(true);
       showBuildOrder(build);
+      placePopup(&actionbox, actionwin);
+      redrawAll(true);
+    }                                              
+    else if ( (selected == "List inverse reqs") || (selection == "L") )
+    { 
+      hideWindow(actionwin);
+      redrawAll(true);
+      showInverseReqs(build);
       placePopup(&actionbox, actionwin);
       redrawAll(true);
     }                                              
