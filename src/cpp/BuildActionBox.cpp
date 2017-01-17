@@ -87,9 +87,9 @@ void BuildActionBox::create(const BuildListItem & build)
         build.getProp("available_version"))
     {
       addItem(new ListItem("Upgrade"));
+      _items[count]->setHotKey(0);
+      count++;
     }
-    _items[count]->setHotKey(0);
-    count++;
   }
 
   addItem(new ListItem("Compute build order"));

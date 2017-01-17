@@ -156,9 +156,9 @@ void SelectionBox::redrawSingleItem(unsigned int idx)
   {
     if ( i == hidx )
     { 
-      wattron(_win, A_BOLD);
+      wattron(_win, A_UNDERLINE);
       wprintw(_win, _items[idx]->name().substr(i,1).c_str());
-      wattroff(_win, A_BOLD);
+      wattroff(_win, A_UNDERLINE);
     }
     else { wprintw(_win, _items[idx]->name().substr(i,1).c_str()); }
   }
