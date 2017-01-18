@@ -700,17 +700,17 @@ void MainWindow::showInverseReqs(const BuildListItem & build)
   unsigned int ninvreqs;
   InvReqBox invreqs;
 
-  printStatus("Computing installed SlackBuilds directly depending on "
+  printStatus("Computing installed SlackBuilds depending on "
               + build.name() + " ...");
   invreqs.create(build, _installedlist);
 
   ninvreqs = invreqs.numItems();
-  if (ninvreqs == 0) { printStatus("No installed SlackBuilds directly depend on"
+  if (ninvreqs == 0) { printStatus("No installed SlackBuilds depend on"
                                    + build.name() + "."); }
   else if (ninvreqs == 1) { printStatus(
-          "1 installed SlackBuild directly depends on " + build.name() + "."); }
+          "1 installed SlackBuild depends on " + build.name() + "."); }
   else { printStatus(int2String(ninvreqs) + 
-           " installed SlackBuilds directly depend on " + build.name() + "."); }
+           " installed SlackBuilds depend on " + build.name() + "."); }
 
   invreqwin = newwin(10, 10, 4, 4);
   invreqs.setWindow(invreqwin);

@@ -80,6 +80,29 @@ void add_req(const BuildListItem & build,
 
 /*******************************************************************************
 
+Adds required SlackBuild to inverse dependency list, removing any instance
+already present in the list
+
+*******************************************************************************/
+void add_inverse_req(BuildListItem * build,
+                     std::vector<BuildListItem *> & invreqlist)
+{
+  unsigned int i, ninvreqs;
+
+  ninvreqs = invreqlist.size();
+  for ( i = 0; i < ninvreqs; i++ )
+  {
+    if (invreqlist[i]->name() == build->name()) 
+    { 
+      invreqlist.erase(invreqlist.begin()+i); 
+      break;
+    }
+  }
+  invreqlist.push_back(build);
+}
+
+/*******************************************************************************
+
 Recursively computes list of requirements for a SlackBuild. List must be
 reversed after calling this to get the proper build order. Returns 1 if a
 requirement is not found in the list.
@@ -133,30 +156,43 @@ int compute_reqs_order(const BuildListItem & build,
 
 /*******************************************************************************
 
-Computes list of installed SlackBuilds that depend on the given SlackBuild
+Recursively finds installed SlackBuilds that depend on a given SlackBuild
 
 *******************************************************************************/
-void compute_inv_reqs(const BuildListItem & build,
+void get_inverse_reqs_recursive(const BuildListItem & build,
                       std::vector<BuildListItem *> & invreqlist,
                       const std::vector<BuildListItem *> & installedlist)
 {
   unsigned int i, j, ninstalled, ndeps;
   std::vector<std::string> deplist;
 
-  invreqlist.resize(0);
-
   ninstalled = installedlist.size();
   for ( i = 0; i < ninstalled; i++ )
   {
-    deplist = split(get_reqs(*installedlist[i]));
+    deplist = split(installedlist[i]->getProp("requires"));
     ndeps = deplist.size();
     for ( j = 0; j < ndeps; j++ )
     {
       if (deplist[j] == build.name())
       {
-        invreqlist.push_back(installedlist[i]);
+        add_inverse_req(installedlist[i], invreqlist);
+        get_inverse_reqs_recursive(*installedlist[i], invreqlist, 
+                                   installedlist);
         break;
       }
     }
   }
+}        
+
+/*******************************************************************************
+
+Computes list of installed SlackBuilds that depend on a given SlackBuild
+
+*******************************************************************************/
+void compute_inv_reqs(const BuildListItem & build,
+                      std::vector<BuildListItem *> & invreqlist,
+                      const std::vector<BuildListItem *> & installedlist)
+{
+  invreqlist.resize(0);
+  get_inverse_reqs_recursive(build, invreqlist, installedlist);
 }

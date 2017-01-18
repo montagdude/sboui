@@ -93,7 +93,9 @@ std::string TextInput::exec()
   const int MY_ESC = 27;
 
   curs_set(1);
-  determineFirstText();
+  _entry.clear();
+  _firsttext = 0;
+  _cursidx = 0;
 
   getting_input = true;
   while (getting_input)
