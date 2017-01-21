@@ -13,8 +13,8 @@ class BuildListBox: public ListBox {
   
   private:
 
-    void redrawFrame() const;
-    void redrawSingleItem(unsigned int idx);
+    virtual void redrawFrame() const;
+    virtual void redrawSingleItem(unsigned int idx);
 
   public:
 

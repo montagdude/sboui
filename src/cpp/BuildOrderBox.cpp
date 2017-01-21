@@ -8,7 +8,7 @@
 #include "signals.h"
 #include "requirements.h"
 #include "BuildListItem.h"
-#include "ScrollBox.h"
+#include "BuildListBox.h"
 #include "BuildOrderBox.h"
 
 using namespace color;
@@ -135,24 +135,113 @@ screen or not.
 *******************************************************************************/
 void BuildOrderBox::redrawSingleItem(unsigned int idx)
 {
-  int nspaces, vlineloc, printlen, rows, cols, i;
+  std::string fg, bg;
+  int color_pair, nspaces, vlineloc, printlen;
+  unsigned int rows, cols, i; 
 
   getmaxyx(_win, rows, cols);
 
-  // Go to item location and print item
+  // Go to item location, optionally highlight, and print item
 
   wmove(_win, idx-_firstprint+3, 1);
+
+  // Turn on highlight color
+
+  if (int(idx) == _highlight)
+  {
+    if (_activated) 
+    { 
+      if (_items[idx]->getBoolProp("tagged")) { fg = tagged; }
+      else { fg = fg_highlight_active; }
+      bg = bg_highlight_active; 
+    }
+    else
+    {
+      if (_items[idx]->getBoolProp("tagged")) { fg = tagged; }
+      else { fg = fg_highlight_inactive; }
+      bg = bg_highlight_inactive; 
+    }
+    color_pair = colors.pair(fg, bg);
+    if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
+    else 
+    { 
+      if (_activated) { wattron(_win, A_REVERSE); }
+    }
+  } 
+  else
+  {
+    if (_items[idx]->getBoolProp("tagged")) { fg = tagged; }
+    else { fg = fg_popup; }
+    bg = bg_popup;
+    color_pair = colors.pair(fg, bg);
+    if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
+  }
+
+  if (_items[idx]->getBoolProp("tagged")) { wattron(_win, A_BOLD); }
+
+  // Save highlight idx for redrawing later.
+  // Note: prevents this method from being const.
+  
+  if (int(idx) == _highlight) { _prevhighlight = _highlight; }
+
+  // Print item, spaces, install status
+
   vlineloc = cols-2 - std::string("Installed").size() - 1;
   printlen = std::min(int(_items[idx]->name().size()), vlineloc);
-  wprintw(_win, _items[idx]->name().substr(0,printlen).c_str());
-
-  // Print spaces, divider, install status
 
   nspaces = vlineloc - _items[idx]->name().size();
-  for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
-  waddch(_win, ACS_VLINE);
+  wprintw(_win, _items[idx]->name().substr(0,printlen).c_str());
+
+  for ( i = 0; int(i) < nspaces; i++ ) { waddch(_win, ' '); }
+
+  wmove(_win, idx-_firstprint+3, vlineloc+2);
   if (_items[idx]->getBoolProp("installed")) { printToEol("   [X]   "); }
   else { printToEol("   [ ]   "); }
+
+  // Turn off tag color
+
+  if (_items[idx]->getBoolProp("tagged")) 
+  { 
+    wattroff(_win, A_BOLD); 
+    if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); }
+    if (int(idx) == _highlight)
+    {
+      if (_activated) 
+      {
+        fg = fg_highlight_active;
+        bg = bg_highlight_active;
+      }
+      else
+      {
+        fg = fg_highlight_inactive;
+        bg = bg_highlight_inactive;
+      }
+    }
+    else
+    {
+      fg = fg_popup;
+      bg = bg_popup;
+    }
+    color_pair = colors.pair(fg, bg);
+    if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
+    else 
+    { 
+      if (_activated) { wattron(_win, A_REVERSE); }
+    }
+  }
+
+  // Divider
+
+  wmove(_win, idx-_firstprint+3, vlineloc+1);
+  waddch(_win, ACS_VLINE);
+
+  // Turn off color
+
+  if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); }
+  else
+  {
+    if ( (int(idx) == _highlight) && _activated ) { wattroff(_win, A_REVERSE); }
+  }
 }
 
 /*******************************************************************************
@@ -278,95 +367,6 @@ void BuildOrderBox::draw(bool force)
   if (_redraw_type != "none") { redrawFrame(); }
   if ( (_redraw_type == "all") || (_redraw_type == "items")) { 
                                                             redrawAllItems(); }
+  else if (_redraw_type == "changed") { redrawChangedItems(); }
   wrefresh(_win);
-}
-
-/*******************************************************************************
-
-User interaction: returns key stroke or other signal
-
-*******************************************************************************/
-std::string BuildOrderBox::exec()
-{
-  int ch, check_redraw;
-  std::string retval;
-
-  const int MY_ESC = 27;
-
-  // Draw list elements
-
-  draw();
-
-  // Get user input
-
-  switch (ch = getch()) {
-
-    // Enter key: accept selection
-
-    case '\n':
-    case '\r':
-    case KEY_ENTER:
-      retval = signals::keyEnter;
-      _redraw_type = "all";
-      break;
-
-    // Arrows/Home/End/PgUp/Dn: scrolling
-
-    case KEY_UP:
-      retval = signals::scroll;
-      check_redraw = scrollUp();
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "none"; }
-      break;
-    case KEY_DOWN:
-      retval = signals::scroll;
-      check_redraw = scrollDown();
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "none"; }
-      break;
-    case KEY_PPAGE:
-      retval = signals::scroll;
-      check_redraw = scrollPreviousPage();
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "none"; }
-      break;
-    case KEY_NPAGE:
-      retval = signals::scroll;
-      check_redraw = scrollNextPage();
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "none"; }
-      break;
-    case KEY_HOME:
-      retval = signals::scroll;
-      check_redraw = scrollFirst();
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "none"; }
-      break;
-    case KEY_END:
-      retval = signals::scroll;
-      check_redraw = scrollLast();
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "none"; }
-      break;
-
-    // Resize signal
-
-    case KEY_RESIZE:
-      retval = signals::resize;
-      _redraw_type = "all";
-      break;
-
-    // Quit key
-
-    case MY_ESC:
-      retval = signals::quit;
-      _redraw_type = "all";
-      break;
-
-    default:
-      retval = char(ch);
-      _redraw_type = "none";
-      break;
-  }
-  return retval;
 }

@@ -4,14 +4,14 @@
 #include <string>
 #include <curses.h>
 #include "BuildListItem.h"
-#include "ScrollBox.h"
+#include "BuildListBox.h"
 
 /*******************************************************************************
 
 Displays build order
 
 *******************************************************************************/
-class BuildOrderBox: public ScrollBox {
+class BuildOrderBox: public BuildListBox {
 
   protected:
 
@@ -46,8 +46,4 @@ class BuildOrderBox: public ScrollBox {
     /* Draws frame, items, etc. as needed */
  
     void draw(bool force=false);
-
-    /* User interaction loop */
-
-    std::string exec();
 };
