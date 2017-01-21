@@ -165,11 +165,21 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
   
   if (int(idx) == _highlight) { _prevhighlight = _highlight; }
 
-  // Print item and turn off tag color
+  // Print item, spaces, install status
 
   vlineloc = cols-2 - std::string("Installed").size() - 1;
   printlen = std::min(int(_items[idx]->name().size()), vlineloc);
+
+  nspaces = vlineloc - _items[idx]->name().size();
   wprintw(_win, _items[idx]->name().substr(0,printlen).c_str());
+
+  for ( i = 0; int(i) < nspaces; i++ ) { waddch(_win, ' '); }
+
+  wmove(_win, idx-_firstprint+3, vlineloc+2);
+  if (_items[idx]->getBoolProp("installed")) { printToEol("   [X]   "); }
+  else { printToEol("   [ ]   "); }
+
+  // Turn off tag color
 
   if (_items[idx]->getBoolProp("tagged")) 
   { 
@@ -201,13 +211,10 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
     }
   }
 
-  // Print spaces, divider, install status
+  // Divider
 
-  nspaces = vlineloc - _items[idx]->name().size();
-  for ( i = 0; int(i) < nspaces; i++ ) { waddch(_win, ' '); }
+  wmove(_win, idx-_firstprint+3, vlineloc+1);
   waddch(_win, ACS_VLINE);
-  if (_items[idx]->getBoolProp("installed")) { printToEol("   [X]   "); }
-  else { printToEol("   [ ]   "); }
 
   // Turn off color
 
