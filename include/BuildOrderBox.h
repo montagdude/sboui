@@ -16,7 +16,6 @@ class BuildOrderBox: public ScrollBox {
   protected:
 
     std::string _info;
-    std::vector<BuildListItem> _reqlist;
 
     /* Drawing */
     
@@ -41,8 +40,8 @@ class BuildOrderBox: public ScrollBox {
 
     /* Creates list based on SlackBuild selected */
 
-    virtual int create(const BuildListItem & build,
-                       const std::vector<BuildListItem> & slackbuilds);
+    virtual int create(BuildListItem & build,
+                       std::vector<BuildListItem> & slackbuilds);
 
     /* Draws frame, items, etc. as needed */
  

@@ -239,18 +239,19 @@ Creates list based on SlackBuild selected. Returns 0 if dependency resolution
 succeeded or 1 if some could not be found in the repository.
 
 *******************************************************************************/
-int BuildOrderBox::create(const BuildListItem & build,
-                          const std::vector<BuildListItem> & slackbuilds) 
+int BuildOrderBox::create(BuildListItem & build,
+                          std::vector<BuildListItem> & slackbuilds) 
 {
   int check; 
   unsigned int nbuilds, i;
+  std::vector<BuildListItem *> reqlist;
 
   setName(build.name() + " build order");
-  check = compute_reqs_order(build, _reqlist, slackbuilds);
-  _reqlist.push_back(build);
+  check = compute_reqs_order(build, reqlist, slackbuilds);
+  reqlist.push_back(&build);
 
-  nbuilds = _reqlist.size();
-  for ( i = 0; i < nbuilds; i++ ) { addItem(&_reqlist[i]); }
+  nbuilds = reqlist.size();
+  for ( i = 0; i < nbuilds; i++ ) { addItem(reqlist[i]); }
 
   return check;
 }

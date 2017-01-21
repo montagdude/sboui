@@ -644,12 +644,13 @@ void MainWindow::filterSearch(const std::string & searchterm,
 Shows build order for a SlackBuild
 
 *******************************************************************************/
-void MainWindow::showBuildOrder(const BuildListItem & build)
+void MainWindow::showBuildOrder(BuildListItem & build)
 {
   WINDOW *buildorderwin;
   int check;
   std::string selection;
   bool getting_input;
+  unsigned int nbuildorder;
   BuildOrderBox buildorder;
 
   printStatus("Computing build order for " + build.name() + " ...");
@@ -663,8 +664,12 @@ void MainWindow::showBuildOrder(const BuildListItem & build)
     return;
   }
 
-  printStatus(int2String(buildorder.numItems()) + 
-              " SlackBuilds in build order for " + build.name() + ".");
+  nbuildorder = buildorder.numItems();
+
+  if (nbuildorder == 1) { printStatus(
+                     "1 SlackBuild in build order for " + build.name() + "."); }
+  else { printStatus(int2String(nbuildorder) + 
+                     " SlackBuilds in build order for " + build.name() + "."); }
 
   buildorderwin = newwin(10, 10, 4, 4);
   buildorder.setWindow(buildorderwin);
@@ -692,7 +697,7 @@ void MainWindow::showBuildOrder(const BuildListItem & build)
 Shows installed SlackBuilds depending on a given SlackBuild
 
 *******************************************************************************/
-void MainWindow::showInverseReqs(const BuildListItem & build)
+void MainWindow::showInverseReqs(BuildListItem & build)
 {
   WINDOW *invreqwin;
   std::string selection;
@@ -705,7 +710,7 @@ void MainWindow::showInverseReqs(const BuildListItem & build)
   invreqs.create(build, _installedlist);
 
   ninvreqs = invreqs.numItems();
-  if (ninvreqs == 0) { printStatus("No installed SlackBuilds depend on"
+  if (ninvreqs == 0) { printStatus("No installed SlackBuilds depend on "
                                    + build.name() + "."); }
   else if (ninvreqs == 1) { printStatus(
           "1 installed SlackBuild depends on " + build.name() + "."); }
@@ -1063,7 +1068,7 @@ void MainWindow::search()
 Dialog for actions pertaining to selected SlackBuild
 
 *******************************************************************************/
-void MainWindow::showBuildActions(const BuildListItem & build)
+void MainWindow::showBuildActions(BuildListItem & build)
 {
   WINDOW *actionwin;
   std::string selection, selected;

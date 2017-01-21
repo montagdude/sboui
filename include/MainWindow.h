@@ -51,8 +51,8 @@ class MainWindow {
 
     /* Actions for a selected SlackBuild */
 
-    void showBuildOrder(const BuildListItem & build);
-    void showInverseReqs(const BuildListItem & build);
+    void showBuildOrder(BuildListItem & build);
+    void showInverseReqs(BuildListItem & build);
 
     /* Sets size of popup boxes */
 
@@ -86,7 +86,7 @@ class MainWindow {
 
     void selectFilter();
     void search();
-    void showBuildActions(const BuildListItem & build);
+    void showBuildActions(BuildListItem & build);
 
     /* Shows the main window */
 
