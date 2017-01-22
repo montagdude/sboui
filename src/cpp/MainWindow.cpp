@@ -690,6 +690,7 @@ void MainWindow::showBuildOrder(BuildListItem & build)
     }
   }
 
+  clearStatus();
   delwin(buildorderwin);
 }
 
@@ -736,6 +737,7 @@ void MainWindow::showInverseReqs(BuildListItem & build)
     }
   }
 
+  clearStatus();
   delwin(invreqwin);
 }
 
@@ -795,6 +797,7 @@ void MainWindow::browseFiles(const BuildListItem & build)
     }
   }
 
+  clearStatus();
   delwin(browserwin);
 }
 
