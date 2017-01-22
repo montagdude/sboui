@@ -207,7 +207,7 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
     if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
     else 
     { 
-      if (_activated) { wattron(_win, A_REVERSE); }
+      if ((int(idx) == _highlight) && _activated) { wattron(_win, A_REVERSE); }
     }
   }
 
