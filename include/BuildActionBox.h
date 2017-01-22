@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vector>
 #include <curses.h>
 #include "ListItem.h"
 #include "BuildListItem.h"

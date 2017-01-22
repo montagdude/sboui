@@ -284,7 +284,7 @@ std::string SelectionBox::exec()
   int ch, check_redraw, hotkey;
   char ch_char, hotcharN, hotcharL;
   std::string retval;
-  bool getting_input;
+  bool getting_input, check_hotkeys;
   unsigned int i;
 
   const int MY_ESC = 27;
@@ -296,6 +296,8 @@ std::string SelectionBox::exec()
   getting_input = true;
   while (getting_input)
   {
+
+    check_hotkeys = false;
 
     // Draw list elements
   
@@ -366,25 +368,29 @@ std::string SelectionBox::exec()
 
       default:
         _redraw_type = "none";
+        check_hotkeys = true;
         break;
     }
       
     // Handle hotkeys (allow upper and lower case)
 
-    ch_char = char(ch);
-    for ( i = 0; i < numItems(); i++ )
+    if (check_hotkeys)
     {
-      hotkey = _items[i]->hotKey();
-      if (hotkey != -1)
+      ch_char = char(ch);
+      for ( i = 0; i < numItems(); i++ )
       {
-        hotcharN = _items[i]->name()[hotkey];
-        hotcharL = std::tolower(_items[i]->name()[hotkey]);
-        if ( (ch_char == hotcharN) || (ch_char == hotcharL) )
+        hotkey = _items[i]->hotKey();
+        if (hotkey != -1)
         {
-          retval = hotcharN;
-          _redraw_type = "all";
-          getting_input = false;
-          break;
+          hotcharN = _items[i]->name()[hotkey];
+          hotcharL = std::tolower(_items[i]->name()[hotkey]);
+          if ( (ch_char == hotcharN) || (ch_char == hotcharL) )
+          {
+            retval = hotcharN;
+            _redraw_type = "all";
+            getting_input = false;
+            break;
+          }
         }
       }
     }
