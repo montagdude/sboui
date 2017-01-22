@@ -255,11 +255,7 @@ int DirListing::navigateUp(bool show_hidden)
   // Try to use new directory, or revert to the old one in case of failure
 
   if (setFromPath(newpath, show_hidden) == 0) { return 0; }
-  else 
-  { 
-    return setFromPath(_path, show_hidden);
-    return 1;
-  }
+  else { return setFromPath(_path, show_hidden); }
 }
 
 /*******************************************************************************

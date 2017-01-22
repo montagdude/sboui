@@ -16,6 +16,7 @@
 #include "BuildActionBox.h"
 #include "BuildOrderBox.h"
 #include "InvReqBox.h"
+#include "DirListBox.h"
 #include "MainWindow.h"
 
 using namespace color;
@@ -740,6 +741,65 @@ void MainWindow::showInverseReqs(BuildListItem & build)
 
 /*******************************************************************************
 
+Displays a file browser in the directory of a given SlackBuild
+
+*******************************************************************************/
+void MainWindow::browseFiles(const BuildListItem & build)
+{
+  WINDOW *browserwin;
+  std::string selection, builddir, type, fname;
+  int check;
+  bool getting_input;
+  DirListBox browser;
+
+  builddir = repo_dir + "/" + build.getProp("category") + "/" + build.name();
+  check = browser.setDirectory(builddir);
+
+//FIXME: Make some sort of error message class to show this
+  if (check != 0) 
+  { 
+    printStatus("Unable to access build directory for " + build.name() + ".");
+    return;
+  }
+
+  browserwin = newwin(10, 10, 4, 4);
+  browser.setName("Browsing " + build.getProp("category") + "/" + build.name());
+  browser.setWindow(browserwin);
+  placePopup(&browser, browserwin);
+
+  getting_input = true;
+  while (getting_input)
+  {
+    selection = browser.exec(); 
+    if (selection == signals::keyEnter)
+    {
+      type = browser.highlightedItem()->getProp("type");
+      if ( (type == "reg") || (type == "lnk") )
+      {
+        fname = browser.highlightedItem()->name();
+        def_prog_mode();
+        endwin();
+        view_file(builddir + "/" + fname);
+        reset_prog_mode();
+        redrawAll(true);
+      }
+//FIXME: Make some sort of error message class to show this
+      else { printStatus("Can only view files and symlinks."); }
+    }
+    else if (selection == signals::quit) { getting_input = false; }
+    else if (selection == signals::resize) 
+    { 
+      placePopup(&browser, browserwin);
+      redrawAll(true);
+      clearStatus();
+    }
+  }
+
+  delwin(browserwin);
+}
+
+/*******************************************************************************
+
 Sets size and position of popup boxes
 FIXME: use templates instead of overloading?
 
@@ -1120,6 +1180,14 @@ void MainWindow::showBuildActions(BuildListItem & build)
       placePopup(&actionbox, actionwin);
       redrawAll(true);
     }                                              
+    else if ( (selected == "Browse files") || (selection == "B") )
+    {
+      hideWindow(actionwin);
+      redrawAll(true);
+      browseFiles(build);
+      placePopup(&actionbox, actionwin);
+      redrawAll(true);
+    }
     else if (selection == signals::resize)
     {
       placePopup(&actionbox, actionwin);

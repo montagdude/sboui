@@ -7,8 +7,6 @@
 #include "ListItem.h"
 #include "SelectionBox.h"
 
-#include <iostream>
-
 using namespace color;
 
 /*******************************************************************************

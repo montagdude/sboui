@@ -53,6 +53,7 @@ class MainWindow {
 
     void showBuildOrder(BuildListItem & build);
     void showInverseReqs(BuildListItem & build);
+    void browseFiles(const BuildListItem & build);
 
     /* Sets size of popup boxes */
 

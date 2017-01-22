@@ -11,7 +11,7 @@ ListBox for SlackBuilds
 *******************************************************************************/
 class BuildListBox: public ListBox {
   
-  private:
+  protected:
 
     virtual void redrawFrame() const;
     virtual void redrawSingleItem(unsigned int idx);

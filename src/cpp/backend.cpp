@@ -290,3 +290,16 @@ void view_readme(const BuildListItem & build)
                                       + build.name() + "/" + "README";
   system(cmd.c_str());
 }
+
+/*******************************************************************************
+
+Opens a file in the editor (note: doesn't check for existence of the file)
+
+*******************************************************************************/
+void view_file(const std::string & path)
+{
+  std::string cmd;
+
+  cmd = editor + " " + path;
+  system(cmd.c_str());
+}
