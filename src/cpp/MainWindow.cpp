@@ -640,7 +640,8 @@ void MainWindow::filterSearch(const std::string & searchterm,
 
 /*******************************************************************************
 
-Installs/upgrades dependencies and installs SlackBuild
+Installs/upgrades dependencies and installs SlackBuild. Returns true if
+anything was installed/upgraded, false otherwise.
 
 *******************************************************************************/
 bool MainWindow::installOrUpgrade(BuildListItem & build)
@@ -691,7 +692,7 @@ bool MainWindow::installOrUpgrade(BuildListItem & build)
         }
         def_prog_mode();
         endwin();
-        check = installorder.applyChanges();
+        installorder.applyChanges();
         reset_prog_mode();
         needs_rebuild = true;
         redrawAll(true);

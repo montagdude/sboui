@@ -21,6 +21,7 @@ class InstallOrderBox: public BuildOrderBox {
        another property (mode: install or upgrade) */
 
     std::vector<BuildListItem> _builds;
+    BuildListItem _build;
 
     /* Drawing */
     

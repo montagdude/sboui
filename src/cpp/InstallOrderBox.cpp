@@ -330,6 +330,12 @@ int InstallOrderBox::create(BuildListItem & build,
 
   for ( i = 0; i < nbuilds; i++ ) { addItem(&_builds[i]); }
 
+  // Determine install/upgrade action for requested SlackBuild
+
+  _build = build;
+  if (_build.getBoolProp("installed")) { _build.addProp("action", "Upgrade"); }
+  else { _build.addProp("action", "Install"); }
+
   return check;
 }
 
@@ -444,7 +450,8 @@ std::string InstallOrderBox::exec()
 
 /*******************************************************************************
 
-Install or upgrade SlackBuild and dependencies
+Install or upgrade SlackBuild and dependencies. Returns 0 if everything
+succeeded or 1 if anything failed.
 
 *******************************************************************************/
 int InstallOrderBox::applyChanges() const
@@ -474,10 +481,26 @@ int InstallOrderBox::applyChanges() const
         std::cout << _builds[i].name()
                   << " failed to build. Continue anyway [y/N]? ";
         std::getline(std::cin, response);
-        if ( (response != "y") && (response != "Y") ) { break; }
+        if ( (response != "y") && (response != "Y") ) { return retval; }
       }
     }
   }
-      
+
+  // Now install/upgrade the requested SlackBuild
+
+  if (_build.getProp("action") == "Install") { check = 
+                                                   install_slackbuild(_build); }
+  else { check = upgrade_slackbuild(_build); }
+
+  // Notify of failure
+
+  if (check != 0)
+  {
+    retval = 1;
+    std::cout << _build.name()
+              << " failed to build. Press Enter to continue... ";
+    std::getline(std::cin, response);
+  }
+
   return retval;
 } 
