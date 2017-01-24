@@ -51,6 +51,7 @@ class MainWindow {
 
     /* Actions for a selected SlackBuild */
 
+    void install(BuildListItem & build);
     void showBuildOrder(BuildListItem & build);
     void showInverseReqs(BuildListItem & build);
     void browseFiles(const BuildListItem & build);

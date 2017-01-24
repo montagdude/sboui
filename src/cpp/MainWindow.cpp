@@ -16,6 +16,7 @@
 #include "BuildActionBox.h"
 #include "BuildOrderBox.h"
 #include "InvReqBox.h"
+#include "InstallOrderBox.h"
 #include "DirListBox.h"
 #include "MainWindow.h"
 
@@ -639,6 +640,63 @@ void MainWindow::filterSearch(const std::string & searchterm,
 
 /*******************************************************************************
 
+Installs/upgrades dependencies and installs SlackBuild
+
+*******************************************************************************/
+void MainWindow::install(BuildListItem & build)
+{
+  WINDOW *installorderwin;
+  int check;
+  std::string selection;
+  bool getting_input;
+  unsigned int ninstallorder;
+  InstallOrderBox installorder;
+
+  printStatus("Computing dependencies for " + build.name() + " ...");
+  check = installorder.create(build, _slackbuilds);
+
+//FIXME: Make some sort of error message class to show this
+  if (check != 0) 
+  { 
+    printStatus("Some requirements of " + build.name() +
+                " not found in repository."); 
+    return;
+  }
+
+  ninstallorder = installorder.numItems();
+
+  if (ninstallorder == 1) { printStatus(
+                                       "1 dependency to install or upgrade."); }
+  else { printStatus(int2String(ninstallorder) + 
+                                      " dependencies to install or upgrade."); }
+
+  if (ninstallorder > 0)
+  {
+    installorderwin = newwin(10, 10, 4, 4);
+    installorder.setWindow(installorderwin);
+    placePopup(&installorder, installorderwin);
+
+    getting_input = true;
+    while (getting_input)
+    {
+      selection = installorder.exec(); 
+      if ( (selection == signals::keyEnter) || 
+           (selection == signals::quit) ) { getting_input = false; }
+      else if (selection == signals::resize) 
+      { 
+        placePopup(&installorder, installorderwin);
+        redrawAll(true);
+        clearStatus();
+      }
+    }
+
+    clearStatus();
+    delwin(installorderwin);
+  }
+}
+
+/*******************************************************************************
+
 Shows build order for a SlackBuild
 
 *******************************************************************************/
@@ -1164,6 +1222,14 @@ void MainWindow::showBuildActions(BuildListItem & build)
       reset_prog_mode();
       redrawAll(true);
     }
+    else if ( (selected == "Install") || (selection == "I") )
+    { 
+      hideWindow(actionwin);
+      redrawAll(true);
+      install(build);
+      placePopup(&actionbox, actionwin);
+      redrawAll(true);
+    }                                              
     else if ( (selected == "Compute build order") || (selection == "C") )
     { 
       hideWindow(actionwin);
