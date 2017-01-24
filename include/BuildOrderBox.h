@@ -19,8 +19,8 @@ class BuildOrderBox: public BuildListBox {
 
     /* Drawing */
     
-    void redrawFrame() const;
-    void redrawSingleItem(unsigned int idx);
+    virtual void redrawFrame() const;
+    virtual void redrawSingleItem(unsigned int idx);
 
   public:
 
@@ -35,8 +35,8 @@ class BuildOrderBox: public BuildListBox {
 
     /* Get attributes */
 
-    void minimumSize(int & height, int & width) const;
-    void preferredSize(int & height, int & width) const;
+    virtual void minimumSize(int & height, int & width) const;
+    virtual void preferredSize(int & height, int & width) const;
 
     /* Creates list based on SlackBuild selected */
 

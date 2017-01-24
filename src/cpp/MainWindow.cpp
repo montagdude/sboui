@@ -359,7 +359,6 @@ Displays upgradable SlackBuilds
 void MainWindow::filterUpgradable()
 {
   unsigned int i, j, ncategories, nfiltered_categories, ninstalled, nupgradable;
-  std::size_t len;
   std::vector<std::string> filtered_categories;
   bool category_found;
   BuildListBox initlistbox;
@@ -388,9 +387,7 @@ void MainWindow::filterUpgradable()
 
   for ( i = 0; i < ninstalled; i++ )
   {
-    len = _installedlist[i]->getProp("available_version").size();
-    if (_installedlist[i]->getProp("installed_version").substr(0, len) != 
-        _installedlist[i]->getProp("available_version")) 
+    if (_installedlist[i]->upgradable())
     {
       category_found = false;
       nfiltered_categories = filtered_categories.size();

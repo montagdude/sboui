@@ -33,5 +33,5 @@ class BuildListBox: public ListBox {
 
     /* User interaction loop */
 
-    std::string exec();
+    virtual std::string exec();
 };

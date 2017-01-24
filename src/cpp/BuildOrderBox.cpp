@@ -8,7 +8,6 @@
 #include "signals.h"
 #include "requirements.h"
 #include "BuildListItem.h"
-#include "BuildListBox.h"
 #include "BuildOrderBox.h"
 
 using namespace color;

@@ -60,7 +60,6 @@ Creates options using info about SlackBuild
 *******************************************************************************/
 void BuildActionBox::create(const BuildListItem & build)
 {
-  std::size_t len;
   unsigned int count;
 
   count = 0;
@@ -82,9 +81,7 @@ void BuildActionBox::create(const BuildListItem & build)
     _items[count]->setHotKey(0);
     count++;
 
-    len = build.getProp("available_version").size();
-    if (build.getProp("installed_version").substr(0, len) !=
-        build.getProp("available_version"))
+    if (build.upgradable())
     {
       addItem(new ListItem("Upgrade"));
       _items[count]->setHotKey(0);
