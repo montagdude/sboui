@@ -37,7 +37,7 @@ void InvReqBox::create(BuildListItem & build,
   unsigned int i, nbuilds;
   std::vector<BuildListItem *> invreqlist;
 
-  setName(build.name() + " inverse reqs");
+  setName(build.name() + " inverse deps");
   compute_inv_reqs(build, invreqlist, installedlist);
 
   nbuilds = invreqlist.size();

@@ -299,7 +299,7 @@ int InstallOrderBox::create(BuildListItem & build,
   unsigned int nreqs, nbuilds, i;
   std::vector<BuildListItem *> reqlist;
 
-  setName("Install dependencies?");
+  setName("Select " + build.name() + " deps");
   check = compute_reqs_order(build, reqlist, slackbuilds);
   if (check != 0) { return check; }
 

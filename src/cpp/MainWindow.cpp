@@ -1238,7 +1238,7 @@ void MainWindow::showBuildActions(BuildListItem & build)
       placePopup(&actionbox, actionwin);
       redrawAll(true);
     }                                              
-    else if ( (selected == "List inverse reqs") || (selection == "L") )
+    else if ( (selected == "List inverse deps") || (selection == "L") )
     { 
       hideWindow(actionwin);
       redrawAll(true);

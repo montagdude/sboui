@@ -93,7 +93,7 @@ void BuildActionBox::create(const BuildListItem & build)
   _items[count]->setHotKey(0);
    count++;
 
-  addItem(new ListItem("List inverse reqs"));
+  addItem(new ListItem("List inverse deps"));
   _items[count]->setHotKey(0);
    count++;
 
