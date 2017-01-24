@@ -48,4 +48,8 @@ class InstallOrderBox: public BuildOrderBox {
        that the space bar is used to tag (select/unselect) items */
 
     std::string exec();
+
+    /* Install or upgrade SlackBuild and dependencies */
+
+    int applyChanges() const;
 };

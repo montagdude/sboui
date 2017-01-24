@@ -643,12 +643,12 @@ void MainWindow::filterSearch(const std::string & searchterm,
 Installs/upgrades dependencies and installs SlackBuild
 
 *******************************************************************************/
-void MainWindow::install(BuildListItem & build)
+bool MainWindow::installOrUpgrade(BuildListItem & build)
 {
   WINDOW *installorderwin;
   int check;
   std::string selection;
-  bool getting_input;
+  bool getting_input, needs_rebuild;
   unsigned int ninstallorder;
   InstallOrderBox installorder;
 
@@ -660,7 +660,7 @@ void MainWindow::install(BuildListItem & build)
   { 
     printStatus("Some requirements of " + build.name() +
                 " not found in repository."); 
-    return;
+    return false;
   }
 
   ninstallorder = installorder.numItems();
@@ -677,11 +677,27 @@ void MainWindow::install(BuildListItem & build)
     placePopup(&installorder, installorderwin);
 
     getting_input = true;
+    needs_rebuild = false;
     while (getting_input)
     {
       selection = installorder.exec(); 
-      if ( (selection == signals::keyEnter) || 
-           (selection == signals::quit) ) { getting_input = false; }
+      if (selection == signals::keyEnter)
+      {
+//FIXME: Make some sort of warning message class to show this
+        if (! installorder.allTagged())
+        {
+          printStatus("Warning: not installing/upgrading some dependencies. "
+                      + std::string("Continue anyway?"));
+        }
+        def_prog_mode();
+        endwin();
+        check = installorder.applyChanges();
+        reset_prog_mode();
+        needs_rebuild = true;
+        redrawAll(true);
+        getting_input = false;
+      }
+      else if (selection == signals::quit) { getting_input = false; }
       else if (selection == signals::resize) 
       { 
         placePopup(&installorder, installorderwin);
@@ -693,6 +709,8 @@ void MainWindow::install(BuildListItem & build)
     clearStatus();
     delwin(installorderwin);
   }
+
+  return needs_rebuild;
 }
 
 /*******************************************************************************
@@ -1190,7 +1208,7 @@ void MainWindow::showBuildActions(BuildListItem & build)
 {
   WINDOW *actionwin;
   std::string selection, selected;
-  bool getting_selection;
+  bool getting_selection, needs_rebuild;
   BuildActionBox actionbox;
 
   // Set up windows and dialog
@@ -1201,7 +1219,7 @@ void MainWindow::showBuildActions(BuildListItem & build)
   actionbox.create(build);
   placePopup(&actionbox, actionwin);
 
-  // Get filter selection
+  // Get selection
 
   getting_selection = true;
   while (getting_selection)
@@ -1222,13 +1240,18 @@ void MainWindow::showBuildActions(BuildListItem & build)
       reset_prog_mode();
       redrawAll(true);
     }
-    else if ( (selected == "Install") || (selection == "I") )
+    else if ( (selected == "Install") || (selection == "I") ||
+              (selected == "Upgrade") || (selection == "U") )
     { 
       hideWindow(actionwin);
       redrawAll(true);
-      install(build);
-      placePopup(&actionbox, actionwin);
-      redrawAll(true);
+      needs_rebuild = installOrUpgrade(build);
+      if (needs_rebuild) { getting_selection = false; }
+      else
+      {
+        placePopup(&actionbox, actionwin);
+        redrawAll(true);
+      }
     }                                              
     else if ( (selected == "Compute build order") || (selection == "C") )
     { 
@@ -1268,6 +1291,10 @@ void MainWindow::showBuildActions(BuildListItem & build)
 
   delwin(actionwin);
   redrawAll(true);
+
+  // Rebuild lists if SlackBuilds were installed/upgraded/removed
+
+  //if (needs_rebuild) { ... }
 }
 
 /*******************************************************************************

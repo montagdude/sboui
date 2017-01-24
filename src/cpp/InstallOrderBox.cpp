@@ -1,3 +1,4 @@
+#include <iostream>
 #include <vector>
 #include <string>
 #include <curses.h>
@@ -7,10 +8,9 @@
 #include "color_settings.h"
 #include "signals.h"
 #include "requirements.h"
+#include "backend.h"
 #include "BuildListItem.h"
 #include "InstallOrderBox.h"
-
-#include <iostream>
 
 using namespace color;
 
@@ -441,3 +441,43 @@ std::string InstallOrderBox::exec()
 
   return retval;
 }
+
+/*******************************************************************************
+
+Install or upgrade SlackBuild and dependencies
+
+*******************************************************************************/
+int InstallOrderBox::applyChanges() const
+{
+  unsigned int nreqs, i;
+  int check, retval;
+  std::string response;
+
+  // First install/upgrade any tagged dependencies (by default, all of them,
+  // unless the user has untagged some of them)
+
+  nreqs = _builds.size();
+  retval = 0;
+  for ( i = 0; i < nreqs; i++ )
+  {
+    if (_builds[i].getBoolProp("tagged"))
+    {
+      if (_builds[i].getProp("action") == "Install") { check = 
+                                               install_slackbuild(_builds[i]); }
+      else { check = upgrade_slackbuild(_builds[i]); }
+
+      // Ask to continue for any failure
+
+      if (check != 0)
+      {
+        retval = 1;
+        std::cout << _builds[i].name()
+                  << " failed to build. Continue anyway [y/N]? ";
+        std::getline(std::cin, response);
+        if ( (response != "y") && (response != "Y") ) { break; }
+      }
+    }
+  }
+      
+  return retval;
+} 

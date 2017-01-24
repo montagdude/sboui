@@ -8,17 +8,25 @@
 #include "sorting.h"
 #include "backend.h"
  
+/* Backend settings */
+//FIXME: put most of these in a separate settings module/class?
+
 //std::string repo_dir = "/var/cache/packages/SBo";
 std::string repo_dir = "/data/dprosser/software/sboui_files/SBo";
 std::string package_manager = "sbomgr";
 std::string sync_cmd = "sbomgr update";
 std::string install_cmd = "sbomgr install -n";
 std::string upgrade_cmd = "sbomgr upgrade";
+std::string install_vars = "";
+std::string install_opts = "";
+std::string upgrade_vars = "";
+std::string upgrade_opts = "";
 
 // Editor for viewing files 
 std::string editor = "vim";
 
 // Bash script with functions to query the repo and installed packages
+//FIXME: location should be set by preprocessor macro depending on configure --prefix=
 //std::string sboutil = "/usr/libexec/sboui/sboutil.sh";
 std::string sboutil = "/data/dprosser/software/sboui_files/sboui/src/shell/sboutil.sh";
 
@@ -275,6 +283,41 @@ void list_nondeps(const std::vector<BuildListItem *> & installedlist,
     } 
     if (! isdep) { nondeplist.push_back(installedlist[i]); }
   } 
+}
+
+/*******************************************************************************
+
+Installs a SlackBuild
+
+*******************************************************************************/
+int install_slackbuild(const BuildListItem & build)
+{
+  std::string cmd;
+  int check;
+
+  cmd = install_vars + " " + install_cmd + " " + install_opts + build.name();
+  check = system(cmd.c_str());
+
+  // http://stackoverflow.com/questions/20193464/how-to-get-the-exit-code-of-program-invoked-by-system-call
+  if (WEXITSTATUS(check) == 0x10) { return 0; }
+  else { return 1; }
+}
+
+/*******************************************************************************
+
+Upgrades a SlackBuild
+
+*******************************************************************************/
+int upgrade_slackbuild(const BuildListItem & build)
+{
+  std::string cmd;
+  int check;
+
+  cmd = upgrade_vars + " " + upgrade_cmd + " " + upgrade_opts + build.name();
+  check = system(cmd.c_str());
+
+  if (WEXITSTATUS(check) == 0x10) { return 0; }
+  else { return 1; }
 }
 
 /*******************************************************************************
