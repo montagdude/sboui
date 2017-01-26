@@ -1,10 +1,10 @@
 #include <vector>
 #include <string>
-#include <sstream>
 #include <cmath>     // floor
 #include "curses.h"
 #include "Color.h"
 #include "color_settings.h"
+#include "string_util.h"
 #include "signals.h"
 #include "backend.h"
 #include "CategoryListItem.h"
@@ -21,29 +21,6 @@
 #include "MainWindow.h"
 
 using namespace color;
-
-std::string int2String(int inval)
-{
-  std::string outstr;
-  std::stringstream ss;
-
-  ss << inval;
-  ss >> outstr;
-  return outstr;
-}
-
-std::string string_to_lower(const std::string & instr)
-{
-  std::string outstr;
-  std::string::size_type k, len;
-
-  len = instr.size();
-  for ( k = 0; k < len; k++ ) 
-  { 
-    outstr.push_back(std::tolower(instr[k]));
-  }
-  return outstr;
-}
 
 /*******************************************************************************
 
@@ -261,7 +238,7 @@ void MainWindow::filterAll()
     _blistboxes.push_back(initlistbox);
   }
   else if (nbuilds == 1) { printStatus("1 SlackBuild in repository."); }
-  else { printStatus(int2String(nbuilds) + " SlackBuilds in repository."); }
+  else { printStatus(int2string(nbuilds) + " SlackBuilds in repository."); }
 }
 
 /*******************************************************************************
@@ -349,7 +326,7 @@ void MainWindow::filterInstalled()
     _blistboxes.push_back(initlistbox);
   }
   else if (ninstalled == 1) { printStatus("1 installed SlackBuild."); }
-  else { printStatus(int2String(ninstalled) + " installed SlackBuilds."); }
+  else { printStatus(int2string(ninstalled) + " installed SlackBuilds."); }
 }
 
 /*******************************************************************************
@@ -443,7 +420,7 @@ void MainWindow::filterUpgradable()
     _blistboxes.push_back(initlistbox);
   }
   else if (nupgradable == 1) { printStatus("1 upgradable SlackBuild."); }
-  else { printStatus(int2String(nupgradable) + " upgradable SlackBuilds."); }
+  else { printStatus(int2string(nupgradable) + " upgradable SlackBuilds."); }
 }
 
 /*******************************************************************************
@@ -533,7 +510,7 @@ void MainWindow::filterNonDeps()
     _blistboxes.push_back(initlistbox);
   }
   else if (nnondeps == 1) { printStatus("1 non-dependency."); }
-  else { printStatus(int2String(nnondeps) + " non-dependencies."); }
+  else { printStatus(int2string(nnondeps) + " non-dependencies."); }
 }
 
 /*******************************************************************************
@@ -634,7 +611,7 @@ void MainWindow::filterSearch(const std::string & searchterm,
     _blistboxes.push_back(initlistbox);
   }
   else if (nsearch == 1) { printStatus("1 match for " + searchterm + "."); }
-  else { printStatus(int2String(nsearch) + " matches for "
+  else { printStatus(int2string(nsearch) + " matches for "
                      + searchterm + "."); }
 }
 
@@ -644,7 +621,8 @@ Installs/upgrades dependencies and installs SlackBuild. Returns true if
 anything was installed/upgraded, false otherwise.
 
 *******************************************************************************/
-bool MainWindow::installOrUpgrade(BuildListItem & build)
+bool MainWindow::installOrUpgrade(BuildListItem & build,
+                                  const std::string & action)
 {
   WINDOW *installorderwin;
   int check;
@@ -654,7 +632,7 @@ bool MainWindow::installOrUpgrade(BuildListItem & build)
   InstallOrderBox installorder;
 
   printStatus("Computing dependencies for " + build.name() + " ...");
-  check = installorder.create(build, _slackbuilds);
+  check = installorder.create(build, _slackbuilds, action);
 
 //FIXME: Make some sort of error message class to show this
   if (check != 0) 
@@ -665,51 +643,47 @@ bool MainWindow::installOrUpgrade(BuildListItem & build)
   }
 
   ninstallorder = installorder.numItems();
+  if (ninstallorder == 2) { printStatus(
+                                    "1 dependency for " + build.name() + "."); }
+  else { printStatus(int2string(ninstallorder-1) + 
+                                   " dependencies for " + build.name() + "."); }
 
-  if (ninstallorder == 1) { printStatus(
-                                       "1 dependency to install or upgrade."); }
-  else { printStatus(int2String(ninstallorder) + 
-                                      " dependencies to install or upgrade."); }
+  installorderwin = newwin(10, 10, 4, 4);
+  installorder.setWindow(installorderwin);
+  placePopup(&installorder, installorderwin);
 
-  if (ninstallorder > 0)
+  getting_input = true;
+  needs_rebuild = false;
+  while (getting_input)
   {
-    installorderwin = newwin(10, 10, 4, 4);
-    installorder.setWindow(installorderwin);
-    placePopup(&installorder, installorderwin);
-
-    getting_input = true;
-    needs_rebuild = false;
-    while (getting_input)
+    selection = installorder.exec(); 
+    if (selection == signals::keyEnter)
     {
-      selection = installorder.exec(); 
-      if (selection == signals::keyEnter)
-      {
 //FIXME: Make some sort of warning message class to show this
-        if (! installorder.allTagged())
-        {
-          printStatus("Warning: not installing/upgrading some dependencies. "
-                      + std::string("Continue anyway?"));
-        }
-        def_prog_mode();
-        endwin();
-        installorder.applyChanges();
-        reset_prog_mode();
-        needs_rebuild = true;
-        redrawAll(true);
-        getting_input = false;
+      if (! installorder.installingAllDeps())
+      {
+        printStatus("Warning: not installing/upgrading some dependencies. "
+                    + std::string("Continue anyway?"));
       }
-      else if (selection == signals::quit) { getting_input = false; }
-      else if (selection == signals::resize) 
-      { 
-        placePopup(&installorder, installorderwin);
-        redrawAll(true);
-        clearStatus();
-      }
+      def_prog_mode();
+      endwin();
+      installorder.applyChanges();
+      reset_prog_mode();
+      needs_rebuild = true;
+      redrawAll(true);
+      getting_input = false;
     }
-
-    clearStatus();
-    delwin(installorderwin);
+    else if (selection == signals::quit) { getting_input = false; }
+    else if (selection == signals::resize) 
+    { 
+      placePopup(&installorder, installorderwin);
+      redrawAll(true);
+      clearStatus();
+    }
   }
+
+  clearStatus();
+  delwin(installorderwin);
 
   return needs_rebuild;
 }
@@ -743,7 +717,7 @@ void MainWindow::showBuildOrder(BuildListItem & build)
 
   if (nbuildorder == 1) { printStatus(
                      "1 SlackBuild in build order for " + build.name() + "."); }
-  else { printStatus(int2String(nbuildorder) + 
+  else { printStatus(int2string(nbuildorder) + 
                      " SlackBuilds in build order for " + build.name() + "."); }
 
   buildorderwin = newwin(10, 10, 4, 4);
@@ -790,7 +764,7 @@ void MainWindow::showInverseReqs(BuildListItem & build)
                                    + build.name() + "."); }
   else if (ninvreqs == 1) { printStatus(
           "1 installed SlackBuild depends on " + build.name() + "."); }
-  else { printStatus(int2String(ninvreqs) + 
+  else { printStatus(int2string(ninvreqs) + 
            " installed SlackBuilds depend on " + build.name() + "."); }
 
   invreqwin = newwin(10, 10, 4, 4);
@@ -1208,7 +1182,7 @@ Dialog for actions pertaining to selected SlackBuild
 void MainWindow::showBuildActions(BuildListItem & build)
 {
   WINDOW *actionwin;
-  std::string selection, selected;
+  std::string selection, selected, action;
   bool getting_selection, needs_rebuild;
   BuildActionBox actionbox;
 
@@ -1242,11 +1216,19 @@ void MainWindow::showBuildActions(BuildListItem & build)
       redrawAll(true);
     }
     else if ( (selected == "Install") || (selection == "I") ||
-              (selected == "Upgrade") || (selection == "U") )
+              (selected == "Upgrade") || (selection == "U") ||
+              (selected == "Reinstall") || (selection == "e") )
     { 
+      if ( (selected == "Install") || (selection == "I") ) 
+        action = "Install";
+      else if ( (selected == "Upgrade") || (selection == "U") )
+        action = "Upgrade";
+      else 
+        action = "Reinstall";
+
       hideWindow(actionwin);
       redrawAll(true);
-      needs_rebuild = installOrUpgrade(build);
+      needs_rebuild = installOrUpgrade(build, action);
       if (needs_rebuild) { getting_selection = false; }
       else
       {

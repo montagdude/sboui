@@ -21,7 +21,6 @@ class InstallOrderBox: public BuildOrderBox {
        another property (mode: install or upgrade) */
 
     std::vector<BuildListItem> _builds;
-    BuildListItem _build;
 
     /* Drawing */
     
@@ -39,11 +38,13 @@ class InstallOrderBox: public BuildOrderBox {
 
     void minimumSize(int & height, int & width) const;
     void preferredSize(int & height, int & width) const;
+    bool installingAllDeps() const;
 
     /* Creates list based on SlackBuild selected */
 
     int create(BuildListItem & build,
-               std::vector<BuildListItem> & slackbuilds);
+               std::vector<BuildListItem> & slackbuilds,
+               const std::string & action);
 
     /* User interaction loop. Differs from standard BuildListBox exec() in
        that the space bar is used to tag (select/unselect) items */

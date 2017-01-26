@@ -288,7 +288,7 @@ void BuildOrderBox::minimumSize(int & height, int & width) const
 
   installed_cols = std::string("Installed").size() + 1; // Room for divider
   reserved_cols = 2;
-  width = _name.size();
+  width = _name.size() + installed_cols;
   if (int(_info.size()) > width) { width = _info.size(); }
   for ( i = 0; i < nitems; i++ )
   {
@@ -313,7 +313,7 @@ void BuildOrderBox::preferredSize(int & height, int & width) const
   installed_cols = std::string("Installed").size() + 1; // Room for divider
   widthpadding = 6;
   reserved_cols = 2;
-  width = _name.size();
+  width = _name.size() + installed_cols;
   if (int(_info.size()) > width) { width = _info.size(); }
   for ( i = 0; i < nitems; i++ )
   {

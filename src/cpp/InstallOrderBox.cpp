@@ -6,6 +6,7 @@
 #include <algorithm> // max, min
 #include "Color.h"
 #include "color_settings.h"
+#include "string_util.h"
 #include "signals.h"
 #include "requirements.h"
 #include "backend.h"
@@ -102,7 +103,7 @@ void InstallOrderBox::redrawFrame() const
   wattron(_win, A_BOLD);
   wprintw(_win, "Name");
 
-  vlineloc = cols-2 - std::string(" Install ").size();
+  vlineloc = cols-2 - std::string(" Reinstall ").size();
   nspaces = vlineloc - std::string("Name").size();
   for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
 
@@ -180,9 +181,9 @@ void InstallOrderBox::redrawSingleItem(unsigned int idx)
   
   if (int(idx) == _highlight) { _prevhighlight = _highlight; }
 
-  // Print item with selection, spaces, divider, install/upgrade action
+  // Print item with selection, spaces, divider, action
 
-  vlineloc = cols-2 - std::string(" Install ").size() - 1;
+  vlineloc = cols-2 - std::string(" Reinstall ").size() - 1;
   printlen = std::min(int(_items[idx]->name().size()), vlineloc-4);
 
   nspaces = vlineloc - 4 - (_items[idx]->name().size());
@@ -196,7 +197,7 @@ void InstallOrderBox::redrawSingleItem(unsigned int idx)
   waddch(_win, ACS_VLINE);
 
   waddch(_win, ' ');
-  printToEol(_items[idx]->getProp("action") + " ");
+  printToEol(_items[idx]->getProp("action"));
 
   // Move to area between brackets to show cursor
 
@@ -249,9 +250,9 @@ void InstallOrderBox::minimumSize(int & height, int & width) const
 
   // Minimum usable width
 
-  action_cols = std::string(" Install ").size() + 1; // Room for divider
+  action_cols = std::string(" Reinstall ").size() + 1; // Room for divider
   reserved_cols = 2;
-  width = _name.size();
+  width = _name.size() + action_cols;
   if (int(_info.size()) > width) { width = _info.size(); }
   for ( i = 0; i < nitems; i++ )
   {
@@ -273,10 +274,10 @@ void InstallOrderBox::preferredSize(int & height, int & width) const
 
   // Preferred width: minimum usable + some padding
 
-  action_cols = std::string(" Install ").size() + 1; // Room for divider
+  action_cols = std::string(" Reinstall ").size() + 1; // Room for divider
   widthpadding = 6;
   reserved_cols = 2;
-  width = _name.size();
+  width = _name.size() + action_cols;
   if (int(_info.size()) > width) { width = _info.size(); }
   for ( i = 0; i < nitems; i++ )
   {
@@ -286,6 +287,22 @@ void InstallOrderBox::preferredSize(int & height, int & width) const
   width += reserved_cols + widthpadding;
 }
 
+bool InstallOrderBox::installingAllDeps() const
+{
+  unsigned int nreqs, i;
+
+  nreqs = _items.size() - 1;   // Only consider dependencies, not the requested
+                               // SlackBuild
+
+  for ( i = 0; i < nreqs; i++ )
+  {
+    if ( (_items[i]->getProp("action") != "Reinstall") &&   
+         (! _items[i]->getBoolProp("tagged")) ) { return false; }
+  }
+
+  return true;
+}
+
 /*******************************************************************************
 
 Creates list based on SlackBuild selected. Returns 0 if dependency resolution
@@ -293,48 +310,59 @@ succeeded or 1 if some could not be found in the repository.
 
 *******************************************************************************/
 int InstallOrderBox::create(BuildListItem & build,
-                            std::vector<BuildListItem> & slackbuilds) 
+                            std::vector<BuildListItem> & slackbuilds,
+                            const std::string & action) 
 {
   int check; 
-  unsigned int nreqs, nbuilds, i;
+  unsigned int nreqs, i;
   std::vector<BuildListItem *> reqlist;
 
-  setName("Select " + build.name() + " deps");
   check = compute_reqs_order(build, reqlist, slackbuilds);
   if (check != 0) { return check; }
 
-  // Create copy of reqlist and determine install/upgrade action
+  // Create copy of reqlist and determine action
 
   nreqs = reqlist.size();
-  nbuilds = 0;
   for ( i = 0; i < nreqs; i++ ) 
   { 
+    _builds.push_back(*reqlist[i]); 
     if (! reqlist[i]->getBoolProp("installed"))
     {
-      _builds.push_back(*reqlist[i]); 
-      _builds[nbuilds].setBoolProp("tagged", true);
-      _builds[nbuilds].addProp("action", "Install");
-      nbuilds++;
+      _builds[i].setBoolProp("tagged", true);
+      _builds[i].addProp("action", "Install");
     }
     else
     {
       if (reqlist[i]->upgradable())
       {
-        _builds.push_back(*reqlist[i]); 
-        _builds[nbuilds].setBoolProp("tagged", true);
-        _builds[nbuilds].addProp("action", "Upgrade");
-        nbuilds++;
+        _builds[i].setBoolProp("tagged", true);
+        _builds[i].addProp("action", "Upgrade");
+      }
+      else
+      {
+        _builds[i].setBoolProp("tagged", false);
+        _builds[i].addProp("action", "Reinstall");
       }
     }
   }
 
-  for ( i = 0; i < nbuilds; i++ ) { addItem(&_builds[i]); }
+  // Set action for requested SlackBuild and add it at the end
 
-  // Determine install/upgrade action for requested SlackBuild
+  _builds.push_back(build);
+  _builds[nreqs].setBoolProp("tagged", true);
+  _builds[nreqs].addProp("action", action);
 
-  _build = build;
-  if (_build.getBoolProp("installed")) { _build.addProp("action", "Upgrade"); }
-  else { _build.addProp("action", "Install"); }
+  // Add to list (note have to do this separately because _builds changes
+  // throughout the above loop)
+
+  for ( i = 0; i <= nreqs; i++ ) { addItem(&_builds[i]); }
+
+  // Set window title
+
+  if (nreqs == 1)
+    setName(build.name() + ": 1 dep");
+  else
+    setName(build.name() + ": " + int2string(nreqs) + " deps");
 
   return check;
 }
@@ -456,50 +484,42 @@ succeeded or 1 if anything failed.
 *******************************************************************************/
 int InstallOrderBox::applyChanges() const
 {
-  unsigned int nreqs, i;
+  unsigned int nbuilds, i;
   int check, retval;
   std::string response;
 
-  // First install/upgrade any tagged dependencies (by default, all of them,
-  // unless the user has untagged some of them)
+  // Install/upgrade/reinstall tagged SlackBuilds
 
-  nreqs = _builds.size();
+  nbuilds = _builds.size();
   retval = 0;
-  for ( i = 0; i < nreqs; i++ )
+  for ( i = 0; i < nbuilds; i++ )
   {
     if (_builds[i].getBoolProp("tagged"))
     {
-      if (_builds[i].getProp("action") == "Install") { check = 
-                                               install_slackbuild(_builds[i]); }
-      else { check = upgrade_slackbuild(_builds[i]); }
+      if (_builds[i].getProp("action") == "Upgrade") { check = 
+                                               upgrade_slackbuild(_builds[i]); }
+      else { check = install_slackbuild(_builds[i]); }
 
       // Ask to continue for any failure
 
       if (check != 0)
       {
         retval = 1;
-        std::cout << _builds[i].name()
-                  << " failed to build. Continue anyway [y/N]? ";
-        std::getline(std::cin, response);
-        if ( (response != "y") && (response != "Y") ) { return retval; }
+        if (i != nbuilds-1)
+        {
+          std::cout << _builds[i].name()
+                    << " failed to build. Continue anyway [y/N]? ";
+          std::getline(std::cin, response);
+          if ( (response != "y") && (response != "Y") ) { return retval; }
+        }
+        else
+        {
+          std::cout << _builds[i].name()
+                    << " failed to build. Press Enter to continue...";
+          std::getline(std::cin, response);
+        }
       }
     }
-  }
-
-  // Now install/upgrade the requested SlackBuild
-
-  if (_build.getProp("action") == "Install") { check = 
-                                                   install_slackbuild(_build); }
-  else { check = upgrade_slackbuild(_build); }
-
-  // Notify of failure
-
-  if (check != 0)
-  {
-    retval = 1;
-    std::cout << _build.name()
-              << " failed to build. Press Enter to continue... ";
-    std::getline(std::cin, response);
   }
 
   return retval;

@@ -85,8 +85,13 @@ void BuildActionBox::create(const BuildListItem & build)
     {
       addItem(new ListItem("Upgrade"));
       _items[count]->setHotKey(0);
-      count++;
     }
+    else
+    {
+      addItem(new ListItem ("Reinstall"));
+      _items[count]->setHotKey(1);
+    }
+    count++;
   }
 
   addItem(new ListItem("Compute build order"));
