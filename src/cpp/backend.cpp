@@ -1,5 +1,6 @@
-#include <stdio.h>  // popen
-#include <stdlib.h> // system
+#include <stdio.h>    // popen
+#include <stdlib.h>   // system
+#include <sys/wait.h> // WEXITSTATUS, WIFEXITED
 #include <vector>
 #include <string>
 #include <sstream>
@@ -11,8 +12,8 @@
 /* Backend settings */
 //FIXME: put most of these in a separate settings module/class?
 
-std::string repo_dir = "/var/cache/packages/SBo";
-//std::string repo_dir = "/data/dprosser/software/sboui_files/SBo";
+//std::string repo_dir = "/var/cache/packages/SBo";
+std::string repo_dir = "/data/dprosser/software/sboui_files/SBo";
 std::string package_manager = "sbomgr";
 std::string sync_cmd = "sbomgr update";
 std::string install_cmd = "sbomgr install -n";
@@ -27,8 +28,8 @@ std::string editor = "vim";
 
 // Bash script with functions to query the repo and installed packages
 //FIXME: location should be set by preprocessor macro depending on configure --prefix=
-std::string sboutil = "/usr/libexec/sboui/sboutil.sh";
-//std::string sboutil = "/data/dprosser/software/sboui_files/sboui/src/shell/sboutil.sh";
+//std::string sboutil = "/usr/libexec/sboui/sboutil.sh";
+std::string sboutil = "/data/dprosser/software/sboui_files/sboui/src/shell/sboutil.sh";
 
 // Config variables to always pass to sboutil
 std::string env = "REPO_DIR=" + repo_dir + " TAG=SBo ";
@@ -298,9 +299,10 @@ int install_slackbuild(const BuildListItem & build)
   cmd = install_vars + " " + install_cmd + " " + install_opts + build.name();
   check = system(cmd.c_str());
 
-  // http://stackoverflow.com/questions/20193464/how-to-get-the-exit-code-of-program-invoked-by-system-call
-  if (WEXITSTATUS(check) == 0x10) { return 0; }
-  else { return 1; }
+  // See `man waitpid` for more info on WEXITSTATUS and WIFEXITED
+
+  if (WIFEXITED(check)) { return WEXITSTATUS(check); }
+  else { return -1; }
 }
 
 /*******************************************************************************
@@ -316,8 +318,8 @@ int upgrade_slackbuild(const BuildListItem & build)
   cmd = upgrade_vars + " " + upgrade_cmd + " " + upgrade_opts + build.name();
   check = system(cmd.c_str());
 
-  if (WEXITSTATUS(check) == 0x10) { return 0; }
-  else { return 1; }
+  if (WIFEXITED(check)) { return WEXITSTATUS(check); }
+  else { return -1; }
 }
 
 /*******************************************************************************

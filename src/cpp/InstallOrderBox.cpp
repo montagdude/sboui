@@ -360,9 +360,9 @@ int InstallOrderBox::create(BuildListItem & build,
   // Set window title
 
   if (nreqs == 1)
-    setName(build.name() + ": 1 dep");
+    setName(build.name() + " (1 dep)");
   else
-    setName(build.name() + ": " + int2string(nreqs) + " deps");
+    setName(build.name() + " (" + int2string(nreqs) + " deps)");
 
   return check;
 }
@@ -478,15 +478,15 @@ std::string InstallOrderBox::exec()
 
 /*******************************************************************************
 
-Install or upgrade SlackBuild and dependencies. Returns 0 if everything
-succeeded or 1 if anything failed.
+Install, upgrade, or reinstall SlackBuild and dependencies. Returns 0 on
+success.
 
 *******************************************************************************/
 int InstallOrderBox::applyChanges() const
 {
   unsigned int nbuilds, i;
   int check, retval;
-  std::string response;
+  std::string response, msg;
 
   // Install/upgrade/reinstall tagged SlackBuilds
 
@@ -500,22 +500,28 @@ int InstallOrderBox::applyChanges() const
                                                upgrade_slackbuild(_builds[i]); }
       else { check = install_slackbuild(_builds[i]); }
 
-      // Ask to continue for any failure
+      // Handle errors
 
-      if (check != 0)
+      if (check == 127)
       {
-        retval = 1;
+        retval = check;
+        std::cout << "Error: package manager not found. "
+                  << "Press Enter to return...";
+        std::getline(std::cin, response);
+        break;
+      }
+      else if (check != 0)
+      {
+        retval = check;
         if (i != nbuilds-1)
         {
-          std::cout << _builds[i].name()
-                    << " failed to build. Continue anyway [y/N]? ";
+          std::cout << "An error occurred. Continue anyway [y/N]?";
           std::getline(std::cin, response);
-          if ( (response != "y") && (response != "Y") ) { return retval; }
+          if ( (response != "y") && (response != "Y") ) { break; }
         }
         else
         {
-          std::cout << _builds[i].name()
-                    << " failed to build. Press Enter to continue...";
+          std::cout << " An error occurred. Press Enter to return...";
           std::getline(std::cin, response);
         }
       }
