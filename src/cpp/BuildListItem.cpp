@@ -14,6 +14,7 @@ BuildListItem::BuildListItem()
   addProp("installed_version", "");
   addProp("available_version", "");
   addProp("requires", "");
+  addProp("package_name", "");
   addBoolProp("tagged", false);
   addBoolProp("installed", false);
 }

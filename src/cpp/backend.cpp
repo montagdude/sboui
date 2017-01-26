@@ -129,22 +129,32 @@ std::vector<std::string> list_installed_names()
 
 /*******************************************************************************
 
-Checks whether the specified SlackBuild is installed. Returns installed version
-if so; otherwise returns "not_installed".
+Gets version and package name for installed SlackBuild
 
 *******************************************************************************/
-std::string check_installed(const BuildListItem & build)
+std::vector<std::string> get_installed_info(const BuildListItem & build)
 {
   char buffer[128];
   FILE* fp;
-  std::string cmd, version;
+  std::string cmd, version, pkgname;
+  std::vector<std::string> output(2);
+  unsigned int i;
 
-  cmd = env + sboutil + " check_installed " + build.name();
+  cmd = env + sboutil + " get_installed_info " + build.name();
   fp = popen(cmd.c_str(), "r");
-  while (fgets(buffer, sizeof(buffer), fp) != NULL) { version = buffer; }  
+  i = 0;
+  while (fgets(buffer, sizeof(buffer), fp) != NULL) 
+  { 
+    if (i == 0) { version = buffer; }
+    else { pkgname = buffer; }
+    i++;
+  }  
   pclose(fp);
 
-  return trim(version);
+  output[0] = trim(version);
+  output[1] = trim(pkgname);
+
+  return output;
 }
 
 /*******************************************************************************
@@ -213,9 +223,9 @@ available version, and dependencies for installed SlackBuilds.
 void list_installed(std::vector<BuildListItem> & slackbuilds,
                     std::vector<BuildListItem *> & installedlist)
 {
-  std::vector<std::string> installednames;
+  std::vector<std::string> installednames, pkg_info;
   unsigned int ninstalled, i, j, nbuilds;
-  std::string installed_version, available_version, reqs;
+  std::string installed_version, pkg_name, available_version, reqs;
 
   installedlist.resize(0);
   installednames = list_installed_names();
@@ -228,10 +238,13 @@ void list_installed(std::vector<BuildListItem> & slackbuilds,
       if (installednames[j] == slackbuilds[i].name())
       {
         slackbuilds[i].setBoolProp("installed", true);
-        installed_version = check_installed(slackbuilds[i]);
+        pkg_info = get_installed_info(slackbuilds[i]);
+        installed_version = pkg_info[0];
+        pkg_name = pkg_info[1];
         available_version = get_available_version(slackbuilds[i]);
         reqs = get_reqs(slackbuilds[i]);
         slackbuilds[i].setProp("installed_version", installed_version);
+        slackbuilds[i].setProp("package_name", installed_version);
         slackbuilds[i].setProp("available_version", available_version);
         slackbuilds[i].setProp("requires", reqs);
         installedlist.push_back(&slackbuilds[i]);

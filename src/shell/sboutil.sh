@@ -32,15 +32,13 @@ function get_pkg_version ()
 }
 
 ################################################################################
-# Checks if a SlackBuild is actually installed. Returns installed version if so;
-# returns "not_installed" otherwise.
-function check_installed ()
+# Returns version and package name of an installed SlackBuild
+function get_installed_info ()
 {
   local BUILD=$1
   #local PKGLIST=$(find /var/log/packages -maxdepth 1 -name "$BUILD*_$TAG")
   local PKGLIST=$(find /data/dprosser/software/sboui_files/packages -maxdepth 1 -name "$BUILD*_$TAG")
-  local INSTALLED="not_installed"
-  local PKG BUILDNAME
+  local VERSION PKG PKGNAME BUILDNAME
 
   # There can be multiple packages fitting the pattern, so loop through them
   # and check against requested
@@ -50,13 +48,15 @@ function check_installed ()
       PKG=$(basename "$PKG")
       BUILDNAME=$(get_pkg_name "$PKG")
       if [ "$BUILDNAME" == "$BUILD" ]; then
-        INSTALLED=$(get_pkg_version "$PKG")
+        VERSION=$(get_pkg_version "$PKG")
+        PKGNAME=$PKG
         break
       fi
     done
   fi
 
-  echo $INSTALLED
+  echo $VERSION
+  echo $PKGNAME
 }
 
 ################################################################################
@@ -103,8 +103,8 @@ function get_reqs ()
 }
 
 case $1 in
-    "check_installed")
-        check_installed $2
+    "get_installed_info")
+        get_installed_info $2
         ;;
     "get_available_version")
         get_available_version $2 $3
