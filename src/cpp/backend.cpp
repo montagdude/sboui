@@ -12,8 +12,8 @@
 /* Backend settings */
 //FIXME: put most of these in a separate settings module/class?
 
-//std::string repo_dir = "/var/cache/packages/SBo";
-std::string repo_dir = "/data/dprosser/software/sboui_files/SBo";
+std::string repo_dir = "/var/cache/packages/SBo";
+//std::string repo_dir = "/data/dprosser/software/sboui_files/SBo";
 std::string package_manager = "sbomgr";
 std::string sync_cmd = "sbomgr update";
 std::string install_cmd = "sbomgr install -n";
@@ -28,8 +28,8 @@ std::string editor = "vim";
 
 // Bash script with functions to query the repo and installed packages
 //FIXME: location should be set by preprocessor macro depending on configure --prefix=
-//std::string sboutil = "/usr/libexec/sboui/sboutil.sh";
-std::string sboutil = "/data/dprosser/software/sboui_files/sboui/src/shell/sboutil.sh";
+std::string sboutil = "/usr/libexec/sboui/sboutil.sh";
+//std::string sboutil = "/data/dprosser/software/sboui_files/sboui/src/shell/sboutil.sh";
 
 // Config variables to always pass to sboutil
 std::string env = "REPO_DIR=" + repo_dir + " TAG=SBo ";
@@ -301,15 +301,13 @@ void list_nondeps(const std::vector<BuildListItem *> & installedlist,
 
 /*******************************************************************************
 
-Installs a SlackBuild
+Runs system command and returns exit status
 
 *******************************************************************************/
-int install_slackbuild(const BuildListItem & build)
+int run_command(const std::string & cmd)
 {
-  std::string cmd;
   int check;
 
-  cmd = install_vars + " " + install_cmd + " " + install_opts + build.name();
   check = system(cmd.c_str());
 
   // See `man waitpid` for more info on WEXITSTATUS and WIFEXITED
@@ -320,19 +318,41 @@ int install_slackbuild(const BuildListItem & build)
 
 /*******************************************************************************
 
+Installs a SlackBuild
+
+*******************************************************************************/
+int install_slackbuild(const BuildListItem & build)
+{
+  std::string cmd;
+
+  cmd = install_vars + " " + install_cmd + " " + install_opts + build.name();
+  return run_command(cmd);
+}
+
+/*******************************************************************************
+
 Upgrades a SlackBuild
 
 *******************************************************************************/
 int upgrade_slackbuild(const BuildListItem & build)
 {
   std::string cmd;
-  int check;
 
   cmd = upgrade_vars + " " + upgrade_cmd + " " + upgrade_opts + build.name();
-  check = system(cmd.c_str());
+  return run_command(cmd);
+}
 
-  if (WIFEXITED(check)) { return WEXITSTATUS(check); }
-  else { return -1; }
+/*******************************************************************************
+
+Removes a SlackBuild
+
+*******************************************************************************/
+int remove_slackbuild(const BuildListItem & build)
+{
+  std::string cmd;
+
+  cmd = "removepkg " + build.getProp("package_name");
+  return run_command(cmd);
 }
 
 /*******************************************************************************
@@ -340,13 +360,13 @@ int upgrade_slackbuild(const BuildListItem & build)
 Displays README for a SlackBuild
 
 *******************************************************************************/
-void view_readme(const BuildListItem & build)
+int view_readme(const BuildListItem & build)
 {
   std::string cmd;
 
   cmd = editor + " " + repo_dir + "/" + build.getProp("category") + "/"
                                       + build.name() + "/" + "README";
-  system(cmd.c_str());
+  return run_command(cmd);
 }
 
 /*******************************************************************************
@@ -354,10 +374,10 @@ void view_readme(const BuildListItem & build)
 Opens a file in the editor (note: doesn't check for existence of the file)
 
 *******************************************************************************/
-void view_file(const std::string & path)
+int view_file(const std::string & path)
 {
   std::string cmd;
 
   cmd = editor + " " + path;
-  system(cmd.c_str());
+  return run_command(cmd);
 }

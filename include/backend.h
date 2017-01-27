@@ -26,5 +26,5 @@ void list_nondeps(const std::vector<BuildListItem *> & installedlist,
 int install_slackbuild(const BuildListItem & build);
 int upgrade_slackbuild(const BuildListItem & build); 
 int remove_slackbuild(const BuildListItem & build);
-void view_readme(const BuildListItem & build);
-void view_file(const std::string & path);
+int view_readme(const BuildListItem & build);
+int view_file(const std::string & path);

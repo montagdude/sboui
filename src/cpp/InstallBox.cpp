@@ -11,7 +11,7 @@
 #include "requirements.h"
 #include "backend.h"
 #include "BuildListItem.h"
-#include "InstallOrderBox.h"
+#include "InstallBox.h"
 
 using namespace color;
 
@@ -20,7 +20,7 @@ using namespace color;
 Draws window border and title
 
 *******************************************************************************/
-void InstallOrderBox::redrawFrame() const
+void InstallBox::redrawFrame() const
 {
   unsigned int rows, cols, namelen, i, nspaces, vlineloc;
   double mid, left, right;
@@ -135,7 +135,7 @@ Redraws a single item. Note: doesn't check if the item is actually on the
 screen or not.
 
 *******************************************************************************/
-void InstallOrderBox::redrawSingleItem(unsigned int idx)
+void InstallBox::redrawSingleItem(unsigned int idx)
 {
   std::string fg, bg;
   int color_pair, nspaces, vlineloc, printlen;
@@ -217,14 +217,14 @@ void InstallOrderBox::redrawSingleItem(unsigned int idx)
 Constructors
 
 *******************************************************************************/
-InstallOrderBox::InstallOrderBox()
+InstallBox::InstallBox()
 { 
   _reserved_rows = 6;
   _info = "Enter: Ok | Esc: Cancel"; 
   _builds.resize(0);
 }
 
-InstallOrderBox::InstallOrderBox(WINDOW *win, const std::string & name)
+InstallBox::InstallBox(WINDOW *win, const std::string & name)
 {
   _reserved_rows = 6;
   _info = "Enter: Ok | Space: Toggle | Esc: Cancel"; 
@@ -238,7 +238,7 @@ InstallOrderBox::InstallOrderBox(WINDOW *win, const std::string & name)
 Get attributes
 
 *******************************************************************************/
-void InstallOrderBox::minimumSize(int & height, int & width) const
+void InstallBox::minimumSize(int & height, int & width) const
 {
   int namelen, reserved_cols, action_cols;
   unsigned int i, nitems;
@@ -262,7 +262,7 @@ void InstallOrderBox::minimumSize(int & height, int & width) const
   width += reserved_cols;
 }
 
-void InstallOrderBox::preferredSize(int & height, int & width) const
+void InstallBox::preferredSize(int & height, int & width) const
 {
   int namelen, reserved_cols, widthpadding, action_cols;
   unsigned int i, nitems;
@@ -287,7 +287,7 @@ void InstallOrderBox::preferredSize(int & height, int & width) const
   width += reserved_cols + widthpadding;
 }
 
-bool InstallOrderBox::installingAllDeps() const
+bool InstallBox::installingAllDeps() const
 {
   unsigned int nreqs, i;
 
@@ -309,7 +309,7 @@ Creates list based on SlackBuild selected. Returns 0 if dependency resolution
 succeeded or 1 if some could not be found in the repository.
 
 *******************************************************************************/
-int InstallOrderBox::create(BuildListItem & build,
+int InstallBox::create(BuildListItem & build,
                             std::vector<BuildListItem> & slackbuilds,
                             const std::string & action) 
 {
@@ -372,7 +372,7 @@ int InstallOrderBox::create(BuildListItem & build,
 User interaction: returns key stroke or other signal
 
 *******************************************************************************/
-std::string InstallOrderBox::exec()
+std::string InstallBox::exec()
 {
   int ch, check_redraw;
   std::string retval;
@@ -482,7 +482,7 @@ Install, upgrade, or reinstall SlackBuild and dependencies. Returns 0 on
 success.
 
 *******************************************************************************/
-int InstallOrderBox::applyChanges() const
+int InstallBox::applyChanges() const
 {
   unsigned int nbuilds, i;
   int check, retval;

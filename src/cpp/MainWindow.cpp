@@ -16,7 +16,7 @@
 #include "BuildActionBox.h"
 #include "BuildOrderBox.h"
 #include "InvReqBox.h"
-#include "InstallOrderBox.h"
+#include "InstallBox.h"
 #include "DirListBox.h"
 #include "MainWindow.h"
 
@@ -617,22 +617,22 @@ void MainWindow::filterSearch(const std::string & searchterm,
 
 /*******************************************************************************
 
-Installs/upgrades dependencies and installs SlackBuild. Returns true if
-anything was installed/upgraded, false otherwise.
+Installs/upgrades/reinstalls/removes SlackBuild and dependencies. Returns true
+if anything was changed, false otherwise.
 
 *******************************************************************************/
-bool MainWindow::installOrUpgrade(BuildListItem & build,
-                                  const std::string & action)
+bool MainWindow::modifyPackage(BuildListItem & build,
+                               const std::string & action)
 {
-  WINDOW *installorderwin;
+  WINDOW *installerwin;
   int check;
   std::string selection;
   bool getting_input, needs_rebuild;
-  unsigned int ninstallorder;
-  InstallOrderBox installorder;
+  unsigned int ninstaller;
+  InstallBox installer;
 
   printStatus("Computing dependencies for " + build.name() + " ...");
-  check = installorder.create(build, _slackbuilds, action);
+  check = installer.create(build, _slackbuilds, action);
 
 //FIXME: Make some sort of error message class to show this
   if (check != 0) 
@@ -642,32 +642,32 @@ bool MainWindow::installOrUpgrade(BuildListItem & build,
     return false;
   }
 
-  ninstallorder = installorder.numItems();
-  if (ninstallorder == 2) { printStatus(
+  ninstaller = installer.numItems();
+  if (ninstaller == 2) { printStatus(
                                     "1 dependency for " + build.name() + "."); }
-  else { printStatus(int2string(ninstallorder-1) + 
+  else { printStatus(int2string(ninstaller-1) + 
                                    " dependencies for " + build.name() + "."); }
 
-  installorderwin = newwin(10, 10, 4, 4);
-  installorder.setWindow(installorderwin);
-  placePopup(&installorder, installorderwin);
+  installerwin = newwin(10, 10, 4, 4);
+  installer.setWindow(installerwin);
+  placePopup(&installer, installerwin);
 
   getting_input = true;
   needs_rebuild = false;
   while (getting_input)
   {
-    selection = installorder.exec(); 
+    selection = installer.exec(); 
     if (selection == signals::keyEnter)
     {
 //FIXME: Make some sort of warning message class to show this
-      if (! installorder.installingAllDeps())
+      if (! installer.installingAllDeps())
       {
         printStatus("Warning: not installing/upgrading some dependencies. "
                     + std::string("Continue anyway?"));
       }
       def_prog_mode();
       endwin();
-      installorder.applyChanges();
+      installer.applyChanges();
       reset_prog_mode();
       needs_rebuild = true;
       redrawAll(true);
@@ -676,14 +676,14 @@ bool MainWindow::installOrUpgrade(BuildListItem & build,
     else if (selection == signals::quit) { getting_input = false; }
     else if (selection == signals::resize) 
     { 
-      placePopup(&installorder, installorderwin);
+      placePopup(&installer, installerwin);
       redrawAll(true);
       clearStatus();
     }
   }
 
   clearStatus();
-  delwin(installorderwin);
+  delwin(installerwin);
 
   return needs_rebuild;
 }
@@ -829,7 +829,8 @@ void MainWindow::browseFiles(const BuildListItem & build)
         fname = browser.highlightedItem()->name();
         def_prog_mode();
         endwin();
-        view_file(builddir + "/" + fname);
+//FIXME: Display an error if the command fails
+        check = view_file(builddir + "/" + fname);
         reset_prog_mode();
         redrawAll(true);
       }
@@ -1001,6 +1002,7 @@ int MainWindow::initialize()
 
   printStatus("Reading SlackBuilds repository ...");
   retval = readLists();
+//FIXME: Make error message class for this
   if (retval != 0) { printStatus("Error reading SlackBuilds repository."); }
   else { filterAll(); }
 
@@ -1184,6 +1186,7 @@ void MainWindow::showBuildActions(BuildListItem & build)
   WINDOW *actionwin;
   std::string selection, selected, action;
   bool getting_selection, needs_rebuild;
+  int check;
   BuildActionBox actionbox;
 
   // Set up windows and dialog
@@ -1211,7 +1214,8 @@ void MainWindow::showBuildActions(BuildListItem & build)
     {
       def_prog_mode();
       endwin();
-      view_readme(build); 
+//FIXME: display error if the command fails
+      check = view_readme(build); 
       reset_prog_mode();
       redrawAll(true);
     }
@@ -1228,7 +1232,7 @@ void MainWindow::showBuildActions(BuildListItem & build)
 
       hideWindow(actionwin);
       redrawAll(true);
-      needs_rebuild = installOrUpgrade(build, action);
+      needs_rebuild = modifyPackage(build, action);
       if (needs_rebuild) { getting_selection = false; }
       else
       {

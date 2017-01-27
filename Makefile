@@ -1,6 +1,6 @@
 CXX=g++
 CXXFLAGS=-g -Wall
-OBJ=Color.o color_settings.o string_util.o signals.o ListItem.o CategoryListItem.o BuildListItem.o sorting.o DirListing.o backend.o requirements.o AbstractListBox.o ListBox.o CategoryListBox.o BuildListBox.o SelectionBox.o FilterBox.o BuildActionBox.o DirListBox.o ScrollBox.o BuildOrderBox.o InvReqBox.o InstallOrderBox.o InputItem.o TextInput.o ToggleInput.o InputBox.o SearchBox.o MainWindow.o sboui.o
+OBJ=Color.o color_settings.o string_util.o signals.o ListItem.o CategoryListItem.o BuildListItem.o sorting.o DirListing.o backend.o requirements.o AbstractListBox.o ListBox.o CategoryListBox.o BuildListBox.o SelectionBox.o FilterBox.o BuildActionBox.o DirListBox.o ScrollBox.o BuildOrderBox.o InvReqBox.o InstallBox.o InputItem.o TextInput.o ToggleInput.o InputBox.o SearchBox.o MainWindow.o sboui.o
 SRCDIR=src/cpp
 CPPFLAGS=-Iinclude
 EXE=sboui
@@ -80,8 +80,8 @@ BuildOrderBox.o: $(SRCDIR)/BuildOrderBox.cpp
 InvReqBox.o: $(SRCDIR)/InvReqBox.cpp
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/InvReqBox.cpp
 
-InstallOrderBox.o: $(SRCDIR)/InstallOrderBox.cpp
-	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/InstallOrderBox.cpp
+InstallBox.o: $(SRCDIR)/InstallBox.cpp
+	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/InstallBox.cpp
 
 InputItem.o: $(SRCDIR)/InputItem.cpp
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/InputItem.cpp

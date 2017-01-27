@@ -8,11 +8,10 @@
 
 /*******************************************************************************
 
-Displays build order for installs/upgrades and allows user to select which to
-install/upgrade
+Allows user to install/upgrade/reinstall/remove SlackBuild and dependencies
 
 *******************************************************************************/
-class InstallOrderBox: public BuildOrderBox {
+class InstallBox: public BuildOrderBox {
 
   private:
 
@@ -31,8 +30,8 @@ class InstallOrderBox: public BuildOrderBox {
 
     /* Constructors */
 
-    InstallOrderBox();
-    InstallOrderBox(WINDOW *win, const std::string & name);
+    InstallBox();
+    InstallBox(WINDOW *win, const std::string & name);
 
     /* Get attributes */
 
