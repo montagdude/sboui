@@ -314,41 +314,50 @@ int InstallBox::create(BuildListItem & build,
                             const std::string & action) 
 {
   int check; 
-  unsigned int nreqs, i;
+  unsigned int nreqs, i, nbuilds;
   std::vector<BuildListItem *> reqlist;
 
-  check = 0;
-  nreqs = 0;
+  check = compute_reqs_order(build, reqlist, slackbuilds);
+  if (check != 0) { return check; }
 
-  if (action != "Remove")
-  {
-    check = compute_reqs_order(build, reqlist, slackbuilds);
-    if (check != 0) { return check; }
+  // Create copy of reqlist and determine action
 
-    // Create copy of reqlist and determine action
-
-    nreqs = reqlist.size();
-    for ( i = 0; i < nreqs; i++ ) 
-    { 
+  nreqs = reqlist.size();
+  nbuilds = 0;
+  for ( i = 0; i < nreqs; i++ ) 
+  { 
+    if (action == "Remove")
+    {
+      if (reqlist[i]->getBoolProp("installed"))
+      {
+        _builds.push_back(*reqlist[i]);
+        _builds[nbuilds].setBoolProp("tagged", false);
+        _builds[nbuilds].addProp("action", "Remove");
+        nbuilds++;
+      }
+    }
+    else
+    {
       _builds.push_back(*reqlist[i]); 
       if (! reqlist[i]->getBoolProp("installed"))
       {
-        _builds[i].setBoolProp("tagged", true);
-        _builds[i].addProp("action", "Install");
+        _builds[nbuilds].setBoolProp("tagged", true);
+        _builds[nbuilds].addProp("action", "Install");
       }
       else
       {
         if (reqlist[i]->upgradable())
         {
-          _builds[i].setBoolProp("tagged", true);
-          _builds[i].addProp("action", "Upgrade");
+          _builds[nbuilds].setBoolProp("tagged", true);
+          _builds[nbuilds].addProp("action", "Upgrade");
         }
         else
         {
-          _builds[i].setBoolProp("tagged", false);
-          _builds[i].addProp("action", "Reinstall");
+          _builds[nbuilds].setBoolProp("tagged", false);
+          _builds[nbuilds].addProp("action", "Reinstall");
         }
       }
+      nbuilds++;
     }
   }
 
@@ -365,14 +374,20 @@ int InstallBox::create(BuildListItem & build,
 
   // Set window title
 
-  if (action != "Remove")
+  if (nreqs == 1)
   {
-    if (nreqs == 1)
+    if (action == "Remove")
+      setName(build.name() + " (1 installed dep)");
+    else
       setName(build.name() + " (1 dep)");
+  }
+  else
+  {
+    if (action == "Remove")
+      setName(build.name() + " (" + int2string(nreqs) + " installed deps)");
     else
       setName(build.name() + " (" + int2string(nreqs) + " deps)");
   }
-  else { setName("Remove " + build.name() + "?"); }
 
   return check;
 }

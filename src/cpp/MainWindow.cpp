@@ -631,29 +631,33 @@ bool MainWindow::modifyPackage(BuildListItem & build,
   unsigned int ninstaller;
   InstallBox installer;
 
-  if (action != "Remove")
-  {
-    printStatus("Computing dependencies for " + build.name() + " ...");
-    check = installer.create(build, _slackbuilds, action);
+  printStatus("Computing dependencies for " + build.name() + " ...");
+  check = installer.create(build, _slackbuilds, action);
 
 //FIXME: Make some sort of error message class to show this
-    if (check != 0) 
-    { 
-      printStatus("Some requirements of " + build.name() +
-                  " not found in repository."); 
-      return false;
-    }
-
-    ninstaller = installer.numItems();
-    if (ninstaller == 2) { printStatus(
-                                    "1 dependency for " + build.name() + "."); }
-    else { printStatus(int2string(ninstaller-1) + 
-                                   " dependencies for " + build.name() + "."); }
+  if (check != 0) 
+  { 
+    printStatus("Some requirements of " + build.name() +
+                " not found in repository."); 
+    return false;
   }
-  else
-  {
-    check = installer.create(build, _slackbuilds, action);
-    ninstaller = installer.numItems();
+
+  ninstaller = installer.numItems();
+  if (ninstaller == 2)
+  { 
+    if (action == "Remove")
+      printStatus("1 installed dependency for " + build.name() + ".");
+    else
+      printStatus("1 dependency for " + build.name() + ".");
+  }
+  else 
+  { 
+    if (action == "Remove")
+      printStatus(int2string(ninstaller-1) + 
+                  " installed dependencies for " + build.name() + ".");
+    else
+      printStatus(int2string(ninstaller-1) + 
+                  " dependencies for " + build.name() + ".");
   }
 
   installerwin = newwin(10, 10, 4, 4);
