@@ -289,7 +289,7 @@ void InstallBox::preferredSize(int & height, int & width) const
 
 bool InstallBox::installingAllDeps() const
 {
-  unsigned int nreqs, i;
+  int nreqs, i;
 
   nreqs = _items.size() - 1;   // Only consider dependencies, not the requested
                                // SlackBuild
@@ -317,31 +317,37 @@ int InstallBox::create(BuildListItem & build,
   unsigned int nreqs, i;
   std::vector<BuildListItem *> reqlist;
 
-  check = compute_reqs_order(build, reqlist, slackbuilds);
-  if (check != 0) { return check; }
+  check = 0;
+  nreqs = 0;
 
-  // Create copy of reqlist and determine action
+  if (action != "Remove")
+  {
+    check = compute_reqs_order(build, reqlist, slackbuilds);
+    if (check != 0) { return check; }
 
-  nreqs = reqlist.size();
-  for ( i = 0; i < nreqs; i++ ) 
-  { 
-    _builds.push_back(*reqlist[i]); 
-    if (! reqlist[i]->getBoolProp("installed"))
-    {
-      _builds[i].setBoolProp("tagged", true);
-      _builds[i].addProp("action", "Install");
-    }
-    else
-    {
-      if (reqlist[i]->upgradable())
+    // Create copy of reqlist and determine action
+
+    nreqs = reqlist.size();
+    for ( i = 0; i < nreqs; i++ ) 
+    { 
+      _builds.push_back(*reqlist[i]); 
+      if (! reqlist[i]->getBoolProp("installed"))
       {
         _builds[i].setBoolProp("tagged", true);
-        _builds[i].addProp("action", "Upgrade");
+        _builds[i].addProp("action", "Install");
       }
       else
       {
-        _builds[i].setBoolProp("tagged", false);
-        _builds[i].addProp("action", "Reinstall");
+        if (reqlist[i]->upgradable())
+        {
+          _builds[i].setBoolProp("tagged", true);
+          _builds[i].addProp("action", "Upgrade");
+        }
+        else
+        {
+          _builds[i].setBoolProp("tagged", false);
+          _builds[i].addProp("action", "Reinstall");
+        }
       }
     }
   }
@@ -359,10 +365,14 @@ int InstallBox::create(BuildListItem & build,
 
   // Set window title
 
-  if (nreqs == 1)
-    setName(build.name() + " (1 dep)");
-  else
-    setName(build.name() + " (" + int2string(nreqs) + " deps)");
+  if (action != "Remove")
+  {
+    if (nreqs == 1)
+      setName(build.name() + " (1 dep)");
+    else
+      setName(build.name() + " (" + int2string(nreqs) + " deps)");
+  }
+  else { setName("Remove " + build.name() + "?"); }
 
   return check;
 }
@@ -478,7 +488,7 @@ std::string InstallBox::exec()
 
 /*******************************************************************************
 
-Install, upgrade, or reinstall SlackBuild and dependencies. Returns 0 on
+Install, upgrade, reinstall, or remove SlackBuild and dependencies. Returns 0 on
 success.
 
 *******************************************************************************/
@@ -488,7 +498,7 @@ int InstallBox::applyChanges() const
   int check, retval;
   std::string response, msg;
 
-  // Install/upgrade/reinstall tagged SlackBuilds
+  // Install/upgrade/reinstall/remove tagged SlackBuilds
 
   nbuilds = _builds.size();
   retval = 0;
@@ -498,6 +508,8 @@ int InstallBox::applyChanges() const
     {
       if (_builds[i].getProp("action") == "Upgrade") { check = 
                                                upgrade_slackbuild(_builds[i]); }
+      else if (_builds[i].getProp("action") == "Remove") { check = 
+                                                remove_slackbuild(_builds[i]); }
       else { check = install_slackbuild(_builds[i]); }
 
       // Handle errors

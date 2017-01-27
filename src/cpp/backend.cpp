@@ -136,23 +136,17 @@ std::vector<std::string> get_installed_info(const BuildListItem & build)
 {
   char buffer[128];
   FILE* fp;
-  std::string cmd, version, pkgname;
-  std::vector<std::string> output(2);
-  unsigned int i;
+  std::string cmd, pkg_info;
+  std::vector<std::string> output;
 
   cmd = env + sboutil + " get_installed_info " + build.name();
   fp = popen(cmd.c_str(), "r");
-  i = 0;
   while (fgets(buffer, sizeof(buffer), fp) != NULL) 
   { 
-    if (i == 0) { version = buffer; }
-    else { pkgname = buffer; }
-    i++;
+    pkg_info = buffer;
+    output.push_back(trim(pkg_info));
   }  
   pclose(fp);
-
-  output[0] = trim(version);
-  output[1] = trim(pkgname);
 
   return output;
 }
@@ -244,7 +238,7 @@ void list_installed(std::vector<BuildListItem> & slackbuilds,
         available_version = get_available_version(slackbuilds[i]);
         reqs = get_reqs(slackbuilds[i]);
         slackbuilds[i].setProp("installed_version", installed_version);
-        slackbuilds[i].setProp("package_name", installed_version);
+        slackbuilds[i].setProp("package_name", pkg_name);
         slackbuilds[i].setProp("available_version", available_version);
         slackbuilds[i].setProp("requires", reqs);
         installedlist.push_back(&slackbuilds[i]);

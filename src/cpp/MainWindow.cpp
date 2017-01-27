@@ -631,22 +631,30 @@ bool MainWindow::modifyPackage(BuildListItem & build,
   unsigned int ninstaller;
   InstallBox installer;
 
-  printStatus("Computing dependencies for " + build.name() + " ...");
-  check = installer.create(build, _slackbuilds, action);
+  if (action != "Remove")
+  {
+    printStatus("Computing dependencies for " + build.name() + " ...");
+    check = installer.create(build, _slackbuilds, action);
 
 //FIXME: Make some sort of error message class to show this
-  if (check != 0) 
-  { 
-    printStatus("Some requirements of " + build.name() +
-                " not found in repository."); 
-    return false;
-  }
+    if (check != 0) 
+    { 
+      printStatus("Some requirements of " + build.name() +
+                  " not found in repository."); 
+      return false;
+    }
 
-  ninstaller = installer.numItems();
-  if (ninstaller == 2) { printStatus(
+    ninstaller = installer.numItems();
+    if (ninstaller == 2) { printStatus(
                                     "1 dependency for " + build.name() + "."); }
-  else { printStatus(int2string(ninstaller-1) + 
+    else { printStatus(int2string(ninstaller-1) + 
                                    " dependencies for " + build.name() + "."); }
+  }
+  else
+  {
+    check = installer.create(build, _slackbuilds, action);
+    ninstaller = installer.numItems();
+  }
 
   installerwin = newwin(10, 10, 4, 4);
   installer.setWindow(installerwin);
@@ -1221,14 +1229,17 @@ void MainWindow::showBuildActions(BuildListItem & build)
     }
     else if ( (selected == "Install") || (selection == "I") ||
               (selected == "Upgrade") || (selection == "U") ||
-              (selected == "Reinstall") || (selection == "e") )
+              (selected == "Reinstall") || (selection == "e") ||
+              (selected == "Remove") || (selection == "R") )
     { 
       if ( (selected == "Install") || (selection == "I") ) 
         action = "Install";
       else if ( (selected == "Upgrade") || (selection == "U") )
         action = "Upgrade";
-      else 
+      else if ( (selected == "Reinstall") || (selection == "e") ) 
         action = "Reinstall";
+      else
+        action = "Remove";
 
       hideWindow(actionwin);
       redrawAll(true);
