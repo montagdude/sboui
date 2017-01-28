@@ -364,17 +364,18 @@ int InstallBox::create(BuildListItem & build,
   // Set action for requested SlackBuild and add it at the end
 
   _builds.push_back(build);
-  _builds[nreqs].setBoolProp("tagged", true);
-  _builds[nreqs].addProp("action", action);
+  _builds[nbuilds].setBoolProp("tagged", true);
+  _builds[nbuilds].addProp("action", action);
+  nbuilds++;
 
   // Add to list (note have to do this separately because _builds changes
   // throughout the above loop)
 
-  for ( i = 0; i <= nreqs; i++ ) { addItem(&_builds[i]); }
+  for ( i = 0; i < nbuilds; i++ ) { addItem(&_builds[i]); }
 
   // Set window title
 
-  if (nreqs == 1)
+  if (nbuilds == 2)
   {
     if (action == "Remove")
       setName(build.name() + " (1 installed dep)");
@@ -384,9 +385,9 @@ int InstallBox::create(BuildListItem & build,
   else
   {
     if (action == "Remove")
-      setName(build.name() + " (" + int2string(nreqs) + " installed deps)");
+      setName(build.name() + " (" + int2string(nbuilds-1) + " installed deps)");
     else
-      setName(build.name() + " (" + int2string(nreqs) + " deps)");
+      setName(build.name() + " (" + int2string(nbuilds-1) + " deps)");
   }
 
   return check;
