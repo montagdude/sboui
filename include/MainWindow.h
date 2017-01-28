@@ -40,6 +40,10 @@ class MainWindow {
     void redrawWindows(bool force=false);
     void redrawAll(bool force=false);
 
+    /* Clears windows, lists, etc. */
+
+    void clearData();
+
     /* Filters lists */
 
     void filterAll();

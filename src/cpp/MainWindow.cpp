@@ -178,6 +178,24 @@ void MainWindow::redrawAll(bool force)
 
 /*******************************************************************************
 
+Clears windows, data, etc.
+
+*******************************************************************************/
+void MainWindow::clearData()
+{
+  if (_win1) { delwin(_win1); }
+  if (_win2) { delwin(_win2); }
+  _blistboxes.resize(0);
+  _slackbuilds.resize(0);
+  _installedlist.resize(0);
+  _nondeplist.resize(0);
+  _categories.resize(0);
+  _category_idx = 0;
+  _activated_listbox = 0;
+}
+
+/*******************************************************************************
+
 Displays all SlackBuilds
 
 *******************************************************************************/
@@ -973,6 +991,7 @@ MainWindow::MainWindow()
   _blistboxes.resize(0);
   _slackbuilds.resize(0);
   _installedlist.resize(0);
+  _nondeplist.resize(0);
   _categories.resize(0);
   _title = "sboui Development Version";
   _filter = "all SlackBuilds";
@@ -981,11 +1000,7 @@ MainWindow::MainWindow()
   _activated_listbox = 0;
 }
 
-MainWindow::~MainWindow()
-{
-  if (_win1) { delwin(_win1); }
-  if (_win2) { delwin(_win2); }
-}
+MainWindow::~MainWindow() { clearData(); }
 
 /*******************************************************************************
 
@@ -1002,6 +1017,7 @@ int MainWindow::initialize()
   _win1 = newwin(4, 0, 10, 10);
   _win2 = newwin(4, 11,10, 10);
 
+  _clistbox.clearList();
   _clistbox.setWindow(_win1);
   _clistbox.setActivated(true);
   _clistbox.setName("Groups");
@@ -1010,13 +1026,24 @@ int MainWindow::initialize()
   initlistbox.setName("SlackBuilds");
   _blistboxes.push_back(initlistbox);
 
-  redrawAll();
+  redrawAll(true);
+
+  // Read SlackBuilds repository
 
   printStatus("Reading SlackBuilds repository ...");
   retval = readLists();
+
+  // Set filter 
+
 //FIXME: Make error message class for this
   if (retval != 0) { printStatus("Error reading SlackBuilds repository."); }
-  else { filterAll(); }
+  else 
+  { 
+    if (_filter == "installed SlackBuilds") { filterInstalled(); }
+    else if (_filter == "upgradable SlackBuilds") { filterUpgradable(); }
+    else if (_filter == "non-dependencies") { filterNonDeps(); }
+    else { filterAll(); }
+  }
 
   return retval;
 }
@@ -1294,9 +1321,14 @@ void MainWindow::showBuildActions(BuildListItem & build)
   delwin(actionwin);
   redrawAll(true);
 
-  // Rebuild lists if SlackBuilds were installed/upgraded/removed
+  // Rebuild lists if SlackBuilds were installed/upgraded/reinstalled/removed
 
-  //if (needs_rebuild) { ... }
+  if (needs_rebuild)
+  { 
+    clearData();
+    initialize();
+    redrawAll(true);
+  }
 }
 
 /*******************************************************************************
