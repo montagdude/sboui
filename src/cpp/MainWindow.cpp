@@ -178,6 +178,15 @@ Redraws windows
 *******************************************************************************/
 void MainWindow::redrawWindows(bool force)
 {
+  // "Resetting" the windows like this before placing them seems to help avoid
+  // some weird behavior (e.g., with toggleLayout not placing _win2 in the right
+  // spot the first time otherwise).
+
+  mvwin(_win1, 0, 0);
+  wresize(_win1, 1, 1);
+  mvwin(_win2, 0, 0);
+  wresize(_win2, 1, 1);
+
   // Set up windows
 
   if (_layout == 0) { redrawWindowsHorz(); }
@@ -196,20 +205,7 @@ Redraws window
 *******************************************************************************/
 void MainWindow::redrawAll(bool force)
 {
-  int rows, cols, i;
-
-  getmaxyx(stdscr, rows, cols);
-
-  // Clear everything except status line
-
-  for ( i = 0; i < rows; i++ )
-  {
-    if ( i != rows-2 )
-    {
-      move(i, 0);
-      clrtoeol();
-    }
-  }
+  clear();
 
   // Draw stuff
 
@@ -228,8 +224,6 @@ void MainWindow::toggleLayout()
   if (_layout == 0) { _layout = 1; }
   else { _layout = 0; }
 
-//FIXME: needs two redraws, but I don't know why
-  redrawAll(true);
   redrawAll(true);
 }
 
@@ -735,7 +729,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
                   " dependencies for " + build.name() + ".");
   }
 
-  installerwin = newwin(10, 10, 4, 4);
+  installerwin = newwin(1, 1, 0, 0);
   installer.setWindow(installerwin);
   placePopup(&installer, installerwin);
 
@@ -807,7 +801,7 @@ void MainWindow::showBuildOrder(BuildListItem & build)
   else { printStatus(int2string(nbuildorder) + 
                      " SlackBuilds in build order for " + build.name() + "."); }
 
-  buildorderwin = newwin(10, 10, 4, 4);
+  buildorderwin = newwin(1, 1, 0, 0);
   buildorder.setWindow(buildorderwin);
   placePopup(&buildorder, buildorderwin);
 
@@ -854,7 +848,7 @@ void MainWindow::showInverseReqs(BuildListItem & build)
   else { printStatus(int2string(ninvreqs) + 
            " installed SlackBuilds depend on " + build.name() + "."); }
 
-  invreqwin = newwin(10, 10, 4, 4);
+  invreqwin = newwin(1, 1, 0, 0);
   invreqs.setWindow(invreqwin);
   placePopup(&invreqs, invreqwin);
 
@@ -899,7 +893,7 @@ void MainWindow::browseFiles(const BuildListItem & build)
     return;
   }
 
-  browserwin = newwin(10, 10, 4, 4);
+  browserwin = newwin(1, 1, 0, 0);
   browser.setName("Browsing " + build.getProp("category") + "/" + build.name());
   browser.setWindow(browserwin);
   placePopup(&browser, browserwin);
@@ -1097,8 +1091,8 @@ int MainWindow::initialize()
 
   // Create windows (note: geometry gets set in redrawWindows);
 
-  _win1 = newwin(4, 0, 10, 10);
-  _win2 = newwin(4, 11,10, 10);
+  _win1 = newwin(1, 1, 0, 0);
+  _win2 = newwin(1, 1, 0, 0);
 
   _clistbox.clearList();
   _clistbox.setWindow(_win1);
@@ -1200,7 +1194,7 @@ void MainWindow::selectFilter()
 
   // Set up window
 
-  filterwin = newwin(10, 10, 4, 4);
+  filterwin = newwin(1, 1, 0, 0);
   _fbox.setWindow(filterwin);
   placePopup(&_fbox, filterwin);
 
@@ -1263,7 +1257,7 @@ void MainWindow::search()
 
   // Set up window and search box
 
-  searchwin = newwin(10, 10, 4, 4);
+  searchwin = newwin(1, 1, 0, 0);
   _searchbox.setWindow(searchwin);
   _searchbox.setMessage("Search SlackBuilds");
   placePopup(&_searchbox, searchwin);
@@ -1314,7 +1308,7 @@ void MainWindow::showBuildActions(BuildListItem & build)
 
   // Set up windows and dialog
 
-  actionwin = newwin(10, 10, 4, 4);
+  actionwin = newwin(1, 1, 0, 0);
   actionbox.setWindow(actionwin);
   actionbox.setName("Actions for " + build.name());
   actionbox.create(build);
