@@ -1550,7 +1550,7 @@ void MainWindow::show()
 
     // Key signals with the same action w/ either type of list box
 
-    if (selection == signals::quit) { getting_input = false; }
+    if (selection == "q") { getting_input = false; }
     else if (selection == signals::resize) { redrawAll(true); }
     else if (selection == "f") { selectFilter(); }
     else if (selection == "/") { search(); }
