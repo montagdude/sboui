@@ -49,7 +49,7 @@ void MainWindow::printToEol(const std::string & msg) const
 Prints/clears status message
 
 *******************************************************************************/
-void MainWindow::printStatus(const std::string & msg) const
+void MainWindow::printStatus(const std::string & msg)
 {
   int rows, cols;
 
@@ -57,18 +57,22 @@ void MainWindow::printStatus(const std::string & msg) const
   move(rows-2, 0);
   clrtoeol();
   printToEol(msg);
+  _status = msg;
   refresh();
 }
 
-void MainWindow::clearStatus() const
+void MainWindow::clearStatus()
 {
   int rows, cols;
 
   getmaxyx(stdscr, rows, cols);
   move(rows-2, 0);
   clrtoeol();
+  _status = "";
   refresh();
 }
+
+void MainWindow::refreshStatus() { printStatus(_status); }
 
 /*******************************************************************************
 
@@ -211,7 +215,7 @@ void MainWindow::redrawAll(bool force)
 
   redrawHeaderFooter(); 
   redrawWindows(force);
-  refresh();
+  refreshStatus();
 }
 
 /*******************************************************************************
@@ -1072,6 +1076,7 @@ MainWindow::MainWindow()
   _title = "sboui Development Version";
   _filter = "all SlackBuilds";
   _info = "f: Filter | /: Search | o: Options | ?: Help";
+  _status = "";
   _category_idx = 0;
   _activated_listbox = 0;
   _layout = 0;
@@ -1546,11 +1551,7 @@ void MainWindow::show()
     // Key signals with the same action w/ either type of list box
 
     if (selection == signals::quit) { getting_input = false; }
-    else if (selection == signals::resize) 
-    { 
-      redrawAll(true); 
-      clearStatus();
-    }
+    else if (selection == signals::resize) { redrawAll(true); }
     else if (selection == "f") { selectFilter(); }
     else if (selection == "/") { search(); }
     else if (selection == "s") { syncRepo(); }
