@@ -882,6 +882,31 @@ void MainWindow::browseFiles(const BuildListItem & build)
 
 /*******************************************************************************
 
+Syncs/updates SlackBuilds repository
+
+*******************************************************************************/
+int MainWindow::syncRepo()
+{
+  int check;
+
+  def_prog_mode();
+  endwin();
+
+  check = sync();
+  reset_prog_mode();
+//FIXME: Display an error if the command fails
+
+  if (check == 0) 
+  {
+    clearData();
+    initialize();
+  }
+
+  return check;
+}
+
+/*******************************************************************************
+
 Sets size and position of popup boxes
 FIXME: use templates instead of overloading?
 
@@ -995,7 +1020,7 @@ MainWindow::MainWindow()
   _categories.resize(0);
   _title = "sboui Development Version";
   _filter = "all SlackBuilds";
-  _info = "f: Filter | s: Search | o: Options | ?: Help";
+  _info = "f: Filter | /: Search | o: Options | ?: Help";
   _category_idx = 0;
   _activated_listbox = 0;
 }
@@ -1044,6 +1069,7 @@ int MainWindow::initialize()
     else if (_filter == "non-dependencies") { filterNonDeps(); }
     else { filterAll(); }
   }
+  redrawAll(true);
 
   return retval;
 }
@@ -1327,7 +1353,6 @@ void MainWindow::showBuildActions(BuildListItem & build)
   { 
     clearData();
     initialize();
-    redrawAll(true);
   }
 }
 
@@ -1475,6 +1500,7 @@ void MainWindow::show()
       clearStatus();
     }
     else if (selection == "f") { selectFilter(); }
-    else if (selection == "s") { search(); }
+    else if (selection == "/") { search(); }
+    else if (selection == "s") { syncRepo(); }
   }
 }

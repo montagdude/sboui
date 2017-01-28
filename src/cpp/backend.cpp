@@ -375,3 +375,10 @@ int view_file(const std::string & path)
   cmd = editor + " " + path;
   return run_command(cmd);
 }
+
+/*******************************************************************************
+
+Syncs/updates SlackBuilds repository
+
+*******************************************************************************/
+int sync() { return run_command(sync_cmd); }

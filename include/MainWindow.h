@@ -60,6 +60,10 @@ class MainWindow {
     void showInverseReqs(BuildListItem & build);
     void browseFiles(const BuildListItem & build);
 
+    /* Sync/update */
+
+    int syncRepo();
+
     /* Sets size of popup boxes */
 
     void popupSize(int & height, int & width, AbstractListBox *popup) const;
