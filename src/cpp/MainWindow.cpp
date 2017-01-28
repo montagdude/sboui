@@ -115,10 +115,10 @@ void MainWindow::redrawHeaderFooter() const
 
 /*******************************************************************************
 
-Redraws windows
+Redraws windows in horizontal layout
 
 *******************************************************************************/
-void MainWindow::redrawWindows(bool force)
+void MainWindow::redrawWindowsHorz()
 {
   int rows, cols;
   int listrows, leftlistcols, rightlistcols, xrightlist;
@@ -140,6 +140,48 @@ void MainWindow::redrawWindows(bool force)
   wresize(_win1, listrows, leftlistcols);
   mvwin(_win2, 3, xrightlist);
   wresize(_win2, listrows, rightlistcols); 
+}
+
+/*******************************************************************************
+
+Redraws windows in vertical layout
+
+*******************************************************************************/
+void MainWindow::redrawWindowsVert()
+{
+  int rows, cols;
+  int listcols, toplistrows, botlistrows, ybotlist;
+  const int minlistcols = 5;
+  const int minlistrows = 3;
+
+  getmaxyx(stdscr, rows, cols);
+
+  // Set window dimensions and positions
+
+  listcols = std::max(cols, minlistcols);
+  toplistrows = std::max(int(std::floor(double(rows-5)/2.)), minlistrows);
+  botlistrows = std::max(rows-5 - toplistrows, minlistrows);
+  ybotlist = 3 + toplistrows;
+
+  // Position windows
+
+  mvwin(_win1, 3, 0);
+  wresize(_win1, toplistrows, listcols);
+  mvwin(_win2, ybotlist, 0);
+  wresize(_win2, botlistrows, listcols); 
+}
+
+/*******************************************************************************
+
+Redraws windows
+
+*******************************************************************************/
+void MainWindow::redrawWindows(bool force)
+{
+  // Set up windows
+
+  if (_layout == 0) { redrawWindowsHorz(); }
+  else { redrawWindowsVert(); }
 
   // Redraw windows
 
@@ -174,6 +216,21 @@ void MainWindow::redrawAll(bool force)
   redrawHeaderFooter(); 
   redrawWindows(force);
   refresh();
+}
+
+/*******************************************************************************
+
+Toggles horizontal/vertical layout
+
+*******************************************************************************/
+void MainWindow::toggleLayout()
+{
+  if (_layout == 0) { _layout = 1; }
+  else { _layout = 0; }
+
+//FIXME: needs two redraws, but I don't know why
+  redrawAll(true);
+  redrawAll(true);
 }
 
 /*******************************************************************************
@@ -1023,6 +1080,7 @@ MainWindow::MainWindow()
   _info = "f: Filter | /: Search | o: Options | ?: Help";
   _category_idx = 0;
   _activated_listbox = 0;
+  _layout = 0;
 }
 
 MainWindow::~MainWindow() { clearData(); }
@@ -1496,11 +1554,12 @@ void MainWindow::show()
     if (selection == signals::quit) { getting_input = false; }
     else if (selection == signals::resize) 
     { 
-      redrawAll(); 
+      redrawAll(true); 
       clearStatus();
     }
     else if (selection == "f") { selectFilter(); }
     else if (selection == "/") { search(); }
     else if (selection == "s") { syncRepo(); }
+    else if (selection == "l") { toggleLayout(); }
   }
 }

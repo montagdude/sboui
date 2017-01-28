@@ -30,15 +30,18 @@ class MainWindow {
     FilterBox _fbox;
     SearchBox _searchbox;
     std::string _title, _filter, _info;
-    unsigned int _category_idx, _activated_listbox;
+    unsigned int _category_idx, _activated_listbox, _layout;
 
     void printToEol(const std::string & msg) const;
     void printStatus(const std::string & msg) const;
     void clearStatus() const;
 
     void redrawHeaderFooter() const;
+    void redrawWindowsHorz();
+    void redrawWindowsVert();
     void redrawWindows(bool force=false);
     void redrawAll(bool force=false);
+    void toggleLayout();
 
     /* Clears windows, lists, etc. */
 
