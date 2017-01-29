@@ -498,6 +498,94 @@ void MainWindow::filterUpgradable()
 
 /*******************************************************************************
 
+Displays tagged SlackBuilds
+
+*******************************************************************************/
+void MainWindow::filterTagged()
+{
+  unsigned int i, j, ncategories, nfiltered_categories, nbuilds, ntagged;
+  std::vector<std::string> filtered_categories;
+  bool category_found;
+  BuildListBox initlistbox;
+
+  _filter = "tagged SlackBuilds";
+  printStatus("Filtering by tagged SlackBuilds ...");
+
+  // Create list boxes (Careful! If you use push_back, etc. later on the lists,
+  // the list boxes must be regenerated because their pointers will become
+  // invalid.)
+
+  nbuilds = _slackbuilds.size();
+  ncategories = _categories.size();
+  _blistboxes.resize(0);
+  _clistbox.clearList();
+  _clistbox.setActivated(true);
+  _category_idx = 0;
+  _activated_listbox = 0;
+  filtered_categories.resize(0);
+  ntagged = 0;
+
+  for ( i = 0; i < nbuilds; i++ )
+  {
+    if (_slackbuilds[i].getBoolProp("tagged"))
+    {
+      category_found = false;
+      nfiltered_categories = filtered_categories.size();
+      for ( j = 0; j < nfiltered_categories; j++ )
+      {
+        if (_slackbuilds[i].getProp("category") == filtered_categories[j])
+        {
+          _blistboxes[j].addItem(&_slackbuilds[i]);
+          category_found = true;
+          break;
+        } 
+      }
+      if (! category_found)
+      {
+        for ( j = 0; j < ncategories; j++ )
+        {
+          if ( _slackbuilds[i].getProp("category") == _categories[j].name())
+          {
+            _clistbox.addItem(&_categories[j]);
+            BuildListBox blistbox;
+            blistbox.setWindow(_win2);
+            blistbox.setName(_categories[j].name());
+            blistbox.setActivated(false);
+            blistbox.addItem(&_slackbuilds[i]);
+            _blistboxes.push_back(blistbox); 
+            filtered_categories.push_back(_slackbuilds[i].getProp("category"));
+            break;
+          }
+        }
+      }
+      ntagged++;
+    }
+  } 
+
+  // Check whether categories should be tagged
+
+  nfiltered_categories = filtered_categories.size();
+  for ( j = 0; j < nfiltered_categories; j++ )
+  {
+    if (_blistboxes[j].allTagged()) { _clistbox.itemByIdx(j)->
+                                                  setBoolProp("tagged", true); }
+    else { _clistbox.itemByIdx(j)->setBoolProp("tagged", false); }
+  }
+
+  if (ntagged == 0) 
+  { 
+    printStatus("No tagged SlackBuilds."); 
+    initlistbox.setWindow(_win2);
+    initlistbox.setActivated(false);
+    initlistbox.setName("SlackBuilds");
+    _blistboxes.push_back(initlistbox);
+  }
+  else if (ntagged == 1) { printStatus("1 tagged SlackBuild."); }
+  else { printStatus(int2string(ntagged) + " tagged SlackBuilds."); }
+}
+
+/*******************************************************************************
+
 Displays installed SlackBuilds that are not a dependency of any other installed
 SlackBuild
 
@@ -1229,6 +1317,8 @@ void MainWindow::selectFilter()
     {
       if (_filter != "upgradable SlackBuilds") { filterUpgradable(); } 
     }
+    // Tagged items could have changed, so allow this one to be re-selected
+    else if ( (selected == "Tagged") || (selection == "T") ) { filterTagged(); }
     else if ( (selected == "Non-dependencies") || (selection == "N") )
     {
       if (_filter != "non-dependencies") { filterNonDeps(); } 

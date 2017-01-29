@@ -22,12 +22,14 @@ FilterBox::FilterBox()
   addItem(new ListItem("All"));
   addItem(new ListItem("Installed"));
   addItem(new ListItem("Upgradable"));
+  addItem(new ListItem("Tagged"));
   addItem(new ListItem("Non-dependencies"));
 
   _items[0]->setHotKey(0);
   _items[1]->setHotKey(0);
   _items[2]->setHotKey(0);
   _items[3]->setHotKey(0);
+  _items[4]->setHotKey(0);
 }
 
 FilterBox::FilterBox(WINDOW *win, const std::string & name)
@@ -40,12 +42,14 @@ FilterBox::FilterBox(WINDOW *win, const std::string & name)
   addItem(new ListItem("All"));
   addItem(new ListItem("Installed"));
   addItem(new ListItem("Upgradable"));
+  addItem(new ListItem("Tagged"));
   addItem(new ListItem("Non-dependencies"));
 
   _items[0]->setHotKey(0);
   _items[1]->setHotKey(0);
   _items[2]->setHotKey(0);
   _items[3]->setHotKey(0);
+  _items[4]->setHotKey(0);
 }
 
 /*******************************************************************************

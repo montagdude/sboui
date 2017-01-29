@@ -53,6 +53,7 @@ class MainWindow {
     void filterAll();
     void filterInstalled();
     void filterUpgradable();
+    void filterTagged();
     void filterNonDeps();
     void filterSearch(const std::string & searchterm, bool case_sensitive=false,
                       bool whole_whord=false);
