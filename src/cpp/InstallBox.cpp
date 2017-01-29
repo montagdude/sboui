@@ -505,10 +505,10 @@ std::string InstallBox::exec()
 /*******************************************************************************
 
 Install, upgrade, reinstall, or remove SlackBuild and dependencies. Returns 0 on
-success.
+success. Also counts number of SlackBuilds that were changed.
 
 *******************************************************************************/
-int InstallBox::applyChanges() const
+int InstallBox::applyChanges(int & nchanged) const
 {
   unsigned int nbuilds, i;
   int check, retval;
@@ -518,6 +518,7 @@ int InstallBox::applyChanges() const
 
   nbuilds = _builds.size();
   retval = 0;
+  nchanged = 0;
   for ( i = 0; i < nbuilds; i++ )
   {
     if (_builds[i].getBoolProp("tagged"))
@@ -553,6 +554,7 @@ int InstallBox::applyChanges() const
           std::getline(std::cin, response);
         }
       }
+      else { nchanged++; }
     }
   }
 

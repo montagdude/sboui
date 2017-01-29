@@ -786,7 +786,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
                                const std::string & action)
 {
   WINDOW *installerwin;
-  int check;
+  int check, nchanged;
   std::string selection;
   bool getting_input, needs_rebuild;
   unsigned int ninstaller;
@@ -840,9 +840,10 @@ bool MainWindow::modifyPackage(BuildListItem & build,
       }
       def_prog_mode();
       endwin();
-      installer.applyChanges();
+      check = installer.applyChanges(nchanged);
+      if (nchanged > 0) { needs_rebuild = true; }
+// FIXME: Error message box if check != 0
       reset_prog_mode();
-      needs_rebuild = true;
       redrawAll(true);
       getting_input = false;
     }
