@@ -1568,6 +1568,7 @@ void MainWindow::show()
       else if (selection == "t")
       {
         _blistboxes[_category_idx].tagAll();
+        _category_idx = _clistbox.highlight();
         _blistboxes[_category_idx].draw();
       }
     }

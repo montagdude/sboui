@@ -276,7 +276,9 @@ std::string CategoryListBox::exec()
       retval = "t";
       _items[_highlight]->setBoolProp("tagged", 
                                  (! _items[_highlight]->getBoolProp("tagged")));
-      _redraw_type = "changed";
+      check_redraw = highlightNext();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
       break;
 
     default:
