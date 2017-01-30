@@ -1,7 +1,7 @@
 #include <vector>
 #include <string>
 #include <cmath>     // floor
-#include "curses.h"
+#include <curses.h>
 #include "Color.h"
 #include "color_settings.h"
 #include "string_util.h"
@@ -11,6 +11,7 @@
 #include "CategoryListBox.h"
 #include "BuildListItem.h"
 #include "BuildListBox.h"
+#include "filters.h"
 #include "FilterBox.h"
 #include "SearchBox.h"
 #include "BuildActionBox.h"
@@ -256,62 +257,24 @@ Displays all SlackBuilds
 *******************************************************************************/
 void MainWindow::filterAll()
 {
-  unsigned int i, j, nbuilds, ncategories;
-  BuildListBox initlistbox;
+  unsigned int nbuilds;
 
   _filter = "all SlackBuilds";
   printStatus("Filtering by all SlackBuilds ...");
 
-  // Create list boxes (Careful! If you use push_back, etc. later on the lists,
-  // the list boxes must be regenerated because their pointers will become
-  // invalid.)
-
-  nbuilds = _slackbuilds.size();
-  ncategories = _categories.size();
-  _blistboxes.resize(0);
-  _clistbox.clearList();
-  _clistbox.setActivated(true);
   _activated_listbox = 0;
   _category_idx = 0;
-  for ( j = 0; j < ncategories; j++ )
-  {
-    _clistbox.addItem(&_categories[j]);
-    BuildListBox blistbox;
-    blistbox.setWindow(_win2);
-    blistbox.setName(_categories[j].name());
-    blistbox.setActivated(false);
-    _blistboxes.push_back(blistbox);
-  }
-  for ( i = 0; i < nbuilds; i++ )
-  {
-    for ( j = 0; j < ncategories; j++ )
-    {
-      if (_slackbuilds[i].getProp("category") == _categories[j].name())
-      {
-        _blistboxes[j].addItem(&_slackbuilds[i]);
-      }
-    }
-  }
+  nbuilds = _slackbuilds.size();
 
-  // Check whether categories should be tagged
+  filter_all(_slackbuilds, _categories, _win2, _clistbox, _blistboxes);
 
-  for ( j = 0; j < ncategories; j++ )
-  {
-    if (_blistboxes[j].allTagged()) { _clistbox.itemByIdx(j)->
-                                                  setBoolProp("tagged", true); }
-    else { _clistbox.itemByIdx(j)->setBoolProp("tagged", false); }
-  }
-
+//FIXME: put this in an error message of some sort
   if (nbuilds == 0) 
-  { 
     printStatus("No SlackBuilds. Run the sync command first."); 
-    initlistbox.setWindow(_win2);
-    initlistbox.setActivated(false);
-    initlistbox.setName("SlackBuilds");
-    _blistboxes.push_back(initlistbox);
-  }
-  else if (nbuilds == 1) { printStatus("1 SlackBuild in repository."); }
-  else { printStatus(int2string(nbuilds) + " SlackBuilds in repository."); }
+  else if (nbuilds == 1)
+    printStatus("1 SlackBuild in repository.");
+  else 
+    printStatus(int2string(nbuilds) + " SlackBuilds in repository.");
 }
 
 /*******************************************************************************
@@ -1212,6 +1175,7 @@ int MainWindow::initialize()
   { 
     if (_filter == "installed SlackBuilds") { filterInstalled(); }
     else if (_filter == "upgradable SlackBuilds") { filterUpgradable(); }
+    else if (_filter == "tagged SlackBuilds") { filterTagged(); }
     else if (_filter == "non-dependencies") { filterNonDeps(); }
     else { filterAll(); }
   }
