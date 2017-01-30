@@ -534,9 +534,7 @@ int InstallBox::applyChanges(int & nchanged) const
       if (check == 127)
       {
         retval = check;
-        std::cout << "Error: package manager not found. "
-                  << "Press Enter to return...";
-        std::getline(std::cin, response);
+        std::cout << "Error: package manager not found. ";
         break;
       }
       else if (check != 0)
@@ -550,13 +548,16 @@ int InstallBox::applyChanges(int & nchanged) const
         }
         else
         {
-          std::cout << " An error occurred. Press Enter to return...";
+          std::cout << " An error occurred. ";
           std::getline(std::cin, response);
         }
       }
       else { nchanged++; }
     }
   }
+
+  std::cout << "Press Enter to return ...";
+  std::getline(std::cin, response);
 
   return retval;
 } 
