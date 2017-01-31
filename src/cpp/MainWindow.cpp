@@ -48,6 +48,18 @@ void MainWindow::printToEol(const std::string & msg) const
 
 /*******************************************************************************
 
+Prints a given number of spaces
+
+*******************************************************************************/
+void MainWindow::printSpaces(unsigned int nspaces) const
+{
+  unsigned int i;
+
+  for ( i = 0; i < nspaces; i++ ) { addch(' '); }
+}
+
+/*******************************************************************************
+
 Prints/clears status message
 
 *******************************************************************************/
@@ -83,18 +95,24 @@ Redraws header and footer
 *******************************************************************************/
 void MainWindow::redrawHeaderFooter() const
 {
+  unsigned int namelen;
   int rows, cols;
-  int pair_title, pair_info;
+  int left, pair_title, pair_info;
+  double mid;
 
   getmaxyx(stdscr, rows, cols);
 
   // Draw title
 
+  namelen = _title.size();
+  mid = double(cols)/2.0;
+  left = std::floor(mid - double(namelen)/2.0);
   move(0, 0);
   clrtoeol();
   pair_title = colors.pair(fg_title, bg_title);
   if (pair_title != -1) { attron(COLOR_PAIR(pair_title)); }
   attron(A_BOLD);
+  printSpaces(left-1);
   printToEol(_title);
   if (pair_title != -1) { attroff(COLOR_PAIR(pair_title)); }
   attroff(A_BOLD);
@@ -107,11 +125,14 @@ void MainWindow::redrawHeaderFooter() const
 
   // Draw footer
 
+  namelen = _info.size();
+  left = std::floor(mid - double(namelen)/2.0);
   move(rows-1, 0);
   clrtoeol();
   pair_info = colors.pair(fg_info, bg_info);
   if (pair_info != -1) { attron(COLOR_PAIR(pair_info)); }
   attron(A_BOLD);
+  printSpaces(left-1);
   printToEol(_info);
   if (pair_info != -1) { attroff(COLOR_PAIR(pair_info)); }
   attroff(A_BOLD);

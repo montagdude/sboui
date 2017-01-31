@@ -34,6 +34,7 @@ class MainWindow {
     unsigned int _category_idx, _activated_listbox, _layout;
 
     void printToEol(const std::string & msg) const;
+    void printSpaces(unsigned int nspaces) const;
     void printStatus(const std::string & msg);
     void clearStatus();
     void refreshStatus();
