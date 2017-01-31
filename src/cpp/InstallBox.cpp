@@ -511,7 +511,7 @@ success. Also counts number of SlackBuilds that were changed.
 int InstallBox::applyChanges(int & nchanged) const
 {
   unsigned int nbuilds, i;
-  int check, retval;
+  int retval;
   std::string response, msg;
 
   // Install/upgrade/reinstall/remove tagged SlackBuilds
@@ -523,23 +523,21 @@ int InstallBox::applyChanges(int & nchanged) const
   {
     if (_builds[i].getBoolProp("tagged"))
     {
-      if (_builds[i].getProp("action") == "Upgrade") { check = 
+      if (_builds[i].getProp("action") == "Upgrade") { retval = 
                                                upgrade_slackbuild(_builds[i]); }
-      else if (_builds[i].getProp("action") == "Remove") { check = 
+      else if (_builds[i].getProp("action") == "Remove") { retval = 
                                                 remove_slackbuild(_builds[i]); }
-      else { check = install_slackbuild(_builds[i]); }
+      else { retval = install_slackbuild(_builds[i]); }
 
       // Handle errors
 
-      if (check == 127)
+      if (retval == 127)
       {
-        retval = check;
         std::cout << "Error: package manager not found. ";
         break;
       }
-      else if (check != 0)
+      else if (retval != 0)
       {
-        retval = check;
         if (i != nbuilds-1)
         {
           std::cout << "An error occurred. Continue anyway [y/N]?";
@@ -556,7 +554,7 @@ int InstallBox::applyChanges(int & nchanged) const
     }
   }
 
-  if (nchanged > 0)
+  if ( (nchanged > 0) || (retval != 0) )
   {
     std::cout << "Press Enter to return ...";
     std::getline(std::cin, response);
