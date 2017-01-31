@@ -1,6 +1,5 @@
 #include <string>
 #include <curses.h>
-#include <cmath>    // floor
 #include "Color.h"
 #include "color_settings.h"
 #include "signals.h"

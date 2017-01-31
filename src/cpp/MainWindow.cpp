@@ -106,7 +106,7 @@ void MainWindow::redrawHeaderFooter() const
 
   namelen = _title.size();
   mid = double(cols)/2.0;
-  left = std::floor(mid - double(namelen)/2.0);
+  left = std::floor(mid - double(namelen)/2.0) + 1;
   move(0, 0);
   clrtoeol();
   pair_title = colors.pair(fg_title, bg_title);
@@ -126,7 +126,7 @@ void MainWindow::redrawHeaderFooter() const
   // Draw footer
 
   namelen = _info.size();
-  left = std::floor(mid - double(namelen)/2.0);
+  left = std::floor(mid - double(namelen)/2.0) + 1;
   move(rows-1, 0);
   clrtoeol();
   pair_info = colors.pair(fg_info, bg_info);

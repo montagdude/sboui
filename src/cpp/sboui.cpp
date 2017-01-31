@@ -42,10 +42,10 @@ int main()
     // Light color scheme
     fg_normal = "black";
     bg_normal = "white";
-    fg_title = "white";
-    bg_title = "green";
-    fg_info = "white";
-    bg_info = "green";
+    fg_title = "black";
+    bg_title = "yellow";
+    fg_info = "black";
+    bg_info = "yellow";
     fg_highlight_active = "white";
     bg_highlight_active = "blue";
     fg_highlight_inactive = "white";

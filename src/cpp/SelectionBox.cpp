@@ -25,9 +25,9 @@ void SelectionBox::redrawFrame() const
   // Title
 
   namelen = _name.size();
-  mid = double(cols)/2.0;
-  left = std::floor(mid - double(namelen)/2.0);
-  wmove(_win, 1, 0);
+  mid = double(cols-2)/2.0;
+  left = std::floor(mid - double(namelen)/2.0) + 1;
+  wmove(_win, 1, 1);
   wclrtoeol(_win);
   pair_title = colors.pair(fg_title, bg_title);
   if (pair_title != -1) { wattron(_win, COLOR_PAIR(pair_title)); }
@@ -40,7 +40,7 @@ void SelectionBox::redrawFrame() const
   // Info on bottom of window
 
   namelen = _info.size();
-  left = std::floor(mid - double(namelen)/2.0);
+  left = std::floor(mid - double(namelen)/2.0) + 1;
   wmove(_win, rows-2, 1);
   wclrtoeol(_win);
   pair_info = colors.pair(fg_info, bg_info);
