@@ -180,7 +180,6 @@ Constructors
 *******************************************************************************/
 InputBox::InputBox()
 {
-  _win = NULL;
   _msg = "";
   _info = "Enter: Ok | Esc: Cancel";
   _redraw_type = "all";

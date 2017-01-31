@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <curses.h>
+#include "CursesWidget.h"
 
 class ListItem;
 
@@ -11,11 +12,10 @@ class ListItem;
 Template list box class
 
 *******************************************************************************/
-class AbstractListBox {
+class AbstractListBox: public CursesWidget {
 
   protected:
 
-    WINDOW *_win;
     std::string _name, _redraw_type;
     std::vector<ListItem *> _items;
     unsigned int _reserved_rows;
@@ -44,25 +44,14 @@ class AbstractListBox {
 
     /* Set attributes */
 
-    void setWindow(WINDOW *win);
     void setName(const std::string & name);
 
     /* Get attributes */
 
     const std::string & name() const;
     unsigned int numItems() const;
-    virtual void minimumSize(int & height, int & width) const = 0;
-    virtual void preferredSize(int & height, int & width) const = 0;
 
     /* Returns pointer to item */
 
     ListItem * itemByIdx(unsigned int idx);
-
-    /* Draws frame, items, etc. as needed */
- 
-    virtual void draw(bool force=false) = 0;
-
-    /* User interaction loop */
-
-    virtual std::string exec() = 0;
 };

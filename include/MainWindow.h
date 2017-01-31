@@ -3,6 +3,7 @@
 #include <curses.h>
 #include <vector>
 #include <string>
+#include "CursesWidget.h"
 #include "AbstractListBox.h"
 #include "CategoryListItem.h"
 #include "CategoryListBox.h"
@@ -71,10 +72,8 @@ class MainWindow {
 
     /* Sets size of popup boxes */
 
-    void popupSize(int & height, int & width, AbstractListBox *popup) const;
-    void popupSize(int & height, int & width, InputBox *popup) const;
-    void placePopup(AbstractListBox *popup, WINDOW *win) const;
-    void placePopup(InputBox *popup, WINDOW *win) const;
+    void popupSize(int & height, int & width, CursesWidget *popup) const;
+    void placePopup(CursesWidget *popup, WINDOW *win) const;
 
     /* Temporarily hides a window */
 

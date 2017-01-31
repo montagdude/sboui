@@ -7,6 +7,7 @@
 #include "string_util.h"
 #include "signals.h"
 #include "backend.h"
+#include "CursesWidget.h"
 #include "CategoryListItem.h"
 #include "CategoryListBox.h"
 #include "BuildListItem.h"
@@ -1015,11 +1016,9 @@ int MainWindow::syncRepo()
 /*******************************************************************************
 
 Sets size and position of popup boxes
-FIXME: use templates instead of overloading?
 
 *******************************************************************************/
-void MainWindow::popupSize(int & height, int & width, 
-                           AbstractListBox *popup) const
+void MainWindow::popupSize(int & height, int & width, CursesWidget *popup) const
 {
   int minheight, minwidth, prefheight, prefwidth, maxheight, maxwidth;
   int rows, cols;
@@ -1045,45 +1044,7 @@ void MainWindow::popupSize(int & height, int & width,
   }
 } 
 
-void MainWindow::popupSize(int & height, int & width, InputBox *popup) const
-{
-  int minheight, minwidth, prefheight, prefwidth, maxheight, maxwidth;
-  int rows, cols;
-
-  getmaxyx(stdscr, rows, cols);
-
-  popup->minimumSize(minheight, minwidth);
-  popup->preferredSize(prefheight, prefwidth);
-  maxheight = rows-4;
-  maxwidth = cols-4;
-
-  if (prefheight < maxheight) { height = prefheight; }
-  else 
-  { 
-    if (maxheight-1 > minheight) { height = maxheight-1; }
-    else { height = minheight; }
-  }
-  if (prefwidth < maxwidth) { width = prefwidth; }
-  else 
-  { 
-    if (maxwidth-1 > minwidth) { width = minwidth-1; }
-    else { width = minwidth; }
-  }
-} 
-
-void MainWindow::placePopup(AbstractListBox *popup, WINDOW *win) const
-{
-  int rows, cols, height, width, top, left;
-
-  getmaxyx(stdscr, rows, cols);
-  popupSize(height, width, popup);
-  left = std::floor(double(cols)/2. - double(width)/2.);
-  top = std::floor(double(rows)/2. - double(height)/2.);
-  mvwin(win, top, left);
-  wresize(win, height, width);
-}
-
-void MainWindow::placePopup(InputBox *popup, WINDOW *win) const
+void MainWindow::placePopup(CursesWidget *popup, WINDOW *win) const
 {
   int rows, cols, height, width, top, left;
 

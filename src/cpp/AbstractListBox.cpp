@@ -1,5 +1,5 @@
 #include <string>
-#include <vector>
+#include <curses.h>
 #include "ListItem.h"
 #include "AbstractListBox.h"
 
@@ -50,7 +50,6 @@ Constructors
 *******************************************************************************/
 AbstractListBox::AbstractListBox()
 {
-  _win = NULL;
   _name = "";
   _redraw_type = "all";
   _items.resize(0);
@@ -93,7 +92,6 @@ void AbstractListBox::clearList()
 Set attributes
 
 *******************************************************************************/
-void AbstractListBox::setWindow(WINDOW *win) { _win = win; }
 void AbstractListBox::setName(const std::string & name) { _name = name; }
 
 /*******************************************************************************

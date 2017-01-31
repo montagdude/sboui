@@ -3,18 +3,19 @@
 #include <string>
 #include <vector>
 #include <curses.h>
-#include "InputItem.h"
+#include "CursesWidget.h"
+
+class InputItem;
 
 /*******************************************************************************
 
 Box containing a number of InputItems
 
 *******************************************************************************/
-class InputBox {
+class InputBox: public CursesWidget {
 
   protected:
 
-    WINDOW *_win;
     std::string _msg, _info, _redraw_type;
     std::vector<InputItem *> _items;    
     unsigned int _highlight, _prevhighlight;
