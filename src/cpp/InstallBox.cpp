@@ -556,8 +556,11 @@ int InstallBox::applyChanges(int & nchanged) const
     }
   }
 
-  std::cout << "Press Enter to return ...";
-  std::getline(std::cin, response);
+  if (nchanged > 0)
+  {
+    std::cout << "Press Enter to return ...";
+    std::getline(std::cin, response);
+  }
 
   return retval;
 } 
