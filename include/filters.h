@@ -11,3 +11,7 @@ void filter_all(std::vector<BuildListItem> & slackbuilds,
                 std::vector<CategoryListItem> & categories,
                 WINDOW *blistboxwin, CategoryListBox & clistbox,
                 std::vector<BuildListBox> & blistboxes);
+void filter_installed(std::vector<BuildListItem *> & installedlist,
+                      std::vector<CategoryListItem> & categories,
+                      WINDOW *blistboxwin, CategoryListBox & clistbox,
+                      std::vector<BuildListBox> & blistboxes);

@@ -306,10 +306,7 @@ Displays installed SlackBuilds
 *******************************************************************************/
 void MainWindow::filterInstalled()
 {
-  unsigned int i, j, ncategories, nfiltered_categories, ninstalled;
-  std::vector<std::string> filtered_categories;
-  bool category_found;
-  BuildListBox initlistbox;
+  unsigned int ninstalled;
 
   _filter = "installed SlackBuilds";
   printStatus("Filtering by installed SlackBuilds ...");
@@ -319,72 +316,18 @@ void MainWindow::filterInstalled()
     list_installed(_slackbuilds, _installedlist); 
   }
 
-  // Create list boxes (Careful! If you use push_back, etc. later on the lists,
-  // the list boxes must be regenerated because their pointers will become
-  // invalid.)
-
-  ninstalled = _installedlist.size();
-  ncategories = _categories.size();
-  _blistboxes.resize(0);
-  _clistbox.clearList();
-  _clistbox.setActivated(true);
-  _category_idx = 0;
   _activated_listbox = 0;
-  filtered_categories.resize(0);
+  _category_idx = 0;
+  ninstalled = _installedlist.size();
 
-  for ( i = 0; i < ninstalled; i++ )
-  {
-    category_found = false;
-    nfiltered_categories = filtered_categories.size();
-    for ( j = 0; j < nfiltered_categories; j++ )
-    {
-      if (_installedlist[i]->getProp("category") == filtered_categories[j])
-      {
-        _blistboxes[j].addItem(_installedlist[i]);
-        category_found = true;
-        break;
-      } 
-    }
-    if (! category_found)
-    {
-      for ( j = 0; j < ncategories; j++ )
-      {
-        if ( _installedlist[i]->getProp("category") == _categories[j].name())
-        {
-          _clistbox.addItem(&_categories[j]);
-          BuildListBox blistbox;
-          blistbox.setWindow(_win2);
-          blistbox.setName(_categories[j].name());
-          blistbox.setActivated(false);
-          blistbox.addItem(_installedlist[i]);
-          _blistboxes.push_back(blistbox); 
-          filtered_categories.push_back(_installedlist[i]->getProp("category"));
-          break;
-        }
-      }
-    }
-  } 
-
-  // Check whether categories should be tagged
-
-  nfiltered_categories = filtered_categories.size();
-  for ( j = 0; j < nfiltered_categories; j++ )
-  {
-    if (_blistboxes[j].allTagged()) { _clistbox.itemByIdx(j)->
-                                                  setBoolProp("tagged", true); }
-    else { _clistbox.itemByIdx(j)->setBoolProp("tagged", false); }
-  }
+  filter_installed(_installedlist, _categories, _win2, _clistbox, _blistboxes);
 
   if (ninstalled == 0) 
-  { 
-    printStatus("No installed SlackBuilds."); 
-    initlistbox.setWindow(_win2);
-    initlistbox.setActivated(false);
-    initlistbox.setName("SlackBuilds");
-    _blistboxes.push_back(initlistbox);
-  }
-  else if (ninstalled == 1) { printStatus("1 installed SlackBuild."); }
-  else { printStatus(int2string(ninstalled) + " installed SlackBuilds."); }
+    printStatus("No installed SlackBuilds.");
+  else if (ninstalled == 1) 
+    printStatus("1 installed SlackBuild.");
+  else 
+    printStatus(int2string(ninstalled) + " installed SlackBuilds.");
 }
 
 /*******************************************************************************
