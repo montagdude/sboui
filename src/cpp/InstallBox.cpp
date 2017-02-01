@@ -545,11 +545,7 @@ int InstallBox::applyChanges(int & nchanged) const
           std::getline(std::cin, response);
           if ( (response != "y") && (response != "Y") ) { return retval; }
         }
-        else
-        {
-          std::cout << " An error occurred. ";
-          std::getline(std::cin, response);
-        }
+        else { std::cout << " An error occurred. "; }
       }
       else { nchanged++; }
     }
