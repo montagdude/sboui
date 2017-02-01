@@ -543,7 +543,7 @@ int InstallBox::applyChanges(int & nchanged) const
         {
           std::cout << "An error occurred. Continue anyway [y/N]?";
           std::getline(std::cin, response);
-          if ( (response != "y") && (response != "Y") ) { break; }
+          if ( (response != "y") && (response != "Y") ) { return retval; }
         }
         else
         {
