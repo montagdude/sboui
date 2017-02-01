@@ -312,9 +312,7 @@ void MainWindow::filterInstalled()
   printStatus("Filtering by installed SlackBuilds ...");
 
   if (_installedlist.size() == 0) 
-  { 
     list_installed(_slackbuilds, _installedlist); 
-  }
 
   _activated_listbox = 0;
   _category_idx = 0;
@@ -337,91 +335,26 @@ Displays upgradable SlackBuilds
 *******************************************************************************/
 void MainWindow::filterUpgradable()
 {
-  unsigned int i, j, ncategories, nfiltered_categories, ninstalled, nupgradable;
-  std::vector<std::string> filtered_categories;
-  bool category_found;
-  BuildListBox initlistbox;
+  unsigned int nupgradable;
 
   _filter = "upgradable SlackBuilds";
   printStatus("Filtering by upgradable SlackBuilds ...");
-
   if (_installedlist.size() == 0) 
-  { 
     list_installed(_slackbuilds, _installedlist); 
-  }
 
-  // Create list boxes (Careful! If you use push_back, etc. later on the lists,
-  // the list boxes must be regenerated because their pointers will become
-  // invalid.)
-
-  ninstalled = _installedlist.size();
-  ncategories = _categories.size();
-  _blistboxes.resize(0);
-  _clistbox.clearList();
-  _clistbox.setActivated(true);
   _category_idx = 0;
   _activated_listbox = 0;
-  filtered_categories.resize(0);
   nupgradable = 0;
 
-  for ( i = 0; i < ninstalled; i++ )
-  {
-    if (_installedlist[i]->upgradable())
-    {
-      category_found = false;
-      nfiltered_categories = filtered_categories.size();
-      for ( j = 0; j < nfiltered_categories; j++ )
-      {
-        if (_installedlist[i]->getProp("category") == filtered_categories[j])
-        {
-          _blistboxes[j].addItem(_installedlist[i]);
-          category_found = true;
-          break;
-        } 
-      }
-      if (! category_found)
-      {
-        for ( j = 0; j < ncategories; j++ )
-        {
-          if ( _installedlist[i]->getProp("category") == _categories[j].name())
-          {
-            _clistbox.addItem(&_categories[j]);
-            BuildListBox blistbox;
-            blistbox.setWindow(_win2);
-            blistbox.setName(_categories[j].name());
-            blistbox.setActivated(false);
-            blistbox.addItem(_installedlist[i]);
-            _blistboxes.push_back(blistbox); 
-            filtered_categories.push_back(
-                                        _installedlist[i]->getProp("category"));
-            break;
-          }
-        }
-      }
-      nupgradable++;
-    }
-  } 
-
-  // Check whether categories should be tagged
-
-  nfiltered_categories = filtered_categories.size();
-  for ( j = 0; j < nfiltered_categories; j++ )
-  {
-    if (_blistboxes[j].allTagged()) { _clistbox.itemByIdx(j)->
-                                                  setBoolProp("tagged", true); }
-    else { _clistbox.itemByIdx(j)->setBoolProp("tagged", false); }
-  }
+  filter_upgradable(_installedlist, _categories, _win2, _clistbox, _blistboxes,
+                    nupgradable);
 
   if (nupgradable == 0) 
-  { 
     printStatus("No upgradable SlackBuilds."); 
-    initlistbox.setWindow(_win2);
-    initlistbox.setActivated(false);
-    initlistbox.setName("SlackBuilds");
-    _blistboxes.push_back(initlistbox);
-  }
-  else if (nupgradable == 1) { printStatus("1 upgradable SlackBuild."); }
-  else { printStatus(int2string(nupgradable) + " upgradable SlackBuilds."); }
+  else if (nupgradable == 1) 
+    printStatus("1 upgradable SlackBuild.");
+  else 
+    printStatus(int2string(nupgradable) + " upgradable SlackBuilds.");
 }
 
 /*******************************************************************************
@@ -431,85 +364,24 @@ Displays tagged SlackBuilds
 *******************************************************************************/
 void MainWindow::filterTagged()
 {
-  unsigned int i, j, ncategories, nfiltered_categories, nbuilds, ntagged;
-  std::vector<std::string> filtered_categories;
-  bool category_found;
-  BuildListBox initlistbox;
+  unsigned int ntagged;
 
   _filter = "tagged SlackBuilds";
   printStatus("Filtering by tagged SlackBuilds ...");
 
-  // Create list boxes (Careful! If you use push_back, etc. later on the lists,
-  // the list boxes must be regenerated because their pointers will become
-  // invalid.)
-
-  nbuilds = _slackbuilds.size();
-  ncategories = _categories.size();
-  _blistboxes.resize(0);
-  _clistbox.clearList();
-  _clistbox.setActivated(true);
   _category_idx = 0;
   _activated_listbox = 0;
-  filtered_categories.resize(0);
   ntagged = 0;
 
-  for ( i = 0; i < nbuilds; i++ )
-  {
-    if (_slackbuilds[i].getBoolProp("tagged"))
-    {
-      category_found = false;
-      nfiltered_categories = filtered_categories.size();
-      for ( j = 0; j < nfiltered_categories; j++ )
-      {
-        if (_slackbuilds[i].getProp("category") == filtered_categories[j])
-        {
-          _blistboxes[j].addItem(&_slackbuilds[i]);
-          category_found = true;
-          break;
-        } 
-      }
-      if (! category_found)
-      {
-        for ( j = 0; j < ncategories; j++ )
-        {
-          if ( _slackbuilds[i].getProp("category") == _categories[j].name())
-          {
-            _clistbox.addItem(&_categories[j]);
-            BuildListBox blistbox;
-            blistbox.setWindow(_win2);
-            blistbox.setName(_categories[j].name());
-            blistbox.setActivated(false);
-            blistbox.addItem(&_slackbuilds[i]);
-            _blistboxes.push_back(blistbox); 
-            filtered_categories.push_back(_slackbuilds[i].getProp("category"));
-            break;
-          }
-        }
-      }
-      ntagged++;
-    }
-  } 
-
-  // Check whether categories should be tagged
-
-  nfiltered_categories = filtered_categories.size();
-  for ( j = 0; j < nfiltered_categories; j++ )
-  {
-    if (_blistboxes[j].allTagged()) { _clistbox.itemByIdx(j)->
-                                                  setBoolProp("tagged", true); }
-    else { _clistbox.itemByIdx(j)->setBoolProp("tagged", false); }
-  }
+  filter_tagged(_slackbuilds, _categories, _win2, _clistbox, _blistboxes, 
+                ntagged);
 
   if (ntagged == 0) 
-  { 
     printStatus("No tagged SlackBuilds."); 
-    initlistbox.setWindow(_win2);
-    initlistbox.setActivated(false);
-    initlistbox.setName("SlackBuilds");
-    _blistboxes.push_back(initlistbox);
-  }
-  else if (ntagged == 1) { printStatus("1 tagged SlackBuild."); }
-  else { printStatus(int2string(ntagged) + " tagged SlackBuilds."); }
+  else if (ntagged == 1) 
+    printStatus("1 tagged SlackBuild.");
+  else 
+    printStatus(int2string(ntagged) + " tagged SlackBuilds.");
 }
 
 /*******************************************************************************
@@ -520,86 +392,28 @@ SlackBuild
 *******************************************************************************/
 void MainWindow::filterNonDeps()
 {
-  unsigned int i, j, ncategories, nfiltered_categories, nnondeps;
-  std::vector<std::string> filtered_categories;
-  bool category_found;
-  BuildListBox initlistbox;
+  unsigned int nnondeps;
 
   _filter = "non-dependencies";
   printStatus("Filtering by non-dependencies ...");
 
   if (_installedlist.size() == 0) 
-  { 
     list_installed(_slackbuilds, _installedlist); 
-  }
-  if (_nondeplist.size() == 0) { list_nondeps(_installedlist, _nondeplist); }
+  if (_nondeplist.size() == 0)
+    list_nondeps(_installedlist, _nondeplist);
 
-  // Create list boxes (Careful! If you use push_back, etc. later on the lists,
-  // the list boxes must be regenerated because their pointers will become
-  // invalid.)
-
-  nnondeps = _nondeplist.size();
-  ncategories = _categories.size();
-  _blistboxes.resize(0);
-  _clistbox.clearList();
-  _clistbox.setActivated(true);
   _category_idx = 0;
   _activated_listbox = 0;
-  filtered_categories.resize(0);
+  nnondeps = _nondeplist.size();
 
-  for ( i = 0; i < nnondeps; i++ )
-  {
-    category_found = false;
-    nfiltered_categories = filtered_categories.size();
-    for ( j = 0; j < nfiltered_categories; j++ )
-    {
-      if (_nondeplist[i]->getProp("category") == filtered_categories[j])
-      {
-        _blistboxes[j].addItem(_nondeplist[i]);
-        category_found = true;
-        break;
-      } 
-    }
-    if (! category_found)
-    {
-      for ( j = 0; j < ncategories; j++ )
-      {
-        if ( _nondeplist[i]->getProp("category") == _categories[j].name())
-        {
-          _clistbox.addItem(&_categories[j]);
-          BuildListBox blistbox;
-          blistbox.setWindow(_win2);
-          blistbox.setName(_categories[j].name());
-          blistbox.setActivated(false);
-          blistbox.addItem(_nondeplist[i]);
-          _blistboxes.push_back(blistbox); 
-          filtered_categories.push_back(_nondeplist[i]->getProp("category"));
-          break;
-        }
-      }
-    }
-  } 
-
-  // Check whether categories should be tagged
-
-  nfiltered_categories = filtered_categories.size();
-  for ( j = 0; j < nfiltered_categories; j++ )
-  {
-    if (_blistboxes[j].allTagged()) { _clistbox.itemByIdx(j)->
-                                                  setBoolProp("tagged", true); }
-    else { _clistbox.itemByIdx(j)->setBoolProp("tagged", false); }
-  }
+  filter_nondeps(_nondeplist, _categories, _win2, _clistbox, _blistboxes);
 
   if (nnondeps == 0) 
-  { 
     printStatus("No non-dependencies."); 
-    initlistbox.setWindow(_win2);
-    initlistbox.setActivated(false);
-    initlistbox.setName("SlackBuilds");
-    _blistboxes.push_back(initlistbox);
-  }
-  else if (nnondeps == 1) { printStatus("1 non-dependency."); }
-  else { printStatus(int2string(nnondeps) + " non-dependencies."); }
+  else if (nnondeps == 1) 
+    printStatus("1 non-dependency.");
+  else 
+    printStatus(int2string(nnondeps) + " non-dependencies.");
 }
 
 /*******************************************************************************
@@ -610,98 +424,24 @@ Filters SlackBuilds by search term
 void MainWindow::filterSearch(const std::string & searchterm, 
                               bool case_sensitive, bool whole_word)
 {
-  unsigned int i, j, nbuilds, ncategories, nsearch_categories, nsearch;
-  std::vector<std::string> search_categories;
-  std::string term, tomatch;
-  bool match, category_found;
-  BuildListBox initlistbox;
+  unsigned int nsearch;
 
   _filter = "search for " + searchterm;
   printStatus("Searching for " + searchterm + " ...");
 
-  // For case insensitive search, we will convert both to lower case
-
-  if (case_sensitive) { term = searchterm; }
-  else { term = string_to_lower(searchterm); }
-
-  // Create list boxes (Careful! If you use push_back, etc. later on the lists,
-  // the list boxes must be regenerated because their pointers will become
-  // invalid.)
-
-  nbuilds = _slackbuilds.size();
-  ncategories = _categories.size();
-  _blistboxes.resize(0);
-  _clistbox.clearList();
-  _clistbox.setActivated(true);
   _activated_listbox = 0;
   _category_idx = 0;
-  search_categories.resize(0);
   nsearch = 0;
 
-  for ( i = 0; i < nbuilds; i++ )
-  {
-    category_found = false;
+  filter_search(_slackbuilds, _categories, _win2, _clistbox, _blistboxes,
+                nsearch, searchterm, case_sensitive, whole_word);
 
-    // Check for search term in SlackBuild name
-
-    if (case_sensitive) { tomatch = _slackbuilds[i].name(); }
-    else { tomatch = string_to_lower(_slackbuilds[i].name()); }
-    if (whole_word) { match = (term == tomatch); }
-    else { match = (tomatch.find(term) != std::string::npos); }
-    if (! match) { continue; }
-
-    nsearch++;
-    nsearch_categories = search_categories.size();
-    for ( j = 0; j < nsearch_categories; j++ )
-    {
-      if (_slackbuilds[i].getProp("category") == search_categories[j])
-      {
-        _blistboxes[j].addItem(&_slackbuilds[i]);
-        category_found = true;
-        break;
-      }
-    }
-    if (! category_found)
-    {
-      for ( j = 0; j < ncategories; j++ )
-      {
-        if (_slackbuilds[i].getProp("category") == _categories[j].name())
-        {
-          _clistbox.addItem(&_categories[j]);
-          BuildListBox blistbox;
-          blistbox.setWindow(_win2);
-          blistbox.setName(_categories[j].name());
-          blistbox.setActivated(false);
-          blistbox.addItem(&_slackbuilds[i]);
-          _blistboxes.push_back(blistbox);
-          search_categories.push_back(_slackbuilds[i].getProp("category"));
-          break;
-        }
-      }
-    } 
-  }
-
-  // Check whether categories should be tagged
-
-  nsearch_categories = search_categories.size();
-  for ( j = 0; j < nsearch_categories; j++ )
-  {
-    if (_blistboxes[j].allTagged()) { _clistbox.itemByIdx(j)->
-                                                  setBoolProp("tagged", true); }
-    else { _clistbox.itemByIdx(j)->setBoolProp("tagged", false); }
-  }
-
-  if (nsearch== 0)
-  {
+  if (nsearch == 0)
     printStatus("No matches for " + searchterm + ".");
-    initlistbox.setWindow(_win2);
-    initlistbox.setActivated(false);
-    initlistbox.setName("SlackBuilds");
-    _blistboxes.push_back(initlistbox);
-  }
-  else if (nsearch == 1) { printStatus("1 match for " + searchterm + "."); }
-  else { printStatus(int2string(nsearch) + " matches for "
-                     + searchterm + "."); }
+  else if (nsearch == 1) 
+    printStatus("1 match for " + searchterm + ".");
+  else 
+    printStatus(int2string(nsearch) + " matches for " + searchterm + ".");
 }
 
 /*******************************************************************************
