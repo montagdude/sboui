@@ -13,4 +13,5 @@ namespace color
   std::string header, header_popup;
   std::string tagged;
   std::string fg_popup, bg_popup;
+  std::string fg_warning, bg_warning;
 }

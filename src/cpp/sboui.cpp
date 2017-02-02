@@ -38,6 +38,8 @@ int main()
     //tagged = "yellow";
     //fg_popup = "blue";
     //bg_popup = "white";
+    //fg_warning = "white";
+    //bg_warning = "red";
 
     // Light color scheme
     fg_normal = "black";
@@ -55,6 +57,8 @@ int main()
     tagged = "red";
     fg_popup = "white";
     bg_popup = "black";
+    fg_warning = "white";
+    bg_warning = "red";
 
     colors.addPair(fg_normal, bg_normal);
     colors.addPair(fg_title, bg_title);
@@ -67,6 +71,7 @@ int main()
     colors.addPair(tagged, bg_highlight_active); 
     colors.addPair(tagged, bg_highlight_inactive); 
     colors.addPair(fg_popup, bg_popup); 
+    colors.addPair(fg_warning, bg_warning); 
     bkgd(COLOR_PAIR(colors.pair(fg_normal, bg_normal)));
   } 
 

@@ -20,6 +20,7 @@
 #include "InvReqBox.h"
 #include "InstallBox.h"
 #include "DirListBox.h"
+#include "MessageBox.h"
 #include "MainWindow.h"
 
 using namespace color;
@@ -700,6 +701,8 @@ Syncs/updates SlackBuilds repository
 int MainWindow::syncRepo()
 {
   int check;
+  MessageBox errbox;
+  WINDOW *errwin;
 
   def_prog_mode();
   endwin();
@@ -712,6 +715,17 @@ int MainWindow::syncRepo()
   {
     clearData();
     initialize();
+  }
+  else
+  {
+    errwin = newwin(1, 1, 0, 0);
+    errbox.setWindow(errwin);
+    errbox.setName("Error");
+    errbox.setMessage("Sync command failed.");
+    placePopup(&errbox, errwin);
+    redrawAll(true);
+    errbox.exec();
+    redrawAll(true);
   }
 
   return check;
