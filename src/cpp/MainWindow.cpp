@@ -521,7 +521,6 @@ bool MainWindow::modifyPackage(BuildListItem & build,
     { 
       placePopup(&installer, installerwin);
       redrawAll(true);
-      clearStatus();
     }
   }
 
@@ -577,7 +576,6 @@ void MainWindow::showBuildOrder(BuildListItem & build)
     { 
       placePopup(&buildorder, buildorderwin);
       redrawAll(true);
-      clearStatus();
     }
   }
 
@@ -624,7 +622,6 @@ void MainWindow::showInverseReqs(BuildListItem & build)
     { 
       placePopup(&invreqs, invreqwin);
       redrawAll(true);
-      clearStatus();
     }
   }
 
@@ -685,7 +682,6 @@ void MainWindow::browseFiles(const BuildListItem & build)
     { 
       placePopup(&browser, browserwin);
       redrawAll(true);
-      clearStatus();
     }
   }
 
@@ -701,8 +697,6 @@ Syncs/updates SlackBuilds repository
 int MainWindow::syncRepo()
 {
   int check;
-  MessageBox errbox;
-  WINDOW *errwin;
 
   def_prog_mode();
   endwin();
@@ -716,19 +710,50 @@ int MainWindow::syncRepo()
     clearData();
     initialize();
   }
-  else
-  {
-    errwin = newwin(1, 1, 0, 0);
-    errbox.setWindow(errwin);
-    errbox.setName("Error");
-    errbox.setMessage("Sync command failed.");
-    placePopup(&errbox, errwin);
-    redrawAll(true);
-    errbox.exec();
-    redrawAll(true);
-  }
+  else { displayError("Sync command failed."); }
 
   return check;
+}
+
+/*******************************************************************************
+
+Displays an error message
+
+*******************************************************************************/
+void MainWindow::displayError(const std::string & msg)
+{
+  std::string selection;
+  bool getting_selection;
+  MessageBox errbox;
+  WINDOW *errwin;
+
+  // Place message box
+
+  errwin = newwin(1, 1, 0, 0);
+  errbox.setWindow(errwin);
+  errbox.setName("Error");
+  errbox.setMessage(msg);
+  placePopup(&errbox, errwin);
+  redrawAll(true);
+
+  // Get user input
+
+  getting_selection = true;
+  while (getting_selection)
+  {
+    selection = errbox.exec();
+    if (selection == signals::resize)
+    {
+      placePopup(&errbox, errwin);
+      redrawAll(true);
+    }
+    else { getting_selection = false; }
+  }
+
+  // Get rid of window
+
+  delwin(errwin);
+  redrawAll(true);
 }
 
 /*******************************************************************************
@@ -972,7 +997,6 @@ void MainWindow::selectFilter()
       getting_selection = true;
       placePopup(&_fbox, filterwin);
       redrawAll(true);
-      clearStatus();
       _fbox.draw(true);
     }
   }
@@ -1013,7 +1037,6 @@ void MainWindow::search()
       getting_input = true;
       placePopup(&_searchbox, searchwin);
       redrawAll(true);
-      clearStatus();
       _searchbox.draw(true);
     }
     else if ( (searchterm != signals::quit) )
@@ -1127,7 +1150,6 @@ void MainWindow::showBuildActions(BuildListItem & build)
     {
       placePopup(&actionbox, actionwin);
       redrawAll(true);
-      clearStatus();
       actionbox.draw(true);
     }
     else { getting_selection = false; }

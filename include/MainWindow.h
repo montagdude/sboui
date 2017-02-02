@@ -71,6 +71,10 @@ class MainWindow {
 
     int syncRepo();
 
+    /* Displays an error message */
+
+    void displayError(const std::string & msg);
+
     /* Sets size of popup boxes */
 
     void popupSize(int & height, int & width, CursesWidget *popup) const;

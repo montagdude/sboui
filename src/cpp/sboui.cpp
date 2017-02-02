@@ -45,9 +45,9 @@ int main()
     fg_normal = "black";
     bg_normal = "white";
     fg_title = "white";
-    bg_title = "yellow";
+    bg_title = "cyan";
     fg_info = "white";
-    bg_info = "yellow";
+    bg_info = "cyan";
     fg_highlight_active = "white";
     bg_highlight_active = "blue";
     fg_highlight_inactive = "white";

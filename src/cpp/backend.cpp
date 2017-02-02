@@ -1,3 +1,4 @@
+#include <iostream>
 #include <stdio.h>    // popen
 #include <stdlib.h>   // system
 #include <sys/wait.h> // WEXITSTATUS, WIFEXITED
@@ -364,4 +365,14 @@ int view_file(const std::string & path)
 Syncs/updates SlackBuilds repository
 
 *******************************************************************************/
-int sync() { return run_command(sync_cmd); }
+int sync() 
+{ 
+  int retval;
+  std::string response;
+
+  retval = run_command(sync_cmd);
+  std::cout << "Press Enter to return ...";
+  std::getline(std::cin, response);
+
+  return retval;
+}
