@@ -7,6 +7,7 @@
 #include "DirListing.h"
 #include "BuildListItem.h"
 #include "sorting.h"
+#include "string_util.h"
 #include "backend.h"
  
 /* Backend settings */
@@ -16,6 +17,11 @@ std::string repo_dir = "/var/cache/packages/SBo";
 //std::string repo_dir = "/data/dprosser/software/sboui_files/SBo";
 std::string package_manager = "sbomgr";
 std::string sync_cmd = "sbomgr update";
+//FIXME: put the following in the manpage
+/* When reinstalling, sboui does not first remove the existing package. To
+   avoid duplicate packages from being installed in this situation, install_cmd
+   should implement upgradepkg --reinstall --install-new instead of installpkg.
+   sbopkg and sbotools both use this approach. */
 std::string install_cmd = "sbomgr install -n";
 std::string upgrade_cmd = "sbomgr upgrade";
 std::string install_vars = "";
@@ -79,29 +85,6 @@ int read_repo(std::vector<BuildListItem> & slackbuilds)
 
   return 0;
 } 
-
-/*******************************************************************************
-
-Trims white space, line ending characters, etc. from end of string
-
-*******************************************************************************/
-std::string trim(std::string instr)
-{
-  int i, trimlen, len;
-
-  len = instr.size();
-  trimlen = len;
-  for ( i = len-1; i >= 0; i-- )
-  {
-    if ( (instr[i] != ' ') && (instr[i] != '\n') && (instr[i] != '\0') )
-    {
-      trimlen = i+1;
-      break;
-    }
-  }
-
-  return instr.substr(0, trimlen);
-}
 
 /*******************************************************************************
 

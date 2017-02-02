@@ -274,6 +274,7 @@ void SelectionBox::draw(bool force)
   else if (_redraw_type == "changed") { redrawChangedItems(); }
   wrefresh(_win);
 }
+
 /*******************************************************************************
 
 User interaction: show display until user hits Enter or Esc

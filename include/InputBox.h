@@ -20,11 +20,6 @@ class InputBox: public CursesWidget {
     std::vector<InputItem *> _items;    
     unsigned int _highlight, _prevhighlight;
 
-    /* Prints to end of line, padding with spaces and avoiding borders */
-
-    void printToEol(const std::string & msg) const;
-    void printSpaces(unsigned int nspaces) const;
-
     /* Setting item to be highlighted */
 
     void highlightFirst();
