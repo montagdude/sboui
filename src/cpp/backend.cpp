@@ -323,11 +323,19 @@ Displays README for a SlackBuild
 *******************************************************************************/
 int view_readme(const BuildListItem & build)
 {
-  std::string cmd;
+  std::string cmd, response;
+  int retval;
 
   cmd = editor + " " + repo_dir + "/" + build.getProp("category") + "/"
                                       + build.name() + "/" + "README";
-  return run_command(cmd);
+  retval = run_command(cmd);
+  if (retval != 0)
+  {
+    std::cout << "Unable to view README. Press Enter to continue ...";
+    std::getline(std::cin, response);
+  }
+
+  return retval;
 }
 
 /*******************************************************************************
@@ -337,10 +345,18 @@ Opens a file in the editor (note: doesn't check for existence of the file)
 *******************************************************************************/
 int view_file(const std::string & path)
 {
-  std::string cmd;
+  std::string cmd, response;
+  int retval;
 
   cmd = editor + " " + path;
-  return run_command(cmd);
+  retval = run_command(cmd);
+  if (retval != 0)
+  {
+    std::cout << "Unable to view file. Press Enter to continue ...";
+    std::getline(std::cin, response);
+  }
+
+  return retval;
 }
 
 /*******************************************************************************

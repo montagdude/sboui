@@ -474,8 +474,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
     clearStatus();
     displayError("Unable to find one or more dependencies of " + build.name() +
                  std::string(" in repository. Disable dependency resolution ") +
-                 std::string("to ignore this error."), "Error",
-                 "Enter: Dismiss");
+                 std::string("to ignore this error."));
     return false;
   }
 
@@ -523,8 +522,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
       redrawAll(true);
       getting_input = false;
       if (check != 0)
-        displayError("One or more requested changes was not applied.", "Error",
-                     "Enter: Dismiss");
+        displayError("One or more requested changes was not applied.");
     }
     else if (selection == signals::quit) { getting_input = false; }
     else if (selection == signals::resize) 
@@ -562,7 +560,7 @@ void MainWindow::showBuildOrder(BuildListItem & build)
     clearStatus();
     displayError("Unable to find one or more dependencies of " + build.name() +
                  std::string(" in repository. Build order will be incomplete."),
-                 "Warning", "Enter: Dismiss");
+                 "Warning");
   }
 
   nbuildorder = buildorder.numItems();
@@ -655,10 +653,9 @@ void MainWindow::browseFiles(const BuildListItem & build)
   builddir = repo_dir + "/" + build.getProp("category") + "/" + build.name();
   check = browser.setDirectory(builddir);
 
-//FIXME: Make some sort of error message class to show this
   if (check != 0) 
   { 
-    printStatus("Unable to access build directory for " + build.name() + ".");
+    displayError("Unable to access build directory for " + build.name() + ".");
     return;
   }
 
@@ -679,13 +676,11 @@ void MainWindow::browseFiles(const BuildListItem & build)
         fname = browser.highlightedItem()->name();
         def_prog_mode();
         endwin();
-//FIXME: Display an error if the command fails
         check = view_file(builddir + "/" + fname);
         reset_prog_mode();
         redrawAll(true);
       }
-//FIXME: Make some sort of error message class to show this
-      else { printStatus("Can only view files and symlinks."); }
+      else { displayError("Can only view files and symlinks."); }
     }
     else if (selection == signals::quit) { getting_input = false; }
     else if (selection == signals::resize) 
@@ -721,8 +716,7 @@ int MainWindow::syncRepo()
   }
   else 
     displayError("Sync command failed. Ensure package manager is "
-                 + std::string("installed and network is connected."),
-                 "Error", "Enter: Dismiss");
+                 + std::string("installed and network is connected."));
 
   return check;
 }
@@ -893,8 +887,11 @@ int MainWindow::initialize()
 
   // Set filter 
 
-//FIXME: Make error message class for this
-  if (retval != 0) { printStatus("Error reading SlackBuilds repository."); }
+  if (retval != 0) 
+  { 
+    clearStatus();
+    displayError("Error reading SlackBuilds repository."); 
+  }
   else 
   { 
     if (_filter == "installed SlackBuilds") { filterInstalled(); }
