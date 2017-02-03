@@ -340,7 +340,6 @@ int BuildOrderBox::create(BuildListItem & build,
   setName(build.name() + " build order");
   check = compute_reqs_order(build, reqlist, slackbuilds);
   reqlist.push_back(&build);
-  if (check != 0) { return check; }
 
   nbuilds = reqlist.size();
   for ( i = 0; i < nbuilds; i++ ) { addItem(reqlist[i]); }

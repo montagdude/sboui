@@ -472,9 +472,10 @@ bool MainWindow::modifyPackage(BuildListItem & build,
   if (check != 0) 
   { 
     clearStatus();
-    displayError("Some requirements of " + build.name() +
-                 std::string(" not found in repository."),
-                 "Error", "Enter: Dismiss");
+    displayError("Unable to find one or more dependencies of " + build.name() +
+                 std::string(" in repository. Disable dependency resolution ") +
+                 std::string("to ignore this error."), "Error",
+                 "Enter: Dismiss");
     return false;
   }
 
@@ -559,10 +560,9 @@ void MainWindow::showBuildOrder(BuildListItem & build)
   if (check != 0) 
   { 
     clearStatus();
-    displayError("Some requirements of " + build.name() +
-                 std::string(" not found in repository."),
+    displayError("Unable to find one or more dependencies of " + build.name() +
+                 std::string(" in repository. Build order will be incomplete."),
                  "Warning", "Enter: Dismiss");
-     return;
   }
 
   nbuildorder = buildorder.numItems();
