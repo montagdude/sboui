@@ -703,14 +703,14 @@ int MainWindow::syncRepo()
 
   check = sync();
   reset_prog_mode();
-//FIXME: Display an error if the command fails
 
   if (check == 0) 
   {
     clearData();
     initialize();
   }
-  else { displayError("Sync command failed."); }
+  else { displayError("Sync command failed. Ensure package manager is "
+                        + std::string("installed and network is connected.")); }
 
   return check;
 }

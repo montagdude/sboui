@@ -61,15 +61,46 @@ std::string trim(const std::string & instr)
 
 /*******************************************************************************
 
-Wraps words in a string into a separate lines, returned as a vector of string
+Splits a string into a vector of strings. Adapted from the answer here:
+http://stackoverflow.com/questions/236129/split-a-string-in-c#236803
+
+*******************************************************************************/
+std::vector<std::string> split(const std::string & instr, char delim)
+{
+  std::stringstream ss(instr);
+  std::vector<std::string> splitstr;
+  std::string item;
+
+  while (std::getline(ss, item, delim)) { splitstr.push_back(trim(item)); }
+
+  return splitstr;
+}
+
+/*******************************************************************************
+
+Wraps words in a string into separate lines, returned as a vector of strings
 
 *******************************************************************************/
 std::vector<std::string> wrap_words(const std::string & instr,
                                     unsigned int width)
 {
-  std::vector<std::string> wordvec(2);
+  std::vector<std::string> wordvec, splitstr;
+  unsigned int nwords, i;
+  std::string line;
 
-  wordvec[0] = "Hello";
-  wordvec[1] = "world";
+  splitstr = split(instr);
+  nwords = splitstr.size();
+  line = splitstr[0];
+  for ( i = 1; i < nwords; i++ )
+  { 
+    if (line.size() + 1 + splitstr[i].size() > width)
+    {
+      wordvec.push_back(line);
+      line = splitstr[i];
+    }
+    else { line += " " + splitstr[i]; }
+  }
+  wordvec.push_back(line);
+
   return wordvec;
 }

@@ -177,23 +177,6 @@ std::string get_reqs(const BuildListItem & build)
 
 /*******************************************************************************
 
-Splits a string into a vector of strings. Adapted from the answer here:
-http://stackoverflow.com/questions/236129/split-a-string-in-c#236803
-
-*******************************************************************************/
-std::vector<std::string> split(const std::string & instr, char delim)
-{
-  std::stringstream ss(instr);
-  std::vector<std::string> splitstr;
-  std::string item;
-
-  while (std::getline(ss, item, delim)) { splitstr.push_back(trim(item)); }
-
-  return splitstr;
-}
-
-/*******************************************************************************
-
 Populates list of installed SlackBuilds. Also determines installed version,
 available version, and dependencies for installed SlackBuilds.
 

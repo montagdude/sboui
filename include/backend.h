@@ -18,7 +18,6 @@ extern std::string editor;
 
 int read_repo(std::vector<BuildListItem> & slackbuilds);
 std::string get_reqs(const BuildListItem & build);
-std::vector<std::string> split(const std::string & instr, char delim=' ');
 void list_installed(std::vector<BuildListItem> & slackbuilds,
                     std::vector<BuildListItem *> & installedlist);
 void list_nondeps(const std::vector<BuildListItem *> & installedlist,

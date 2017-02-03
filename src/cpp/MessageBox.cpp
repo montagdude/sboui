@@ -154,36 +154,38 @@ Get attributes
 *******************************************************************************/
 void MessageBox::minimumSize(int & height, int & width) const
 {
-  int reserved_rows, reserved_cols;
+  int reserved_rows, reserved_cols, msg_width;
 
   reserved_rows = 6 + 2*_margin_v;
   reserved_cols = 2;
 
-  // Minimum usable width -- pick some reasonable number
+  // Minimum usable width -- pick some reasonable number (message width 15)
 
   width = std::max(_name.size(), _info.size()) + reserved_cols;
-  width = std::max(width, 10);
+  width = std::max(width, 15);
+  msg_width = width-2-2*_margin_h;
 
   // Minimum usable height based on width and message
 
-  height = reserved_rows + wrap_words(_message, width).size();
+  height = reserved_rows + wrap_words(_message, msg_width).size();
 }
 
 void MessageBox::preferredSize(int & height, int & width) const
 {
-  int reserved_rows, reserved_cols;
+  int reserved_rows, reserved_cols, msg_width;
 
   reserved_rows = 6 + 2*_margin_v;
-  reserved_cols = 2 + 2*_margin_h;
+  reserved_cols = 2;
 
-  // Preferred width -- pick some reasonable number
+  // Preferred width -- pick some reasonable number (message width 30)
 
   width = std::max(_name.size(), _info.size()) + reserved_cols;
-  width = std::max(width, 30);
+  width = std::max(width, int(30+2+2*_margin_h));
+  msg_width = width-2-2*_margin_h;
 
   // Required height based on width and message
 
-  height = reserved_rows + wrap_words(_message, width).size();
+  height = reserved_rows + wrap_words(_message, msg_width ).size();
 }
 
 /*******************************************************************************
