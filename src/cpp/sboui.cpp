@@ -23,42 +23,42 @@ int main()
   if (has_colors())
   {
     // Dark color scheme
-    //fg_normal = "white";     
-    //bg_normal = "black";     
-    //fg_title = "white";
-    //bg_title = "blue";
-    //fg_info = "white";
-    //bg_info = "blue";
-    //fg_highlight_active = "black";
-    //bg_highlight_active = "cyan";
-    //fg_highlight_inactive = "black";
-    //bg_highlight_inactive = "white";
-    //header = "yellow";
-    //header_popup = "black";
-    //tagged = "yellow";
-    //fg_popup = "blue";
-    //bg_popup = "white";
-    //fg_warning = "white";
-    //bg_warning = "red";
-
-    // Light color scheme
-    fg_normal = "black";
-    bg_normal = "white";
+    fg_normal = "white";     
+    bg_normal = "black";     
     fg_title = "white";
-    bg_title = "cyan";
+    bg_title = "blue";
     fg_info = "white";
-    bg_info = "cyan";
-    fg_highlight_active = "white";
-    bg_highlight_active = "blue";
-    fg_highlight_inactive = "white";
-    bg_highlight_inactive = "black";
-    header = "red";
-    header_popup = "white";
-    tagged = "red";
-    fg_popup = "white";
-    bg_popup = "black";
+    bg_info = "blue";
+    fg_highlight_active = "black";
+    bg_highlight_active = "cyan";
+    fg_highlight_inactive = "black";
+    bg_highlight_inactive = "white";
+    header = "yellow";
+    header_popup = "black";
+    tagged = "yellow";
+    fg_popup = "blue";
+    bg_popup = "white";
     fg_warning = "white";
     bg_warning = "red";
+
+    // Light color scheme
+    //fg_normal = "black";
+    //bg_normal = "white";
+    //fg_title = "white";
+    //bg_title = "cyan";
+    //fg_info = "white";
+    //bg_info = "cyan";
+    //fg_highlight_active = "white";
+    //bg_highlight_active = "blue";
+    //fg_highlight_inactive = "white";
+    //bg_highlight_inactive = "black";
+    //header = "red";
+    //header_popup = "white";
+    //tagged = "red";
+    //fg_popup = "white";
+    //bg_popup = "black";
+    //fg_warning = "white";
+    //bg_warning = "red";
 
     colors.addPair(fg_normal, bg_normal);
     colors.addPair(fg_title, bg_title);

@@ -19,7 +19,7 @@ Draws window border and title
 void MessageBox::redrawFrame() const
 {
   unsigned int rows, cols, namelen, i;
-  int left, pair_title, pair_info;
+  int left;
   double mid;
 
   getmaxyx(_win, rows, cols);
@@ -98,8 +98,9 @@ Prints message in box within defined margins
 *******************************************************************************/
 void MessageBox::redrawMessage() const
 {
-  unsigned int i, max_lines;
-  int rows, cols;
+  unsigned int i, max_lines, len;
+  int rows, cols, left;
+  double mid;
   std::vector<std::string> wrapped_message;
 
   getmaxyx(_win, rows, cols);
@@ -108,7 +109,11 @@ void MessageBox::redrawMessage() const
   max_lines = wrapped_message.size();
   for ( i = 0; i < max_lines; i++ )
   {
-    wmove(_win, 3+_margin_v+i, 1+_margin_h);
+    len = wrapped_message[i].size();
+    mid = double(cols-2)/2.0;
+    left = std::floor(mid - double(len)/2.0) + 1;
+    wmove(_win, 3+_margin_v+i, 1);
+    printSpaces(left-1);
     wprintw(_win, wrapped_message[i].c_str());
   }
 }
@@ -124,8 +129,8 @@ MessageBox::MessageBox()
   _name = "";
   _message = "";
   _info = "Enter: Ok";
-  _margin_v = 1;
-  _margin_h = 1;
+  _margin_v = 0;
+  _margin_h = 0;
 }
 
 MessageBox::MessageBox(WINDOW *win, const std::string & name)
@@ -134,8 +139,8 @@ MessageBox::MessageBox(WINDOW *win, const std::string & name)
   _name = name;
   _message = "";
   _info = "Enter: Ok";
-  _margin_v = 1;
-  _margin_h = 1;
+  _margin_v = 0;
+  _margin_h = 0;
 }
 
 /*******************************************************************************
