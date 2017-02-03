@@ -73,7 +73,8 @@ class MainWindow {
 
     /* Displays an error message */
 
-    void displayError(const std::string & msg);
+    int displayError(const std::string & msg, const std::string & name="Error",
+                     const std::string & info="Enter: Ok | Esc: Cancel");
 
     /* Sets size of popup boxes */
 

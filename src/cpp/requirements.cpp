@@ -92,12 +92,13 @@ int get_reqs_recursive(const BuildListItem & build,
 {
   unsigned int i, ndeps;
   std::vector<std::string> deplist;
-  int idx;
+  int idx, check;
 
   if (build.getBoolProp("installed")) { deplist = 
                                         split(build.getProp("requires")); }
   else { deplist = split(get_reqs(build)); }
   
+  check = 0;
   ndeps = deplist.size();
   for ( i = 0; i < ndeps; i++ )
   { 
@@ -106,11 +107,12 @@ int get_reqs_recursive(const BuildListItem & build,
       idx = build_from_name(deplist[i], slackbuilds);
       if (idx != -1) { add_req(&slackbuilds[idx], reqlist); }
       else { return 1; }
-      get_reqs_recursive(slackbuilds[idx], reqlist, slackbuilds); 
+      check = get_reqs_recursive(slackbuilds[idx], reqlist, slackbuilds); 
+      if (check != 0) { return check; }
     }
   }
 
-  return 0;
+  return check;
 }
 
 /*******************************************************************************

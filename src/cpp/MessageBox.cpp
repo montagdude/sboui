@@ -128,7 +128,7 @@ MessageBox::MessageBox()
   _win = NULL;
   _name = "";
   _message = "";
-  _info = "Enter: Ok";
+  _info = "Enter: Ok | Esc: Cancel";
   _margin_v = 0;
   _margin_h = 0;
 }
@@ -138,7 +138,7 @@ MessageBox::MessageBox(WINDOW *win, const std::string & name)
   _win = win;
   _name = name;
   _message = "";
-  _info = "Enter: Ok";
+  _info = "Enter: Ok | Esc: Cancel";
   _margin_v = 0;
   _margin_h = 0;
 }

@@ -281,6 +281,7 @@ Displays all SlackBuilds
 void MainWindow::filterAll()
 {
   unsigned int nbuilds;
+  int choice;
 
   _filter = "all SlackBuilds";
   printStatus("Filtering by all SlackBuilds ...");
@@ -291,9 +292,13 @@ void MainWindow::filterAll()
 
   filter_all(_slackbuilds, _categories, _win2, _clistbox, _blistboxes);
 
-//FIXME: put this in an error message of some sort
-  if (nbuilds == 0) 
-    printStatus("No SlackBuilds. Run the sync command first."); 
+  if (nbuilds == 0)
+  {
+    clearStatus();
+    choice = displayError("Repository is empty. Run the sync command now?",
+                          "Error", "Enter: Yes | Esc: No");
+    if (choice == 1) { syncRepo(); }
+  } 
   else if (nbuilds == 1)
     printStatus("1 SlackBuild in repository.");
   else 
@@ -455,7 +460,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
                                const std::string & action)
 {
   WINDOW *installerwin;
-  int check, nchanged;
+  int check, nchanged, response;
   std::string selection;
   bool getting_input, needs_rebuild;
   unsigned int ninstaller;
@@ -464,11 +469,12 @@ bool MainWindow::modifyPackage(BuildListItem & build,
   printStatus("Computing dependencies for " + build.name() + " ...");
   check = installer.create(build, _slackbuilds, action);
 
-//FIXME: Make some sort of error message class to show this
   if (check != 0) 
   { 
-    printStatus("Some requirements of " + build.name() +
-                " not found in repository."); 
+    clearStatus();
+    displayError("Some requirements of " + build.name() +
+                 std::string(" not found in repository."),
+                 "Error", "Enter: Dismiss");
     return false;
   }
 
@@ -501,20 +507,23 @@ bool MainWindow::modifyPackage(BuildListItem & build,
     selection = installer.exec(); 
     if (selection == signals::keyEnter)
     {
-//FIXME: Make some sort of warning message class to show this
+      response = 1;
+      nchanged = 0;
+      check = 0;
       if (! installer.installingAllDeps())
-      {
-        printStatus("Warning: not installing/upgrading some dependencies. "
-                    + std::string("Continue anyway?"));
-      }
+        response = displayError("You have chosen to skip some dependencies. " +
+                                std::string("Continue anyway? "), "Warning",
+                                "Enter: Yes | Esc: No"); 
       def_prog_mode();
       endwin();
-      check = installer.applyChanges(nchanged);
+      if (response == 1) { check = installer.applyChanges(nchanged); }
       if (nchanged > 0) { needs_rebuild = true; }
-// FIXME: Error message box if check != 0
       reset_prog_mode();
       redrawAll(true);
       getting_input = false;
+      if (check != 0)
+        displayError("One or more requested changes was not applied.", "Error",
+                     "Enter: Dismiss");
     }
     else if (selection == signals::quit) { getting_input = false; }
     else if (selection == signals::resize) 
@@ -547,12 +556,13 @@ void MainWindow::showBuildOrder(BuildListItem & build)
   printStatus("Computing build order for " + build.name() + " ...");
   check = buildorder.create(build, _slackbuilds);
 
-//FIXME: Make some sort of error message class to show this
   if (check != 0) 
   { 
-    printStatus("Some requirements of " + build.name() +
-                " not found in repository."); 
-    return;
+    clearStatus();
+    displayError("Some requirements of " + build.name() +
+                 std::string(" not found in repository."),
+                 "Warning", "Enter: Dismiss");
+     return;
   }
 
   nbuildorder = buildorder.numItems();
@@ -709,21 +719,25 @@ int MainWindow::syncRepo()
     clearData();
     initialize();
   }
-  else { displayError("Sync command failed. Ensure package manager is "
-                        + std::string("installed and network is connected.")); }
+  else 
+    displayError("Sync command failed. Ensure package manager is "
+                 + std::string("installed and network is connected."),
+                 "Error", "Enter: Dismiss");
 
   return check;
 }
 
 /*******************************************************************************
 
-Displays an error message
+Displays an error message. Returns 1 for Enter/Ok, 0 for Esc/Cancel.
 
 *******************************************************************************/
-void MainWindow::displayError(const std::string & msg)
+int MainWindow::displayError(const std::string & msg, const std::string & name,
+                             const std::string & info)
 {
   std::string selection;
   bool getting_selection;
+  int response;
   MessageBox errbox;
   WINDOW *errwin;
 
@@ -731,8 +745,9 @@ void MainWindow::displayError(const std::string & msg)
 
   errwin = newwin(1, 1, 0, 0);
   errbox.setWindow(errwin);
-  errbox.setName("Error");
+  errbox.setName(name);
   errbox.setMessage(msg);
+  errbox.setInfo(info);
   placePopup(&errbox, errwin);
   redrawAll(true);
 
@@ -742,18 +757,23 @@ void MainWindow::displayError(const std::string & msg)
   while (getting_selection)
   {
     selection = errbox.exec();
+    getting_selection = false;
     if (selection == signals::resize)
     {
+      getting_selection = true;
       placePopup(&errbox, errwin);
       redrawAll(true);
     }
-    else { getting_selection = false; }
+    else if (selection == signals::keyEnter) { response = 1; }
+    else { response = 0; }
   }
 
   // Get rid of window
 
   delwin(errwin);
   redrawAll(true);
+
+  return response;
 }
 
 /*******************************************************************************
