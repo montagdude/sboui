@@ -1,7 +1,7 @@
 #include <string>
 #include <curses.h>
 #include "Color.h"
-#include "color_settings.h"
+#include "settings.h"
 #include "signals.h"
 #include "DirListing.h"
 #include "ListItem.h"

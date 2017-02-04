@@ -9,37 +9,15 @@
 #include "BuildListItem.h"
 #include "sorting.h"
 #include "string_util.h"
+#include "settings.h"
 #include "backend.h"
+
+using namespace backend;
  
-/* Backend settings */
-//FIXME: put most of these in a separate settings module/class?
-
-//std::string repo_dir = "/var/cache/packages/SBo";
-std::string repo_dir = "/data/dprosser/software/sboui_files/SBo";
-std::string package_manager = "sbomgr";
-std::string sync_cmd = "sbomgr update";
-//FIXME: put the following in the manpage
-/* When reinstalling, sboui does not first remove the existing package. To
-   avoid duplicate packages from being installed in this situation, install_cmd
-   should implement upgradepkg --reinstall --install-new instead of installpkg.
-   sbopkg and sbotools both use this approach. */
-std::string install_cmd = "sbomgr install -n";
-std::string upgrade_cmd = "sbomgr upgrade";
-std::string install_vars = "";
-std::string install_opts = "";
-std::string upgrade_vars = "";
-std::string upgrade_opts = "";
-
-// Editor for viewing files 
-std::string editor = "vim";
-
 // Bash script with functions to query the repo and installed packages
 //FIXME: location should be set by preprocessor macro depending on configure --prefix=
-//std::string sboutil = "/usr/libexec/sboui/sboutil.sh";
-std::string sboutil = "/data/dprosser/software/sboui_files/sboui/src/shell/sboutil.sh";
-
-// Config variables to always pass to sboutil
-std::string env = "REPO_DIR=" + repo_dir + " TAG=SBo ";
+std::string sboutil = "/usr/libexec/sboui/sboutil.sh";
+//std::string sboutil = "/data/dprosser/software/sboui_files/sboui/src/shell/sboutil.sh";
 
 /*******************************************************************************
 

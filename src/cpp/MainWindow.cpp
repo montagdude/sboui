@@ -3,7 +3,7 @@
 #include <cmath>     // floor
 #include <curses.h>
 #include "Color.h"
-#include "color_settings.h"
+#include "settings.h"
 #include "string_util.h"
 #include "signals.h"
 #include "backend.h"
@@ -650,7 +650,8 @@ void MainWindow::browseFiles(const BuildListItem & build)
   bool getting_input;
   DirListBox browser;
 
-  builddir = repo_dir + "/" + build.getProp("category") + "/" + build.name();
+  builddir = backend::repo_dir + "/" + build.getProp("category") + "/" +
+             build.name();
   check = browser.setDirectory(builddir);
 
   if (check != 0) 
@@ -1082,7 +1083,6 @@ void MainWindow::showBuildActions(BuildListItem & build)
   WINDOW *actionwin;
   std::string selection, selected, action;
   bool getting_selection, needs_rebuild;
-  int check;
   BuildActionBox actionbox;
 
   // Set up windows and dialog
@@ -1110,8 +1110,7 @@ void MainWindow::showBuildActions(BuildListItem & build)
     {
       def_prog_mode();
       endwin();
-//FIXME: display error if the command fails
-      check = view_readme(build); 
+      view_readme(build); 
       reset_prog_mode();
       redrawAll(true);
     }

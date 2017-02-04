@@ -4,18 +4,6 @@
 #include <vector>
 #include "BuildListItem.h"
 
-/* Backend settings */
-//FIXME: put most of these in a separate settings module/class?
-
-extern std::string repo_dir;
-extern std::string package_manager;
-extern std::string sync_cmd, install_cmd, upgrade_cmd;
-extern std::string install_vars, install_opts;
-extern std::string upgrade_vars, upgrade_opts;
-extern std::string editor;
-
-/* Backend operations */
-
 int read_repo(std::vector<BuildListItem> & slackbuilds);
 std::string get_reqs(const BuildListItem & build);
 void list_installed(std::vector<BuildListItem> & slackbuilds,

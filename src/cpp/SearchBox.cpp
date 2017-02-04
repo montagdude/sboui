@@ -3,7 +3,7 @@
 #include <cmath>      // floor
 #include <algorithm>  // min, max
 #include "Color.h"
-#include "color_settings.h"
+#include "settings.h"
 #include "TextInput.h"
 #include "ToggleInput.h"
 #include "SearchBox.h"

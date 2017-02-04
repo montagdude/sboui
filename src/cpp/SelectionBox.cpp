@@ -2,7 +2,7 @@
 #include <curses.h>
 #include <cmath>    // floor
 #include "Color.h"
-#include "color_settings.h"
+#include "settings.h"
 #include "signals.h"
 #include "ListItem.h"
 #include "SelectionBox.h"

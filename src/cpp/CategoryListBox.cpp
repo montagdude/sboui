@@ -2,7 +2,7 @@
 #include <string>
 #include <cmath>   // floor
 #include "Color.h"
-#include "color_settings.h"
+#include "settings.h"
 #include "signals.h"
 #include "BuildListItem.h"
 #include "BuildListBox.h"

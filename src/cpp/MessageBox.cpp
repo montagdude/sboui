@@ -4,7 +4,7 @@
 #include <cmath>     // floor
 #include <algorithm> // min
 #include "Color.h"
-#include "color_settings.h"
+#include "settings.h"
 #include "signals.h"
 #include "string_util.h"
 #include "MessageBox.h"

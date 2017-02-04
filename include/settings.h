@@ -3,6 +3,17 @@
 #include <string>
 #include "Color.h"
 
+namespace backend
+{
+  extern std::string repo_dir;
+  extern std::string package_manager;
+  extern std::string sync_cmd, install_cmd, upgrade_cmd;
+  extern std::string install_vars, install_opts;
+  extern std::string upgrade_vars, upgrade_opts;
+  extern std::string env;
+  extern std::string editor; 
+}
+
 namespace color 
 {
   extern Color colors;
@@ -16,3 +27,6 @@ namespace color
   extern std::string fg_popup, bg_popup;
   extern std::string fg_warning, bg_warning;
 }
+
+int read_config();
+int set_colors();
