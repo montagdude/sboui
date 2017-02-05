@@ -3,12 +3,17 @@
 #include "settings.h"
 #include "MainWindow.h"
 
-using namespace color;
-
 int main()
 {
   MainWindow mainwindow;
   int check;
+
+  // Read config files
+
+  check = read_config();
+  if (check != 0) { return check; }
+
+  // Set up ncurses
 
   initscr();
   curs_set(0);
@@ -16,11 +21,7 @@ int main()
   noecho();
   set_escdelay(25);
   keypad(stdscr, TRUE);
-
-  // Read config files
-
-  read_config();
-  set_colors();
+  if (has_colors()) { apply_color_settings(); }
 
   // User interaction loop
 

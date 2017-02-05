@@ -10,8 +10,9 @@ namespace backend
   extern std::string sync_cmd, install_cmd, upgrade_cmd;
   extern std::string install_vars, install_opts;
   extern std::string upgrade_vars, upgrade_opts;
-  extern std::string env;
   extern std::string editor; 
+  extern std::string color_theme_file;
+  extern std::string env;
 }
 
 namespace color 
@@ -28,5 +29,5 @@ namespace color
   extern std::string fg_warning, bg_warning;
 }
 
+void apply_color_settings();
 int read_config();
-int set_colors();

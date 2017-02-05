@@ -8,7 +8,7 @@ EXE=sboui
 all: $(EXE)
 
 $(EXE): $(OBJ)
-	$(CXX) $(CXXFLAGS) -o $(EXE) $(OBJ) -lncurses
+	$(CXX) $(CXXFLAGS) -o $(EXE) $(OBJ) -lncurses -lconfig++
 
 clean:
 	rm *.o
