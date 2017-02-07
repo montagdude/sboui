@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include <curses.h>
 #include <libconfig.h++>
 #include "Color.h"
@@ -94,7 +95,81 @@ Reads color theme configuration file
 *******************************************************************************/
 int read_color_theme(const std::string & color_theme_file)
 {
-  return 0;
+  Config color_cfg;
+  unsigned int i, nsettings;
+  int retval;
+  std::vector<std::string> color_names;
+  std::vector<std::string *> color_vars;
+  const std::string missing_msg = " color not found.";
+
+  // Read config file
+
+  try { color_cfg.readFile(color_theme_file.c_str()); }
+  catch(const FileIOException &fioex)
+  {
+    std::cerr << "Error cannot read color theme file." << std::endl;
+    return 1;
+  }
+  catch(const ParseException &pex)
+  {
+    std::cerr << "Parse error at " << pex.getFile() << ":" << pex.getLine()
+              << " - " << pex.getError() << std::endl;
+    return 1;
+  }
+
+  // Store settings in vectors so we can read them in a loop
+
+  color_vars.push_back(&fg_normal);
+  color_vars.push_back(&bg_normal);
+  color_vars.push_back(&fg_title);
+  color_vars.push_back(&bg_title);
+  color_vars.push_back(&fg_info);
+  color_vars.push_back(&bg_info);
+  color_vars.push_back(&fg_highlight_active);
+  color_vars.push_back(&bg_highlight_active);
+  color_vars.push_back(&fg_highlight_inactive);
+  color_vars.push_back(&bg_highlight_inactive);
+  color_vars.push_back(&header);
+  color_vars.push_back(&header_popup);
+  color_vars.push_back(&tagged);
+  color_vars.push_back(&fg_popup);
+  color_vars.push_back(&bg_popup);
+  color_vars.push_back(&fg_warning);
+  color_vars.push_back(&bg_warning);
+
+  color_names.push_back("fg_normal");
+  color_names.push_back("bg_normal");
+  color_names.push_back("fg_title");
+  color_names.push_back("bg_title");
+  color_names.push_back("fg_info");
+  color_names.push_back("bg_info");
+  color_names.push_back("fg_highlight_active");
+  color_names.push_back("bg_highlight_active");
+  color_names.push_back("fg_highlight_inactive");
+  color_names.push_back("bg_highlight_inactive");
+  color_names.push_back("header");
+  color_names.push_back("header_popup");
+  color_names.push_back("tagged");
+  color_names.push_back("fg_popup");
+  color_names.push_back("bg_popup");
+  color_names.push_back("fg_warning");
+  color_names.push_back("bg_warning");
+
+  // Try to read inputs, but stop if there is a problem
+
+  nsettings = color_vars.size();
+  retval = 0;
+  for ( i = 0; i < nsettings; i++ )
+  {
+    if (! color_cfg.lookupValue(color_names[i], *color_vars[i]))
+    {
+      std::cerr << "Error: '" + color_names[i] + "'" + missing_msg << std::endl;
+      retval = 1;
+      break;
+    }
+  }
+
+  return retval;
 }
 
 /*******************************************************************************
@@ -106,10 +181,12 @@ int read_config()
 {
   int check;
   Config cfg;
+  std::string response;
 
   // Read config file
 
-  try { cfg.readFile("/etc/sboui/sboui.cfg"); }
+  //try { cfg.readFile("/etc/sboui/sboui.cfg"); }
+  try { cfg.readFile("config/sboui.cfg"); }
   catch(const FileIOException &fioex)
   {
     std::cerr << "Error: cannot read sboui.cfg." << std::endl;
@@ -124,63 +201,58 @@ int read_config()
 
   // Read inputs and/or set defaults
 
-  try { cfg.lookupValue("repo_dir", repo_dir); }
-  catch(const SettingNotFoundException &nfex)
+  if (! cfg.lookupValue("repo_dir", repo_dir))
   {
-    std::cerr << "No repo_dir setting in sboui.cfg." << std::endl;
+    std::cerr << "Error: no repo_dir setting in sboui.cfg." << std::endl;
     return 1;
   }
 
-  try { cfg.lookupValue("package_manager", package_manager); }
-  catch(const SettingNotFoundException &nfex)
+  if (! cfg.lookupValue("package_manager", package_manager))
   {
-    std::cerr << "No package_manager setting in sboui.cfg." << std::endl;
+    std::cerr << "Error: No package_manager setting in sboui.cfg." << std::endl;
     return 1;
   }
 
-  try { cfg.lookupValue("install_vars", install_vars); }
-  catch(const SettingNotFoundException &nfex) { install_vars = ""; }
+  if (! cfg.lookupValue("install_vars", install_vars)) { install_vars = ""; }
 
-  try { cfg.lookupValue("install_opts", install_opts); }
-  catch(const SettingNotFoundException &nfex) { install_opts = ""; }
+  if (! cfg.lookupValue("install_opts", install_opts)) { install_opts = ""; }
 
-  try { cfg.lookupValue("upgrade_vars", upgrade_vars); }
-  catch(const SettingNotFoundException &nfex) { upgrade_vars = ""; }
+  if (! cfg.lookupValue("upgrade_vars", upgrade_vars)) { upgrade_vars = ""; }
 
-  try { cfg.lookupValue("upgrade_opts", upgrade_opts); }
-  catch(const SettingNotFoundException &nfex) { upgrade_opts = ""; }
+  if (! cfg.lookupValue("upgrade_opts", upgrade_opts)) { upgrade_opts = ""; }
 
-  try { cfg.lookupValue("editor", editor); }
-  catch(const SettingNotFoundException &nfex) { editor = "vim"; }
+  if (! cfg.lookupValue("editor", editor)) { editor = "vim"; }
 
 //FIXME: the following are necessary for custom package managers
-  try { cfg.lookupValue("sync_cmd", sync_cmd); }
-  catch(const SettingNotFoundException &nfex) { sync_cmd = "sbomgr update"; }
+  if (! cfg.lookupValue("sync_cmd", sync_cmd)) { sync_cmd = "sbomgr update"; }
 
-  try { cfg.lookupValue("install_cmd", install_cmd); }
-  catch(const SettingNotFoundException &nfex) { install_cmd = 
-                                                "sbomgr install -n"; }
+  if (! cfg.lookupValue("install_cmd", install_cmd))
+    install_cmd = "sbomgr install -n";
 
-  try { cfg.lookupValue("upgrade_cmd", upgrade_cmd); }
-  catch(const SettingNotFoundException &nfex) { upgrade_cmd = 
-                                                "sbomgr upgrade"; }
+  if (! cfg.lookupValue("upgrade_cmd", upgrade_cmd))
+    upgrade_cmd = "sbomgr upgrade";
   
   // Config variables to always pass to sboutil
 
   env = "REPO_DIR=" + repo_dir + " TAG=SBo ";
 
-  // Color settings
+  // Color settings. Try to read user settings or revert to defaults.
 
-  try { cfg.lookupValue("color_theme_file", color_theme_file); }
-  catch(const SettingNotFoundException &nfex) { color_theme_file = ""; }
-
-  check = 1;
-  if (color_theme_file != "") { check = read_color_theme(color_theme_file); }
-  if (check == 1) 
-  {
-    set_default_colors();
-    check = 0;
-  } 
+  if (cfg.lookupValue("color_theme_file", color_theme_file))
+  { 
+    check = read_color_theme(color_theme_file); 
+    if (check != 0)
+    {
+      std::cout << "Using default colors. Press Enter to continue ...";
+      std::getline(std::cin, response);
+      set_default_colors();
+    }
+  }
+  else 
+  { 
+    color_theme_file = "";
+    set_default_colors(); 
+  }
   
-  return check;
+  return 0;
 }
