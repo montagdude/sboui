@@ -4,6 +4,8 @@
 #include <curses.h>
 #include "ListBox.h"
 
+class TagList;
+
 /*******************************************************************************
 
 ListBox for SlackBuilds
@@ -12,6 +14,8 @@ ListBox for SlackBuilds
 class BuildListBox: public ListBox {
   
   protected:
+
+    TagList *_taglist;
 
     virtual void redrawFrame() const;
     virtual void redrawSingleItem(unsigned int idx);
@@ -23,8 +27,10 @@ class BuildListBox: public ListBox {
     BuildListBox();
     BuildListBox(WINDOW *win, const std::string & name);
 
-    /* Setting properties */
+    /* Tagging */
 
+    void setTagList(TagList *taglist);
+    void tagSlackBuild(unsigned int idx);
     unsigned int tagAll();
 
     /* Accessing properties */

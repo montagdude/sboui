@@ -17,7 +17,7 @@ class InstallBox: public BuildOrderBox {
 
     /* For this class, keep separate copies of the SlackBuilds in the build
        order, since tagging will have a different meaning and we will add
-       another property (mode: install or upgrade) */
+       another property (mode: install, upgrade, etc.) */
 
     std::vector<BuildListItem> _builds;
 
@@ -50,7 +50,7 @@ class InstallBox: public BuildOrderBox {
 
     std::string exec();
 
-    /* Install or upgrade SlackBuild and dependencies */
+    /* Install, upgrade, remove, or reinstall SlackBuild and dependencies */
 
     int applyChanges(int & nchanged) const;
 };

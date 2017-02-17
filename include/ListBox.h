@@ -48,7 +48,7 @@ class ListBox: public AbstractListBox {
     /* Edit list */
 
     void removeItem(unsigned int idx);
-    void clearList();
+    virtual void clearList();
 
     /* Set attributes */
 

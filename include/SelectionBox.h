@@ -16,7 +16,7 @@ class SelectionBox: public ListBox {
     std::string _info;
 
     void redrawFrame() const;
-    void redrawSingleItem(unsigned int idx);
+    virtual void redrawSingleItem(unsigned int idx);
 
   public:
 
@@ -40,5 +40,5 @@ class SelectionBox: public ListBox {
 
     /* User interaction loop */
 
-    std::string exec();
+    virtual std::string exec();
 };

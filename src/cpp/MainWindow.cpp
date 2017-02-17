@@ -21,6 +21,7 @@
 #include "InstallBox.h"
 #include "DirListBox.h"
 #include "MessageBox.h"
+#include "TagList.h"
 #include "MainWindow.h"
 
 using namespace color;
@@ -269,6 +270,7 @@ void MainWindow::clearData()
   _installedlist.resize(0);
   _nondeplist.resize(0);
   _categories.resize(0);
+  _taglist.clearList();
   _category_idx = 0;
   _activated_listbox = 0;
 }
@@ -452,6 +454,19 @@ void MainWindow::filterSearch(const std::string & searchterm,
 
 /*******************************************************************************
 
+Sets taglist reference in BuildListBoxes
+
+*******************************************************************************/
+void MainWindow::setTagList()
+{
+  unsigned int nblistboxes, i;
+
+  nblistboxes = _blistboxes.size();
+  for ( i = 0; i < nblistboxes; i++ ) { _blistboxes[i].setTagList(&_taglist); }
+}
+
+/*******************************************************************************
+
 Installs/upgrades/reinstalls/removes SlackBuild and dependencies. Returns true
 if anything was changed, false otherwise.
 
@@ -554,6 +569,7 @@ void MainWindow::showBuildOrder(BuildListItem & build)
 
   printStatus("Computing build order for " + build.name() + " ...");
   check = buildorder.create(build, _slackbuilds);
+  buildorder.setTagList(&_taglist);
 
   if (check != 0) 
   { 
@@ -607,6 +623,7 @@ void MainWindow::showInverseReqs(BuildListItem & build)
   printStatus("Computing installed SlackBuilds depending on "
               + build.name() + " ...");
   invreqs.create(build, _installedlist);
+  invreqs.setTagList(&_taglist);
 
   ninvreqs = invreqs.numItems();
   if (ninvreqs == 0) { printStatus("No installed SlackBuilds depend on "
@@ -724,51 +741,48 @@ int MainWindow::syncRepo()
 
 /*******************************************************************************
 
-Displays an error message. Returns 1 for Enter/Ok, 0 for Esc/Cancel.
+Applies action to tagged SlackBuilds
 
 *******************************************************************************/
-int MainWindow::displayError(const std::string & msg, const std::string & name,
-                             const std::string & info)
+void MainWindow::applyTags(const std::string & action)
 {
+  WINDOW *tagwin;
+  unsigned int ndisplay;
+  bool getting_input;
   std::string selection;
-  bool getting_selection;
-  int response;
-  MessageBox errbox;
-  WINDOW *errwin;
 
-  // Place message box
-
-  errwin = newwin(1, 1, 0, 0);
-  errbox.setWindow(errwin);
-  errbox.setName(name);
-  errbox.setMessage(msg);
-  errbox.setInfo(info);
-  placePopup(&errbox, errwin);
-  redrawAll(true);
-
-  // Get user input
-
-  getting_selection = true;
-  while (getting_selection)
+  ndisplay = _taglist.getDisplayList(action);
+  if (ndisplay == 0)
   {
-    selection = errbox.exec();
-    getting_selection = false;
-    if (selection == signals::resize)
-    {
-      getting_selection = true;
-      placePopup(&errbox, errwin);
+    displayError("No tagged SlackBuilds to " + string_to_lower(action) + ".");
+    return;
+  }
+  else if (ndisplay == 1)
+    printStatus("1 tagged SlackBuild to " + string_to_lower(action) + ".");
+  else
+    printStatus(int2string(ndisplay) +
+                " tagged SlackBuild to " + string_to_lower(action) + ".");
+
+  tagwin = newwin(1, 1, 0, 0);
+  _taglist.setWindow(tagwin);
+  _taglist.setName("SlackBuilds to " + string_to_lower(action));
+  placePopup(&_taglist, tagwin);
+
+  getting_input = true;
+  while (getting_input)
+  {
+    selection = _taglist.exec(); 
+    if (selection == signals::quit) { getting_input = false; }
+    else if (selection == signals::resize) 
+    { 
+      placePopup(&_taglist, tagwin);
       redrawAll(true);
     }
-    else if (selection == signals::keyEnter) { response = 1; }
-    else { response = 0; }
   }
 
-  // Get rid of window
-
-  delwin(errwin);
+  clearStatus();
+  delwin(tagwin);
   redrawAll(true);
-
-  return response;
 }
 
 /*******************************************************************************
@@ -828,6 +842,55 @@ void MainWindow::hideWindow(WINDOW *win) const
   top = std::floor(double(rows)/2.);
   mvwin(win, top, left);
   wresize(win, 0, 0);
+}
+
+/*******************************************************************************
+
+Displays an error message. Returns 1 for Enter/Ok, 0 for Esc/Cancel.
+
+*******************************************************************************/
+int MainWindow::displayError(const std::string & msg, const std::string & name,
+                             const std::string & info)
+{
+  std::string selection;
+  bool getting_selection;
+  int response;
+  MessageBox errbox;
+  WINDOW *errwin;
+
+  // Place message box
+
+  errwin = newwin(1, 1, 0, 0);
+  errbox.setWindow(errwin);
+  errbox.setName(name);
+  errbox.setMessage(msg);
+  errbox.setInfo(info);
+  placePopup(&errbox, errwin);
+  redrawAll(true);
+
+  // Get user input
+
+  getting_selection = true;
+  while (getting_selection)
+  {
+    selection = errbox.exec();
+    getting_selection = false;
+    if (selection == signals::resize)
+    {
+      getting_selection = true;
+      placePopup(&errbox, errwin);
+      redrawAll(true);
+    }
+    else if (selection == signals::keyEnter) { response = 1; }
+    else { response = 0; }
+  }
+
+  // Get rid of window
+
+  delwin(errwin);
+  redrawAll(true);
+
+  return response;
 }
 
 /*******************************************************************************
@@ -902,6 +965,7 @@ int MainWindow::initialize()
     else { filterAll(); }
   }
   redrawAll(true);
+  setTagList();
 
   return retval;
 }
@@ -1018,6 +1082,7 @@ void MainWindow::selectFilter()
       _fbox.draw(true);
     }
   }
+  setTagList();
 
   // Get rid of window and redraw
 
@@ -1329,5 +1394,9 @@ void MainWindow::show()
     else if (selection == "/") { search(); }
     else if (selection == "s") { syncRepo(); }
     else if (selection == "l") { toggleLayout(); }
+    else if (selection == "i") { applyTags("Install"); }
+    else if (selection == "u") { applyTags("Upgrade"); }
+    else if (selection == "r") { applyTags("Remove"); }
+    else if (selection == "e") { applyTags("Reinstall"); }
   }
 }

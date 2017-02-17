@@ -5,6 +5,7 @@
 #include "Color.h"
 #include "settings.h"
 #include "signals.h"
+#include "TagList.h"
 #include "BuildListItem.h"
 #include "BuildListBox.h"
 
@@ -230,13 +231,17 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
 Constructors
 
 *******************************************************************************/
-BuildListBox::BuildListBox() { _reserved_rows = 4; }
-
+BuildListBox::BuildListBox()
+{ 
+  _reserved_rows = 4; 
+  _taglist = NULL;
+}
 BuildListBox::BuildListBox(WINDOW *win, const std::string & name)
 {
   _win = win;
   _name = name;
   _reserved_rows = 4;
+  _taglist = NULL;
 }
 
 /*******************************************************************************
@@ -265,6 +270,28 @@ bool BuildListBox::allTagged() const
 
 /*******************************************************************************
 
+Sets a pointer to the tag list
+
+*******************************************************************************/
+void BuildListBox::setTagList(TagList *taglist) { _taglist = taglist; }
+
+/*******************************************************************************
+
+Tags or untags a single item
+
+*******************************************************************************/
+void BuildListBox::tagSlackBuild(unsigned int idx)
+{
+  if (idx < numItems())
+  {
+    _items[idx]->setBoolProp("tagged", ! _items[idx]->getBoolProp("tagged"));
+    if (_items[idx]->getBoolProp("tagged")) { _taglist->addItem(_items[idx]); }
+    else { _taglist->removeItem(_items[idx]); }
+  }
+}
+
+/*******************************************************************************
+
 Tags or untags (if everything is already tagged) items. Returns 0 if the
 operation tags everything, and 1 if it untags everything.
 
@@ -283,6 +310,7 @@ unsigned int BuildListBox::tagAll()
       if (! _items[i]->getBoolProp("tagged")) 
       { 
         _items[i]->setBoolProp("tagged", true); 
+        _taglist->addItem(_items[i]);
       }
     }
     retval = 0;
@@ -292,9 +320,8 @@ unsigned int BuildListBox::tagAll()
     for ( i = 0; i < nitems; i++ ) 
     { 
       if (_items[i]->getBoolProp("tagged")) 
-      { 
         _items[i]->setBoolProp("tagged", false); 
-      }
+        _taglist->removeItem(_items[i]);
     }
     retval = 1;
   }
@@ -404,8 +431,7 @@ std::string BuildListBox::exec()
 
     case 't':
       retval = "t";
-      _items[_highlight]->setBoolProp("tagged", 
-                                 (! _items[_highlight]->getBoolProp("tagged")));
+      tagSlackBuild(_highlight);
       check_redraw = highlightNext();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }

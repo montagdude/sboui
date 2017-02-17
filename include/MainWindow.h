@@ -12,6 +12,7 @@
 #include "FilterBox.h"
 #include "SearchBox.h"
 #include "InputBox.h"
+#include "TagList.h"
 
 /*******************************************************************************
 
@@ -30,6 +31,7 @@ class MainWindow {
     std::vector<CategoryListItem> _categories;
     FilterBox _fbox;
     SearchBox _searchbox;
+    TagList _taglist;
     std::string _title, _filter, _info, _status;
     unsigned int _category_idx, _activated_listbox, _layout;
 
@@ -60,6 +62,10 @@ class MainWindow {
     void filterSearch(const std::string & searchterm, bool case_sensitive=false,
                       bool whole_whord=false);
 
+    /* Sets taglist reference in BuildListBoxes */
+
+    void setTagList();
+
     /* Actions for a selected SlackBuild */
 
     bool modifyPackage(BuildListItem & build, const std::string & action);
@@ -70,6 +76,10 @@ class MainWindow {
     /* Sync/update */
 
     int syncRepo();
+
+    /* Apply action to tagged SlackBuilds */
+
+    void applyTags(const std::string & action);
 
     /* Displays an error message */
 
