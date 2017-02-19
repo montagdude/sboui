@@ -20,6 +20,7 @@ namespace backend
   std::string editor;
   std::string color_theme_file;
   std::string env;
+  bool resolve_deps, confirm_changes;
 }
 
 namespace color 
@@ -185,8 +186,8 @@ int read_config()
 
   // Read config file
 
-  //try { cfg.readFile("/etc/sboui/sboui.cfg"); }
-  try { cfg.readFile("config/sboui.cfg"); }
+  try { cfg.readFile("/etc/sboui/sboui.cfg"); }
+  //try { cfg.readFile("config/sboui.cfg"); }
   catch(const FileIOException &fioex)
   {
     std::cerr << "Error: cannot read sboui.cfg." << std::endl;
@@ -222,6 +223,11 @@ int read_config()
   if (! cfg.lookupValue("upgrade_opts", upgrade_opts)) { upgrade_opts = ""; }
 
   if (! cfg.lookupValue("editor", editor)) { editor = "vim"; }
+
+  if (! cfg.lookupValue("resolve_deps", resolve_deps)) { resolve_deps = true; }
+
+  if (! cfg.lookupValue("confirm_changes", confirm_changes)) 
+    confirm_changes = true;
 
 //FIXME: the following are necessary for custom package managers
   if (! cfg.lookupValue("sync_cmd", sync_cmd)) { sync_cmd = "sbomgr update"; }

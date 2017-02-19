@@ -311,17 +311,21 @@ succeeded or 1 if some could not be found in the repository.
 
 *******************************************************************************/
 int InstallBox::create(BuildListItem & build,
-                            std::vector<BuildListItem> & slackbuilds,
-                            const std::string & action) 
+                       std::vector<BuildListItem> & slackbuilds,
+                       const std::string & action, bool resolve_deps) 
 {
   int check; 
   unsigned int nreqs, i, nbuilds;
   std::vector<BuildListItem *> reqlist;
 
-  check = compute_reqs_order(build, reqlist, slackbuilds);
-  if (check != 0) { return check; }
+  reqlist.resize(0);
+  if (resolve_deps)
+  {
+    check = compute_reqs_order(build, reqlist, slackbuilds);
+    if (check != 0) { return check; }
+  }
 
-  // Create copy of reqlist and determine action
+  // Copy reqlist to _builds list and determine action
 
   nreqs = reqlist.size();
   nbuilds = 0;
@@ -376,22 +380,30 @@ int InstallBox::create(BuildListItem & build,
 
   // Set window title
 
-  if (nbuilds == 2)
-  {
-    if (action == "Remove")
-      setName(build.name() + " (1 installed dep)");
-    else
-      setName(build.name() + " (1 dep)");
-  }
+  if (! resolve_deps)
+    setName(build.name() + " (deps ignored)");
   else
   {
-    if (action == "Remove")
-      setName(build.name() + " (" + int2string(nbuilds-1) + " installed deps)");
+    if (nbuilds == 2)
+    {
+      if (action == "Remove")
+        setName(build.name() + " (1 installed dep)");
+      else
+        setName(build.name() + " (1 dep)");
+    }
     else
-      setName(build.name() + " (" + int2string(nbuilds-1) + " deps)");
+    {
+      if (action == "Remove")
+      {
+        setName(build.name() + 
+                " (" + int2string(nbuilds-1) + " installed deps)");
+      }
+      else
+        setName(build.name() + " (" + int2string(nbuilds-1) + " deps)");
+    }
   }
 
-  return check;
+  return 0;
 }
 
 /*******************************************************************************
@@ -509,13 +521,13 @@ Install, upgrade, reinstall, or remove SlackBuild and dependencies. Returns 0 on
 success. Also counts number of SlackBuilds that were changed.
 
 *******************************************************************************/
-int InstallBox::applyChanges(int & nchanged) const
+int InstallBox::applyChanges(int & nchanged, bool notify_complete) const
 {
   unsigned int nbuilds, i;
   int retval;
   std::string response, msg;
 
-  // Install/upgrade/reinstall/remove tagged SlackBuilds
+  // Install/upgrade/reinstall/remove selected SlackBuilds
 
   nbuilds = _builds.size();
   retval = 0;
@@ -551,7 +563,7 @@ int InstallBox::applyChanges(int & nchanged) const
     }
   }
 
-  if ( (nchanged > 0) || (retval != 0) )
+  if ( retval != 0 || (nchanged > 0 && notify_complete) )
   {
     std::cout << "Press Enter to return ...";
     std::getline(std::cin, response);

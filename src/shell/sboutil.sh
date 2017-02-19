@@ -36,8 +36,8 @@ function get_pkg_version ()
 function get_installed_info ()
 {
   local BUILD=$1
-  #local PKGLIST=$(find /var/log/packages -maxdepth 1 -name "$BUILD*_$TAG")
-  local PKGLIST=$(find /data/dprosser/software/sboui_files/packages -maxdepth 1 -name "$BUILD*_$TAG")
+  local PKGLIST=$(find /var/log/packages -maxdepth 1 -name "$BUILD*_$TAG")
+  #local PKGLIST=$(find /data/dprosser/software/sboui_files/packages -maxdepth 1 -name "$BUILD*_$TAG")
   local VERSION PKG PKGNAME BUILDNAME
 
   # There can be multiple packages fitting the pattern, so loop through them
@@ -76,8 +76,8 @@ function get_available_version ()
 # Lists installed SlackBuilds
 function list_installed ()
 {
-  #local PKGLIST=$(find /var/log/packages -maxdepth 1 -name "$BUILD*_$TAG")
-  local PKGLIST=$(find /data/dprosser/software/sboui_files/packages -maxdepth 1 -name "$BUILD*_$TAG")
+  local PKGLIST=$(find /var/log/packages -maxdepth 1 -name "$BUILD*_$TAG")
+  #local PKGLIST=$(find /data/dprosser/software/sboui_files/packages -maxdepth 1 -name "$BUILD*_$TAG")
   local PKG
 
   for PKG in $PKGLIST

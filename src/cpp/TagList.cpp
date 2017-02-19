@@ -6,6 +6,7 @@
 #include "settings.h"
 #include "signals.h"
 #include "ListItem.h"
+#include "BuildListItem.h"
 #include "SelectionBox.h"
 #include "TagList.h"
 
@@ -120,8 +121,15 @@ void TagList::removeItem(ListItem *item)
       break;
     }
   }
+  _highlight = 0;
+  _firstprint = 0;
+  _prevhighlight = 0;
+  _redraw_type = "all";
+}
 
-  _items.resize(0);
+void TagList::removeItem(unsigned int idx)
+{
+  if (idx <= _tagged.size()) { _tagged.erase(_tagged.begin()+idx); }
   _highlight = 0;
   _firstprint = 0;
   _prevhighlight = 0;
@@ -293,4 +301,26 @@ std::string TagList::exec()
   curs_set(0);
 
   return retval;
+}
+
+/*******************************************************************************
+
+Converts item in _items list to BuildListItem. Careful: does not perform bounds
+checks!
+
+*******************************************************************************/
+BuildListItem TagList::itemByIdx(unsigned int idx) const
+{
+  BuildListItem item;
+
+  item.setName(_items[idx]->name());
+  item.addProp("category", _items[idx]->getProp("category"));
+  item.addProp("installed_version", _items[idx]->getProp("installed_version"));
+  item.addProp("available_version", _items[idx]->getProp("available_version"));
+  item.addProp("requires", _items[idx]->getProp("requires"));
+  item.addProp("package_name", _items[idx]->getProp("package_name"));
+  item.addBoolProp("tagged", _items[idx]->getBoolProp("tagged"));
+  item.addBoolProp("installed", _items[idx]->getBoolProp("installed"));
+
+  return item;
 }

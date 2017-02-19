@@ -481,8 +481,9 @@ bool MainWindow::modifyPackage(BuildListItem & build,
   unsigned int ninstaller;
   InstallBox installer;
 
-  printStatus("Computing dependencies for " + build.name() + " ...");
-  check = installer.create(build, _slackbuilds, action);
+  if (backend::resolve_deps)
+    printStatus("Computing dependencies for " + build.name() + " ...");
+  check = installer.create(build, _slackbuilds, action, backend::resolve_deps);
 
   if (check != 0) 
   { 
@@ -494,61 +495,77 @@ bool MainWindow::modifyPackage(BuildListItem & build,
   }
 
   ninstaller = installer.numItems();
-  if (ninstaller == 2)
-  { 
-    if (action == "Remove")
-      printStatus("1 installed dependency for " + build.name() + ".");
-    else
-      printStatus("1 dependency for " + build.name() + ".");
-  }
-  else 
-  { 
-    if (action == "Remove")
-      printStatus(int2string(ninstaller-1) + 
-                  " installed dependencies for " + build.name() + ".");
-    else
-      printStatus(int2string(ninstaller-1) + 
-                  " dependencies for " + build.name() + ".");
-  }
-
-  installerwin = newwin(1, 1, 0, 0);
-  installer.setWindow(installerwin);
-  placePopup(&installer, installerwin);
-
-  getting_input = true;
-  needs_rebuild = false;
-  while (getting_input)
+  if (backend::resolve_deps)
   {
-    selection = installer.exec(); 
-    if (selection == signals::keyEnter)
-    {
-      response = 1;
-      nchanged = 0;
-      check = 0;
-      if (! installer.installingAllDeps())
-        response = displayError("You have chosen to skip some dependencies. " +
-                                std::string("Continue anyway? "), "Warning",
-                                "Enter: Yes | Esc: No"); 
-      def_prog_mode();
-      endwin();
-      if (response == 1) { check = installer.applyChanges(nchanged); }
-      if (nchanged > 0) { needs_rebuild = true; }
-      reset_prog_mode();
-      redrawAll(true);
-      getting_input = false;
-      if (check != 0)
-        displayError("One or more requested changes was not applied.");
-    }
-    else if (selection == signals::quit) { getting_input = false; }
-    else if (selection == signals::resize) 
+    if (ninstaller == 2)
     { 
-      placePopup(&installer, installerwin);
-      redrawAll(true);
+      if (action == "Remove")
+        printStatus("1 installed dependency for " + build.name() + ".");
+      else
+        printStatus("1 dependency for " + build.name() + ".");
     }
+    else 
+    { 
+      if (action == "Remove")
+        printStatus(int2string(ninstaller-1) + 
+                    " installed dependencies for " + build.name() + ".");
+      else
+        printStatus(int2string(ninstaller-1) + 
+                    " dependencies for " + build.name() + ".");
+    }
+  }
+
+  // Show list of changes to apply and/or apply changes
+
+  needs_rebuild = false;
+  response = 0;
+  if (backend::confirm_changes)
+  {
+    installerwin = newwin(1, 1, 0, 0);
+    installer.setWindow(installerwin);
+    placePopup(&installer, installerwin);
+
+    getting_input = true;
+    while (getting_input)
+    {
+      selection = installer.exec(); 
+      if (selection == signals::keyEnter)
+      {
+        getting_input = false;
+        response = 1;
+        if (! installer.installingAllDeps())
+        {
+          response = displayError("You have chosen to skip some dependencies." +
+                                  std::string(" Continue anyway? "), "Warning",
+                                  "Enter: Yes | Esc: No"); 
+        }
+      }
+      else if (selection == signals::quit) { getting_input = false; }
+      else if (selection == signals::resize) 
+      { 
+        placePopup(&installer, installerwin);
+        redrawAll(true);
+      }
+    }
+    delwin(installerwin);
+  }
+  else { response = 1; }
+
+  // Apply changes
+
+  if (response == 1)
+  {
+    def_prog_mode();
+    endwin();
+    check = installer.applyChanges(nchanged, backend::confirm_changes);
+    if (nchanged > 0) { needs_rebuild = true; }
+    reset_prog_mode();
+    redrawAll(true);
+    if (check != 0)
+      displayError("One or more requested changes was not applied.");
   }
 
   clearStatus();
-  delwin(installerwin);
 
   return needs_rebuild;
 }
@@ -747,9 +764,10 @@ Applies action to tagged SlackBuilds
 void MainWindow::applyTags(const std::string & action)
 {
   WINDOW *tagwin;
-  unsigned int ndisplay;
-  bool getting_input;
+  unsigned int ndisplay, i;
+  bool getting_input, apply_changes, any_modified, needs_rebuild;
   std::string selection;
+  BuildListItem item;
 
   ndisplay = _taglist.getDisplayList(action);
   if (ndisplay == 0)
@@ -768,11 +786,22 @@ void MainWindow::applyTags(const std::string & action)
   _taglist.setName("SlackBuilds to " + string_to_lower(action));
   placePopup(&_taglist, tagwin);
 
+  // Show list of tagged SlackBuilds to install/upgrade/remove/reinstall
+
   getting_input = true;
   while (getting_input)
   {
     selection = _taglist.exec(); 
-    if (selection == signals::quit) { getting_input = false; }
+    if (selection == signals::keyEnter) 
+    { 
+      apply_changes = true; 
+      getting_input = false;
+    }
+    else if (selection == signals::quit) 
+    { 
+      apply_changes = false; 
+      getting_input = false;
+    }
     else if (selection == signals::resize) 
     { 
       placePopup(&_taglist, tagwin);
@@ -783,6 +812,31 @@ void MainWindow::applyTags(const std::string & action)
   clearStatus();
   delwin(tagwin);
   redrawAll(true);
+
+  // Apply changes
+
+  needs_rebuild = false;
+  if (apply_changes)
+  {
+    for ( i = 0; i < ndisplay; i++ ) 
+    {
+      redrawAll(true);
+      item = _taglist.itemByIdx(i);
+      if (item.getBoolProp("tagged"))
+      { 
+        any_modified = modifyPackage(item, action);
+        if (! needs_rebuild) { needs_rebuild = any_modified; }
+      }
+    }
+
+    // Rebuild lists if SlackBuilds were installed/upgraded/reinstalled/removed
+
+    if (needs_rebuild)
+    { 
+      clearData();
+      initialize();
+    }
+  } 
 }
 
 /*******************************************************************************
@@ -1131,6 +1185,7 @@ void MainWindow::search()
       }
     }
   }
+  setTagList();
 
   // Get rid of window and redraw
 

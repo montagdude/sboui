@@ -43,7 +43,7 @@ class InstallBox: public BuildOrderBox {
 
     int create(BuildListItem & build,
                std::vector<BuildListItem> & slackbuilds,
-               const std::string & action);
+               const std::string & action, bool resolve_deps=true);
 
     /* User interaction loop. Differs from standard BuildListBox exec() in
        that the space bar is used to tag (select/unselect) items */
@@ -52,5 +52,5 @@ class InstallBox: public BuildOrderBox {
 
     /* Install, upgrade, remove, or reinstall SlackBuild and dependencies */
 
-    int applyChanges(int & nchanged) const;
+    int applyChanges(int & nchanged, bool notify_complete=true) const;
 };

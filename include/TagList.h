@@ -5,6 +5,7 @@
 #include <curses.h>
 #include "SelectionBox.h"
 #include "ListItem.h"
+#include "BuildListItem.h"
 
 /*******************************************************************************
 
@@ -36,6 +37,7 @@ class TagList: public SelectionBox {
 
     void addItem(ListItem *item);
     void removeItem(ListItem *item);
+    void removeItem(unsigned int idx);
     void clearList();
 
     /* Create _items list to display based on action */
@@ -45,4 +47,8 @@ class TagList: public SelectionBox {
     /* User interaction loop */
 
     std::string exec();
+
+    /* Returns BuildListItem by index in _items list */
+
+    BuildListItem itemByIdx(unsigned int idx) const;
 };
