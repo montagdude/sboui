@@ -331,7 +331,8 @@ int InstallBox::create(BuildListItem & build,
   // Re-check install status if requested
 
   nreqs = reqlist.size();
-  if (recheck) {}
+  if (recheck)
+    for ( i = 0; i < nreqs; i++ ) { reqlist[i]->readPropsFromRepo(); }
 
   // Copy reqlist to _builds list and determine action
 

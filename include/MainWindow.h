@@ -68,7 +68,8 @@ class MainWindow {
 
     /* Actions for a selected SlackBuild */
 
-    bool modifyPackage(BuildListItem & build, const std::string & action);
+    bool modifyPackage(BuildListItem & build, const std::string & action,
+                       bool recheck=false);
     void showBuildOrder(BuildListItem & build);
     void showInverseReqs(BuildListItem & build);
     void browseFiles(const BuildListItem & build);

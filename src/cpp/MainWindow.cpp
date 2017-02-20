@@ -472,7 +472,7 @@ if anything was changed, false otherwise.
 
 *******************************************************************************/
 bool MainWindow::modifyPackage(BuildListItem & build,
-                               const std::string & action)
+                               const std::string & action, bool recheck)
 {
   WINDOW *installerwin;
   int check, nchanged, response;
@@ -483,7 +483,8 @@ bool MainWindow::modifyPackage(BuildListItem & build,
 
   if (backend::resolve_deps)
     printStatus("Computing dependencies for " + build.name() + " ...");
-  check = installer.create(build, _slackbuilds, action, backend::resolve_deps);
+  check = installer.create(build, _slackbuilds, action, backend::resolve_deps,
+                           recheck);
 
   if (check != 0) 
   { 
@@ -824,7 +825,7 @@ void MainWindow::applyTags(const std::string & action)
       item = _taglist.itemByIdx(i);
       if (item.getBoolProp("tagged"))
       { 
-        any_modified = modifyPackage(item, action);
+        any_modified = modifyPackage(item, action, true);
         if (! needs_rebuild) { needs_rebuild = any_modified; }
       }
     }
