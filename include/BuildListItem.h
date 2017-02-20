@@ -16,6 +16,10 @@ class BuildListItem: public ListItem {
 
     BuildListItem();
 
+    // Convert ListItem to BuildListItem
+
+    void operator = (const ListItem & item);
+
     // Checks whether a SlackBuild can be upgraded
 
     bool upgradable() const;

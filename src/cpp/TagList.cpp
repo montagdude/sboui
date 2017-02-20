@@ -313,14 +313,7 @@ BuildListItem TagList::itemByIdx(unsigned int idx) const
 {
   BuildListItem item;
 
-  item.setName(_items[idx]->name());
-  item.addProp("category", _items[idx]->getProp("category"));
-  item.addProp("installed_version", _items[idx]->getProp("installed_version"));
-  item.addProp("available_version", _items[idx]->getProp("available_version"));
-  item.addProp("requires", _items[idx]->getProp("requires"));
-  item.addProp("package_name", _items[idx]->getProp("package_name"));
-  item.addBoolProp("tagged", _items[idx]->getBoolProp("tagged"));
-  item.addBoolProp("installed", _items[idx]->getBoolProp("installed"));
+  item = *_items[idx];
 
   return item;
 }

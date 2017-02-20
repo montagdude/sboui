@@ -31,7 +31,7 @@ class ListItem {
 
     // Accessing props
 
-    int propByName(const std::string & propname) const;
+    int propIdxByName(const std::string & propname) const;
     void setPropByIdx(unsigned int idx, const std::string & value);
 
   public:
@@ -57,6 +57,7 @@ class ListItem {
 
     const std::string & name() const;
     int hotKey() const;
+    bool checkProp(const std::string & propname) const;
     const std::string & getProp(const std::string & propname) const;
     bool getBoolProp(const std::string & propname) const;
 };

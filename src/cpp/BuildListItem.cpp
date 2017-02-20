@@ -21,6 +21,44 @@ BuildListItem::BuildListItem()
 
 /*******************************************************************************
 
+Converts ListItem to BuildListItem
+
+*******************************************************************************/
+void BuildListItem::operator = (const ListItem & item)
+{
+  _name = item.name();
+
+  if (item.checkProp("category"))
+    setProp("category", item.getProp("category"));
+  else { addProp("category", ""); }
+
+  if (item.checkProp("installed_version"))
+    setProp("installed_version", item.getProp("installed_version"));
+  else { addProp("installed_version", ""); }
+
+  if (item.checkProp("available_version"))
+    setProp("available_version", item.getProp("available_version"));
+  else { addProp("available_version", ""); }
+
+  if (item.checkProp("requires"))
+    setProp("requires", item.getProp("requires"));
+  else { addProp("requires", ""); }
+
+  if (item.checkProp("package_name"))
+    setProp("package_name", item.getProp("package_name"));
+  else { addProp("package_name", ""); }
+
+  if (item.checkProp("tagged"))
+    setBoolProp("tagged", item.getBoolProp("tagged"));
+  else { addBoolProp("tagged", false); }
+
+  if (item.checkProp("installed"))
+    setBoolProp("installed", item.getBoolProp("installed"));
+  else { addBoolProp("installed", false); }
+}
+
+/*******************************************************************************
+
 Checks whether SlackBuild can be upgraded
 
 *******************************************************************************/

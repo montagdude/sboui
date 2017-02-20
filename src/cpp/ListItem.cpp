@@ -24,7 +24,7 @@ Searches for a property in the list and returns its index. If it does not
 exist, returns -1.
 
 *******************************************************************************/
-int ListItem::propByName(const std::string & propname) const
+int ListItem::propIdxByName(const std::string & propname) const
 {
   int i, nprops, propidx;
 
@@ -83,7 +83,7 @@ void ListItem::addProp(const std::string & propname, const std::string & value)
   int propidx;
   listprop prop;
 
-  propidx = propByName(propname);
+  propidx = propIdxByName(propname);
   if (propidx != -1) { setPropByIdx(propidx, value); }
   else
   {
@@ -98,7 +98,7 @@ void ListItem::addBoolProp(const std::string & propname, bool value)
   int propidx;
   listprop prop;
 
-  propidx = propByName(propname);
+  propidx = propIdxByName(propname);
   if (propidx != -1) { setPropByIdx(propidx, bool2String(value)); }
   else
   {
@@ -113,7 +113,7 @@ int ListItem::setProp(const std::string & propname, const std::string & value)
   int propidx;
   listprop prop;
 
-  propidx = propByName(propname);
+  propidx = propIdxByName(propname);
   if (propidx == -1) { return 1; }
   else
   {
@@ -127,7 +127,7 @@ int ListItem::setBoolProp(const std::string & propname, bool value)
   int propidx;
   listprop prop;
 
-  propidx = propByName(propname);
+  propidx = propIdxByName(propname);
   if (propidx == -1) { return 1; }
   else
   {
@@ -138,12 +138,21 @@ int ListItem::setBoolProp(const std::string & propname, bool value)
 
 /*******************************************************************************
 
-Access properties. Warning: does not check for invalid propname specified.
-Such an attempt will result in a segfault.
+Access properties. Warning: getProp methods do not check whether the prop is
+actually present, so attempting to access invalid props will result in a
+segfault. If you are not sure whether the prop is present, check first with
+checkProp.
 
 *******************************************************************************/
 const std::string & ListItem::name() const { return _name; }
 int ListItem::hotKey() const { return _hotkey; }
+bool ListItem::checkProp(const std::string & propname) const
+{
+  if ( (propname == "name") || (propIdxByName(propname) != -1) )
+    return true;
+  else { return false; }
+}
+
 const std::string & ListItem::getProp(const std::string & propname) const
 {
   int propidx;
@@ -151,7 +160,7 @@ const std::string & ListItem::getProp(const std::string & propname) const
   if (propname == "name") { return _name; }
   else
   {
-    propidx = propByName(propname);
+    propidx = propIdxByName(propname);
     return _props[propidx].value;
   }
 }
@@ -160,6 +169,6 @@ bool ListItem::getBoolProp(const std::string & propname) const
 {
   int propidx;
   
-  propidx = propByName(propname);
+  propidx = propIdxByName(propname);
   return string2Bool(_props[propidx].value);
 }

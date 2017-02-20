@@ -312,7 +312,8 @@ succeeded or 1 if some could not be found in the repository.
 *******************************************************************************/
 int InstallBox::create(BuildListItem & build,
                        std::vector<BuildListItem> & slackbuilds,
-                       const std::string & action, bool resolve_deps) 
+                       const std::string & action, bool resolve_deps,
+                       bool recheck) 
 {
   int check; 
   unsigned int nreqs, i, nbuilds;
@@ -324,6 +325,10 @@ int InstallBox::create(BuildListItem & build,
     check = compute_reqs_order(build, reqlist, slackbuilds);
     if (check != 0) { return check; }
   }
+
+//FIXME:  // Re-check install status if requested
+
+  if (recheck) {}
 
   // Copy reqlist to _builds list and determine action
 
