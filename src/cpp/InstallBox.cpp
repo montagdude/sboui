@@ -297,7 +297,8 @@ bool InstallBox::installingAllDeps() const
 
   for ( i = 0; i < nreqs; i++ )
   {
-    if ( (_items[i]->getProp("action") != "Reinstall") &&   
+    if ( ((_items[i]->getProp("action") == "Install") ||   
+          (_items[i]->getProp("action") == "Upgrade")) &&
          (! _items[i]->getBoolProp("tagged")) ) { return false; }
   }
 

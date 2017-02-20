@@ -32,13 +32,16 @@ function get_pkg_version ()
 }
 
 ################################################################################
-# Returns version and package name of an installed SlackBuild
+# Returns version and package name of an installed SlackBuild. If not installed,
+# returns "not_installed" for both.
 function get_installed_info ()
 {
   local BUILD=$1
   local PKGLIST=$(find /var/log/packages -maxdepth 1 -name "$BUILD*_$TAG")
   #local PKGLIST=$(find /data/dprosser/software/sboui_files/packages -maxdepth 1 -name "$BUILD*_$TAG")
-  local VERSION PKG PKGNAME BUILDNAME
+  local VERSION="not_installed"
+  local PKGNAME="not_installed"
+  local PKG BUILDNAME
 
   # There can be multiple packages fitting the pattern, so loop through them
   # and check against requested

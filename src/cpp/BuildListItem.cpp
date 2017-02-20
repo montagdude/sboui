@@ -69,7 +69,7 @@ void BuildListItem::readPropsFromRepo()
   std::vector<std::string> pkg_info;
 
   pkg_info = get_installed_info(*this);
-  if (pkg_info[0] != "")
+  if (pkg_info[0] != "not_installed")
   {
     setBoolProp("installed", true);
     setProp("installed_version", pkg_info[0]);
