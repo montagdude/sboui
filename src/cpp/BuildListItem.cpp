@@ -1,4 +1,6 @@
 #include <string>
+#include <vector>
+#include "backend.h"
 #include "ListItem.h"
 #include "BuildListItem.h"
 
@@ -55,6 +57,28 @@ void BuildListItem::operator = (const ListItem & item)
   if (item.checkProp("installed"))
     setBoolProp("installed", item.getBoolProp("installed"));
   else { addBoolProp("installed", false); }
+}
+
+/*******************************************************************************
+
+Reads properties from repo
+
+*******************************************************************************/
+void BuildListItem::readPropsFromRepo()
+{
+  std::vector<std::string> pkg_info;
+
+  pkg_info = get_installed_info(*this);
+  if (pkg_info[0] != "")
+  {
+    setBoolProp("installed", true);
+    setProp("installed_version", pkg_info[0]);
+    setProp("package_name", pkg_info[1]);
+  }
+  else { setBoolProp("installed", false); }
+
+  setProp("available_version", get_available_version(*this));
+  setProp("requires", get_reqs(*this));
 }
 
 /*******************************************************************************

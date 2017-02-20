@@ -317,6 +317,8 @@ int InstallBox::create(BuildListItem & build,
 {
   int check; 
   unsigned int nreqs, i, nbuilds;
+  std::vector<std::string> pkg_info;
+  std::string installed_version, available_version;
   std::vector<BuildListItem *> reqlist;
 
   reqlist.resize(0);
@@ -326,13 +328,13 @@ int InstallBox::create(BuildListItem & build,
     if (check != 0) { return check; }
   }
 
-//FIXME:  // Re-check install status if requested
+  // Re-check install status if requested
 
+  nreqs = reqlist.size();
   if (recheck) {}
 
   // Copy reqlist to _builds list and determine action
 
-  nreqs = reqlist.size();
   nbuilds = 0;
   for ( i = 0; i < nreqs; i++ ) 
   { 

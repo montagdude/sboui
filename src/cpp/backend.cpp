@@ -162,9 +162,8 @@ available version, and dependencies for installed SlackBuilds.
 void list_installed(std::vector<BuildListItem> & slackbuilds,
                     std::vector<BuildListItem *> & installedlist)
 {
-  std::vector<std::string> installednames, pkg_info;
+  std::vector<std::string> installednames;
   unsigned int ninstalled, i, j, nbuilds;
-  std::string installed_version, pkg_name, available_version, reqs;
 
   installedlist.resize(0);
   installednames = list_installed_names();
@@ -176,16 +175,7 @@ void list_installed(std::vector<BuildListItem> & slackbuilds,
     {
       if (installednames[j] == slackbuilds[i].name())
       {
-        slackbuilds[i].setBoolProp("installed", true);
-        pkg_info = get_installed_info(slackbuilds[i]);
-        installed_version = pkg_info[0];
-        pkg_name = pkg_info[1];
-        available_version = get_available_version(slackbuilds[i]);
-        reqs = get_reqs(slackbuilds[i]);
-        slackbuilds[i].setProp("installed_version", installed_version);
-        slackbuilds[i].setProp("package_name", pkg_name);
-        slackbuilds[i].setProp("available_version", available_version);
-        slackbuilds[i].setProp("requires", reqs);
+        slackbuilds[i].readPropsFromRepo();
         installedlist.push_back(&slackbuilds[i]);
         break;
       }

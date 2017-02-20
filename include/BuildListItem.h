@@ -20,6 +20,10 @@ class BuildListItem: public ListItem {
 
     void operator = (const ListItem & item);
 
+    // Reads properties from repo 
+
+    void readPropsFromRepo();
+
     // Checks whether a SlackBuild can be upgraded
 
     bool upgradable() const;
