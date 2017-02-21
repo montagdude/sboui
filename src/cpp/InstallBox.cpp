@@ -322,12 +322,15 @@ int InstallBox::create(BuildListItem & build,
   std::string installed_version, available_version;
   std::vector<BuildListItem *> reqlist;
 
+  // Get list of reqs and/or add requested SlackBuild to list
+
   reqlist.resize(0);
   if (resolve_deps)
   {
     check = compute_reqs_order(build, reqlist, slackbuilds);
     if (check != 0) { return check; }
   }
+  reqlist.push_back(&build);
 
   // Re-check install status if requested
 
@@ -374,13 +377,6 @@ int InstallBox::create(BuildListItem & build,
       nbuilds++;
     }
   }
-
-  // Set action for requested SlackBuild and add it at the end
-
-  _builds.push_back(build);
-  _builds[nbuilds].setBoolProp("tagged", true);
-  _builds[nbuilds].addProp("action", action);
-  nbuilds++;
 
   // Add to list (note have to do this separately because _builds changes
   // throughout the above loop)
