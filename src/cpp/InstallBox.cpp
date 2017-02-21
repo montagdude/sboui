@@ -330,25 +330,30 @@ int InstallBox::create(BuildListItem & build,
     check = compute_reqs_order(build, reqlist, slackbuilds);
     if (check != 0) { return check; }
   }
+  nreqs = reqlist.size();
   reqlist.push_back(&build);
 
   // Re-check install status if requested
 
-  nreqs = reqlist.size();
   if (recheck)
-    for ( i = 0; i < nreqs; i++ ) { reqlist[i]->readPropsFromRepo(); }
+    for ( i = 0; i <= nreqs; i++ ) { reqlist[i]->readPropsFromRepo(); }
 
   // Copy reqlist to _builds list and determine action
 
   nbuilds = 0;
-  for ( i = 0; i < nreqs; i++ ) 
+  for ( i = 0; i <= nreqs; i++ ) 
   { 
     if (action == "Remove")
     {
       if (reqlist[i]->getBoolProp("installed"))
       {
         _builds.push_back(*reqlist[i]);
-        _builds[nbuilds].setBoolProp("tagged", false);
+
+        // By default do not remove dependencies, only the requested SlackBuild
+
+        if (i < nreqs) { _builds[nbuilds].setBoolProp("tagged", false); }
+        else { _builds[nbuilds].setBoolProp("tagged", true); }
+
         _builds[nbuilds].addProp("action", "Remove");
         nbuilds++;
       }
