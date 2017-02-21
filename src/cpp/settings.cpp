@@ -88,6 +88,7 @@ void apply_color_settings()
   colors.addPair(tagged, bg_highlight_inactive); 
   colors.addPair(fg_popup, bg_popup); 
   colors.addPair(fg_warning, bg_warning); 
+  colors.addPair(hotkey, bg_normal); 
   colors.addPair(hotkey, bg_popup); 
   colors.addPair(hotkey, bg_highlight_active); 
   colors.addPair(hotkey, bg_highlight_inactive); 
