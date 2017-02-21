@@ -1,0 +1,43 @@
+#pragma once
+
+#include <vector>
+#include <string>
+#include <curses.h>
+#include "HelpItem.h"
+#include "ScrollBox.h"
+
+/*******************************************************************************
+
+Help window: lists keyboard shortcuts
+
+*******************************************************************************/
+class HelpWindow: public ScrollBox {
+
+  private:
+
+    unsigned int _shortcutwidth;
+
+    /* List of items to display */
+
+    std::vector<HelpItem> _helpitems;
+
+    /* Drawing */
+
+    void redrawFrame() const;
+    void redrawSingleItem(unsigned int idx);
+
+    /* Constructs list to display */
+ 
+    void createList();
+
+  public:
+
+    /* Constructors */
+
+    HelpWindow();
+    HelpWindow(WINDOW *win, const std::string & name);
+
+    /* Window sizing and placement */
+
+    void placeWindow() const;
+};

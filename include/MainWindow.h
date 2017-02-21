@@ -13,6 +13,7 @@
 #include "SearchBox.h"
 #include "InputBox.h"
 #include "TagList.h"
+#include "HelpWindow.h"
 
 /*******************************************************************************
 
@@ -32,6 +33,7 @@ class MainWindow {
     FilterBox _fbox;
     SearchBox _searchbox;
     TagList _taglist;
+    HelpWindow _help;
     std::string _title, _filter, _info, _status;
     unsigned int _category_idx, _activated_listbox, _layout;
 
@@ -61,6 +63,10 @@ class MainWindow {
     void filterNonDeps();
     void filterSearch(const std::string & searchterm, bool case_sensitive=false,
                       bool whole_whord=false);
+
+    /* Displays help window */
+
+    int showHelp();
 
     /* Sets taglist reference in BuildListBoxes */
 

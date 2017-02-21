@@ -1,6 +1,6 @@
 CXX=g++
 CXXFLAGS=-g -Wall
-OBJ=Color.o settings.o string_util.o signals.o ListItem.o CategoryListItem.o BuildListItem.o sorting.o DirListing.o backend.o requirements.o CursesWidget.o AbstractListBox.o ListBox.o CategoryListBox.o BuildListBox.o SelectionBox.o FilterBox.o BuildActionBox.o DirListBox.o TagList.o ScrollBox.o BuildOrderBox.o InvReqBox.o InstallBox.o InputItem.o TextInput.o ToggleInput.o InputBox.o SearchBox.o MessageBox.o filters.o MainWindow.o sboui.o
+OBJ=Color.o settings.o string_util.o signals.o ListItem.o CategoryListItem.o BuildListItem.o sorting.o DirListing.o backend.o requirements.o CursesWidget.o AbstractListBox.o ListBox.o CategoryListBox.o BuildListBox.o SelectionBox.o FilterBox.o BuildActionBox.o DirListBox.o TagList.o BuildOrderBox.o InvReqBox.o InstallBox.o ScrollBox.o HelpItem.o HelpWindow.o InputItem.o TextInput.o ToggleInput.o InputBox.o SearchBox.o MessageBox.o filters.o MainWindow.o sboui.o
 SRCDIR=src/cpp
 CPPFLAGS=-Iinclude
 EXE=sboui
@@ -77,9 +77,6 @@ DirListBox.o: $(SRCDIR)/DirListBox.cpp
 TagList.o: $(SRCDIR)/TagList.cpp
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/TagList.cpp
 
-ScrollBox.o: $(SRCDIR)/ScrollBox.cpp
-	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/ScrollBox.cpp
-
 BuildOrderBox.o: $(SRCDIR)/BuildOrderBox.cpp
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/BuildOrderBox.cpp
 
@@ -88,6 +85,15 @@ InvReqBox.o: $(SRCDIR)/InvReqBox.cpp
 
 InstallBox.o: $(SRCDIR)/InstallBox.cpp
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/InstallBox.cpp
+
+ScrollBox.o: $(SRCDIR)/ScrollBox.cpp
+	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/ScrollBox.cpp
+
+HelpItem.o: $(SRCDIR)/HelpItem.cpp
+	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/HelpItem.cpp
+
+HelpWindow.o: $(SRCDIR)/HelpWindow.cpp
+	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/HelpWindow.cpp
 
 InputItem.o: $(SRCDIR)/InputItem.cpp
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) $(SRCDIR)/InputItem.cpp

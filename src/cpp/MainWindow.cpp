@@ -454,6 +454,46 @@ void MainWindow::filterSearch(const std::string & searchterm,
 
 /*******************************************************************************
 
+Shows help window
+
+*******************************************************************************/
+int MainWindow::showHelp()
+{
+  WINDOW *helpwin;
+  std::string selection;
+  bool getting_input;
+
+  clear();
+  setInfo("Esc: Back to main");
+  redrawHeaderFooter();
+
+  helpwin = newwin(1, 1, 0, 0);
+  _help.setWindow(helpwin);
+  _help.placeWindow();
+
+  getting_input = true;
+  while (getting_input)
+  {
+    selection = _help.exec(); 
+    if (selection == signals::quit) { getting_input = false; }
+    else if (selection == signals::resize) 
+    { 
+      clear();
+      redrawHeaderFooter();
+      _help.placeWindow();
+    }
+    else if (selection == "q") { return 1; }
+  }
+
+  clearStatus();
+  setInfo("f: Filter | /: Search | o: Options | ?: Help");
+  delwin(helpwin);
+  redrawAll(true);
+  return 0;
+}
+
+/*******************************************************************************
+
 Sets taglist reference in BuildListBoxes
 
 *******************************************************************************/
@@ -1315,6 +1355,7 @@ void MainWindow::show()
 {
   std::string selection, statusmsg;
   bool getting_input, all_tagged;
+  int check_quit;
   BuildListItem *build;
 
   redrawAll();
@@ -1449,6 +1490,11 @@ void MainWindow::show()
     else if (selection == "f") { selectFilter(); }
     else if (selection == "/") { search(); }
     else if (selection == "s") { syncRepo(); }
+    else if (selection == "?") 
+    {
+      check_quit = showHelp();
+      if (check_quit == 1) { getting_input = false; }
+    }
     else if (selection == "l") { toggleLayout(); }
     else if (selection == "i") { applyTags("Install"); }
     else if (selection == "u") { applyTags("Upgrade"); }
