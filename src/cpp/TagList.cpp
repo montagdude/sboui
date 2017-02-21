@@ -156,8 +156,7 @@ unsigned int TagList::getDisplayList(const std::string & action)
 {
   unsigned int i, ntagged;
   bool add_item;
-  std::size_t len;
-  ListItem item;
+  BuildListItem item;
 
   _items.resize(0);
   
@@ -172,15 +171,7 @@ unsigned int TagList::getDisplayList(const std::string & action)
     }
     else if (action == "Upgrade")
     {
-/* FIXME? This is already a method in BuildListItem, but we are using plain
-   ListItems. Maybe there is a more consistent way to do this without breaking
-   anything. */
-      len = item.getProp("available_version").size();
-      if (item.getBoolProp("installed"))
-      {
-        if (item.getProp("installed_version").substr(0,len) !=
-            item.getProp("available_version")) { add_item = true; }
-      }
+      if (item.upgradable()) { add_item = true; }
     }
     else if ( (action == "Remove") || (action == "Reinstall") )
     {
