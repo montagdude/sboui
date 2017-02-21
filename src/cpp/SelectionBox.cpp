@@ -160,11 +160,9 @@ void SelectionBox::redrawSingleItem(unsigned int idx)
   {
     if ( i == hidx )
     { 
-      wattron(_win, A_BOLD);
       if (color_pair1 != -1) { wattroff(_win, COLOR_PAIR(color_pair1)); }
       if (color_pair2 != -1) { wattron(_win, COLOR_PAIR(color_pair2)); }
       wprintw(_win, _items[idx]->name().substr(i,1).c_str());
-      wattroff(_win, A_BOLD);
       if (color_pair2 != -1) { wattroff(_win, COLOR_PAIR(color_pair2)); }
       if (color_pair1 != -1) { wattron(_win, COLOR_PAIR(color_pair1)); }
     }

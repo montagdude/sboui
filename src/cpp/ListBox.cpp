@@ -244,7 +244,7 @@ screen or not.
 void ListBox::redrawSingleItem(unsigned int idx)
 {
   std::string fg, bg;
-  int color_pair, len, i, hidx;
+  int color_pair1, color_pair2, len, i, hidx;
 
   // Go to item location, optionally highlight, and print item
 
@@ -252,7 +252,7 @@ void ListBox::redrawSingleItem(unsigned int idx)
 
   // Turn on highlight color
 
-  color_pair = -1;
+  color_pair1 = -1;
   if (int(idx) == _highlight)
   {
     if (_activated) 
@@ -265,13 +265,19 @@ void ListBox::redrawSingleItem(unsigned int idx)
       fg = fg_highlight_inactive; 
       bg = bg_highlight_inactive; 
     }
-    color_pair = colors.pair(fg, bg);
-    if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
+    color_pair1 = colors.pair(fg, bg);
+    color_pair2 = colors.pair(hotkey, bg);
+    if (color_pair1 != -1) { wattron(_win, COLOR_PAIR(color_pair1)); }
     else 
     { 
       if (_activated) { wattron(_win, A_REVERSE); }
     }
   } 
+  else
+  {
+    color_pair1 = colors.pair(fg_normal, bg_normal);
+    color_pair2 = colors.pair(hotkey, bg_normal);
+  }
 
   // Save highlight idx for redrawing later.
   // Note: prevents this method from being const.
@@ -286,9 +292,11 @@ void ListBox::redrawSingleItem(unsigned int idx)
   {
     if ( i == hidx )
     { 
-      wattron(_win, A_UNDERLINE);
+      if (color_pair1 != -1) { wattroff(_win, COLOR_PAIR(color_pair1)); }
+      if (color_pair2 != -1) { wattron(_win, COLOR_PAIR(color_pair2)); }
       wprintw(_win, _items[idx]->name().substr(i,1).c_str());
-      wattroff(_win, A_UNDERLINE);
+      if (color_pair2 != -1) { wattroff(_win, COLOR_PAIR(color_pair2)); }
+      if (color_pair1 != -1) { wattron(_win, COLOR_PAIR(color_pair1)); } 
     }
     else { wprintw(_win, _items[idx]->name().substr(i,1).c_str()); }
   }
@@ -296,7 +304,7 @@ void ListBox::redrawSingleItem(unsigned int idx)
 
   // Turn off highlight color
 
-  if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); } 
+  if (color_pair1 != -1) { wattroff(_win, COLOR_PAIR(color_pair1)); } 
   else
   { 
     if ( (int(idx) == _highlight) && _activated ) { wattroff(_win, A_REVERSE); }

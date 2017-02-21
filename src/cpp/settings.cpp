@@ -66,7 +66,7 @@ void set_default_colors()
   bg_popup = "white";
   fg_warning = "white";
   bg_warning = "red";
-  hotkey = "yellow";
+  hotkey = "black";
 }
 
 /*******************************************************************************
