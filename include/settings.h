@@ -28,6 +28,7 @@ namespace color
   extern std::string tagged;
   extern std::string fg_popup, bg_popup;
   extern std::string fg_warning, bg_warning;
+  extern std::string hotkey;
 }
 
 void apply_color_settings();

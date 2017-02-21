@@ -35,6 +35,7 @@ namespace color
   std::string tagged;
   std::string fg_popup, bg_popup;
   std::string fg_warning, bg_warning;
+  std::string hotkey;
 }
 
 using namespace backend;
@@ -65,6 +66,7 @@ void set_default_colors()
   bg_popup = "white";
   fg_warning = "white";
   bg_warning = "red";
+  hotkey = "yellow";
 }
 
 /*******************************************************************************
@@ -86,6 +88,9 @@ void apply_color_settings()
   colors.addPair(tagged, bg_highlight_inactive); 
   colors.addPair(fg_popup, bg_popup); 
   colors.addPair(fg_warning, bg_warning); 
+  colors.addPair(hotkey, bg_popup); 
+  colors.addPair(hotkey, bg_highlight_active); 
+  colors.addPair(hotkey, bg_highlight_inactive); 
   bkgd(COLOR_PAIR(colors.pair(fg_normal, bg_normal)));
 } 
 
@@ -137,6 +142,7 @@ int read_color_theme(const std::string & color_theme_file)
   color_vars.push_back(&bg_popup);
   color_vars.push_back(&fg_warning);
   color_vars.push_back(&bg_warning);
+  color_vars.push_back(&hotkey);
 
   color_names.push_back("fg_normal");
   color_names.push_back("bg_normal");
@@ -155,6 +161,7 @@ int read_color_theme(const std::string & color_theme_file)
   color_names.push_back("bg_popup");
   color_names.push_back("fg_warning");
   color_names.push_back("bg_warning");
+  color_names.push_back("hotkey");
 
   // Try to read inputs, but stop if there is a problem
 
