@@ -821,13 +821,13 @@ void MainWindow::applyTags(const std::string & action)
   {
     for ( i = 0; i < ndisplay; i++ ) 
     {
-      redrawAll(true);
       item = _taglist.itemByIdx(i);
       if (item.getBoolProp("tagged"))
       { 
         any_modified = modifyPackage(item, action, true);
         if (! needs_rebuild) { needs_rebuild = any_modified; }
       }
+      redrawAll(true);
     }
 
     // Rebuild lists if SlackBuilds were installed/upgraded/reinstalled/removed
