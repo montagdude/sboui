@@ -1265,6 +1265,7 @@ void MainWindow::showBuildActions(BuildListItem & build)
   // Get selection
 
   getting_selection = true;
+  needs_rebuild = false;
   while (getting_selection)
   {
     selected = "None";
