@@ -545,7 +545,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
       else
         printStatus("1 dependency for " + build.name() + ".");
     }
-    else 
+    else if (ninstaller >= 1)
     { 
       if (action == "Remove")
         printStatus(int2string(ninstaller-1) + 
@@ -553,6 +553,14 @@ bool MainWindow::modifyPackage(BuildListItem & build,
       else
         printStatus(int2string(ninstaller-1) + 
                     " dependencies for " + build.name() + ".");
+    }
+    else
+    {
+      /* The list can possibly be empty when removing tagged SlackBuilds.
+         In this case, there's nothing left to do. */
+
+      clearStatus();
+      return false;
     }
   }
 
