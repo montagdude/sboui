@@ -32,10 +32,11 @@ class HelpWindow: public ScrollBox {
 
   public:
 
-    /* Constructors */
+    /* Constructors and destructor */
 
     HelpWindow();
     HelpWindow(WINDOW *win, const std::string & name);
+    ~HelpWindow();
 
     /* Window sizing and placement */
 

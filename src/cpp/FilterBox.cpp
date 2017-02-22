@@ -1,16 +1,12 @@
 #include <string>
 #include <curses.h>
-#include "Color.h"
-#include "settings.h"
 #include "ListItem.h"
 #include "SelectionBox.h"
 #include "FilterBox.h"
 
-using namespace color;
-
 /*******************************************************************************
 
-Constructors
+Constructors and destructor
 
 *******************************************************************************/
 FilterBox::FilterBox()
@@ -52,11 +48,6 @@ FilterBox::FilterBox(WINDOW *win, const std::string & name)
   _items[4]->setHotKey(0);
 }
 
-/*******************************************************************************
-
-Destructor
-
-*******************************************************************************/
 FilterBox::~FilterBox()
 {
   unsigned int i, nitems;

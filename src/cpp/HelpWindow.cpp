@@ -120,22 +120,43 @@ void HelpWindow::redrawSingleItem(unsigned int idx)
 
   getmaxyx(_win, rows, cols);
 
-  // Go to item location and print item
+  // Go to item location
 
   wmove(_win, idx-_firstprint+3, 1);
 
-  // Print name, spaces, shortcut
+  // Turn on bold for header
+
+  if (_items[idx]->getBoolProp("header"))
+    wattron(_win, A_BOLD);
+
+  // Print name (if not a 'space' item)
 
   vlineloc = cols-2 - _shortcutwidth - 1;
   printlen = std::min(int(_items[idx]->name().size()), vlineloc);
 
-  nspaces = vlineloc - _items[idx]->name().size();
-  wprintw(_win, _items[idx]->name().substr(0,printlen).c_str());
+  if (_items[idx]->getBoolProp("space"))
+    nspaces = vlineloc;
+  else
+  {
+    nspaces = vlineloc - _items[idx]->name().size();
+    wprintw(_win, _items[idx]->name().substr(0,printlen).c_str());
+  }
+
+  // Turn off bold for header
+
+  if (_items[idx]->getBoolProp("header"))
+    wattroff(_win, A_BOLD);
+
+  // Print spaces and shortcut 
 
   for ( i = 0; int(i) < nspaces; i++ ) { waddch(_win, ' '); }
 
-  wmove(_win, idx-_firstprint+3, vlineloc+3);
-  printToEol(_items[idx]->getProp("shortcut"));
+  if ( (! _items[idx]->getBoolProp("header")) &&
+       (! _items[idx]->getBoolProp("space")) )
+  {
+    wmove(_win, idx-_firstprint+3, vlineloc+3);
+    printToEol(_items[idx]->getProp("shortcut"));
+  }
 
   // Divider
 
@@ -151,69 +172,47 @@ Constructs list to display
 void HelpWindow::createList()
 {
   unsigned int i, nitems;
-  std::vector<std::string> names, shortcuts;
 
-  names.push_back("Filter SlackBuilds");
-  names.push_back("Sync repository");
-  names.push_back("Search");
-  names.push_back("Help / show shortcuts");
-  names.push_back("Quit");
-  names.push_back("Toggle vertical/horizontal layout");
-  names.push_back("Switch active list");
-  names.push_back("Scroll up");
-  names.push_back("Scroll down");
-  names.push_back("Scroll page up");
-  names.push_back("Scroll page down");
-  names.push_back("Jump to end");
-  names.push_back("Jump to beginning");
-  names.push_back("Select highlighted");
-  names.push_back("Go back / cancel");
-  names.push_back("Toggle selection");
-  names.push_back("Tag/untag SlackBuild or group");
-  names.push_back("Install tagged");
-  names.push_back("Upgrade tagged");
-  names.push_back("Remove tagged");
-  names.push_back("Reinstall tagged");
+  addItem(new HelpItem("General", "", true, false));
+  addItem(new HelpItem("Filter SlackBuilds", "f"));
+  addItem(new HelpItem("Help / show shortcuts", "?"));
+  addItem(new HelpItem("Options", "o"));
+  addItem(new HelpItem("Quit", "q"));
+  addItem(new HelpItem("Search", "/"));
+  addItem(new HelpItem("Switch active list", "Tab"));
+  addItem(new HelpItem("Sync / update repository", "s"));
+  addItem(new HelpItem("Toggle vertical/horizontal layout", "l"));
+
+  addItem(new HelpItem("space1", "", false, true));
+
+  addItem(new HelpItem("Lists & input boxes", "", true, false));
+  addItem(new HelpItem("Go back / cancel", "Esc"));
+  addItem(new HelpItem("Jump to beginning", "Home"));
+  addItem(new HelpItem("Jump to end", "End"));
+  addItem(new HelpItem("Scroll down", "Down arrow"));
+  addItem(new HelpItem("Scroll up", "Up arrow"));
+  addItem(new HelpItem("Scroll down a page", "Page down"));
+  addItem(new HelpItem("Scroll up a page", "Page up"));
+  addItem(new HelpItem("Select highlighted", "Enter"));
+  addItem(new HelpItem("Toggle selection", "Space"));
+
+  addItem(new HelpItem("space2", "", false, true));
+
+  addItem(new HelpItem("Tagging", "", true, false));
+  addItem(new HelpItem("Install tagged", "i"));
+  addItem(new HelpItem("Reinstall tagged", "e"));
+  addItem(new HelpItem("Remove tagged", "r"));
+  addItem(new HelpItem("Tag/untag SlackBuild or group", "t"));
+  addItem(new HelpItem("Upgrade tagged", "u"));
    
-  shortcuts.push_back("f");
-  shortcuts.push_back("s");
-  shortcuts.push_back("/");
-  shortcuts.push_back("?");
-  shortcuts.push_back("q");
-  shortcuts.push_back("l");
-  shortcuts.push_back("Tab");
-  shortcuts.push_back("Up arrow");
-  shortcuts.push_back("Down arrow");
-  shortcuts.push_back("Page up");
-  shortcuts.push_back("Page down");
-  shortcuts.push_back("Home");
-  shortcuts.push_back("End");
-  shortcuts.push_back("Enter");
-  shortcuts.push_back("Esc");
-  shortcuts.push_back("Space");
-  shortcuts.push_back("t");
-  shortcuts.push_back("i");
-  shortcuts.push_back("u");
-  shortcuts.push_back("r");
-  shortcuts.push_back("e");
-
-  nitems = names.size();
-  for ( i = 0; i < nitems; i++ )
-  {
-    HelpItem item;
-    item.setName(names[i]);
-    item.setProp("shortcut", shortcuts[i]);
-    _helpitems.push_back(item);
-  }
-  for ( i = 0; i < nitems; i++ ) { addItem(&_helpitems[i]); }
-
   // Determine width needed to display shortcut
 
+  nitems = numItems();
   _shortcutwidth = 0;
   for ( i = 0; i < nitems; i++ )
   {
-    if (shortcuts[i].size() > _shortcutwidth)
-      _shortcutwidth = shortcuts[i].size();
+    if (_items[i]->getProp("shortcut").size() > _shortcutwidth)
+      _shortcutwidth = _items[i]->getProp("shortcut").size();
   } 
   if (std::string("Shortcut").size() > _shortcutwidth)
     _shortcutwidth = std::string("Shortcut").size();
@@ -222,7 +221,7 @@ void HelpWindow::createList()
 
 /*******************************************************************************
 
-Constructors
+Constructors and destructor
 
 *******************************************************************************/
 HelpWindow::HelpWindow()
@@ -240,6 +239,15 @@ HelpWindow::HelpWindow(WINDOW *win, const std::string & name)
   _reserved_rows = 4;
   _shortcutwidth = 0;
   createList();
+}
+
+HelpWindow::~HelpWindow()
+{
+  unsigned int i, nitems;
+
+  nitems = numItems();
+  for ( i = 0; i < nitems; i++ ) { delete _items[i]; }
+  _items.resize(0);
 }
 
 /*******************************************************************************

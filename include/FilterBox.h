@@ -15,12 +15,9 @@ class FilterBox: public SelectionBox {
   
   public:
 
-    /* Constructors */
+    /* Constructors and destructor */
 
     FilterBox();
     FilterBox(WINDOW *win, const std::string & name);
-
-    /* Destructor */
-
     ~FilterBox();
 };

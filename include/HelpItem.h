@@ -12,7 +12,9 @@ class HelpItem: public ListItem {
 
   public:
 
-    // Constructor
+    // Constructors
 
     HelpItem();
+    HelpItem(const std::string & name, const std::string & shortcut,
+             bool header=false, bool space=false);
 };
