@@ -66,6 +66,18 @@ TextInput::TextInput()
 
 /*******************************************************************************
 
+Set properties
+
+*******************************************************************************/
+void TextInput::clear()
+{ 
+  _entry = "";
+  _firsttext = 0;
+  _cursidx = 0;
+}
+
+/*******************************************************************************
+
 Draws text input
 
 *******************************************************************************/
@@ -94,9 +106,6 @@ std::string TextInput::exec()
   const int MY_ESC = 27;
 
   curs_set(1);
-  _entry.clear();
-  _firsttext = 0;
-  _cursidx = 0;
 
   getting_input = true;
   while (getting_input)

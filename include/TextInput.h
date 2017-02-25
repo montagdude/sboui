@@ -31,6 +31,10 @@ class TextInput: public InputItem {
 
     TextInput();
 
+    /* Set properties */
+
+    void clear();
+
     /* User interaction */
 
     void draw(bool force=false, bool highlight=false);

@@ -1216,6 +1216,7 @@ void MainWindow::search()
   while (getting_input)
   {
     getting_input = false;
+    _searchbox.clearSearch();
     searchterm = _searchbox.exec();
     if (searchterm == signals::resize)
     {

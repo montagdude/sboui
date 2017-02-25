@@ -31,6 +31,10 @@ class SearchBox: public InputBox {
     SearchBox();
     SearchBox(WINDOW *win, const std::string & msg);
 
+    /* Set attributes */
+
+    void clearSearch();
+
     /* Get attributes */
 
     std::string searchString() const;
