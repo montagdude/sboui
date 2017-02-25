@@ -4,6 +4,7 @@
 #include <curses.h>
 #include "TextInput.h"
 #include "ToggleInput.h"
+#include "Label.h"
 #include "InputBox.h"
 
 /*******************************************************************************
@@ -15,6 +16,7 @@ class SearchBox: public InputBox {
 
   private:
 
+    Label _label;
     TextInput _entryitem;
     ToggleInput _caseitem, _wholeitem;
 

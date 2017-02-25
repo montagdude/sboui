@@ -1208,7 +1208,6 @@ void MainWindow::search()
 
   searchwin = newwin(1, 1, 0, 0);
   _searchbox.setWindow(searchwin);
-  _searchbox.setMessage("Search SlackBuilds");
   placePopup(&_searchbox, searchwin);
 
   // Get search term from user

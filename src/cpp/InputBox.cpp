@@ -205,7 +205,7 @@ InputBox::InputBox(WINDOW *win, const std::string & msg)
 
 /*******************************************************************************
 
-Adds item to the input box, setting proper position and size
+Adds item to the input box and sets first selectable item highlighted.
 
 *******************************************************************************/
 void InputBox::addItem(InputItem *item)
@@ -218,6 +218,7 @@ void InputBox::addItem(InputItem *item)
   if (item->autoPosition()) { item->setPosition(nitems+3,1); }
   item->setWindow(_win);
   _items.push_back(item);
+  highlightFirst();
 }
 
 /*******************************************************************************
