@@ -4,7 +4,6 @@
 #include <curses.h>
 #include "TextInput.h"
 #include "ToggleInput.h"
-#include "Label.h"
 #include "InputBox.h"
 
 /*******************************************************************************
@@ -16,7 +15,6 @@ class SearchBox: public InputBox {
 
   private:
 
-    Label _label;
     TextInput _entryitem;
     ToggleInput _caseitem, _wholeitem;
 
@@ -26,10 +24,11 @@ class SearchBox: public InputBox {
 
   public:
 
-    /* Constructors */
+    /* Constructors and destructor */
 
     SearchBox();
     SearchBox(WINDOW *win, const std::string & msg);
+    ~SearchBox();
 
     /* Set attributes */
 

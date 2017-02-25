@@ -42,7 +42,7 @@ void InputItem::printSpaces(unsigned int nspaces) const
 
 /*******************************************************************************
 
-Constructor
+Constructor and destructor
 
 *******************************************************************************/
 InputItem::InputItem()
@@ -56,6 +56,8 @@ InputItem::InputItem()
   _selectable = true;
   _auto_position = true;
 }
+
+InputItem::~InputItem() {}
 
 /*******************************************************************************
 

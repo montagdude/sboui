@@ -27,6 +27,11 @@ class InputItem {
 
     InputItem();
 
+    // Virtual destructor needed to call delete on base class
+    // http://stackoverflow.com/questions/461203/when-to-use-virtual-destructors#461224
+
+    virtual ~InputItem();
+
     // Set attributes
 
     void setName(const std::string & name);

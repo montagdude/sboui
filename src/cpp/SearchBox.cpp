@@ -6,6 +6,7 @@
 #include "settings.h"
 #include "TextInput.h"
 #include "ToggleInput.h"
+#include "Label.h"
 #include "SearchBox.h"
 
 using namespace color;
@@ -102,7 +103,7 @@ void SearchBox::redrawFrame() const
 
 /*******************************************************************************
 
-Constructors
+Constructors and destructor
 
 *******************************************************************************/
 SearchBox::SearchBox()
@@ -110,23 +111,25 @@ SearchBox::SearchBox()
   _reserved_rows = 7;
   _msg = "Search repository";
 
-  _label.setWidth(30);
-  _label.setName("Search term:");
+  addItem(new Label());
+  _items[0]->setWidth(30);
+  _items[0]->setName("Search term:");
+  _items[0]->setPosition(3,1);
+
+  addItem(&_entryitem);
   _entryitem.setWidth(30);
+  _entryitem.setPosition(4,1);
+
+  addItem(&_caseitem);
   _caseitem.setName("Case sensitive");
   _caseitem.disable();
   _caseitem.setWidth(30);
+  _caseitem.setPosition(6,1);
+
+  addItem(&_wholeitem);
   _wholeitem.setName("Whole word");
   _wholeitem.disable();
   _wholeitem.setWidth(30);
-
-  addItem(&_label);
-  addItem(&_entryitem);
-  addItem(&_caseitem);
-  addItem(&_wholeitem);
-  _label.setPosition(3,1);
-  _entryitem.setPosition(4,1);
-  _caseitem.setPosition(6,1);
   _wholeitem.setPosition(7,1);
 }
 
@@ -136,25 +139,29 @@ SearchBox::SearchBox(WINDOW *win, const std::string & msg)
   _msg = msg;
   _reserved_rows = 7;
 
-  _label.setWidth(30);
-  _label.setName("Search term:");
+  addItem(new Label());
+  _items[0]->setWidth(30);
+  _items[0]->setName("Search term:");
+  _items[0]->setPosition(3,1);
+
+  addItem(&_entryitem);
   _entryitem.setWidth(30);
+  _entryitem.setPosition(4,1);
+
+  addItem(&_caseitem);
   _caseitem.setName("Case sensitive");
   _caseitem.disable();
   _caseitem.setWidth(30);
+  _caseitem.setPosition(6,1);
+
+  addItem(&_wholeitem);
   _wholeitem.setName("Whole word");
   _wholeitem.disable();
   _wholeitem.setWidth(30);
-
-  addItem(&_label);
-  addItem(&_entryitem);
-  addItem(&_caseitem);
-  addItem(&_wholeitem);
-  _label.setPosition(3,1);
-  _entryitem.setPosition(4,1);
-  _caseitem.setPosition(6,1);
   _wholeitem.setPosition(7,1);
 }
+
+SearchBox::~SearchBox() { delete _items[0]; }
 
 /*******************************************************************************
 

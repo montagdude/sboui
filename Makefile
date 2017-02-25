@@ -1,4 +1,4 @@
-CXX=g++
+CXX=clang++
 CXXFLAGS=-g -Wall
 OBJ=Color.o settings.o string_util.o signals.o ListItem.o CategoryListItem.o BuildListItem.o sorting.o DirListing.o backend.o requirements.o CursesWidget.o AbstractListBox.o ListBox.o CategoryListBox.o BuildListBox.o SelectionBox.o FilterBox.o BuildActionBox.o DirListBox.o TagList.o BuildOrderBox.o InvReqBox.o InstallBox.o ScrollBox.o HelpItem.o HelpWindow.o InputItem.o TextInput.o ToggleInput.o Label.o InputBox.o SearchBox.o MessageBox.o filters.o MainWindow.o sboui.o
 SRCDIR=src/cpp
