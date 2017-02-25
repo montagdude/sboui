@@ -31,8 +31,6 @@ class SearchBox: public InputBox {
 
     /* Get attributes */
 
-    void minimumSize(int & height, int & width) const;
-    void preferredSize(int & height, int & width) const;
     std::string searchString() const;
     bool caseSensitive() const;
     bool wholeWord() const;

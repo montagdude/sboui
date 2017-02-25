@@ -30,6 +30,18 @@ void InputItem::printToEol(const std::string & msg) const
 
 /*******************************************************************************
 
+Prints a given number of spaces
+
+*******************************************************************************/
+void InputItem::printSpaces(unsigned int nspaces) const
+{
+  unsigned int i;
+
+  for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
+}
+
+/*******************************************************************************
+
 Constructor
 
 *******************************************************************************/
@@ -41,6 +53,8 @@ InputItem::InputItem()
   _width = 0;
   _name = "";
   _redraw_type = "none";
+  _selectable = true;
+  _auto_position = true;
 }
 
 /*******************************************************************************
@@ -57,12 +71,31 @@ void InputItem::setPosition(int y, int x)
   _posx = x;
 }
 
+void InputItem::setAutoPosition(bool auto_position)
+{ 
+  _auto_position = auto_position;
+}
+
 /*******************************************************************************
 
 Get attributes
 
 *******************************************************************************/
 const std::string & InputItem::name() const { return _name; }
+int InputItem::posx() const { return _posx; }
+int InputItem::posy() const { return _posy; }
+int InputItem::width() const { return _width; }
+bool InputItem::selectable() const { return _selectable; }
+bool InputItem::autoPosition() const { return _auto_position; }
+
+/*******************************************************************************
+
+User interaction. The base class version just returns an empty string, so that
+non-selectable InputItems (e.g., labels) don't have to implement it. Selectable
+classes should reimplement this.
+
+*******************************************************************************/
+std::string InputItem::exec() { return ""; }
 
 /*******************************************************************************
 

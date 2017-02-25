@@ -16,10 +16,12 @@ class InputItem {
     WINDOW *_win;
     int _posx, _posy, _width; 
     std::string _name, _redraw_type;
+    bool _selectable, _auto_position;
 
-    /* Prints to end of line */
+    /* Prints to end of line or specified number of spaces */
 
     void printToEol(const std::string & msg) const;
+    void printSpaces(unsigned int nspaces) const;
 
   public:
 
@@ -31,15 +33,21 @@ class InputItem {
     void setPosition(int y, int x);
     void setWidth(int width);
     void setWindow(WINDOW *win);
+    void setAutoPosition(bool auto_position);
 
     // Get attributes
 
     const std::string & name() const;
+    int posx() const;
+    int posy() const;
+    int width() const;
+    bool selectable() const;
+    bool autoPosition() const;
 
     // User interaction
 
     virtual void draw(bool force=false, bool highlight=false) = 0;
-    virtual std::string exec() = 0;
+    virtual std::string exec();
 
     // Accessing properties of different types. Derived classes should
     // reimplement these as needed.

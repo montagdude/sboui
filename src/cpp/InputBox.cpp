@@ -17,34 +17,77 @@ Setting item to be highlighted
 *******************************************************************************/
 void InputBox::highlightFirst() 
 { 
-  _prevhighlight = _highlight;
-  _highlight = 0; 
+  unsigned int i, nitems;
+
+  nitems = _items.size();
+  if (nitems > 0)
+  {
+    _prevhighlight = _highlight;
+    for ( i = 0; i < nitems; i++ )
+    {
+      if (_items[i]->selectable())
+      {
+        _highlight = i;
+        break;
+      }
+    }
+  }
 }
 
 void InputBox::highlightLast() 
 { 
-  if (_items.size() > 0) 
+  int i, nitems;
+
+  nitems = _items.size();
+  if (nitems > 0) 
   { 
     _prevhighlight = _highlight;
-    _highlight = _items.size()-1; 
+    for ( i = nitems-1; i >= 0; i-- )
+    {
+      if (_items[i]->selectable())
+      {
+        _highlight = i;
+        break;
+      } 
+    }
   }
 }
 
 void InputBox::highlightPrevious()
 {
-  if ( (_items.size() > 0) && (_highlight > 0) ) 
+  int i, nitems;
+
+  nitems = _items.size();
+  if ( (nitems > 0) && (_highlight > 0) ) 
   { 
     _prevhighlight = _highlight;
-    _highlight--; 
+    for ( i = _highlight-1; i >= 0; i-- )
+    {
+      if (_items[i]->selectable())
+      {
+        _highlight = i;
+        break;
+      }
+    }
   }
 }
 
 void InputBox::highlightNext()
 {
-  if ( (_items.size() > 0) && (_highlight < _items.size()-1) ) 
+  unsigned int i, nitems;
+
+  nitems = _items.size();
+  if ( (nitems > 0) && (_highlight < _items.size()-1) ) 
   { 
     _prevhighlight = _highlight;
-    _highlight++; 
+    for ( i = _highlight+1; i < nitems; i++ )
+    {
+      if (_items[i]->selectable())
+      {
+        _highlight = i;
+        break;
+      }
+    }
   }
 }
 
@@ -146,6 +189,7 @@ InputBox::InputBox()
   _redraw_type = "all";
   _highlight = 0;
   _prevhighlight = 0;
+  _reserved_rows = 6;
 }
 
 InputBox::InputBox(WINDOW *win, const std::string & msg)
@@ -156,6 +200,7 @@ InputBox::InputBox(WINDOW *win, const std::string & msg)
   _redraw_type = "all";
   _highlight = 0;
   _prevhighlight = 0;
+  _reserved_rows = 6;
 }
 
 /*******************************************************************************
@@ -170,8 +215,7 @@ void InputBox::addItem(InputItem *item)
 
   getmaxyx(_win, rows, cols);
   nitems = _items.size();
-  item->setPosition(nitems+3,1);
-  item->setWidth(cols-2);
+  if (item->autoPosition()) { item->setPosition(nitems+3,1); }
   item->setWindow(_win);
   _items.push_back(item);
 }
@@ -199,34 +243,37 @@ Get attributes
 *******************************************************************************/
 void InputBox::minimumSize(int & height, int & width) const
 {
-  int reserved_cols;
+  int reserved_cols, ymax, ymin, right;
+  unsigned int nitems, i;
 
-  // Scrolling is not implemented for this - just give number of rows needed
+  // Get height needed (scrolling is not implemented for this - just give the
+  // number of rows needed)
 
-  height = 6 + _items.size();
+  ymin = 1000;
+  ymax = 0;
+  nitems = _items.size();
+  for ( i = 0; i < nitems; i++ )
+  {
+    if (_items[i]->posy() < ymin) { ymin = _items[i]->posy(); }
+    if (_items[i]->posy() > ymax) { ymax = _items[i]->posy(); }
+  }
+  height = ymax - ymin + _reserved_rows;
 
-  // Minimum usable width (at least 2 characters visible in entry)
+  // Minimum usable width
 
   width = std::max(_msg.size(), _info.size());
-  width = std::max(width, 2);
+  for ( i = 0; i < nitems; i++ )
+  {
+    right = _items[i]->posx() + _items[i]->width() - 1;
+    if (right > width) { width = right; }
+  } 
   reserved_cols = 2;       // For frame border
   width += reserved_cols;
 }
 
 void InputBox::preferredSize(int & height, int & width) const
 {
-  int reserved_cols;
-
-  // Scrolling is not implemented for this - just give number of rows needed
-
-  height = 6 + _items.size();
-
-  // Preferred width (at least 30 characters visible in entries)
-
-  width = std::max(_msg.size(), _info.size());
-  width = std::max(width, 30);
-  reserved_cols = 2;
-  width += reserved_cols;
+  minimumSize(height, width);
 }
 
 /*******************************************************************************
@@ -253,7 +300,6 @@ void InputBox::draw(bool force)
     redrawFrame();
     for ( i = 0; i < nitems; i++ ) 
     { 
-      _items[i]->setWidth(cols-2);           // Dimensions may have changed
       _items[i]->draw(force, i==_highlight);  
     }
   }

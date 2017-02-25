@@ -58,6 +58,7 @@ Constructor
 TextInput::TextInput()
 {
   _redraw_type = "entry";
+  _selectable = true;
   _entry = "";
   _firsttext = 0;
   _cursidx = 0;
@@ -73,7 +74,7 @@ void TextInput::draw(bool force, bool highlight)
   if (force) { _redraw_type = "entry"; }
 
   if (_redraw_type == "entry") { redrawEntry(); }
-  wmove(_win, _posy, _cursidx - _firsttext + 1);
+  wmove(_win, _posy, _posx + _cursidx - _firsttext);
   wrefresh(_win);
 }
 

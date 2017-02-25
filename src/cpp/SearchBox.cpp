@@ -107,10 +107,15 @@ Constructors
 *******************************************************************************/
 SearchBox::SearchBox()
 {
+  _reserved_rows = 7;
+
+  _entryitem.setWidth(30);
   _caseitem.setName("Case sensitive");
   _caseitem.disable();
+  _caseitem.setWidth(30);
   _wholeitem.setName("Whole word");
   _wholeitem.disable();
+  _wholeitem.setWidth(30);
 
   addItem(&_entryitem);
   addItem(&_caseitem);
@@ -123,11 +128,15 @@ SearchBox::SearchBox(WINDOW *win, const std::string & msg)
 {
   _win = win;
   _msg = msg;
+  _reserved_rows = 7;
 
+  _entryitem.setWidth(30);
   _caseitem.setName("Case sensitive");
   _caseitem.disable();
+  _caseitem.setWidth(30);
   _wholeitem.setName("Whole word");
   _wholeitem.disable();
+  _wholeitem.setWidth(30);
 
   addItem(&_entryitem);
   addItem(&_caseitem);
@@ -141,38 +150,6 @@ SearchBox::SearchBox(WINDOW *win, const std::string & msg)
 Get attributes
 
 *******************************************************************************/
-void SearchBox::minimumSize(int & height, int & width) const
-{
-  int reserved_cols;
-
-  // Scrolling is not implemented for this - just give number of rows needed
-
-  height = 7 + _items.size();
-
-  // Minimum usable width (at least 2 characters visible in entry)
-
-  width = std::max(_msg.size(), _info.size());
-  width = std::max(width, 2);
-  reserved_cols = 2;       // For frame border
-  width += reserved_cols;
-}
-
-void SearchBox::preferredSize(int & height, int & width) const
-{
-  int reserved_cols;
-
-  // Scrolling is not implemented for this - just give number of rows needed
-
-  height = 7 + _items.size();
-
-  // Preferred width (at least 30 characters visible in entries)
-
-  width = std::max(_msg.size(), _info.size());
-  width = std::max(width, 30);
-  reserved_cols = 2;
-  width += reserved_cols;
-}
-
 std::string SearchBox::searchString() const
 { 
   return _entryitem.getStringProp(); 

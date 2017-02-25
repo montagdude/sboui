@@ -22,6 +22,7 @@ class TextInput: public InputItem {
 
     /* Drawing */
     
+    void redrawLabel() const;
     void redrawEntry() const;
 
   public:
