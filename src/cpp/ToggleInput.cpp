@@ -103,6 +103,8 @@ std::string ToggleInput::exec()
   std::string retval;
 
   const int MY_ESC = 27;
+  const int MY_TAB = 9;
+  const int MY_SHIFT_TAB = 353;
 
   curs_set(1);
 
@@ -148,11 +150,13 @@ std::string ToggleInput::exec()
         getting_input = false;
         break;
       case KEY_UP:
+      case MY_SHIFT_TAB:
         retval = signals::highlightPrev;
         _redraw_type = "all";
         getting_input = false;
         break;
       case KEY_DOWN:
+      case MY_TAB:
         retval = signals::highlightNext;
         _redraw_type = "all";
         getting_input = false;

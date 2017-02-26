@@ -1249,7 +1249,7 @@ Search dialog
 void MainWindow::search()
 {
   WINDOW *searchwin;
-  std::string searchterm;
+  std::string selection;
   bool getting_input;
 
   // Set up window and search box
@@ -1263,26 +1263,26 @@ void MainWindow::search()
   getting_input = true;
   while (getting_input)
   {
-    getting_input = false;
     _searchbox.clearSearch();
-    searchterm = _searchbox.exec();
-    if (searchterm == signals::resize)
+    selection = _searchbox.exec();
+    if (selection == signals::resize)
     {
-      getting_input = true;
       placePopup(&_searchbox, searchwin);
       redrawAll(true);
       _searchbox.draw(true);
     }
-    else if ( (searchterm == signals::keyEnter) )
+    else if (selection == signals::keyEnter)
     { 
+      getting_input = false;
       if (_searchbox.searchString().size() > 0)
       {
         filterSearch(_searchbox.searchString(), _searchbox.caseSensitive(),
                      _searchbox.wholeWord());
       }
+      setTagList();
     }
+    else if (selection == signals::quit) { getting_input = false; }
   }
-  setTagList();
 
   // Get rid of window and redraw
 

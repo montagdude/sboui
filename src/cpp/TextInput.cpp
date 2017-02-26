@@ -117,6 +117,8 @@ std::string TextInput::exec()
 
   const int MY_DELETE = 330;
   const int MY_ESC = 27;
+  const int MY_TAB = 9;
+  const int MY_SHIFT_TAB = 353;
 
   curs_set(1);
 
@@ -189,11 +191,13 @@ std::string TextInput::exec()
         if (check_redraw == 0) { _redraw_type = "none"; }
         break;
       case KEY_UP:
+      case MY_SHIFT_TAB:
         retval = signals::highlightPrev;
         _redraw_type = "entry";
         getting_input = false;
         break;
       case KEY_DOWN:
+      case MY_TAB:
         retval = signals::highlightNext;
         _redraw_type = "entry";
         getting_input = false;

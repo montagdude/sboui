@@ -147,7 +147,7 @@ void HelpWindow::redrawSingleItem(unsigned int idx)
   if (_items[idx]->getBoolProp("header"))
     wattroff(_win, A_BOLD);
 
-  // Print spaces and shortcut 
+  // Print dots and shortcut 
 
   for ( i = 0; int(i) < nspaces; i++ ) { waddch(_win, ' '); }
 
@@ -189,6 +189,8 @@ void HelpWindow::createList()
   addItem(new HelpItem("Go back / cancel", "Esc"));
   addItem(new HelpItem("Jump to beginning", "Home"));
   addItem(new HelpItem("Jump to end", "End"));
+  addItem(new HelpItem("Next input field", "Tab"));
+  addItem(new HelpItem("Previous input field", "Shift+Tab"));
   addItem(new HelpItem("Scroll down", "Down arrow"));
   addItem(new HelpItem("Scroll up", "Up arrow"));
   addItem(new HelpItem("Scroll down a page", "Page down"));
