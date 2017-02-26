@@ -115,7 +115,7 @@ screen or not.
 *******************************************************************************/
 void HelpWindow::redrawSingleItem(unsigned int idx)
 {
-  int nspaces, vlineloc, printlen;
+  int ndots, vlineloc, printlen;
   unsigned int rows, cols, i; 
 
   getmaxyx(_win, rows, cols);
@@ -135,10 +135,10 @@ void HelpWindow::redrawSingleItem(unsigned int idx)
   printlen = std::min(int(_items[idx]->name().size()), vlineloc);
 
   if (_items[idx]->getBoolProp("space"))
-    nspaces = vlineloc;
+    ndots = vlineloc;
   else
   {
-    nspaces = vlineloc - _items[idx]->name().size();
+    ndots = vlineloc - _items[idx]->name().size();
     wprintw(_win, _items[idx]->name().substr(0,printlen).c_str());
   }
 
@@ -149,14 +149,15 @@ void HelpWindow::redrawSingleItem(unsigned int idx)
 
   // Print dots and shortcut 
 
-  for ( i = 0; int(i) < nspaces; i++ ) { waddch(_win, ' '); }
-
   if ( (! _items[idx]->getBoolProp("header")) &&
        (! _items[idx]->getBoolProp("space")) )
   {
+    for ( i = 0; int(i) < ndots; i++ ) { waddch(_win, '.'); }
     wmove(_win, idx-_firstprint+3, vlineloc+3);
     printToEol(_items[idx]->getProp("shortcut"));
   }
+  else 
+    for ( i = 0; int(i) < ndots; i++ ) { waddch(_win, ' '); }
 
   // Divider
 
