@@ -28,8 +28,7 @@ class ToggleInput: public InputItem {
 
     /* Setting properties */
 
-    void enable();
-    void disable();
+    void setEnabled(bool enabled);
     void toggle();
 
     /* User interaction */

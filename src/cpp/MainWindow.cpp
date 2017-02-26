@@ -22,6 +22,8 @@
 #include "DirListBox.h"
 #include "MessageBox.h"
 #include "TagList.h"
+#include "OptionsWindow.h"
+#include "HelpWindow.h"
 #include "MainWindow.h"
 
 using namespace color;
@@ -450,6 +452,52 @@ void MainWindow::filterSearch(const std::string & searchterm,
     printStatus("1 match for " + searchterm + ".");
   else 
     printStatus(int2string(nsearch) + " matches for " + searchterm + ".");
+}
+
+/*******************************************************************************
+
+Shows options window
+
+*******************************************************************************/
+int MainWindow::showOptions()
+{
+  WINDOW *optionswin;
+  std::string selection;
+  bool getting_input;
+
+  clear();
+  setInfo("Enter: Apply settings | Esc: Back to main");
+  redrawHeaderFooter();
+
+  optionswin = newwin(1, 1, 0, 0);
+  _options.readSettings();
+  _options.setWindow(optionswin);
+  _options.placeWindow();
+
+  getting_input = true;
+  while (getting_input)
+  {
+    selection = _options.exec(); 
+    if (selection == signals::quit) { getting_input = false; }
+    else if (selection == signals::resize) 
+    { 
+      clear();
+      redrawHeaderFooter();
+      _options.placeWindow();
+    }
+    else if (selection == "q") { return 1; }
+    else 
+    {
+      getting_input = false;
+      _options.applySettings();
+    }
+  }
+
+  clearStatus();
+  setInfo("f: Filter | /: Search | o: Options | ?: Help");
+  delwin(optionswin);
+  redrawAll(true);
+  return 0;
 }
 
 /*******************************************************************************
@@ -1499,6 +1547,11 @@ void MainWindow::show()
     else if (selection == "f") { selectFilter(); }
     else if (selection == "/") { search(); }
     else if (selection == "s") { syncRepo(); }
+    else if (selection == "o") 
+    {
+      check_quit = showOptions();
+      if (check_quit == 1) { getting_input = false; }
+    }
     else if (selection == "?") 
     {
       check_quit = showHelp();

@@ -24,10 +24,9 @@ class SearchBox: public InputBox {
 
   public:
 
-    /* Constructors and destructor */
+    /* Constructor and destructor */
 
     SearchBox();
-    SearchBox(WINDOW *win, const std::string & msg);
     ~SearchBox();
 
     /* Set attributes */
@@ -39,4 +38,8 @@ class SearchBox: public InputBox {
     std::string searchString() const;
     bool caseSensitive() const;
     bool wholeWord() const;
+
+    /* Draws frame, items, etc. as needed */
+
+    void draw(bool force=false);
 };

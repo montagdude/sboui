@@ -49,8 +49,7 @@ ToggleInput::ToggleInput()
 Setting properties
 
 *******************************************************************************/
-void ToggleInput::enable() { _enabled = true; }
-void ToggleInput::disable() { _enabled = false; }
+void ToggleInput::setEnabled(bool enabled) { _enabled = enabled; }
 void ToggleInput::toggle() { _enabled = !_enabled; }
 
 /*******************************************************************************

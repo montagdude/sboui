@@ -22,7 +22,6 @@ class TextInput: public InputItem {
 
     /* Drawing */
     
-    void redrawLabel() const;
     void redrawEntry() const;
 
   public:
@@ -33,6 +32,7 @@ class TextInput: public InputItem {
 
     /* Set properties */
 
+    void setText(const std::string & text);
     void clear();
 
     /* User interaction */

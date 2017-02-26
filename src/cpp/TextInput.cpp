@@ -39,15 +39,12 @@ Redraws user input
 *******************************************************************************/
 void TextInput::redrawEntry() const
 {
-  int pair_input, numprint;
+  int numprint;
 
   numprint = std::min(_width-1, int(_entry.size() - _firsttext));
   
   wmove(_win, _posy, _posx);
-  pair_input = colors.pair(fg_highlight_active, bg_highlight_active);
-  if (pair_input != -1) { wattron(_win, COLOR_PAIR(pair_input)); }
   printToEol(_entry.substr(_firsttext, numprint));
-  if (pair_input != -1) { wattroff(_win, COLOR_PAIR(pair_input)); }
 }
 
 /*******************************************************************************
@@ -69,6 +66,13 @@ TextInput::TextInput()
 Set properties
 
 *******************************************************************************/
+void TextInput::setText(const std::string & text)
+{
+  _entry = text;
+  _cursidx = _entry.size();
+  determineFirstText();
+}
+
 void TextInput::clear()
 { 
   _entry = "";
@@ -83,9 +87,18 @@ Draws text input
 *******************************************************************************/
 void TextInput::draw(bool force, bool highlight)
 {
+  int pair_input;
+
   if (force) { _redraw_type = "entry"; }
 
+  pair_input = -1;
+  if (highlight)
+  {
+    pair_input = colors.pair(fg_highlight_active, bg_highlight_active);
+    if (pair_input != -1) { wattron(_win, COLOR_PAIR(pair_input)); }
+  }
   if (_redraw_type == "entry") { redrawEntry(); }
+  if (pair_input != -1) { wattroff(_win, COLOR_PAIR(pair_input)); }
   wmove(_win, _posy, _posx + _cursidx - _firsttext);
   wrefresh(_win);
 }
@@ -112,7 +125,7 @@ std::string TextInput::exec()
   {
     // Redraw
   
-    draw();
+    draw(false, true);
     _redraw_type = "entry";
 
     // Get user input

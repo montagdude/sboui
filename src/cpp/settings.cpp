@@ -55,7 +55,7 @@ void set_default_colors()
   bg_title = "blue";
   fg_info = "white";
   bg_info = "blue";
-  fg_highlight_active = "black";
+  fg_highlight_active = "blue";
   bg_highlight_active = "cyan";
   fg_highlight_inactive = "black";
   bg_highlight_inactive = "white";

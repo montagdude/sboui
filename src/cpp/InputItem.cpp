@@ -42,7 +42,8 @@ void InputItem::printSpaces(unsigned int nspaces) const
 
 /*******************************************************************************
 
-Constructor and destructor
+Constructor and destructor. For use of virtual destructor, see:
+http://stackoverflow.com/questions/461203/when-to-use-virtual-destructors#461224
 
 *******************************************************************************/
 InputItem::InputItem()

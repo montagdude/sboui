@@ -29,6 +29,8 @@ class InputItem {
 
     // Virtual destructor needed to call delete on base class
     // http://stackoverflow.com/questions/461203/when-to-use-virtual-destructors#461224
+    // (In this case, it's really just to suppress the compiler warning, since
+    // InputItems don't dynamically allocate any memory.)
 
     virtual ~InputItem();
 

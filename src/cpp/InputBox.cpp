@@ -286,7 +286,7 @@ void InputBox::draw(bool force)
 {
   int rows, cols;
   unsigned int i, nitems;
-  int pair_popup;
+  int pair_normal;
 
   nitems = _items.size();
   getmaxyx(_win, rows, cols);
@@ -296,8 +296,8 @@ void InputBox::draw(bool force)
   if (_redraw_type == "all") 
   { 
     wclear(_win);
-    pair_popup = colors.pair(fg_popup, bg_popup);
-    if (pair_popup != -1) { wbkgd(_win, COLOR_PAIR(pair_popup)); }
+    pair_normal = colors.pair(fg_normal, bg_normal);
+    if (pair_normal != -1) { wbkgd(_win, COLOR_PAIR(pair_normal)); }
     redrawFrame();
     for ( i = 0; i < nitems; i++ ) 
     { 
@@ -325,7 +325,6 @@ std::string InputBox::exec()
   getting_input = true;
   while (getting_input)
   {
-
     // Draw input box elements
   
     draw();
