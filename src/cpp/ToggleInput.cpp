@@ -118,12 +118,12 @@ std::string ToggleInput::exec()
 
     switch (ch = getch()) {
 
-      // Enter key: return name of this item
+      // Enter key: return enter signal
 
       case '\n':
       case '\r':
       case KEY_ENTER: 
-        retval = _name;
+        retval = signals::keyEnter;
         _redraw_type = "all";
         getting_input = false;
         break;
@@ -170,6 +170,12 @@ std::string ToggleInput::exec()
 
       case MY_ESC:
         retval = signals::quit;
+        _redraw_type = "all";
+        getting_input = false;
+        break;
+
+      default:
+        retval = char(ch);
         _redraw_type = "all";
         getting_input = false;
         break;

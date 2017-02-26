@@ -339,7 +339,7 @@ std::string InputBox::exec()
       _redraw_type = "all";
       getting_input = false;
     }
-    else if (selection == signals::quit)
+    else if ( (selection == signals::quit) || (selection == signals::keyEnter) )
     {
       retval = selection;
       _redraw_type = "all";

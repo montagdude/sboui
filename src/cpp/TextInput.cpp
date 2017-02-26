@@ -105,7 +105,7 @@ void TextInput::draw(bool force, bool highlight)
 
 /*******************************************************************************
 
-User interaction: returns key stroke or entry
+User interaction: returns key stroke
 
 *******************************************************************************/
 std::string TextInput::exec()
@@ -132,12 +132,12 @@ std::string TextInput::exec()
 
     switch (ch = getch()) {
 
-      // Enter key: return entry
+      // Enter key: return Enter signal
 
       case '\n':
       case '\r':
       case KEY_ENTER: 
-        retval = _entry;
+        retval = signals::keyEnter;
         _redraw_type = "entry";
         getting_input = false;
         break;

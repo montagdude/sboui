@@ -486,7 +486,7 @@ int MainWindow::showOptions()
       _options.placeWindow();
     }
     else if (selection == "q") { return 1; }
-    else 
+    else if (selection == signals::keyEnter) 
     {
       getting_input = false;
       _options.applySettings();
@@ -1273,7 +1273,7 @@ void MainWindow::search()
       redrawAll(true);
       _searchbox.draw(true);
     }
-    else if ( (searchterm != signals::quit) )
+    else if ( (searchterm == signals::keyEnter) )
     { 
       if (_searchbox.searchString().size() > 0)
       {
