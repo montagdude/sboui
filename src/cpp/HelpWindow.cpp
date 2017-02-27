@@ -174,7 +174,7 @@ void HelpWindow::createList()
 {
   unsigned int i, nitems;
 
-  addItem(new HelpItem("General", "", true, false));
+  addItem(new HelpItem("Main window", "", true, false));
   addItem(new HelpItem("Filter SlackBuilds", "f"));
   addItem(new HelpItem("Help / show shortcuts", "?"));
   addItem(new HelpItem("Options", "o"));
@@ -197,7 +197,7 @@ void HelpWindow::createList()
   addItem(new HelpItem("Scroll down a page", "Page down"));
   addItem(new HelpItem("Scroll up a page", "Page up"));
   addItem(new HelpItem("Select highlighted", "Enter"));
-  addItem(new HelpItem("Toggle selection", "Space"));
+  addItem(new HelpItem("Toggle check box", "Space"));
 
   addItem(new HelpItem("space2", "", false, true));
 
