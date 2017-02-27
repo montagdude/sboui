@@ -1413,7 +1413,7 @@ void MainWindow::show()
   std::string selection, statusmsg;
   bool getting_input, all_tagged;
   int check_quit;
-  BuildListItem *build;
+  BuildListItem build;
 
   redrawAll();
 
@@ -1446,18 +1446,12 @@ void MainWindow::show()
         _activated_listbox = 1;
 
         // Display status message for installed SlackBuild
-        /* Note: use static_cast because it is certain that build is actually a
-           BuildListItem, and the base class (ListItem) has no virtual members
-           (not polymorphic). Otherwise, should use dynamic_cast.
-           http://stackoverflow.com/questions/332030/when-should-static-cast-dynamic-cast-const-cast-and-reinterpret-cast-be-used 
-           http://stackoverflow.com/questions/6322949/downcasting-using-the-static-cast-in-c */
 
-        build = static_cast<BuildListItem*>(
-                                  _blistboxes[_category_idx].highlightedItem());
-        if (build->getBoolProp("installed"))
+        build = *_blistboxes[_category_idx].highlightedItem();
+        if (build.getBoolProp("installed"))
         {
-          statusmsg = "Installed: " + build->getProp("installed_version") +
-            " -> Available: " + build->getProp("available_version");
+          statusmsg = "Installed: " + build.getProp("installed_version") +
+            " -> Available: " + build.getProp("available_version");
           printStatus(statusmsg);
         }
         else { clearStatus(); }
@@ -1485,12 +1479,11 @@ void MainWindow::show()
       {
         // Display status message for installed SlackBuild
 
-        build = static_cast<BuildListItem*>(
-                                  _blistboxes[_category_idx].highlightedItem());
-        if (build->getBoolProp("installed"))
+        build = *_blistboxes[_category_idx].highlightedItem();
+        if (build.getBoolProp("installed"))
         {
-          statusmsg = "Installed: " + build->getProp("installed_version") +
-            " -> Available: " + build->getProp("available_version");
+          statusmsg = "Installed: " + build.getProp("installed_version") +
+            " -> Available: " + build.getProp("available_version");
           printStatus(statusmsg);
         }
         else { clearStatus(); }
@@ -1534,9 +1527,8 @@ void MainWindow::show()
 
       else if (selection == signals::keyEnter)
       {
-        build = static_cast<BuildListItem*>(
-                                  _blistboxes[_category_idx].highlightedItem());
-        showBuildActions(*build);
+        build = *_blistboxes[_category_idx].highlightedItem();
+        showBuildActions(build);
       }
     }
 
