@@ -427,12 +427,20 @@ std::string BuildListBox::exec()
       _redraw_type = "all";
       break;
 
-    // t: tag item
+    // t and T: tag item
 
     case 't':
       retval = "t";
       tagSlackBuild(_highlight);
       check_redraw = highlightNext();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+
+    case 'T':
+      retval = "T";
+      tagSlackBuild(_highlight);
+      check_redraw = highlightPrevious();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
       break;

@@ -205,7 +205,8 @@ void HelpWindow::createList()
   addItem(new HelpItem("Install tagged", "i"));
   addItem(new HelpItem("Reinstall tagged", "e"));
   addItem(new HelpItem("Remove tagged", "r"));
-  addItem(new HelpItem("Tag/untag SlackBuild or group", "t"));
+  addItem(new HelpItem("Tag and move down", "t"));
+  addItem(new HelpItem("Tag and move up", "T"));
   addItem(new HelpItem("Upgrade tagged", "u"));
    
   // Determine width needed to display shortcut

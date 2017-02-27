@@ -270,13 +270,22 @@ std::string CategoryListBox::exec()
       _redraw_type = "all";
       break;
 
-    // t: tag item
+    // t or T: tag item
 
     case 't':
       retval = "t";
       _items[_highlight]->setBoolProp("tagged", 
                                  (! _items[_highlight]->getBoolProp("tagged")));
       check_redraw = highlightNext();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+
+    case 'T':
+      retval = "T";
+      _items[_highlight]->setBoolProp("tagged", 
+                                 (! _items[_highlight]->getBoolProp("tagged")));
+      check_redraw = highlightPrevious();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
       break;

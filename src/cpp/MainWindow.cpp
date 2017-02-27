@@ -1459,7 +1459,7 @@ void MainWindow::show()
 
       // Tag signal: tag/untag all items in category
 
-      else if (selection == "t")
+      else if ( (selection == "t") || (selection == "T") )
       {
         _blistboxes[_category_idx].tagAll();
         _category_idx = _clistbox.highlight();
@@ -1502,7 +1502,7 @@ void MainWindow::show()
 
       // Tag signal: see if we need to change tag for category
 
-      else if (selection == "t")
+      else if ( (selection == "t") || (selection == "T") )
       {
         all_tagged = _blistboxes[_category_idx].allTagged();
         if (_clistbox.highlightedItem()->getBoolProp("tagged"))
