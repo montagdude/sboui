@@ -470,9 +470,9 @@ int MainWindow::showOptions()
   redrawHeaderFooter();
 
   optionswin = newwin(1, 1, 0, 0);
-  _options.readSettings();
   _options.setWindow(optionswin);
   _options.placeWindow();
+  _options.readSettings();
 
   getting_input = true;
   while (getting_input)

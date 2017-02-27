@@ -194,8 +194,8 @@ int read_config()
 
   // Read config file
 
-  try { cfg.readFile("/etc/sboui/sboui.cfg"); }
-  //try { cfg.readFile("config/sboui.cfg"); }
+  //try { cfg.readFile("/etc/sboui/sboui.cfg"); }
+  try { cfg.readFile("config/sboui.cfg"); }
   catch(const FileIOException &fioex)
   {
     std::cerr << "Error: cannot read sboui.cfg." << std::endl;
