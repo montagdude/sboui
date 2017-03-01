@@ -303,6 +303,7 @@ Disables color
 *******************************************************************************/
 void deactivate_color()
 {
+  if (has_colors()) { apply_color_settings(); }
   colors.clear();
   enable_color = false;
 }   
