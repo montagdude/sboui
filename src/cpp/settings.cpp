@@ -77,6 +77,7 @@ Applies color settings in curses
 void apply_color_settings()
 {
   start_color();
+  colors.clear();
   colors.addPair(fg_normal, bg_normal);
   colors.addPair(fg_title, bg_title);
   colors.addPair(fg_info, bg_info);
@@ -283,8 +284,16 @@ Enables color. Returns 1 if terminal does not support color; 0 otherwise.
 *******************************************************************************/
 int activate_color()
 {
+  int check;
+
   if (has_colors())
   {
+    if (color_theme_file != "")
+    {
+      check = read_color_theme(color_theme_file);
+      if (check != 0) { set_default_colors(); }
+    }
+    else { set_default_colors(); }
     apply_color_settings();
     enable_color = true;
     return 0;
@@ -303,7 +312,11 @@ Disables color
 *******************************************************************************/
 void deactivate_color()
 {
-  if (has_colors()) { apply_color_settings(); }
+  if (has_colors()) 
+  { 
+    set_default_colors();
+    apply_color_settings(); 
+  }
   colors.clear();
   enable_color = false;
 }   
