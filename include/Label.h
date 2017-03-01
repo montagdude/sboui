@@ -13,8 +13,7 @@ class Label: public InputItem {
 
   private:
 
-    int _color_pair;
-    bool _bold;
+    int _color_idx;
 
   public:
 
@@ -24,8 +23,7 @@ class Label: public InputItem {
 
     /* Set attributes */
 
-    void setColor(int color_pair);
-    void setBold(bool bold);
+    void setColor(int color_idx);
 
     /* Drawing */
 

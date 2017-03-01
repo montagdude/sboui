@@ -17,7 +17,7 @@ Draws window border, title, and info
 void SelectionBox::redrawFrame() const
 {
   unsigned int rows, cols, namelen, i;
-  int left, pair_title, pair_info;
+  int left;
   double mid;
 
   getmaxyx(_win, rows, cols);
@@ -29,13 +29,10 @@ void SelectionBox::redrawFrame() const
   left = std::floor(mid - double(namelen)/2.0) + 1;
   wmove(_win, 1, 1);
   wclrtoeol(_win);
-  pair_title = colors.pair(fg_title, bg_title);
-  if (pair_title != -1) { wattron(_win, COLOR_PAIR(pair_title)); }
-  wattron(_win, A_BOLD);
+  colors.turnOn(_win, fg_title, bg_title);
   printSpaces(left-1);
   printToEol(_name);
-  if (pair_title != -1) { wattroff(_win, COLOR_PAIR(pair_title)); }
-  wattroff(_win, A_BOLD);
+  colors.turnOff(_win);
 
   // Info on bottom of window
 
@@ -43,13 +40,10 @@ void SelectionBox::redrawFrame() const
   left = std::floor(mid - double(namelen)/2.0) + 1;
   wmove(_win, rows-2, 1);
   wclrtoeol(_win);
-  pair_info = colors.pair(fg_info, bg_info);
-  if (pair_info != -1) { wattron(_win, COLOR_PAIR(pair_info)); }
-  wattron(_win, A_BOLD);
+  colors.turnOn(_win, fg_info, bg_info);
   printSpaces(left-1);
   printToEol(_info);
-  if (pair_info != -1) { wattroff(_win, COLOR_PAIR(pair_info)); }
-  wattroff(_win, A_BOLD);
+  colors.turnOff(_win);
 
   // Corners
 
@@ -120,7 +114,6 @@ void SelectionBox::redrawSingleItem(unsigned int idx)
 
   // Turn on highlight color
 
-  color_pair1 = -1;
   if (int(idx) == _highlight)
   {
     if (_activated) 
@@ -133,18 +126,17 @@ void SelectionBox::redrawSingleItem(unsigned int idx)
       fg = fg_highlight_inactive; 
       bg = bg_highlight_inactive; 
     }
-    color_pair1 = colors.pair(fg, bg);
-    color_pair2 = colors.pair(hotkey, bg);
-    if (color_pair1 != -1) { wattron(_win, COLOR_PAIR(color_pair1)); }
-    else 
+    color_pair1 = colors.getPair(fg, bg);
+    color_pair2 = colors.getPair(hotkey, bg);
+    if (colors.turnOn(_win, color_pair1) != 0)
     { 
       if (_activated) { wattron(_win, A_REVERSE); }
     }
   } 
   else 
   { 
-    color_pair1 = colors.pair(fg_popup, bg_popup);
-    color_pair2 = colors.pair(hotkey, bg_popup);
+    color_pair1 = colors.getPair(fg_popup, bg_popup);
+    color_pair2 = colors.getPair(hotkey, bg_popup);
   }
 
   // Save highlight idx for redrawing later.
@@ -160,11 +152,11 @@ void SelectionBox::redrawSingleItem(unsigned int idx)
   {
     if ( i == hidx )
     { 
-      if (color_pair1 != -1) { wattroff(_win, COLOR_PAIR(color_pair1)); }
-      if (color_pair2 != -1) { wattron(_win, COLOR_PAIR(color_pair2)); }
+      colors.turnOff(_win);
+      colors.turnOn(_win, color_pair2);
       wprintw(_win, _items[idx]->name().substr(i,1).c_str());
-      if (color_pair2 != -1) { wattroff(_win, COLOR_PAIR(color_pair2)); }
-      if (color_pair1 != -1) { wattron(_win, COLOR_PAIR(color_pair1)); }
+      colors.turnOff(_win);
+      colors.turnOn(_win, color_pair1);
     }
     else { wprintw(_win, _items[idx]->name().substr(i,1).c_str()); }
   }
@@ -172,8 +164,7 @@ void SelectionBox::redrawSingleItem(unsigned int idx)
 
   // Turn off highlight color
 
-  if (color_pair1 != -1) { wattroff(_win, COLOR_PAIR(color_pair1)); } 
-  else
+  if (colors.turnOff(_win) != 0)
   { 
     if ( (int(idx) == _highlight) && _activated ) { wattroff(_win, A_REVERSE); }
   }
@@ -264,8 +255,6 @@ Draws box (frame, items, etc.) as needed
 *******************************************************************************/
 void SelectionBox::draw(bool force)
 {
-  int pair_popup;
-
   if (force) { _redraw_type = "all"; }
 
   // Draw list elements
@@ -273,8 +262,7 @@ void SelectionBox::draw(bool force)
   if (_redraw_type == "all")
   {
     wclear(_win);
-    pair_popup = colors.pair(fg_popup, bg_popup);
-    if (pair_popup != -1) { wbkgd(_win, COLOR_PAIR(pair_popup)); }
+    colors.setBackground(_win, fg_popup, bg_popup);
   }
   if (_redraw_type != "none") { redrawFrame(); }
   if ( (_redraw_type == "all") || (_redraw_type == "items") ) {

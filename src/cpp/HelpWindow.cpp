@@ -18,7 +18,6 @@ void HelpWindow::redrawFrame() const
 {
   unsigned int rows, cols, namelen, i, nspaces, vlineloc;
   double mid, left, right;
-  int pair_header;
 
   getmaxyx(_win, rows, cols);
 
@@ -74,25 +73,19 @@ void HelpWindow::redrawFrame() const
 
   // Draw header
 
-  pair_header = colors.pair(header, bg_normal);
-
   wmove(_win, 1, 1);
-  if (pair_header != -1) { wattron(_win, COLOR_PAIR(pair_header)); }
-  wattron(_win, A_BOLD);
+  colors.turnOn(_win, header, bg_normal);
   wprintw(_win, "Action");
-  if (pair_header != -1) { wattroff(_win, COLOR_PAIR(pair_header)); }
-  wattroff(_win, A_BOLD);
+  colors.turnOff(_win);
 
   vlineloc = cols-2 - _shortcutwidth;
   nspaces = vlineloc - std::string("Action").size();
   for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
 
-  if (pair_header != -1) { wattron(_win, COLOR_PAIR(pair_header)); }
-  wattron(_win, A_BOLD);
+  colors.turnOn(_win, header, bg_normal);
   printToEol(" Shortcut");
   wmove(_win, 2, 1);
-  if (pair_header != -1) { wattroff(_win, COLOR_PAIR(pair_header)); }
-  wattroff(_win, A_BOLD);
+  colors.turnOff(_win);
 
   // Draw horizontal and then vertical line
 

@@ -59,35 +59,21 @@ Draws input
 *******************************************************************************/
 void ToggleInput::draw(bool force, bool highlight)
 {
-  int color_pair;
-
   if (force) { _redraw_type = "all"; }
-
-  // Set color
 
   if (highlight)
   {
-    color_pair = colors.pair(fg_highlight_active, bg_highlight_active);
-    if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
-    else { wattron(_win, A_REVERSE); }
+    if (colors.turnOn(_win, fg_highlight_active, bg_highlight_active) != 0)
+      wattron(_win, A_REVERSE);
   }
 
-  // Draw elements
-
   if ( (_redraw_type == "all") || (_redraw_type == "entry") )
-  {
     redrawEntry();
-  } 
   if (_redraw_type == "all") { redrawText(); }
   wmove(_win, _posy, _posx+1);
 
-  // Turn off color and refresh
-
   if (highlight)
-  {
-    if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); }
-    else { wattroff(_win, A_REVERSE); }
-  }
+    if (colors.turnOff(_win) != 0) { wattroff(_win, A_REVERSE); }
   wrefresh(_win);
 }
 

@@ -2,6 +2,7 @@
 #include <curses.h>
 #include <cmath>      // floor
 #include <algorithm>  // min, max
+#include "Color.h"
 #include "settings.h"
 #include "TextInput.h"
 #include "ToggleInput.h"
@@ -9,6 +10,7 @@
 #include "OptionsWindow.h"
 
 using namespace backend;
+using namespace color;
 
 /*******************************************************************************
 
@@ -78,7 +80,7 @@ OptionsWindow::OptionsWindow()
 
   // Label for basic settings
 
-  _basic.setBold(true);
+  _basic.setColor(colors.getPair(header, bg_normal));
   addItem(&_basic);
   _items[0]->setName("Basic settings");
   _items[0]->setPosition(1,1);
@@ -148,7 +150,7 @@ OptionsWindow::OptionsWindow()
 
   // Advanced settings
 
-  _advanced.setBold(true);
+  _advanced.setColor(colors.getPair(header, bg_normal));
   addItem(&_advanced);  
   _items[13]->setName("Advanced settings");
   _items[13]->setPosition(13,1);

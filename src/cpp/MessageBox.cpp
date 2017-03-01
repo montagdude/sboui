@@ -201,11 +201,8 @@ called, there is no _redraw_type for it.
 *******************************************************************************/
 void MessageBox::draw(bool force)
 {
-  int pair_warning;
-
   wclear(_win);
-  pair_warning = colors.pair(fg_warning, bg_warning);
-  if (pair_warning != -1) { wbkgd(_win, COLOR_PAIR(pair_warning)); }
+  colors.setBackground(_win, fg_warning, bg_warning);
   redrawFrame();
   redrawMessage();
   wrefresh(_win);

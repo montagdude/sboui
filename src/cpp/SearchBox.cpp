@@ -19,7 +19,7 @@ Draws window border, message, and info
 void SearchBox::redrawFrame() const
 {
   unsigned int rows, cols, msglen, i;
-  int left, pair_title, pair_info;
+  int left;
   double mid;
 
   getmaxyx(_win, rows, cols);
@@ -31,13 +31,10 @@ void SearchBox::redrawFrame() const
   left = std::floor(mid - double(msglen)/2.0) + 1;
   wmove(_win, 1, 1);
   wclrtoeol(_win);
-  pair_title = colors.pair(fg_title, bg_title);
-  if (pair_title != -1) { wattron(_win, COLOR_PAIR(pair_title)); }
-  wattron(_win, A_BOLD);
+  colors.turnOn(_win, fg_title, bg_title);
   printSpaces(left-1);
   printToEol(_msg);
-  if (pair_title != -1) { wattroff(_win, COLOR_PAIR(pair_title)); }
-  wattroff(_win, A_BOLD);
+  colors.turnOff(_win);
 
   // Info on bottom of window
 
@@ -45,13 +42,10 @@ void SearchBox::redrawFrame() const
   left = std::floor(mid - double(msglen)/2.0) + 1;
   wmove(_win, rows-2, 1);
   wclrtoeol(_win);
-  pair_info = colors.pair(fg_info, bg_info);
-  if (pair_info != -1) { wattron(_win, COLOR_PAIR(pair_info)); }
-  wattron(_win, A_BOLD);
+  colors.turnOn(_win, fg_info, bg_info);
   printSpaces(left-1);
   printToEol(_info);
-  if (pair_info != -1) { wattroff(_win, COLOR_PAIR(pair_info)); }
-  wattroff(_win, A_BOLD);
+  colors.turnOff(_win);
 
   // Corners
 
@@ -164,7 +158,6 @@ void SearchBox::draw(bool force)
 {
   int rows, cols;
   unsigned int i, nitems;
-  int pair_popup;
 
   nitems = _items.size();
   getmaxyx(_win, rows, cols);
@@ -174,8 +167,7 @@ void SearchBox::draw(bool force)
   if (_redraw_type == "all") 
   { 
     wclear(_win);
-    pair_popup = colors.pair(fg_popup, bg_popup);
-    if (pair_popup != -1) { wbkgd(_win, COLOR_PAIR(pair_popup)); }
+    colors.setBackground(_win, fg_popup, bg_popup);
     redrawFrame();
     for ( i = 0; i < nitems; i++ ) 
     { 

@@ -51,22 +51,22 @@ void set_default_colors()
 {
   fg_normal = "white";     
   bg_normal = "black";     
-  fg_title = "white";
+  fg_title = "brightwhite";
   bg_title = "blue";
-  fg_info = "white";
+  fg_info = "brightwhite";
   bg_info = "blue";
-  fg_highlight_active = "blue";
+  fg_highlight_active = "brightwhite";
   bg_highlight_active = "cyan";
   fg_highlight_inactive = "black";
   bg_highlight_inactive = "white";
-  header = "yellow";
-  header_popup = "black";
-  tagged = "yellow";
+  header = "brightyellow";
+  header_popup = "brightblack";
+  tagged = "brightred";
   fg_popup = "blue";
   bg_popup = "white";
   fg_warning = "white";
   bg_warning = "red";
-  hotkey = "black";
+  hotkey = "brightblack";
 }
 
 /*******************************************************************************
@@ -76,6 +76,7 @@ Applies color settings in curses
 *******************************************************************************/
 void apply_color_settings()
 {
+  start_color();
   colors.addPair(fg_normal, bg_normal);
   colors.addPair(fg_title, bg_title);
   colors.addPair(fg_info, bg_info);
@@ -92,7 +93,7 @@ void apply_color_settings()
   colors.addPair(hotkey, bg_popup); 
   colors.addPair(hotkey, bg_highlight_active); 
   colors.addPair(hotkey, bg_highlight_inactive); 
-  bkgd(COLOR_PAIR(colors.pair(fg_normal, bg_normal)));
+  colors.setBackground(stdscr, fg_normal, bg_normal);
 } 
 
 /*******************************************************************************
@@ -245,6 +246,8 @@ int read_config()
 
   if (! cfg.lookupValue("upgrade_cmd", upgrade_cmd))
     upgrade_cmd = "sbomgr upgrade";
+
+//FIXME: add setting for default layout
   
   // Config variables to always pass to sboutil
 

@@ -24,7 +24,6 @@ void InstallBox::redrawFrame() const
 {
   unsigned int rows, cols, namelen, i, nspaces, vlineloc;
   double mid, left, right;
-  int pair_title, pair_info, pair_header;
 
   getmaxyx(_win, rows, cols);
 
@@ -35,13 +34,10 @@ void InstallBox::redrawFrame() const
   left = std::floor(mid - double(namelen)/2.0) + 1;
   wmove(_win, rows-2, 1);
   wclrtoeol(_win);
-  pair_info = colors.pair(fg_info, bg_info);
-  if (pair_info != -1) { wattron(_win, COLOR_PAIR(pair_info)); }
-  wattron(_win, A_BOLD);
+  colors.turnOn(_win, fg_info, bg_info);
   printSpaces(left-1);
   printToEol(_info);
-  if (pair_info != -1) { wattroff(_win, COLOR_PAIR(pair_info)); }
-  wattroff(_win, A_BOLD);
+  colors.turnOff(_win);
 
   // Title
 
@@ -50,12 +46,9 @@ void InstallBox::redrawFrame() const
   left = std::floor(mid - double(namelen)/2.0);
   right = left + namelen;
   wmove(_win, 0, left);
-  pair_title = colors.pair(fg_title, bg_title);
-  if (pair_title != -1) { wattron(_win, COLOR_PAIR(pair_title)); }
-  wattron(_win, A_BOLD);
+  colors.turnOn(_win, fg_title, bg_title);
   wprintw(_win, _name.c_str());
-  if (pair_title != -1) { wattroff(_win, COLOR_PAIR(pair_title)); }
-  wattroff(_win, A_BOLD);
+  colors.turnOff(_win);
 
   // Corners
 
@@ -99,9 +92,7 @@ void InstallBox::redrawFrame() const
   // Draw header
 
   wmove(_win, 1, 1);
-  pair_header = colors.pair(header_popup, bg_popup);
-  if (pair_header != -1) { wattron(_win, COLOR_PAIR(pair_header)); }
-  wattron(_win, A_BOLD);
+  colors.turnOn(_win, header_popup, bg_popup);
   wprintw(_win, "Name");
 
   vlineloc = cols-2 - std::string(" Reinstall ").size();
@@ -109,8 +100,7 @@ void InstallBox::redrawFrame() const
   for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
 
   printToEol(" Action");
-  if (pair_header != -1) { wattroff(_win, COLOR_PAIR(pair_header)); }
-  wattroff(_win, A_BOLD);
+  colors.turnOff(_win);
 
   // Draw horizontal and then vertical lines
 
@@ -139,10 +129,16 @@ screen or not.
 void InstallBox::redrawSingleItem(unsigned int idx)
 {
   std::string fg, bg;
-  int color_pair, nspaces, vlineloc, printlen;
+  int nspaces, vlineloc, printlen;
   unsigned int rows, cols, i; 
 
   getmaxyx(_win, rows, cols);
+
+  // Print divider before applying color
+
+  vlineloc = cols-2 - std::string(" Reinstall ").size() - 1;
+  wmove(_win, idx-_firstprint+3, vlineloc+1);
+  waddch(_win, ACS_VLINE);
 
   // Go to item location, optionally highlight, and print item
 
@@ -162,20 +158,12 @@ void InstallBox::redrawSingleItem(unsigned int idx)
       fg = fg_highlight_inactive;
       bg = bg_highlight_inactive; 
     }
-    color_pair = colors.pair(fg, bg);
-    if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
-    else 
+    if (colors.turnOn(_win, fg, bg) != 0)
     { 
       if (_activated) { wattron(_win, A_REVERSE); }
     }
   } 
-  else
-  {
-    fg = fg_popup;
-    bg = bg_popup;
-    color_pair = colors.pair(fg, bg);
-    if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
-  }
+  else { colors.turnOn(_win, fg_popup, bg_popup); }
 
   // Save highlight idx for redrawing later.
   // Note: prevents this method from being const.
@@ -184,10 +172,9 @@ void InstallBox::redrawSingleItem(unsigned int idx)
 
   // Print item with selection, spaces, divider, action
 
-  vlineloc = cols-2 - std::string(" Reinstall ").size() - 1;
   printlen = std::min(int(_items[idx]->name().size()), vlineloc-4);
-
   nspaces = vlineloc - 4 - (_items[idx]->name().size());
+
   if (_items[idx]->getBoolProp("tagged")) { wprintw(_win, "[X] "); }
   else { wprintw(_win, "[ ] "); }
 
@@ -195,8 +182,7 @@ void InstallBox::redrawSingleItem(unsigned int idx)
 
   for ( i = 0; int(i) < nspaces; i++ ) { waddch(_win, ' '); }
 
-  waddch(_win, ACS_VLINE);
-
+  wmove(_win, idx-_firstprint+3, vlineloc+2);
   waddch(_win, ' ');
   printToEol(_items[idx]->getProp("action"));
 
@@ -206,8 +192,7 @@ void InstallBox::redrawSingleItem(unsigned int idx)
 
   // Turn off color
 
-  if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); }
-  else
+  if (colors.turnOff(_win) != 0)
   {
     if ( (int(idx) == _highlight) && _activated ) { wattroff(_win, A_REVERSE); }
   }

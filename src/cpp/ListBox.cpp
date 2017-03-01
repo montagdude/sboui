@@ -252,7 +252,6 @@ void ListBox::redrawSingleItem(unsigned int idx)
 
   // Turn on highlight color
 
-  color_pair1 = -1;
   if (int(idx) == _highlight)
   {
     if (_activated) 
@@ -265,18 +264,17 @@ void ListBox::redrawSingleItem(unsigned int idx)
       fg = fg_highlight_inactive; 
       bg = bg_highlight_inactive; 
     }
-    color_pair1 = colors.pair(fg, bg);
-    color_pair2 = colors.pair(hotkey, bg);
-    if (color_pair1 != -1) { wattron(_win, COLOR_PAIR(color_pair1)); }
-    else 
+    color_pair1 = colors.getPair(fg, bg);
+    color_pair2 = colors.getPair(hotkey, bg);
+    if (colors.turnOn(_win, color_pair1) != 0)
     { 
       if (_activated) { wattron(_win, A_REVERSE); }
     }
   } 
   else
   {
-    color_pair1 = colors.pair(fg_normal, bg_normal);
-    color_pair2 = colors.pair(hotkey, bg_normal);
+    color_pair1 = colors.getPair(fg_normal, bg_normal);
+    color_pair2 = colors.getPair(hotkey, bg_normal);
   }
 
   // Save highlight idx for redrawing later.
@@ -284,7 +282,7 @@ void ListBox::redrawSingleItem(unsigned int idx)
   
   if (int(idx) == _highlight) { _prevhighlight = _highlight; }
 
-  // Print item, setting hotkey character as bold
+  // Print item
 
   len = _items[idx]->name().size();
   hidx = _items[idx]->hotKey();
@@ -292,11 +290,11 @@ void ListBox::redrawSingleItem(unsigned int idx)
   {
     if ( i == hidx )
     { 
-      if (color_pair1 != -1) { wattroff(_win, COLOR_PAIR(color_pair1)); }
-      if (color_pair2 != -1) { wattron(_win, COLOR_PAIR(color_pair2)); }
+      colors.turnOff(_win);
+      colors.turnOn(_win, color_pair2);
       wprintw(_win, _items[idx]->name().substr(i,1).c_str());
-      if (color_pair2 != -1) { wattroff(_win, COLOR_PAIR(color_pair2)); }
-      if (color_pair1 != -1) { wattron(_win, COLOR_PAIR(color_pair1)); } 
+      colors.turnOff(_win);
+      colors.turnOn(_win, color_pair1);
     }
     else { wprintw(_win, _items[idx]->name().substr(i,1).c_str()); }
   }
@@ -304,8 +302,7 @@ void ListBox::redrawSingleItem(unsigned int idx)
 
   // Turn off highlight color
 
-  if (color_pair1 != -1) { wattroff(_win, COLOR_PAIR(color_pair1)); } 
-  else
+  if (colors.turnOff(_win) != 0)
   { 
     if ( (int(idx) == _highlight) && _activated ) { wattroff(_win, A_REVERSE); }
   }
@@ -483,8 +480,6 @@ Draws list box (frame, items, etc.) as needed
 *******************************************************************************/
 void ListBox::draw(bool force)
 {
-  int pair_normal;
-
   if (force) { _redraw_type = "all"; }
 
   // Draw list elements
@@ -492,8 +487,7 @@ void ListBox::draw(bool force)
   if (_redraw_type == "all")
   { 
     wclear(_win); 
-    pair_normal = colors.pair(fg_normal, bg_normal);
-    if (pair_normal != -1) { wbkgd(_win, COLOR_PAIR(pair_normal)); }
+    colors.setBackground(_win, fg_normal, bg_normal);
   }
   if (_redraw_type != "none") { redrawFrame(); }
   if ( (_redraw_type == "all") || (_redraw_type == "items")) { 

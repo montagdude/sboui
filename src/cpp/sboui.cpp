@@ -5,7 +5,6 @@
 
 int main()
 {
-  MainWindow mainwindow;
   int check;
 
   // Read config files
@@ -25,6 +24,7 @@ int main()
 
   // User interaction loop
 
+  MainWindow mainwindow;  // Call constructor after setting colors
   check = mainwindow.initialize();
   mainwindow.show();
 

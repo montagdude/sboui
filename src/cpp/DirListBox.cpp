@@ -19,7 +19,6 @@ screen or not.
 void DirListBox::redrawSingleItem(unsigned int idx)
 {
   std::string fg, bg;
-  int color_pair;
 
   // Go to item location, optionally highlight, and print item
 
@@ -27,7 +26,6 @@ void DirListBox::redrawSingleItem(unsigned int idx)
 
   // Turn on highlight color
 
-  color_pair = -1;
   if (int(idx) == _highlight)
   {
     if (_activated) 
@@ -40,9 +38,7 @@ void DirListBox::redrawSingleItem(unsigned int idx)
       fg = fg_highlight_inactive; 
       bg = bg_highlight_inactive; 
     }
-    color_pair = colors.pair(fg, bg);
-    if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
-    else 
+    if (colors.turnOn(_win, fg, bg) != 0)
     { 
       if (_activated) { wattron(_win, A_REVERSE); }
     }
@@ -71,8 +67,7 @@ void DirListBox::redrawSingleItem(unsigned int idx)
 
   // Turn off highlight color
 
-  if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); } 
-  else
+  if (colors.turnOff(_win) != 0)
   { 
     if ( (int(idx) == _highlight) && _activated ) { wattroff(_win, A_REVERSE); }
   }

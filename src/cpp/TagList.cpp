@@ -21,7 +21,6 @@ screen or not.
 void TagList::redrawSingleItem(unsigned int idx)
 {
   std::string fg, bg;
-  int color_pair;
   unsigned int rows, cols; 
 
   getmaxyx(_win, rows, cols);
@@ -44,20 +43,12 @@ void TagList::redrawSingleItem(unsigned int idx)
       fg = fg_highlight_inactive;
       bg = bg_highlight_inactive; 
     }
-    color_pair = colors.pair(fg, bg);
-    if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
-    else 
+    if (colors.turnOn(_win, fg, bg) != 0)
     { 
       if (_activated) { wattron(_win, A_REVERSE); }
     }
   } 
-  else
-  {
-    fg = fg_popup;
-    bg = bg_popup;
-    color_pair = colors.pair(fg, bg);
-    if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
-  }
+  else { colors.turnOn(_win, fg_popup, bg_popup); }
 
   // Save highlight idx for redrawing later.
   // Note: prevents this method from being const.
@@ -77,8 +68,7 @@ void TagList::redrawSingleItem(unsigned int idx)
 
   // Turn off color
 
-  if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); }
-  else
+  if (colors.turnOff(_win) != 0)
   {
     if ( (int(idx) == _highlight) && _activated ) { wattroff(_win, A_REVERSE); }
   }

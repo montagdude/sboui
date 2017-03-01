@@ -87,19 +87,19 @@ Draws text input
 *******************************************************************************/
 void TextInput::draw(bool force, bool highlight)
 {
-  int pair_input;
-
   if (force) { _redraw_type = "entry"; }
 
-  pair_input = -1;
   if (highlight)
   {
-    pair_input = colors.pair(fg_highlight_active, bg_highlight_active);
-    if (pair_input != -1) { wattron(_win, COLOR_PAIR(pair_input)); }
+    if (colors.turnOn(_win, fg_highlight_active, bg_highlight_active) != 0)
+      wattron(_win, A_REVERSE);
   }
+
   if (_redraw_type == "entry") { redrawEntry(); }
-  if (pair_input != -1) { wattroff(_win, COLOR_PAIR(pair_input)); }
   wmove(_win, _posy, _posx + _cursidx - _firsttext);
+
+  if (highlight)
+    if (colors.turnOff(_win) != 0) { wattroff(_win, A_REVERSE); }
   wrefresh(_win);
 }
 

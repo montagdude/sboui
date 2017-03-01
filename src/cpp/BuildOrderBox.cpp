@@ -21,7 +21,6 @@ void BuildOrderBox::redrawFrame() const
 {
   unsigned int rows, cols, namelen, i, nspaces, vlineloc;
   double mid, left, right;
-  int pair_title, pair_info, pair_header;
 
   getmaxyx(_win, rows, cols);
 
@@ -32,13 +31,10 @@ void BuildOrderBox::redrawFrame() const
   left = std::floor(mid - double(namelen)/2.0) + 1;
   wmove(_win, rows-2, 1);
   wclrtoeol(_win);
-  pair_info = colors.pair(fg_info, bg_info);
-  if (pair_info != -1) { wattron(_win, COLOR_PAIR(pair_info)); }
-  wattron(_win, A_BOLD);
+  colors.turnOn(_win, fg_info, bg_info);
   printSpaces(left-1);
   printToEol(_info);
-  if (pair_info != -1) { wattroff(_win, COLOR_PAIR(pair_info)); }
-  wattroff(_win, A_BOLD);
+  colors.turnOff(_win);
 
   // Title
 
@@ -47,12 +43,9 @@ void BuildOrderBox::redrawFrame() const
   left = std::floor(mid - double(namelen)/2.0);
   right = left + namelen;
   wmove(_win, 0, left);
-  pair_title = colors.pair(fg_title, bg_title);
-  if (pair_title != -1) { wattron(_win, COLOR_PAIR(pair_title)); }
-  wattron(_win, A_BOLD);
+  colors.turnOn(_win, fg_title, bg_title);
   wprintw(_win, _name.c_str());
-  if (pair_title != -1) { wattroff(_win, COLOR_PAIR(pair_title)); }
-  wattroff(_win, A_BOLD);
+  colors.turnOff(_win);
 
   // Corners
 
@@ -96,9 +89,7 @@ void BuildOrderBox::redrawFrame() const
   // Draw header
 
   wmove(_win, 1, 1);
-  pair_header = colors.pair(header_popup, bg_popup);
-  if (pair_header != -1) { wattron(_win, COLOR_PAIR(pair_header)); }
-  wattron(_win, A_BOLD);
+  colors.turnOn(_win, header_popup, bg_popup);
   wprintw(_win, "Name");
 
   vlineloc = cols-2 - std::string("Installed").size();
@@ -106,8 +97,7 @@ void BuildOrderBox::redrawFrame() const
   for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
 
   printToEol("Installed");
-  if (pair_header != -1) { wattroff(_win, COLOR_PAIR(pair_header)); }
-  wattroff(_win, A_BOLD);
+  colors.turnOff(_win);
 
   // Draw horizontal and then vertical lines
 
@@ -136,10 +126,16 @@ screen or not.
 void BuildOrderBox::redrawSingleItem(unsigned int idx)
 {
   std::string fg, bg;
-  int color_pair, nspaces, vlineloc, printlen;
+  int nspaces, vlineloc, printlen;
   unsigned int rows, cols, i; 
 
   getmaxyx(_win, rows, cols);
+
+  // Print divider before applying color
+
+  vlineloc = cols-2 - std::string("Installed").size() - 1;
+  wmove(_win, idx-_firstprint+3, vlineloc+1);
+  waddch(_win, ACS_VLINE);
 
   // Go to item location, optionally highlight, and print item
 
@@ -161,9 +157,7 @@ void BuildOrderBox::redrawSingleItem(unsigned int idx)
       else { fg = fg_highlight_inactive; }
       bg = bg_highlight_inactive; 
     }
-    color_pair = colors.pair(fg, bg);
-    if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
-    else 
+    if (colors.turnOn(_win, fg, bg) != 0)
     { 
       if (_activated) { wattron(_win, A_REVERSE); }
     }
@@ -173,11 +167,8 @@ void BuildOrderBox::redrawSingleItem(unsigned int idx)
     if (_items[idx]->getBoolProp("tagged")) { fg = tagged; }
     else { fg = fg_popup; }
     bg = bg_popup;
-    color_pair = colors.pair(fg, bg);
-    if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
+    colors.turnOn(_win, fg, bg);
   }
-
-  if (_items[idx]->getBoolProp("tagged")) { wattron(_win, A_BOLD); }
 
   // Save highlight idx for redrawing later.
   // Note: prevents this method from being const.
@@ -186,9 +177,7 @@ void BuildOrderBox::redrawSingleItem(unsigned int idx)
 
   // Print item, spaces, install status
 
-  vlineloc = cols-2 - std::string("Installed").size() - 1;
   printlen = std::min(int(_items[idx]->name().size()), vlineloc);
-
   nspaces = vlineloc - _items[idx]->name().size();
   wprintw(_win, _items[idx]->name().substr(0,printlen).c_str());
 
@@ -198,47 +187,9 @@ void BuildOrderBox::redrawSingleItem(unsigned int idx)
   if (_items[idx]->getBoolProp("installed")) { printToEol("   [X]   "); }
   else { printToEol("   [ ]   "); }
 
-  // Turn off tag color
-
-  if (_items[idx]->getBoolProp("tagged")) 
-  { 
-    wattroff(_win, A_BOLD); 
-    if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); }
-    if (int(idx) == _highlight)
-    {
-      if (_activated) 
-      {
-        fg = fg_highlight_active;
-        bg = bg_highlight_active;
-      }
-      else
-      {
-        fg = fg_highlight_inactive;
-        bg = bg_highlight_inactive;
-      }
-    }
-    else
-    {
-      fg = fg_popup;
-      bg = bg_popup;
-    }
-    color_pair = colors.pair(fg, bg);
-    if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
-    else 
-    { 
-      if (_activated) { wattron(_win, A_REVERSE); }
-    }
-  }
-
-  // Divider
-
-  wmove(_win, idx-_firstprint+3, vlineloc+1);
-  waddch(_win, ACS_VLINE);
-
   // Turn off color
 
-  if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); }
-  else
+  if (colors.turnOff(_win) != 0)
   {
     if ( (int(idx) == _highlight) && _activated ) { wattroff(_win, A_REVERSE); }
   }
@@ -354,8 +305,6 @@ Draws scroll box (frame, items, etc.) as needed
 *******************************************************************************/
 void BuildOrderBox::draw(bool force)
 {
-  int pair_popup;
-
   if (force) { _redraw_type = "all"; }
 
   // Draw list elements
@@ -363,8 +312,7 @@ void BuildOrderBox::draw(bool force)
   if (_redraw_type == "all")
   { 
     wclear(_win); 
-    pair_popup = colors.pair(fg_popup, bg_popup);
-    if (pair_popup != -1) { wbkgd(_win, COLOR_PAIR(pair_popup)); }
+    colors.setBackground(_win, fg_popup, bg_popup);
   }
   if (_redraw_type != "none") { redrawFrame(); }
   if ( (_redraw_type == "all") || (_redraw_type == "items")) { 

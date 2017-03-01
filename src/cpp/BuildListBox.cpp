@@ -20,7 +20,6 @@ void BuildListBox::redrawFrame() const
 {
   unsigned int rows, cols, namelen, i, nspaces, vlineloc;
   double mid, left, right;
-  int pair_header;
 
   getmaxyx(_win, rows, cols);
 
@@ -76,25 +75,19 @@ void BuildListBox::redrawFrame() const
 
   // Draw header
 
-  pair_header = colors.pair(header, bg_normal);
-
   wmove(_win, 1, 1);
-  if (pair_header != -1) { wattron(_win, COLOR_PAIR(pair_header)); }
-  wattron(_win, A_BOLD);
+  colors.turnOn(_win, header, bg_normal);
   wprintw(_win, "Name");
-  if (pair_header != -1) { wattroff(_win, COLOR_PAIR(pair_header)); }
-  wattroff(_win, A_BOLD);
+  colors.turnOff(_win);
 
   vlineloc = cols-2 - std::string("Installed").size();
   nspaces = vlineloc - std::string("Name").size();
   for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
 
-  if (pair_header != -1) { wattron(_win, COLOR_PAIR(pair_header)); }
-  wattron(_win, A_BOLD);
+  colors.turnOn(_win, header, bg_normal);
   printToEol("Installed");
   wmove(_win, 2, 1);
-  if (pair_header != -1) { wattroff(_win, COLOR_PAIR(pair_header)); }
-  wattroff(_win, A_BOLD);
+  colors.turnOff(_win);
 
   // Draw horizontal and then vertical line
 
@@ -118,10 +111,16 @@ screen or not.
 void BuildListBox::redrawSingleItem(unsigned int idx)
 {
   std::string fg, bg;
-  int color_pair, nspaces, vlineloc, printlen;
+  int nspaces, vlineloc, printlen;
   unsigned int rows, cols, i; 
 
   getmaxyx(_win, rows, cols);
+
+  // Print divider before applying color
+
+  vlineloc = cols-2 - std::string("Installed").size() - 1;
+  wmove(_win, idx-_firstprint+3, vlineloc+1);
+  waddch(_win, ACS_VLINE);
 
   // Go to item location, optionally highlight, and print item
 
@@ -143,9 +142,7 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
       else { fg = fg_highlight_inactive; }
       bg = bg_highlight_inactive; 
     }
-    color_pair = colors.pair(fg, bg);
-    if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
-    else 
+    if (colors.turnOn(_win, fg, bg) != 0)
     { 
       if (_activated) { wattron(_win, A_REVERSE); }
     }
@@ -155,11 +152,8 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
     if (_items[idx]->getBoolProp("tagged")) { fg = tagged; }
     else { fg = fg_normal; }
     bg = bg_normal;
-    color_pair = colors.pair(fg, bg);
-    if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
+    colors.turnOn(_win, fg, bg);
   }
-
-  if (_items[idx]->getBoolProp("tagged")) { wattron(_win, A_BOLD); }
 
   // Save highlight idx for redrawing later.
   // Note: prevents this method from being const.
@@ -168,9 +162,7 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
 
   // Print item, spaces, install status
 
-  vlineloc = cols-2 - std::string("Installed").size() - 1;
   printlen = std::min(int(_items[idx]->name().size()), vlineloc);
-
   nspaces = vlineloc - _items[idx]->name().size();
   wprintw(_win, _items[idx]->name().substr(0,printlen).c_str());
 
@@ -180,47 +172,9 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
   if (_items[idx]->getBoolProp("installed")) { printToEol("   [X]   "); }
   else { printToEol("   [ ]   "); }
 
-  // Turn off tag color
-
-  if (_items[idx]->getBoolProp("tagged")) 
-  { 
-    wattroff(_win, A_BOLD); 
-    if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); }
-    if (int(idx) == _highlight)
-    {
-      if (_activated) 
-      {
-        fg = fg_highlight_active;
-        bg = bg_highlight_active;
-      }
-      else
-      {
-        fg = fg_highlight_inactive;
-        bg = bg_highlight_inactive;
-      }
-    }
-    else
-    {
-      fg = fg_normal;
-      bg = bg_normal;
-    }
-    color_pair = colors.pair(fg, bg);
-    if (color_pair != -1) { wattron(_win, COLOR_PAIR(color_pair)); }
-    else 
-    { 
-      if ((int(idx) == _highlight) && _activated) { wattron(_win, A_REVERSE); }
-    }
-  }
-
-  // Divider
-
-  wmove(_win, idx-_firstprint+3, vlineloc+1);
-  waddch(_win, ACS_VLINE);
-
   // Turn off color
 
-  if (color_pair != -1) { wattroff(_win, COLOR_PAIR(color_pair)); }
-  else
+  if (colors.turnOff(_win) != 0)
   {
     if ( (int(idx) == _highlight) && _activated ) { wattroff(_win, A_REVERSE); }
   }

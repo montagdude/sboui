@@ -321,8 +321,7 @@ void ScrollBox::draw(bool force)
   if (_redraw_type == "all")
   { 
     wclear(_win); 
-    pair_normal = colors.pair(fg_normal, bg_normal);
-    if (pair_normal != -1) { wbkgd(_win, COLOR_PAIR(pair_normal)); }
+    colors.setBackground(_win, fg_normal, bg_normal);
   }
   if (_redraw_type != "none") { redrawFrame(); }
   if ( (_redraw_type == "all") || (_redraw_type == "items")) { 

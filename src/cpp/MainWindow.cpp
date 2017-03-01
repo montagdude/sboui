@@ -101,7 +101,7 @@ void MainWindow::redrawHeaderFooter() const
 {
   unsigned int namelen;
   int rows, cols;
-  int left, pair_title, pair_info;
+  int left;
   double mid;
 
   getmaxyx(stdscr, rows, cols);
@@ -113,13 +113,10 @@ void MainWindow::redrawHeaderFooter() const
   left = std::floor(mid - double(namelen)/2.0) + 1;
   move(0, 0);
   clrtoeol();
-  pair_title = colors.pair(fg_title, bg_title);
-  if (pair_title != -1) { attron(COLOR_PAIR(pair_title)); }
-  attron(A_BOLD);
+  colors.turnOn(stdscr, fg_title, bg_title);
   printSpaces(left-1);
   printToEol(_title);
-  if (pair_title != -1) { attroff(COLOR_PAIR(pair_title)); }
-  attroff(A_BOLD);
+  colors.turnOff(stdscr);
 
   // Print filter selection
 
@@ -133,13 +130,10 @@ void MainWindow::redrawHeaderFooter() const
   left = std::floor(mid - double(namelen)/2.0) + 1;
   move(rows-1, 0);
   clrtoeol();
-  pair_info = colors.pair(fg_info, bg_info);
-  if (pair_info != -1) { attron(COLOR_PAIR(pair_info)); }
-  attron(A_BOLD);
+  colors.turnOn(stdscr, fg_info, bg_info);
   printSpaces(left-1);
   printToEol(_info);
-  if (pair_info != -1) { attroff(COLOR_PAIR(pair_info)); }
-  attroff(A_BOLD);
+  colors.turnOff(stdscr);
 
   refresh();
 }
