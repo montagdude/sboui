@@ -20,7 +20,7 @@ namespace backend
   std::string editor;
   std::string color_theme_file;
   std::string env;
-  bool resolve_deps, confirm_changes;
+  bool resolve_deps, confirm_changes, enable_color;
 }
 
 namespace color 
@@ -238,6 +238,8 @@ int read_config()
   if (! cfg.lookupValue("confirm_changes", confirm_changes)) 
     confirm_changes = true;
 
+  if (! cfg.lookupValue("enable_color", enable_color)) { enable_color = true; }
+
 //FIXME: the following are necessary for custom package managers
   if (! cfg.lookupValue("sync_cmd", sync_cmd)) { sync_cmd = "sbomgr update"; }
 
@@ -270,6 +272,37 @@ int read_config()
     color_theme_file = "";
     set_default_colors(); 
   }
-  
+
   return 0;
 }
+
+/*******************************************************************************
+
+Enables color. Returns 1 if terminal does not support color; 0 otherwise.
+
+*******************************************************************************/
+int activate_color()
+{
+  if (has_colors())
+  {
+    apply_color_settings();
+    enable_color = true;
+    return 0;
+  }
+  else
+  {
+    enable_color = false;
+    return 1;
+  }
+}
+
+/*******************************************************************************
+
+Disables color
+
+*******************************************************************************/
+void deactivate_color()
+{
+  colors.clear();
+  enable_color = false;
+}   

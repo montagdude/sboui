@@ -39,6 +39,7 @@ Constructor
 ToggleInput::ToggleInput()
 {
   _redraw_type = "all";
+  _item_type = "ToggleInput";
   _selectable = true;
   _name = "ToggleInput";
   _enabled = false;

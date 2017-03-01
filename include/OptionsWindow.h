@@ -18,7 +18,7 @@ class OptionsWindow: public InputBox {
 
     TextInput _iopts_inp, _ivars_inp, _uopts_inp, _uvars_inp, _editor_inp;
     TextInput _repo_inp, _sync_inp, _inst_inp, _upgr_inp;
-    ToggleInput _resolve_toggle, _confirm_toggle;
+    ToggleInput _resolve_toggle, _confirm_toggle, _color_toggle;
     Label _basic, _advanced;
 
     /* Drawing */

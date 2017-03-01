@@ -54,6 +54,7 @@ InputItem::InputItem()
   _width = 0;
   _name = "";
   _redraw_type = "none";
+  _item_type = "none";
   _selectable = true;
   _auto_position = true;
 }
@@ -85,6 +86,7 @@ Get attributes
 
 *******************************************************************************/
 const std::string & InputItem::name() const { return _name; }
+const std::string & InputItem::itemType() const { return _item_type; }
 int InputItem::posx() const { return _posx; }
 int InputItem::posy() const { return _posy; }
 int InputItem::width() const { return _width; }

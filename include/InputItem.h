@@ -15,7 +15,7 @@ class InputItem {
 
     WINDOW *_win;
     int _posx, _posy, _width; 
-    std::string _name, _redraw_type;
+    std::string _name, _redraw_type, _item_type;
     bool _selectable, _auto_position;
 
     /* Prints to end of line or specified number of spaces */
@@ -50,6 +50,7 @@ class InputItem {
     int width() const;
     bool selectable() const;
     bool autoPosition() const;
+    const std::string & itemType() const;
 
     // User interaction
 

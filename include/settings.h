@@ -13,7 +13,7 @@ namespace backend
   extern std::string editor; 
   extern std::string color_theme_file;
   extern std::string env;
-  extern bool resolve_deps, confirm_changes;
+  extern bool resolve_deps, confirm_changes, enable_color;
 }
 
 namespace color 
@@ -33,3 +33,5 @@ namespace color
 
 void apply_color_settings();
 int read_config();
+int activate_color();
+void deactivate_color();

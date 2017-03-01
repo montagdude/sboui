@@ -223,3 +223,14 @@ int Color::setBackground(WINDOW *win, const std::string & fg,
 
   return 0;
 }
+
+/*******************************************************************************
+
+Clears all colors
+
+*******************************************************************************/
+void Color::clear()
+{
+  _colors.resize(0);
+  _active_pair = -1;
+}

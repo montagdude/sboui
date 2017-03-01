@@ -15,6 +15,7 @@ Constructor
 Label::Label()
 {
   _redraw_type = "label";
+  _item_type = "Label";
   _selectable = false;
   _color_idx = -1;
 }

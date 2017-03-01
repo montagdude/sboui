@@ -20,7 +20,7 @@ int main()
   noecho();
   set_escdelay(25);
   keypad(stdscr, TRUE);
-  if (has_colors()) { apply_color_settings(); }
+  if (backend::enable_color) { activate_color(); }
 
   // User interaction loop
 

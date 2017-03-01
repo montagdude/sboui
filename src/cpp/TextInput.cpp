@@ -55,6 +55,7 @@ Constructor
 TextInput::TextInput()
 {
   _redraw_type = "entry";
+  _item_type = "TextInput";
   _selectable = true;
   _entry = "";
   _firsttext = 0;

@@ -52,4 +52,8 @@ class Color {
     int turnOff(WINDOW *win);
     int setBackground(WINDOW *win, const std::string & fg,
                       const std::string & bg) const;
+
+    /* Clears all colors */
+
+    void clear();
 };

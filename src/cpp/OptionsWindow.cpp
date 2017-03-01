@@ -75,140 +75,198 @@ Constructor and destructor
 *******************************************************************************/
 OptionsWindow::OptionsWindow()
 {
+  int count, line;
+
   _reserved_rows = 2;
   _msg = "Options";
+
+  count = 0;
+  line = 1; 
 
   // Label for basic settings
 
   _basic.setColor(colors.getPair(header, bg_normal));
   addItem(&_basic);
-  _items[0]->setName("Basic settings");
-  _items[0]->setPosition(1,1);
-  _items[0]->setWidth(_items[0]->name().size());
+  _items[count]->setName("Basic settings");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(_items[count]->name().size());
+  count++;
+  line += 2;
 
   // Toggle inputs
 
   addItem(&_resolve_toggle);
-  _items[1]->setName("Resolve dependencies");
-  _items[1]->setPosition(3,1);
-  _items[1]->setWidth(_items[1]->name().size());
+  _items[count]->setName("Resolve dependencies");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(_items[count]->name().size());
+  count++;
+  line += 1;
 
   addItem(&_confirm_toggle);
-  _items[2]->setName("Ask for confirmation before applying changes");
-  _items[2]->setPosition(4,1);
-  _items[2]->setWidth(_items[2]->name().size());
+  _items[count]->setName("Ask for confirmation before applying changes");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(_items[count]->name().size());
+  count++;
+  line += 1;
 
-  // Labels for basic settings
+  addItem(&_color_toggle);
+  _items[count]->setName("Enable color");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(_items[count]->name().size());
+  count++;
+  line += 2;
 
-  addItem(new Label());
-  _items[3]->setName("Editor");
-  _items[3]->setPosition(6,1);
-  _items[3]->setWidth(24);
-
-  addItem(new Label());
-  _items[4]->setName("Additional install CLOs");
-  _items[4]->setPosition(8,1);
-  _items[4]->setWidth(24);
-
-  addItem(new Label());
-  _items[5]->setName("Install environment vars");
-  _items[5]->setPosition(9,1);
-  _items[5]->setWidth(24);
+  // Labels + text input boxes for basic settings
 
   addItem(new Label());
-  _items[6]->setName("Additional upgrade CLOs");
-  _items[6]->setPosition(10,1);
-  _items[6]->setWidth(24);
-
-  addItem(new Label());
-  _items[7]->setName("Upgrade environment vars");
-  _items[7]->setPosition(11,1);
-  _items[7]->setWidth(24);
-
-  // Text input boxes for basic settings (note: widths get changed by 
-  // placeWindow)
+  _items[count]->setName("Editor");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(24);
+  count++;
+  line += 0;
 
   addItem(&_editor_inp);
-  _items[8]->setPosition(6,26);
-  _items[8]->setWidth(20);
+  _items[count]->setPosition(line,26);
+  _items[count]->setWidth(20);
+  count++;
+  line += 1;
+
+  addItem(new Label());
+  _items[count]->setName("Additional install CLOs");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(24);
+  count++;
+  line += 0;
 
   addItem(&_iopts_inp);
-  _items[9]->setPosition(8,26);
-  _items[9]->setWidth(20);
+  _items[count]->setPosition(line,26);
+  _items[count]->setWidth(20);
+  count++;
+  line += 1;
+
+  addItem(new Label());
+  _items[count]->setName("Install environment vars");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(24);
+  count++;
+  line += 0;
 
   addItem(&_ivars_inp);
-  _items[10]->setPosition(9,26);
-  _items[10]->setWidth(20);
+  _items[count]->setPosition(line,26);
+  _items[count]->setWidth(20);
+  count++;
+  line += 1;
+
+  addItem(new Label());
+  _items[count]->setName("Additional upgrade CLOs");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(24);
+  count++;
+  line += 0;
 
   addItem(&_uopts_inp);
-  _items[11]->setPosition(10,26);
-  _items[11]->setWidth(20);
+  _items[count]->setPosition(line,26);
+  _items[count]->setWidth(20);
+  count++;
+  line += 1;
+
+  addItem(new Label());
+  _items[count]->setName("Upgrade environment vars");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(24);
+  count++;
+  line += 0;
 
   addItem(&_uvars_inp);
-  _items[12]->setPosition(11,26);
-  _items[12]->setWidth(20);
+  _items[count]->setPosition(line,26);
+  _items[count]->setWidth(20);
+  count++;
+  line += 2;
 
   // Advanced settings
 
   _advanced.setColor(colors.getPair(header, bg_normal));
   addItem(&_advanced);  
-  _items[13]->setName("Advanced settings");
-  _items[13]->setPosition(13,1);
-  _items[13]->setWidth(_items[13]->name().size());
+  _items[count]->setName("Advanced settings");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(_items[count]->name().size());
+  count++;
+  line += 2;
   
-  // Labels for advanced settings
+  // Labels + text input boxes for advanced settings
 
   addItem(new Label());
-  _items[14]->setName("Package manager");
-  _items[14]->setPosition(15,1);
-  _items[14]->setWidth(20);
+  _items[count]->setName("Package manager");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(20);
+  count++;
+  line += 1;
 
   addItem(new Label());
-  _items[15]->setName("Repository directory");
-  _items[15]->setPosition(16,1);
-  _items[15]->setWidth(20);
-
-  addItem(new Label());
-  _items[16]->setName("Sync command");
-  _items[16]->setPosition(17,1);
-  _items[16]->setWidth(20);
-
-  addItem(new Label());
-  _items[17]->setName("Install command");
-  _items[17]->setPosition(18,1);
-  _items[17]->setWidth(20);
-
-  addItem(new Label());
-  _items[18]->setName("Upgrade command");
-  _items[18]->setPosition(19,1);
-  _items[18]->setWidth(20);
-
-  // Text input boxes for advanced settings (note: widths get changed by 
-  // placeWindow)
+  _items[count]->setName("Repository directory");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(20);
+  count++;
+  line += 0;
 
   addItem(&_repo_inp);
-  _items[19]->setPosition(16,26);
-  _items[19]->setWidth(20);
+  _items[count]->setPosition(line,26);
+  _items[count]->setWidth(20);
+  count++;
+  line += 1;
+
+  addItem(new Label());
+  _items[count]->setName("Sync command");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(20);
+  count++;
+  line += 0;
 
   addItem(&_sync_inp);
-  _items[20]->setPosition(17,26);
-  _items[20]->setWidth(20);
+  _items[count]->setPosition(line,26);
+  _items[count]->setWidth(20);
+  count++;
+  line += 1;
+
+  addItem(new Label());
+  _items[count]->setName("Install command");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(20);
+  count++;
+  line += 0;
 
   addItem(&_inst_inp);
-  _items[21]->setPosition(18,26);
-  _items[21]->setWidth(20);
+  _items[count]->setPosition(line,26);
+  _items[count]->setWidth(20);
+  count++;
+  line += 1;
+
+  addItem(new Label());
+  _items[count]->setName("Upgrade command");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(20);
+  count++;
+  line += 0;
 
   addItem(&_upgr_inp);
-  _items[22]->setPosition(19,26);
-  _items[22]->setWidth(20);
+  _items[count]->setPosition(line,26);
+  _items[count]->setWidth(20);
 }
 
 OptionsWindow::~OptionsWindow()
 {
-  unsigned int i;
-  
-  for ( i = 3; i < 8; i++ ) { delete _items[i]; }
-  for ( i = 14; i < 19; i++ ) { delete _items[i]; }
+  unsigned int i, nitems;
+
+  nitems = _items.size();
+  for ( i = 0; i < nitems; i++ )
+  {
+    if (_items[i]->itemType() == "Label")
+    {
+      if ( (_items[i]->name() != "Basic settings") && 
+           (_items[i]->name() != "Advanced settings") )
+        delete _items[i];
+    }
+  }
 }
 
 /*******************************************************************************
@@ -220,6 +278,7 @@ void OptionsWindow::readSettings()
 {
   _resolve_toggle.setEnabled(resolve_deps);
   _confirm_toggle.setEnabled(confirm_changes);
+  _color_toggle.setEnabled(enable_color);
 
   _editor_inp.setText(editor);
   _iopts_inp.setText(install_opts);
@@ -237,6 +296,8 @@ void OptionsWindow::applySettings() const
 {
   resolve_deps = _resolve_toggle.getBoolProp();
   confirm_changes = _confirm_toggle.getBoolProp();
+  if (_color_toggle.getBoolProp()) { activate_color(); }
+  else { deactivate_color(); }
 
   editor = _editor_inp.getStringProp();
   install_opts = _iopts_inp.getStringProp();
@@ -258,19 +319,16 @@ Sizes and places window. Also sets width of text input boxes.
 void OptionsWindow::placeWindow()
 {
   int rows, cols;
-  unsigned int i;
+  unsigned int i, nitems;
 
   getmaxyx(stdscr, rows, cols);
   mvwin(_win, 2, 0);
   wresize(_win, rows-4, cols);
 
-  for ( i = 3; i < 13; i++ )
+  nitems = _items.size();
+  for ( i = 0; i < nitems; i++ )
   {
-    _items[i]->setWidth(cols-1-_items[i]->posx());
-  }
-
-  for ( i = 19; i < 23; i++ )
-  {
-    _items[i]->setWidth(cols-1-_items[i]->posx());
+    if (_items[i]->itemType() == "TextInput")
+      _items[i]->setWidth(cols-1-_items[i]->posx());
   }
 }
