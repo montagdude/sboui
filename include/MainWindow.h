@@ -37,7 +37,7 @@ class MainWindow {
     OptionsWindow _options;
     HelpWindow _help;
     std::string _title, _filter, _info, _status;
-    unsigned int _category_idx, _activated_listbox, _layout;
+    unsigned int _category_idx, _activated_listbox;
 
     void printToEol(const std::string & msg) const;
     void printSpaces(unsigned int nspaces) const;

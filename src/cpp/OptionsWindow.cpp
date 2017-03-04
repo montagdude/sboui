@@ -116,6 +116,23 @@ OptionsWindow::OptionsWindow()
   count++;
   line += 2;
 
+  // Label + ComboBox for layout
+
+  addItem(new Label());
+  _items[count]->setName("List layout");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(_items[count]->name().size());
+  count++;
+  line += 0;
+
+  _layout_box.setParent(this);
+  _layout_box.addChoice("horizontal");
+  _layout_box.addChoice("vertical");
+  addItem(& _layout_box);
+  _items[count]->setPosition(line,26);
+  count++;
+  line += 1;
+
   // Labels + text input boxes for basic settings
 
   addItem(new Label());
@@ -192,15 +209,26 @@ OptionsWindow::OptionsWindow()
   _items[count]->setWidth(_items[count]->name().size());
   count++;
   line += 2;
-  
-  // Labels + text input boxes for advanced settings
+
+  // Label + ComboBox for layout
 
   addItem(new Label());
   _items[count]->setName("Package manager");
   _items[count]->setPosition(line,1);
-  _items[count]->setWidth(20);
+  _items[count]->setWidth(_items[count]->name().size());
+  count++;
+  line += 0;
+
+  _pmgr_box.setParent(this);
+  _pmgr_box.addChoice("sbopkg");
+  _pmgr_box.addChoice("sbotools");
+  _pmgr_box.addChoice("custom");
+  addItem(& _pmgr_box);
+  _items[count]->setPosition(line,26);
   count++;
   line += 1;
+  
+  // Labels + text input boxes for advanced settings
 
   addItem(new Label());
   _items[count]->setName("Repository directory");
@@ -280,11 +308,15 @@ void OptionsWindow::readSettings()
   _confirm_toggle.setEnabled(confirm_changes);
   _color_toggle.setEnabled(enable_color);
 
+  _layout_box.setChoice(layout);
+
   _editor_inp.setText(editor);
   _iopts_inp.setText(install_opts);
   _ivars_inp.setText(install_vars);
   _uopts_inp.setText(upgrade_opts);
   _uvars_inp.setText(upgrade_vars);
+
+  _pmgr_box.setChoice(package_manager);
 
   _repo_inp.setText(repo_dir);
   _sync_inp.setText(sync_cmd);
@@ -299,11 +331,15 @@ void OptionsWindow::applySettings() const
   if (_color_toggle.getBoolProp()) { activate_color(); }
   else { deactivate_color(); }
 
+  layout = _layout_box.getStringProp();
+
   editor = _editor_inp.getStringProp();
   install_opts = _iopts_inp.getStringProp();
   install_vars = _ivars_inp.getStringProp();
   upgrade_opts = _uopts_inp.getStringProp();
   upgrade_vars = _uvars_inp.getStringProp();
+
+  package_manager = _pmgr_box.getStringProp();
 
   repo_dir = _repo_inp.getStringProp();
   sync_cmd = _sync_inp.getStringProp();

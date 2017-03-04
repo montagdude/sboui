@@ -5,6 +5,7 @@
 #include "TextInput.h"
 #include "ToggleInput.h"
 #include "Label.h"
+#include "ComboBox.h"
 #include "InputBox.h"
 
 /*******************************************************************************
@@ -20,6 +21,7 @@ class OptionsWindow: public InputBox {
     TextInput _repo_inp, _sync_inp, _inst_inp, _upgr_inp;
     ToggleInput _resolve_toggle, _confirm_toggle, _color_toggle;
     Label _basic, _advanced;
+    ComboBox _layout_box, _pmgr_box;
 
     /* Drawing */
 

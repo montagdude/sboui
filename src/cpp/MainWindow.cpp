@@ -214,8 +214,8 @@ void MainWindow::redrawWindows(bool force)
 
   // Set up windows
 
-  if (_layout == 0) { redrawWindowsHorz(); }
-  else { redrawWindowsVert(); }
+  if (backend::layout == "vertical") { redrawWindowsVert(); }
+  else { redrawWindowsHorz(); }
 
   // Redraw windows
 
@@ -246,8 +246,8 @@ Toggles horizontal/vertical layout
 *******************************************************************************/
 void MainWindow::toggleLayout()
 {
-  if (_layout == 0) { _layout = 1; }
-  else { _layout = 0; }
+  if (backend::layout == "horizontal") { backend::layout = "vertical"; }
+  else { backend::layout = "horizontal"; }
 
   redrawAll(true);
 }
@@ -1058,7 +1058,6 @@ MainWindow::MainWindow()
   _status = "";
   _category_idx = 0;
   _activated_listbox = 0;
-  _layout = 0;
 }
 
 MainWindow::~MainWindow() { clearData(); }

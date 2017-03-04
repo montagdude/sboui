@@ -410,6 +410,30 @@ Set attributes
 
 *******************************************************************************/
 void ListBox::setActivated(bool activated) { _activated = activated; }
+int ListBox::setHighlight(int highlight)
+{
+  if ( (highlight >= 0) && (highlight < int(_items.size())) )
+  {
+    _prevhighlight = _highlight;
+    _highlight = highlight;
+    determineFirstPrint();
+    return 0;
+  }
+  else { return 1; }
+}
+
+int ListBox::setHighlight(const std::string & name)
+{
+  int i, nitems, retval;
+
+  retval = 1;
+  nitems = _items.size();
+  for ( i = 0; i < nitems; i++ )
+  {
+    if (_items[i]->name() == name) { retval = setHighlight(i); }
+  }
+  return retval;
+}
 
 /*******************************************************************************
 
@@ -417,6 +441,11 @@ Get attributes
 
 *******************************************************************************/
 unsigned int ListBox::highlight() const { return _highlight; }
+const std::string & ListBox::highlightedName() const
+{ 
+  return _items[_highlight]->name();
+}
+
 void ListBox::minimumSize(int & height, int & width) const
 {
   int namelen, reserved_cols;

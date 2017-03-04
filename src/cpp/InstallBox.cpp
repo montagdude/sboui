@@ -548,7 +548,7 @@ int InstallBox::applyChanges(int & nchanged, bool notify_complete) const
       {
         if (i != nbuilds-1)
         {
-          std::cout << "An error occurred. Continue anyway [y/N]?";
+          std::cout << "An error occurred. Continue anyway [y/N]? ";
           std::getline(std::cin, response);
           if ( (response != "y") && (response != "Y") ) { return retval; }
         }

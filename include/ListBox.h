@@ -53,10 +53,13 @@ class ListBox: public AbstractListBox {
     /* Set attributes */
 
     void setActivated(bool activated);
+    int setHighlight(int highlight);
+    int setHighlight(const std::string & name);
 
     /* Get attributes */
 
     unsigned int highlight() const;
+    const std::string & highlightedName() const;
     virtual void minimumSize(int & height, int & width) const;
     virtual void preferredSize(int & height, int & width) const;
 

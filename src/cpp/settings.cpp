@@ -19,6 +19,7 @@ namespace backend
   std::string upgrade_opts;
   std::string editor;
   std::string color_theme_file;
+  std::string layout;
   std::string env;
   bool resolve_deps, confirm_changes, enable_color;
 }
@@ -36,6 +37,7 @@ namespace color
   std::string fg_popup, bg_popup;
   std::string fg_warning, bg_warning;
   std::string hotkey;
+  std::string fg_combobox, bg_combobox;
 }
 
 using namespace backend;
@@ -67,6 +69,8 @@ void set_default_colors()
   fg_warning = "white";
   bg_warning = "red";
   hotkey = "brightblack";
+  fg_combobox = "blue";
+  bg_combobox = "white";
 }
 
 /*******************************************************************************
@@ -94,6 +98,7 @@ void apply_color_settings()
   colors.addPair(hotkey, bg_popup); 
   colors.addPair(hotkey, bg_highlight_active); 
   colors.addPair(hotkey, bg_highlight_inactive); 
+  colors.addPair(fg_combobox, bg_combobox); 
   colors.setBackground(stdscr, fg_normal, bg_normal);
 } 
 
@@ -146,6 +151,8 @@ int read_color_theme(const std::string & color_theme_file)
   color_vars.push_back(&fg_warning);
   color_vars.push_back(&bg_warning);
   color_vars.push_back(&hotkey);
+  color_vars.push_back(&fg_combobox);
+  color_vars.push_back(&bg_combobox);
 
   color_names.push_back("fg_normal");
   color_names.push_back("bg_normal");
@@ -165,6 +172,8 @@ int read_color_theme(const std::string & color_theme_file)
   color_names.push_back("fg_warning");
   color_names.push_back("bg_warning");
   color_names.push_back("hotkey");
+  color_names.push_back("fg_combobox");
+  color_names.push_back("bg_combobox");
 
   // Try to read inputs, but stop if there is a problem
 
@@ -196,8 +205,8 @@ int read_config()
 
   // Read config file
 
-  //try { cfg.readFile("/etc/sboui/sboui.cfg"); }
-  try { cfg.readFile("config/sboui.cfg"); }
+  try { cfg.readFile("/etc/sboui/sboui.cfg"); }
+  //try { cfg.readFile("config/sboui.cfg"); }
   catch(const FileIOException &fioex)
   {
     std::cerr << "Error: cannot read sboui.cfg." << std::endl;
@@ -223,6 +232,13 @@ int read_config()
     std::cerr << "Error: No package_manager setting in sboui.cfg." << std::endl;
     return 1;
   }
+  if ( (package_manager != "sbopkg") && (package_manager != "sbotools") &&
+       (package_manager != "custom") )
+  {
+    std::cerr << "Error: package_manager must be sbopkg, sbotools, or custom." 
+              << std::endl;
+    return 1;
+  }
 
   if (! cfg.lookupValue("install_vars", install_vars)) { install_vars = ""; }
 
@@ -241,6 +257,15 @@ int read_config()
 
   if (! cfg.lookupValue("enable_color", enable_color)) { enable_color = true; }
 
+  if (! cfg.lookupValue("layout", layout)) { layout = "horizontal"; }
+  if ( (layout != "horizontal") && (layout != "vertical") )
+  {
+    layout = "horizontal";
+    std::cout << "Unrecognized layout option. Using default." << std::endl;
+    std::cout << "Press Enter to continue ...";
+    std::getline(std::cin, response);
+  }
+
 //FIXME: the following are necessary for custom package managers
   if (! cfg.lookupValue("sync_cmd", sync_cmd)) { sync_cmd = "sbomgr update"; }
 
@@ -250,8 +275,6 @@ int read_config()
   if (! cfg.lookupValue("upgrade_cmd", upgrade_cmd))
     upgrade_cmd = "sbomgr upgrade";
 
-//FIXME: add setting for default layout
-  
   // Config variables to always pass to sboutil
 
   env = "REPO_DIR=" + repo_dir + " TAG=SBo ";

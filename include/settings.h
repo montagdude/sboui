@@ -12,6 +12,7 @@ namespace backend
   extern std::string upgrade_vars, upgrade_opts;
   extern std::string editor; 
   extern std::string color_theme_file;
+  extern std::string layout;
   extern std::string env;
   extern bool resolve_deps, confirm_changes, enable_color;
 }
@@ -29,6 +30,7 @@ namespace color
   extern std::string fg_popup, bg_popup;
   extern std::string fg_warning, bg_warning;
   extern std::string hotkey;
+  extern std::string fg_combobox, bg_combobox;
 }
 
 void apply_color_settings();

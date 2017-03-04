@@ -312,8 +312,6 @@ Draws scroll box (frame, items, etc.) as needed
 *******************************************************************************/
 void ScrollBox::draw(bool force)
 {
-  int pair_normal;
-
   if (force) { _redraw_type = "all"; }
 
   // Draw list elements

@@ -183,6 +183,7 @@ InputBox::InputBox()
   _redraw_type = "all";
   _highlight = 0;
   _prevhighlight = 0;
+  _firstprint = 0;
   _reserved_rows = 6;
 }
 
@@ -194,6 +195,7 @@ InputBox::InputBox(WINDOW *win, const std::string & msg)
   _redraw_type = "all";
   _highlight = 0;
   _prevhighlight = 0;
+  _firstprint = 0;
   _reserved_rows = 6;
 }
 

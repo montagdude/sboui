@@ -18,7 +18,7 @@ class InputBox: public CursesWidget {
 
     std::string _msg, _info, _redraw_type;
     std::vector<InputItem *> _items;    
-    unsigned int _highlight, _prevhighlight, _reserved_rows;
+    unsigned int _highlight, _prevhighlight, _firstprint, _reserved_rows;
 
     /* Setting item to be highlighted */
 

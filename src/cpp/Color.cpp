@@ -176,6 +176,8 @@ int Color::turnOn(WINDOW *win, int vec_idx)
 {
   color_pair mypair;
 
+  // Get color pair
+
   if ( (vec_idx == -1) || (vec_idx >= int(_colors.size())) ) { return 1; }
   _active_pair = vec_idx;
   mypair = _colors[_active_pair];
@@ -215,6 +217,22 @@ int Color::setBackground(WINDOW *win, const std::string & fg,
 
   vec_idx = getPair(fg, bg);
   if (vec_idx == -1) { return 1; }
+  mypair = _colors[vec_idx];
+
+  // Set background color
+
+  wbkgd(win, COLOR_PAIR(mypair.idx));
+
+  return 0;
+}
+
+int Color::setBackground(WINDOW *win, int vec_idx) const
+{
+  color_pair mypair;
+
+  // Get color pair
+
+  if ( (vec_idx == -1) || (vec_idx >= int(_colors.size())) ) { return 1; }
   mypair = _colors[vec_idx];
 
   // Set background color
