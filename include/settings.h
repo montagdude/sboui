@@ -8,8 +8,8 @@ namespace backend
   extern std::string repo_dir;
   extern std::string package_manager;
   extern std::string sync_cmd, install_cmd, upgrade_cmd;
-  extern std::string install_vars, install_opts;
-  extern std::string upgrade_vars, upgrade_opts;
+  extern std::string install_clos, install_vars;
+  extern std::string upgrade_clos, upgrade_vars;
   extern std::string editor; 
   extern std::string color_theme_file;
   extern std::string layout;

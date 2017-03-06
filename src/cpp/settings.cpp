@@ -13,10 +13,10 @@ namespace backend
   std::string sync_cmd;
   std::string install_cmd;
   std::string upgrade_cmd;
+  std::string install_clos;
   std::string install_vars;
-  std::string install_opts;
+  std::string upgrade_clos;
   std::string upgrade_vars;
-  std::string upgrade_opts;
   std::string editor;
   std::string color_theme_file;
   std::string layout;
@@ -240,13 +240,13 @@ int read_config()
     return 1;
   }
 
+  if (! cfg.lookupValue("install_clos", install_clos)) { install_clos = ""; }
+
   if (! cfg.lookupValue("install_vars", install_vars)) { install_vars = ""; }
 
-  if (! cfg.lookupValue("install_opts", install_opts)) { install_opts = ""; }
+  if (! cfg.lookupValue("upgrade_clos", upgrade_clos)) { upgrade_clos = ""; }
 
   if (! cfg.lookupValue("upgrade_vars", upgrade_vars)) { upgrade_vars = ""; }
-
-  if (! cfg.lookupValue("upgrade_opts", upgrade_opts)) { upgrade_opts = ""; }
 
   if (! cfg.lookupValue("editor", editor)) { editor = "vim"; }
 

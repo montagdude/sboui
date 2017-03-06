@@ -254,7 +254,7 @@ int install_slackbuild(const BuildListItem & build)
 {
   std::string cmd;
 
-  cmd = install_vars + " " + install_cmd + " " + install_opts + " " +
+  cmd = install_vars + " " + install_cmd + " " + install_clos + " " +
         build.name();
   return run_command(cmd);
 }
@@ -268,7 +268,7 @@ int upgrade_slackbuild(const BuildListItem & build)
 {
   std::string cmd;
 
-  cmd = upgrade_vars + " " + upgrade_cmd + " " + upgrade_opts + " " +
+  cmd = upgrade_vars + " " + upgrade_cmd + " " + upgrade_clos + " " +
         build.name();
   return run_command(cmd);
 }

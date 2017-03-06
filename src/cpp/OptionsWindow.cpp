@@ -155,7 +155,7 @@ OptionsWindow::OptionsWindow()
   count++;
   line += 0;
 
-  addItem(&_iopts_inp);
+  addItem(&_iclos_inp);
   _items[count]->setPosition(line,26);
   _items[count]->setWidth(20);
   count++;
@@ -181,7 +181,7 @@ OptionsWindow::OptionsWindow()
   count++;
   line += 0;
 
-  addItem(&_uopts_inp);
+  addItem(&_uclos_inp);
   _items[count]->setPosition(line,26);
   _items[count]->setWidth(20);
   count++;
@@ -311,9 +311,9 @@ void OptionsWindow::readSettings()
   _layout_box.setChoice(layout);
 
   _editor_inp.setText(editor);
-  _iopts_inp.setText(install_opts);
+  _iclos_inp.setText(install_clos);
   _ivars_inp.setText(install_vars);
-  _uopts_inp.setText(upgrade_opts);
+  _uclos_inp.setText(upgrade_clos);
   _uvars_inp.setText(upgrade_vars);
 
   _pmgr_box.setChoice(package_manager);
@@ -334,9 +334,9 @@ void OptionsWindow::applySettings() const
   layout = _layout_box.getStringProp();
 
   editor = _editor_inp.getStringProp();
-  install_opts = _iopts_inp.getStringProp();
+  install_clos = _iclos_inp.getStringProp();
   install_vars = _ivars_inp.getStringProp();
-  upgrade_opts = _uopts_inp.getStringProp();
+  upgrade_clos = _uclos_inp.getStringProp();
   upgrade_vars = _uvars_inp.getStringProp();
 
   package_manager = _pmgr_box.getStringProp();
