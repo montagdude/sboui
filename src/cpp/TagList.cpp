@@ -21,7 +21,7 @@ screen or not.
 void TagList::redrawSingleItem(unsigned int idx)
 {
   std::string fg, bg;
-  unsigned int rows, cols; 
+  int rows, cols; 
 
   getmaxyx(_win, rows, cols);
 

@@ -22,7 +22,7 @@ Draws window border and title
 *******************************************************************************/
 void InstallBox::redrawFrame() const
 {
-  unsigned int rows, cols, namelen, i, nspaces, vlineloc;
+  int rows, cols, namelen, i, nspaces, vlineloc;
   double mid, left, right;
 
   getmaxyx(_win, rows, cols);
@@ -84,7 +84,7 @@ void InstallBox::redrawFrame() const
   // Symbols on right border to indicate scrolling
 
   if (_firstprint != 0) { mvwaddch(_win, 3, cols-1, ACS_UARROW); }
-  if (_items.size() > _firstprint + rows-4)
+  if (int(_items.size()) > _firstprint + rows-4)
   {
     mvwaddch(_win, rows-4, cols-1, ACS_DARROW);
   }
@@ -129,8 +129,7 @@ screen or not.
 void InstallBox::redrawSingleItem(unsigned int idx)
 {
   std::string fg, bg;
-  int nspaces, vlineloc, printlen;
-  unsigned int rows, cols, i; 
+  int nspaces, vlineloc, printlen, rows, cols, i;
 
   getmaxyx(_win, rows, cols);
 

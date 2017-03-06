@@ -98,7 +98,7 @@ Draws window border, message, and info
 *******************************************************************************/
 void InputBox::redrawFrame() const
 {
-  unsigned int rows, cols, msglen, i;
+  int rows, cols, msglen, i;
   int left;
   double mid;
 

@@ -111,8 +111,7 @@ screen or not.
 void BuildListBox::redrawSingleItem(unsigned int idx)
 {
   std::string fg, bg;
-  int nspaces, vlineloc, printlen;
-  unsigned int rows, cols, i; 
+  int nspaces, vlineloc, printlen, rows, cols, i;
 
   getmaxyx(_win, rows, cols);
 

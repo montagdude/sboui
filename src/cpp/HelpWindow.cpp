@@ -16,7 +16,7 @@ Draws window border, title, and header
 *******************************************************************************/
 void HelpWindow::redrawFrame() const
 {
-  unsigned int rows, cols, namelen, i, nspaces, vlineloc;
+  int rows, cols, namelen, i, nspaces, vlineloc;
   double mid, left, right;
 
   getmaxyx(_win, rows, cols);
@@ -66,7 +66,7 @@ void HelpWindow::redrawFrame() const
   // Symbols on right border to indicate scrolling
 
   if (_firstprint != 0) { mvwaddch(_win, 3, cols-1, ACS_UARROW); }
-  if (_items.size() > _firstprint + rows-4)
+  if (int(_items.size()) > _firstprint + rows-4)
   {
     mvwaddch(_win, rows-2, cols-1, ACS_DARROW);
   }
@@ -108,8 +108,7 @@ screen or not.
 *******************************************************************************/
 void HelpWindow::redrawSingleItem(unsigned int idx)
 {
-  int ndots, vlineloc, printlen;
-  unsigned int rows, cols, i; 
+  int ndots, vlineloc, printlen, rows, cols, i;
 
   getmaxyx(_win, rows, cols);
 

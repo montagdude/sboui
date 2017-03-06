@@ -22,7 +22,7 @@ void ToggleInput::redrawEntry() const
 
 void ToggleInput::redrawText() const
 {
-  unsigned int nspaces;
+  int nspaces;
 
   wmove(_win, _posy, _posx+4);
   if (_width > int(_name.size())+4) { nspaces = _width - (_name.size()+4); }

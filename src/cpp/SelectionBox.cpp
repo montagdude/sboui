@@ -16,8 +16,7 @@ Draws window border, title, and info
 *******************************************************************************/
 void SelectionBox::redrawFrame() const
 {
-  unsigned int rows, cols, namelen, i;
-  int left;
+  int rows, cols, namelen, i, left;
   double mid;
 
   getmaxyx(_win, rows, cols);

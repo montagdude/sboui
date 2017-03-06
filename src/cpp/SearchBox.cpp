@@ -18,8 +18,7 @@ Draws window border, message, and info
 *******************************************************************************/
 void SearchBox::redrawFrame() const
 {
-  unsigned int rows, cols, msglen, i;
-  int left;
+  int rows, cols, msglen, i, left;
   double mid;
 
   getmaxyx(_win, rows, cols);
