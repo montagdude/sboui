@@ -303,6 +303,8 @@ int InstallBox::create(BuildListItem & build,
 {
   int check; 
   unsigned int nreqs, i, nbuilds;
+  bool tag;
+  std::string action_applied;
   std::vector<std::string> pkg_info;
   std::string installed_version, available_version;
   std::vector<BuildListItem *> reqlist;
@@ -323,48 +325,54 @@ int InstallBox::create(BuildListItem & build,
   if (recheck)
     for ( i = 0; i <= nreqs; i++ ) { reqlist[i]->readPropsFromRepo(); }
 
-  // Copy reqlist to _builds list and determine action
+  // Copy reqlist to _builds list and determine action for each
 
   nbuilds = 0;
-  for ( i = 0; i <= nreqs; i++ ) 
-  { 
-    if (action == "Remove")
+  for ( i = 0; i <= nreqs; i++ )
+  {
+    if (action != "Remove")
     {
-      if (reqlist[i]->getBoolProp("installed"))
-      {
-        _builds.push_back(*reqlist[i]);
-
-        // By default do not remove dependencies, only the requested SlackBuild
-
-        if (i < nreqs) { _builds[nbuilds].setBoolProp("tagged", false); }
-        else { _builds[nbuilds].setBoolProp("tagged", true); }
-
-        _builds[nbuilds].addProp("action", "Remove");
-        nbuilds++;
-      }
-    }
-    else
-    {
-      _builds.push_back(*reqlist[i]); 
+      _builds.push_back(*reqlist[i]);
       if (! reqlist[i]->getBoolProp("installed"))
       {
-        _builds[nbuilds].setBoolProp("tagged", true);
-        _builds[nbuilds].addProp("action", "Install");
+        tag = true;
+        action_applied = "Install";
       }
       else
       {
         if (reqlist[i]->upgradable())
         {
-          _builds[nbuilds].setBoolProp("tagged", true);
-          _builds[nbuilds].addProp("action", "Upgrade");
+          tag = true;
+          action_applied = "Upgrade";
         }
         else
         {
-          _builds[nbuilds].setBoolProp("tagged", false);
-          _builds[nbuilds].addProp("action", "Reinstall");
+          // By default, do not reinstall dependencies
+
+          if ( (action == "Reinstall") && (i == nreqs) ) { tag = true; }
+          else { tag = false; }
+          action_applied = "Reinstall";
         }
       }
+      _builds[nbuilds].setBoolProp("tagged", tag);
+      _builds[nbuilds].addProp("action", action_applied);
       nbuilds++;
+    }
+    else
+    {
+      if (reqlist[i]->getBoolProp("installed"))
+      {
+        _builds.push_back(*reqlist[i]);
+        
+        // By default, do not remove dependencies
+
+        if (i == nreqs) { tag = true; }
+        else { tag = false; }
+        action_applied = "Remove";
+        _builds[nbuilds].setBoolProp("tagged", tag);
+        _builds[nbuilds].addProp("action", action_applied);
+        nbuilds++;
+      }
     }
   }
 
