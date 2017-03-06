@@ -1522,6 +1522,11 @@ void MainWindow::show()
       {
         build = *_blistboxes[_category_idx].highlightedItem();
         showBuildActions(build);
+
+        // Update tag setting since we are working with a local copy
+
+        _blistboxes[_category_idx].highlightedItem()->
+                             setBoolProp("tagged", build.getBoolProp("tagged"));
       }
     }
 
