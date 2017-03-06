@@ -6,7 +6,7 @@
 #include "Color.h"
 #include "settings.h"
 
-namespace backend
+namespace settings
 {
   std::string repo_dir;
   std::string package_manager;
@@ -40,7 +40,7 @@ namespace color
   std::string fg_combobox, bg_combobox;
 }
 
-using namespace backend;
+using namespace settings;
 using namespace color;
 using namespace libconfig;
 

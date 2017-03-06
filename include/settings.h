@@ -3,7 +3,7 @@
 #include <string>
 #include "Color.h"
 
-namespace backend
+namespace settings
 {
   extern std::string repo_dir;
   extern std::string package_manager;

@@ -214,7 +214,7 @@ void MainWindow::redrawWindows(bool force)
 
   // Set up windows
 
-  if (backend::layout == "vertical") { redrawWindowsVert(); }
+  if (settings::layout == "vertical") { redrawWindowsVert(); }
   else { redrawWindowsHorz(); }
 
   // Redraw windows
@@ -246,8 +246,8 @@ Toggles horizontal/vertical layout
 *******************************************************************************/
 void MainWindow::toggleLayout()
 {
-  if (backend::layout == "horizontal") { backend::layout = "vertical"; }
-  else { backend::layout = "horizontal"; }
+  if (settings::layout == "horizontal") { settings::layout = "vertical"; }
+  else { settings::layout = "horizontal"; }
 
   redrawAll(true);
 }
@@ -563,9 +563,9 @@ bool MainWindow::modifyPackage(BuildListItem & build,
   unsigned int ninstaller;
   InstallBox installer;
 
-  if (backend::resolve_deps)
+  if (settings::resolve_deps)
     printStatus("Computing dependencies for " + build.name() + " ...");
-  check = installer.create(build, _slackbuilds, action, backend::resolve_deps,
+  check = installer.create(build, _slackbuilds, action, settings::resolve_deps,
                            recheck);
 
   if (check != 0) 
@@ -578,7 +578,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
   }
 
   ninstaller = installer.numItems();
-  if (backend::resolve_deps)
+  if (settings::resolve_deps)
   {
     if (ninstaller == 2)
     { 
@@ -610,7 +610,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
 
   needs_rebuild = false;
   response = 0;
-  if (backend::confirm_changes)
+  if (settings::confirm_changes)
   {
     installerwin = newwin(1, 1, 0, 0);
     installer.setWindow(installerwin);
@@ -648,7 +648,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
   {
     def_prog_mode();
     endwin();
-    check = installer.applyChanges(nchanged, backend::confirm_changes);
+    check = installer.applyChanges(nchanged, settings::confirm_changes);
     if (nchanged > 0) { needs_rebuild = true; }
     reset_prog_mode();
     redrawAll(true);
@@ -775,7 +775,7 @@ void MainWindow::browseFiles(const BuildListItem & build)
   bool getting_input;
   DirListBox browser;
 
-  builddir = backend::repo_dir + "/" + build.getProp("category") + "/" +
+  builddir = settings::repo_dir + "/" + build.getProp("category") + "/" +
              build.name();
   check = browser.setDirectory(builddir);
 

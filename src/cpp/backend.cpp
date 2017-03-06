@@ -12,7 +12,7 @@
 #include "settings.h"
 #include "backend.h"
 
-using namespace backend;
+using namespace settings;
  
 // Bash script with functions to query the repo and installed packages
 //FIXME: location should be set by preprocessor macro depending on configure --prefix=

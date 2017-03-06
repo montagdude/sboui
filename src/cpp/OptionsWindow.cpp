@@ -9,7 +9,7 @@
 #include "Label.h"
 #include "OptionsWindow.h"
 
-using namespace backend;
+using namespace settings;
 using namespace color;
 
 /*******************************************************************************
