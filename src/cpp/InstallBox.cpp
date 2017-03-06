@@ -13,7 +13,7 @@
 #include "BuildListItem.h"
 #include "InstallBox.h"
 
-using namespace color;
+using namespace color_settings;
 
 /*******************************************************************************
 

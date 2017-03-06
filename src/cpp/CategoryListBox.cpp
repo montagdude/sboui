@@ -8,7 +8,7 @@
 #include "BuildListBox.h"
 #include "CategoryListBox.h"
 
-using namespace color;
+using namespace color_settings;
 
 /*******************************************************************************
 

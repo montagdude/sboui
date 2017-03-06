@@ -6,7 +6,7 @@
 #include "InputItem.h"
 #include "TextInput.h"
 
-using namespace color;
+using namespace color_settings;
 
 /*******************************************************************************
 

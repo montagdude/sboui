@@ -9,7 +9,7 @@
 #include "InputBox.h"
 #include "ComboBox.h"
 
-using namespace color;
+using namespace color_settings;
 
 /*******************************************************************************
 

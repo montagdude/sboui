@@ -17,7 +17,7 @@ namespace settings
   extern bool resolve_deps, confirm_changes, enable_color;
 }
 
-namespace color 
+namespace color_settings
 {
   extern Color colors;
   extern std::string fg_normal, bg_normal;

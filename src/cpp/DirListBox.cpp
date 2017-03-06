@@ -8,7 +8,7 @@
 #include "SelectionBox.h"
 #include "DirListBox.h"
 
-using namespace color;
+using namespace color_settings;
 
 /*******************************************************************************
  

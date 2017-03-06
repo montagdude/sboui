@@ -6,7 +6,7 @@
 #include "InputItem.h"
 #include "ToggleInput.h"
 
-using namespace color;
+using namespace color_settings;
 
 /*******************************************************************************
 

@@ -10,7 +10,7 @@
 #include "SelectionBox.h"
 #include "TagList.h"
 
-using namespace color;
+using namespace color_settings;
 
 /*******************************************************************************
  

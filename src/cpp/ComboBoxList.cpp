@@ -6,7 +6,7 @@
 #include "ListItem.h"
 #include "ComboBoxList.h"
 
-using namespace color;
+using namespace color_settings;
 
 /*******************************************************************************
 

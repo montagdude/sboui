@@ -9,7 +9,7 @@
 #include "Label.h"
 #include "SearchBox.h"
 
-using namespace color;
+using namespace color_settings;
 
 /*******************************************************************************
 

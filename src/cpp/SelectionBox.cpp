@@ -7,7 +7,7 @@
 #include "ListItem.h"
 #include "SelectionBox.h"
 
-using namespace color;
+using namespace color_settings;
 
 /*******************************************************************************
 

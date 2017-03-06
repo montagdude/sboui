@@ -10,7 +10,7 @@
 #include "BuildListItem.h"
 #include "BuildOrderBox.h"
 
-using namespace color;
+using namespace color_settings;
 
 /*******************************************************************************
 

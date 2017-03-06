@@ -9,7 +9,7 @@
 #include "string_util.h"
 #include "MessageBox.h"
 
-using namespace color;
+using namespace color_settings;
 
 /*******************************************************************************
 

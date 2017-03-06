@@ -7,7 +7,7 @@
 #include "HelpItem.h"
 #include "HelpWindow.h"
 
-using namespace color;
+using namespace color_settings;
 
 /*******************************************************************************
 

@@ -1,13 +1,9 @@
 #include <string>
 #include <curses.h>
-#include "Color.h"
-#include "settings.h"
 #include "ListItem.h"
 #include "BuildListItem.h"
 #include "SelectionBox.h"
 #include "BuildActionBox.h"
-
-using namespace color;
 
 /*******************************************************************************
 

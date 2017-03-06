@@ -24,7 +24,7 @@ namespace settings
   bool resolve_deps, confirm_changes, enable_color;
 }
 
-namespace color 
+namespace color_settings
 {
   Color colors;
   std::string fg_normal, bg_normal;
@@ -41,7 +41,7 @@ namespace color
 }
 
 using namespace settings;
-using namespace color;
+using namespace color_settings;
 using namespace libconfig;
 
 /*******************************************************************************

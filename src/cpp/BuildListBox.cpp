@@ -9,7 +9,7 @@
 #include "BuildListItem.h"
 #include "BuildListBox.h"
 
-using namespace color;
+using namespace color_settings;
 
 /*******************************************************************************
 

@@ -8,7 +8,7 @@
 #include "InputItem.h"
 #include "InputBox.h"
 
-using namespace color;
+using namespace color_settings;
 
 /*******************************************************************************
 

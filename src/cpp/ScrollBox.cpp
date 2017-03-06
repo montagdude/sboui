@@ -9,7 +9,7 @@
 #include "AbstractListBox.h"
 #include "ScrollBox.h"
 
-using namespace color;
+using namespace color_settings;
 
 /*******************************************************************************
 

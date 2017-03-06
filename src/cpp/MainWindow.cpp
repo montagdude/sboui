@@ -26,7 +26,7 @@
 #include "HelpWindow.h"
 #include "MainWindow.h"
 
-using namespace color;
+using namespace color_settings;
 
 /*******************************************************************************
 

@@ -10,7 +10,7 @@
 #include "OptionsWindow.h"
 
 using namespace settings;
-using namespace color;
+using namespace color_settings;
 
 /*******************************************************************************
 
