@@ -18,8 +18,8 @@ Draws window border, title, and header
 *******************************************************************************/
 void BuildListBox::redrawFrame() const
 {
-  unsigned int rows, cols, namelen, i, nspaces, vlineloc;
-  double mid, left, right;
+  int rows, cols, namelen, i, nspaces, vlineloc, left, right;
+  double mid;
 
   getmaxyx(_win, rows, cols);
 
@@ -68,7 +68,7 @@ void BuildListBox::redrawFrame() const
   // Symbols on right border to indicate scrolling
 
   if (_firstprint != 0) { mvwaddch(_win, 3, cols-1, ACS_UARROW); }
-  if (_items.size() > _firstprint + rows-4)
+  if (int(_items.size()) > _firstprint + rows-4)
   {
     mvwaddch(_win, rows-2, cols-1, ACS_DARROW);
   }

@@ -21,7 +21,7 @@ class InputItem {
     /* Prints to end of line or specified number of spaces */
 
     void printToEol(const std::string & msg) const;
-    void printSpaces(unsigned int nspaces) const;
+    void printSpaces(int nspaces) const;
 
   public:
 

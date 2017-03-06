@@ -17,9 +17,8 @@ Draws window border, title, and header
 *******************************************************************************/
 void CategoryListBox::redrawFrame() const
 {
-  unsigned int rows, cols, namelen, i;
+  int rows, cols, namelen, i, left, right;
   double mid;
-  int left, right;
 
   getmaxyx(_win, rows, cols);
 
@@ -68,7 +67,7 @@ void CategoryListBox::redrawFrame() const
   // Symbols on right border to indicate scrolling
 
   if (_firstprint != 0) { mvwaddch(_win, 3, cols-1, ACS_UARROW); }
-  if (_items.size() > _firstprint + rows-4)
+  if (int(_items.size()) > _firstprint + rows-4)
   {
     mvwaddch(_win, rows-2, cols-1, ACS_DARROW);
   }

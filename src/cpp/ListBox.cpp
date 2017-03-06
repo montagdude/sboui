@@ -178,8 +178,7 @@ Draws window border and title
 *******************************************************************************/
 void ListBox::redrawFrame() const
 {
-  unsigned int rows, cols, namelen, i;
-  int left, right;
+  int rows, cols, namelen, i, left, right;
   double mid;
 
   getmaxyx(_win, rows, cols);

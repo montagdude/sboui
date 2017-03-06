@@ -33,9 +33,9 @@ void InputItem::printToEol(const std::string & msg) const
 Prints a given number of spaces
 
 *******************************************************************************/
-void InputItem::printSpaces(unsigned int nspaces) const
+void InputItem::printSpaces(int nspaces) const
 {
-  unsigned int i;
+  int i;
 
   for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
 }

@@ -55,9 +55,9 @@ void MainWindow::printToEol(const std::string & msg) const
 Prints a given number of spaces
 
 *******************************************************************************/
-void MainWindow::printSpaces(unsigned int nspaces) const
+void MainWindow::printSpaces(int nspaces) const
 {
-  unsigned int i;
+  int i;
 
   for ( i = 0; i < nspaces; i++ ) { addch(' '); }
 }
@@ -99,9 +99,7 @@ Redraws header and footer
 *******************************************************************************/
 void MainWindow::redrawHeaderFooter() const
 {
-  unsigned int namelen;
-  int rows, cols;
-  int left;
+  int rows, cols, namelen, left;
   double mid;
 
   getmaxyx(stdscr, rows, cols);
