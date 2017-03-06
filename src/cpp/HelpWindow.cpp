@@ -185,6 +185,7 @@ void HelpWindow::createList()
   addItem(new HelpItem("Jump to end", "End"));
   addItem(new HelpItem("Next input field", "Tab"));
   addItem(new HelpItem("Previous input field", "Shift+Tab"));
+  addItem(new HelpItem("Pull down combo box", "Space"));
   addItem(new HelpItem("Scroll down", "Down arrow"));
   addItem(new HelpItem("Scroll up", "Up arrow"));
   addItem(new HelpItem("Scroll down a page", "Page down"));
