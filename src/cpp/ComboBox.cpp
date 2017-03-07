@@ -203,6 +203,14 @@ std::string ComboBox::exec(int y_offset)
         retval = signals::highlightLast;
         getting_input = false;
         break;
+      case KEY_PPAGE:
+        retval = signals::highlightPrevPage;
+        getting_input = false;
+        break;
+      case KEY_NPAGE:
+        retval = signals::highlightNextPage;
+        getting_input = false;
+        break;
       case KEY_UP:
       case MY_SHIFT_TAB:
         retval = signals::highlightPrev;

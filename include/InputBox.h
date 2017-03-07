@@ -27,6 +27,8 @@ class InputBox: public CursesWidget {
     int highlightLast();
     int highlightPrevious();
     int highlightNext();
+    int highlightPreviousPage();
+    int highlightNextPage();
 
     /* Determines first line to print (needed for scrolling) */
     

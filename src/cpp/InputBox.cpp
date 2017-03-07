@@ -115,6 +115,84 @@ int InputBox::highlightNext()
   return determineFirstPrint();
 }
 
+int InputBox::highlightPreviousPage()
+{
+  int rows, cols, rowsavail, firstprintstore;
+  unsigned int i, nitems;
+  bool highlight_found;
+
+  getmaxyx(_win, rows, cols);
+  rowsavail = rows-_reserved_rows;
+
+  // Determine how far to page
+
+  firstprintstore = _firstprint;
+  if (_firstprint - rowsavail <= _header_lines)
+  {
+    if (_items[_highlight]->posy() - rowsavail <= _header_lines)
+      return highlightFirst();
+    _firstprint = _header_lines;
+  }
+  else { _firstprint -= rowsavail; }
+
+  // Highlight next selectable choice after _firstprint
+
+  nitems = _items.size();
+  highlight_found = false;
+  for ( i = 0; i < nitems; i++ )
+  {
+    if ( (_items[i]->posy() >= _firstprint) && (_items[i]->selectable()) )
+    {
+      _highlight = i;
+      highlight_found = true;
+      break;
+    }
+  }
+  if (! highlight_found) { highlightFirst(); }
+
+  if (_firstprint == firstprintstore) { return 0; }
+  else { return 1; }
+}
+
+int InputBox::highlightNextPage()
+{
+  int rows, cols, rowsavail, firstprintstore, lastprint;
+  unsigned int i, nitems;
+  bool highlight_found;
+
+  getmaxyx(_win, rows, cols);
+  rowsavail = rows-_reserved_rows;
+
+  // Determine how far to page
+
+  nitems = _items.size();
+  firstprintstore = _firstprint;
+  lastprint = _items[nitems-1]->posy();
+  if (_items[_highlight]->posy() + rowsavail-1 >= lastprint)
+    return highlightLast();
+  if (_firstprint + rowsavail-1 >= lastprint) { return highlightLast(); }
+  else if (_firstprint + 2*(rowsavail-1) >= lastprint)
+    _firstprint = lastprint - (rowsavail-1);
+  else { _firstprint += rowsavail; }
+
+  // Highlight next selectable choice after _firstprint
+
+  highlight_found = false;
+  for ( i = 0; i < nitems; i++ )
+  {
+    if ( (_items[i]->posy() >= _firstprint) && (_items[i]->selectable()) )
+    {
+      _highlight = i;
+      highlight_found = true;
+      break;
+    }
+  }
+  if (! highlight_found) { highlightLast(); }
+  
+  if (_firstprint == firstprintstore) { return 0; }
+  else { return 1; }
+}
+
 /*******************************************************************************
 
 Determine first line to print based on current highlighted and number of
@@ -450,6 +528,16 @@ std::string InputBox::exec()
     else if (selection == signals::highlightLast) 
     { 
       if (highlightLast() == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+    }
+    else if (selection == signals::highlightPrevPage)
+    {
+      if (highlightPreviousPage() == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+    }
+    else if (selection == signals::highlightNextPage)
+    {
+      if (highlightNextPage() == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
     }
     else if (selection == signals::highlightPrev)

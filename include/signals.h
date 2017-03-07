@@ -11,6 +11,8 @@ namespace signals
   extern std::string highlightLast;
   extern std::string highlightPrev;
   extern std::string highlightNext;
+  extern std::string highlightPrevPage;
+  extern std::string highlightNextPage;
   extern std::string keyTab;
   extern std::string keyEnter;
   extern std::string scroll;

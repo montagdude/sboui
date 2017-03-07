@@ -191,6 +191,16 @@ std::string TextInput::exec(int y_offset)
         check_redraw = determineFirstText();
         if (check_redraw == 0) { _redraw_type = "none"; }
         break;
+      case KEY_PPAGE:
+        retval = signals::highlightPrevPage;
+        _redraw_type = "entry";
+        getting_input = false;
+        break;
+      case KEY_NPAGE:
+        retval = signals::highlightNextPage;
+        _redraw_type = "entry";
+        getting_input = false;
+        break;
       case KEY_UP:
       case MY_SHIFT_TAB:
         retval = signals::highlightPrev;

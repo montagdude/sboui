@@ -136,6 +136,16 @@ std::string ToggleInput::exec(int y_offset)
         _redraw_type = "all";
         getting_input = false;
         break;
+      case KEY_PPAGE:
+        retval = signals::highlightPrevPage;
+        _redraw_type = "all";
+        getting_input = false;
+        break;
+      case KEY_NPAGE:
+        retval = signals::highlightNextPage;
+        _redraw_type = "all";
+        getting_input = false;
+        break;
       case KEY_UP:
       case MY_SHIFT_TAB:
         retval = signals::highlightPrev;

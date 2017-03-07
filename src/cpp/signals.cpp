@@ -10,6 +10,8 @@ namespace signals
   std::string highlightLast = "__HIGHLIGHTLAST__";
   std::string highlightPrev = "__HIGHLIGHTPREV__";
   std::string highlightNext = "__HIGHLIGHTNEXT__";
+  std::string highlightPrevPage = "__HIGHLIGHTPREVPAGE__";
+  std::string highlightNextPage = "__HIGHLIGHTNEXTPAGE__";
   std::string keyTab = "__TAB__";
   std::string keyEnter = "__ENTER__";
   std::string scroll = "__SCROLL__";
