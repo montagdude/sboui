@@ -221,35 +221,6 @@ int read_config()
 
   // Read inputs and/or set defaults
 
-  if (! cfg.lookupValue("repo_dir", repo_dir))
-  {
-    std::cerr << "Error: no repo_dir setting in sboui.cfg." << std::endl;
-    return 1;
-  }
-
-  if (! cfg.lookupValue("package_manager", package_manager))
-  {
-    std::cerr << "Error: No package_manager setting in sboui.cfg." << std::endl;
-    return 1;
-  }
-  if ( (package_manager != "sbopkg") && (package_manager != "sbotools") &&
-       (package_manager != "custom") )
-  {
-    std::cerr << "Error: package_manager must be sbopkg, sbotools, or custom." 
-              << std::endl;
-    return 1;
-  }
-
-  if (! cfg.lookupValue("install_clos", install_clos)) { install_clos = ""; }
-
-  if (! cfg.lookupValue("install_vars", install_vars)) { install_vars = ""; }
-
-  if (! cfg.lookupValue("upgrade_clos", upgrade_clos)) { upgrade_clos = ""; }
-
-  if (! cfg.lookupValue("upgrade_vars", upgrade_vars)) { upgrade_vars = ""; }
-
-  if (! cfg.lookupValue("editor", editor)) { editor = "vim"; }
-
   if (! cfg.lookupValue("resolve_deps", resolve_deps)) { resolve_deps = true; }
 
   if (! cfg.lookupValue("confirm_changes", confirm_changes)) 
@@ -266,16 +237,75 @@ int read_config()
     std::getline(std::cin, response);
   }
 
-//FIXME: the following are necessary for custom package managers
-  if (! cfg.lookupValue("sync_cmd", sync_cmd)) { sync_cmd = "sbomgr update"; }
+  if (! cfg.lookupValue("editor", editor)) { editor = "vim"; }
+
+  if (! cfg.lookupValue("install_clos", install_clos)) { install_clos = ""; }
+
+  if (! cfg.lookupValue("install_vars", install_vars)) { install_vars = ""; }
+
+  if (! cfg.lookupValue("upgrade_clos", upgrade_clos)) { upgrade_clos = ""; }
+
+  if (! cfg.lookupValue("upgrade_vars", upgrade_vars)) { upgrade_vars = ""; }
+
+  // Package manager settings
+
+  if (! cfg.lookupValue("package_manager", package_manager))
+  {
+    std::cerr << "Error: No package_manager setting in sboui.cfg." << std::endl;
+    return 1;
+  }
+
+  if (! cfg.lookupValue("repo_dir", repo_dir))
+  {
+    std::cerr << "Error: no repo_dir setting in sboui.cfg." << std::endl;
+    return 1;
+  }
+
+  if ( (package_manager != "sbopkg") && (package_manager != "sbotools") &&
+       (package_manager != "custom") )
+  {
+    std::cerr << "Error: package_manager must be sbopkg, sbotools, or custom." 
+              << std::endl;
+    return 1;
+  }
+
+  if (! cfg.lookupValue("sync_cmd", sync_cmd))
+  { 
+    if (package_manager == "sbopkg") { sync_cmd = "sbopkg -r"; }
+    else if (package_manager == "sbotools") { sync_cmd = "sbosnap fetch"; }
+    else
+    {
+      std::cerr << "Error: must specify sync_cmd for custom package_manager."
+                << std::endl;
+      return 1;
+    }
+  }
 
   if (! cfg.lookupValue("install_cmd", install_cmd))
-    install_cmd = "sbomgr install -n";
+  {
+    if (package_manager == "sbopkg") { install_cmd = "sbopkg -i"; }
+    else if (package_manager == "sbotools") { sync_cmd = "sboinstall -r"; } 
+    else
+    {
+      std::cerr << "Error: must specify install_cmd for custom package_manager."
+                << std::endl;
+      return 1;
+    }
+  }
 
   if (! cfg.lookupValue("upgrade_cmd", upgrade_cmd))
-    upgrade_cmd = "sbomgr upgrade";
+  {
+    if (package_manager == "sbopkg") { upgrade_cmd = "sbopkg -i"; }
+    else if (package_manager == "sbotools") { sync_cmd = "sboupgrade -r"; } 
+    else
+    {
+      std::cerr << "Error: must specify upgrade_cmd for custom package_manager."
+                << std::endl;
+      return 1;
+    }
+  }
 
-  // Config variables to always pass to sboutil
+  // Environment variables passed to sboutil
 
   env = "REPO_DIR=" + repo_dir + " TAG=SBo ";
 
