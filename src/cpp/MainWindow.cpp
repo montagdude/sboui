@@ -1380,10 +1380,9 @@ void MainWindow::showBuildActions(BuildListItem & build)
     else { getting_selection = false; }
   }
 
-  // Get rid of window and redraw
+  // Get rid of window (redraw happens in MainWindow::show())
 
   delwin(actionwin);
-  redrawAll(true);
 
   // Rebuild lists if SlackBuilds were installed/upgraded/reinstalled/removed
 
@@ -1404,6 +1403,7 @@ void MainWindow::show()
   std::string selection, statusmsg;
   bool getting_input, all_tagged;
   int check_quit;
+  unsigned int i, ncategories;
   BuildListItem build;
 
   redrawAll();
@@ -1525,6 +1525,16 @@ void MainWindow::show()
 
         _blistboxes[_category_idx].highlightedItem()->
                              setBoolProp("tagged", build.getBoolProp("tagged"));
+
+        // Determine if categories should be tagged and redraw
+
+        ncategories = _clistbox.numItems();
+        for ( i = 0; i < ncategories; i++ )
+        {
+          if (_blistboxes[i].allTagged())
+            _clistbox.itemByIdx(i)->setBoolProp("tagged", true);
+        }
+        redrawAll(true);
       }
     }
 
