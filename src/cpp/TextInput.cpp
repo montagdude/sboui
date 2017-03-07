@@ -37,13 +37,13 @@ unsigned int TextInput::determineFirstText()
 Redraws user input
 
 *******************************************************************************/
-void TextInput::redrawEntry() const
+void TextInput::redrawEntry(int y_offset) const
 {
   int numprint;
 
   numprint = std::min(_width-1, int(_entry.size() - _firsttext));
   
-  wmove(_win, _posy, _posx);
+  wmove(_win, _posy-y_offset, _posx);
   printToEol(_entry.substr(_firsttext, numprint));
 }
 
@@ -86,7 +86,7 @@ void TextInput::clear()
 Draws text input
 
 *******************************************************************************/
-void TextInput::draw(bool force, bool highlight)
+void TextInput::draw(int y_offset, bool force, bool highlight)
 {
   if (force) { _redraw_type = "entry"; }
 
@@ -96,8 +96,8 @@ void TextInput::draw(bool force, bool highlight)
       wattron(_win, A_REVERSE);
   }
 
-  if (_redraw_type == "entry") { redrawEntry(); }
-  wmove(_win, _posy, _posx + _cursidx - _firsttext);
+  if (_redraw_type == "entry") { redrawEntry(y_offset); }
+  wmove(_win, _posy-y_offset, _posx + _cursidx - _firsttext);
 
   if (highlight)
     if (colors.turnOff(_win) != 0) { wattroff(_win, A_REVERSE); }
@@ -109,7 +109,7 @@ void TextInput::draw(bool force, bool highlight)
 User interaction: returns key stroke
 
 *******************************************************************************/
-std::string TextInput::exec()
+std::string TextInput::exec(int y_offset)
 {
   int ch;
   bool getting_input;
@@ -128,7 +128,7 @@ std::string TextInput::exec()
   {
     // Redraw
   
-    draw(false, true);
+    draw(y_offset, false, true);
     _redraw_type = "entry";
 
     // Get user input

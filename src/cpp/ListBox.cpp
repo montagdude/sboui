@@ -163,9 +163,7 @@ int ListBox::determineFirstPrint()
   rowsavail = rows-_reserved_rows;
   if (_highlight < _firstprint) { _firstprint = _highlight; }
   else if (_highlight >= _firstprint + rowsavail)
-  {
     _firstprint = _highlight - rowsavail + 1;
-  }
 
   if (firstprintstore == _firstprint) { return 0; }
   else { return 1; }
@@ -229,9 +227,7 @@ void ListBox::redrawFrame() const
 
   if (_firstprint != 0) { mvwaddch(_win, 1, cols-1, ACS_UARROW); }
   if (_items.size() > _firstprint + rows-_reserved_rows)
-  {
     mvwaddch(_win, rows-2, cols-1, ACS_DARROW);
-  }
 }
 
 /*******************************************************************************
@@ -325,14 +321,10 @@ void ListBox::redrawChangedItems()
        (_prevhighlight < _firstprint+rowsavail) )
   {
     if (_prevhighlight < int(_items.size())) 
-    { 
       redrawSingleItem(_prevhighlight); 
-    }
   }
   if (_highlight < int(_items.size())) 
-  { 
     redrawSingleItem(_highlight); 
-  }
 }
 
 /******************************************************************************

@@ -17,8 +17,8 @@ class ToggleInput: public InputItem {
 
     /* Drawing */
 
-    void redrawEntry() const;
-    void redrawText() const;
+    void redrawEntry(int y_offset) const;
+    void redrawText(int y_offset) const;
 
   public:
 
@@ -33,8 +33,8 @@ class ToggleInput: public InputItem {
 
     /* User interaction */
 
-    void draw(bool force=false, bool highlight=false);
-    std::string exec();
+    void draw(int y_offset, bool force=false, bool highlight=false);
+    std::string exec(int y_offset);
 
     /* Accessing properties. */
 

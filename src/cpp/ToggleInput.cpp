@@ -13,18 +13,18 @@ using namespace color_settings;
 Drawing
 
 *******************************************************************************/
-void ToggleInput::redrawEntry() const
+void ToggleInput::redrawEntry(int y_offset) const
 {
-  wmove(_win, _posy, _posx);
+  wmove(_win, _posy-y_offset, _posx);
   if (_enabled) { wprintw(_win, "[X] "); }
   else { wprintw(_win, "[ ] "); }
 }
 
-void ToggleInput::redrawText() const
+void ToggleInput::redrawText(int y_offset) const
 {
   int nspaces;
 
-  wmove(_win, _posy, _posx+4);
+  wmove(_win, _posy-y_offset, _posx+4);
   if (_width > int(_name.size())+4) { nspaces = _width - (_name.size()+4); }
   else { nspaces = 0; } 
   wprintw(_win, _name.c_str());
@@ -58,7 +58,7 @@ void ToggleInput::toggle() { _enabled = !_enabled; }
 Draws input
 
 *******************************************************************************/
-void ToggleInput::draw(bool force, bool highlight)
+void ToggleInput::draw(int y_offset, bool force, bool highlight)
 {
   if (force) { _redraw_type = "all"; }
 
@@ -69,9 +69,9 @@ void ToggleInput::draw(bool force, bool highlight)
   }
 
   if ( (_redraw_type == "all") || (_redraw_type == "entry") )
-    redrawEntry();
-  if (_redraw_type == "all") { redrawText(); }
-  wmove(_win, _posy, _posx+1);
+    redrawEntry(y_offset);
+  if (_redraw_type == "all") { redrawText(y_offset); }
+  wmove(_win, _posy-y_offset, _posx+1);
 
   if (highlight)
     if (colors.turnOff(_win) != 0) { wattroff(_win, A_REVERSE); }
@@ -83,7 +83,7 @@ void ToggleInput::draw(bool force, bool highlight)
 User interaction allows user to toggle the item
 
 *******************************************************************************/
-std::string ToggleInput::exec()
+std::string ToggleInput::exec(int y_offset)
 {
   int ch;
   bool getting_input;
@@ -100,7 +100,7 @@ std::string ToggleInput::exec()
   {
     // Redraw
   
-    draw(false, true);
+    draw(y_offset, false, true);
     _redraw_type = "entry";
 
     // Get user input

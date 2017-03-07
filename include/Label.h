@@ -27,5 +27,5 @@ class Label: public InputItem {
 
     /* Drawing */
 
-    void draw(bool force=false, bool highlight=false);
+    void draw(int y_offset, bool force=false, bool highlight=false);
 };

@@ -18,18 +18,25 @@ class InputBox: public CursesWidget {
 
     std::string _msg, _info, _redraw_type;
     std::vector<InputItem *> _items;    
-    unsigned int _highlight, _prevhighlight, _firstprint, _reserved_rows;
+    int _highlight, _prevhighlight, _firstprint, _reserved_rows;
+    int _header_lines, _first_selectable, _last_selectable;
 
     /* Setting item to be highlighted */
 
-    void highlightFirst();
-    void highlightLast();
-    void highlightPrevious();
-    void highlightNext();
+    int highlightFirst();
+    int highlightLast();
+    int highlightPrevious();
+    int highlightNext();
+
+    /* Determines first line to print (needed for scrolling) */
+    
+    int determineFirstPrint();
 
     /* Drawing */
     
     virtual void redrawFrame() const;
+    void redrawChangedItems(bool force);
+    void redrawAllItems(bool force);
 
   public:
 

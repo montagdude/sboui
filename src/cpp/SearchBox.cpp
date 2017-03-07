@@ -101,7 +101,9 @@ Constructors and destructor
 *******************************************************************************/
 SearchBox::SearchBox()
 {
-  _reserved_rows = 7;
+  _reserved_rows = 6;
+  _header_lines = 3;
+  _firstprint = _header_lines;
   _msg = "Search repository";
 
   addItem(new Label());
@@ -155,12 +157,6 @@ Redraws box and all input items
 *******************************************************************************/
 void SearchBox::draw(bool force)
 {
-  int rows, cols;
-  unsigned int i, nitems;
-
-  nitems = _items.size();
-  getmaxyx(_win, rows, cols);
-
   if (force) { _redraw_type = "all"; }
 
   if (_redraw_type == "all") 
@@ -168,15 +164,8 @@ void SearchBox::draw(bool force)
     wclear(_win);
     colors.setBackground(_win, fg_popup, bg_popup);
     redrawFrame();
-    for ( i = 0; i < nitems; i++ ) 
-    { 
-      _items[i]->draw(force, i==_highlight);  
-    }
+    redrawAllItems(force);
   }
-  else 
-  { 
-    _items[_prevhighlight]->draw(force, false); 
-    _items[_highlight]->draw(force, true); 
-  }
+  else { redrawChangedItems(force); }
   wrefresh(_win);
 }

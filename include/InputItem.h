@@ -54,8 +54,8 @@ class InputItem {
 
     // User interaction
 
-    virtual void draw(bool force=false, bool highlight=false) = 0;
-    virtual std::string exec();
+    virtual void draw(int y_offset, bool force=false, bool highlight=false) = 0;
+    virtual std::string exec(int y_offset);
 
     // Accessing properties of different types. Derived classes should
     // reimplement these as needed.

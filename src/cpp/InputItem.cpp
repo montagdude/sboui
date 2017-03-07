@@ -100,7 +100,7 @@ non-selectable InputItems (e.g., labels) don't have to implement it. Selectable
 classes should reimplement this.
 
 *******************************************************************************/
-std::string InputItem::exec() { return ""; }
+std::string InputItem::exec(int y_offset) { return ""; }
 
 /*******************************************************************************
 

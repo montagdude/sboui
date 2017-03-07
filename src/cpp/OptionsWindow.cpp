@@ -21,6 +21,7 @@ void OptionsWindow::redrawFrame() const
 {
   int rows, cols, namelen, i, left, right;
   double mid;
+  unsigned int nitems;
 
   getmaxyx(_win, rows, cols);
 
@@ -65,6 +66,14 @@ void OptionsWindow::redrawFrame() const
 
   wmove(_win, rows-1, 1);
   for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
+
+  // Symbols on right border to indicate scrolling
+
+  nitems = _items.size();
+  if (_firstprint != _header_lines) { mvwaddch(_win, _header_lines, cols-1,
+                                               ACS_UARROW); }
+  if (_items[nitems-1]->posy() > _firstprint + rows-_reserved_rows - 1)
+    mvwaddch(_win, rows-2, cols-1, ACS_DARROW);
 }
 
 /*******************************************************************************
@@ -77,6 +86,8 @@ OptionsWindow::OptionsWindow()
   int count, line;
 
   _reserved_rows = 2;
+  _header_lines = 1;
+  _firstprint = _header_lines;
   _msg = "Options";
 
   count = 0;

@@ -32,9 +32,9 @@ void Label::setColor(int color_idx) { _color_idx = color_idx; }
 Draws label
 
 *******************************************************************************/
-void Label::draw(bool force, bool highlight)
+void Label::draw(int y_offset, bool force, bool highlight)
 {
-  wmove(_win, _posy, _posx);
+  wmove(_win, _posy-y_offset, _posx);
 
   colors.turnOn(_win, _color_idx);
   wprintw(_win, _name.c_str());

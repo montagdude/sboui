@@ -121,7 +121,7 @@ void ComboBox::setChoice(const std::string & choice)
 Draws ComboBox
 
 *******************************************************************************/
-void ComboBox::draw(bool force, bool highlight)
+void ComboBox::draw(int y_offset, bool force, bool highlight)
 {
   int nspaces;
 
@@ -136,7 +136,7 @@ void ComboBox::draw(bool force, bool highlight)
 
   // Print selection and indicator
 
-  wmove(_win, _posy, _posx);
+  wmove(_win, _posy-y_offset, _posx);
   wprintw(_win, _list.highlightedItem()->name().c_str());
   nspaces = _width - _list.highlightedItem()->name().size() - 3;
   printSpaces(nspaces);
@@ -154,7 +154,7 @@ void ComboBox::draw(bool force, bool highlight)
 User interaction: returns key stroke
 
 *******************************************************************************/
-std::string ComboBox::exec()
+std::string ComboBox::exec(int y_offset)
 {
   int ch;
   bool getting_input;
@@ -169,7 +169,7 @@ std::string ComboBox::exec()
   {
     // Redraw
 
-    draw(false, true);
+    draw(y_offset, false, true);
     
     // Get user input
 
@@ -192,6 +192,14 @@ std::string ComboBox::exec()
 
       // Navigation keys
 
+      case KEY_HOME:
+        retval = signals::highlightFirst;
+        getting_input = false;
+        break;
+      case KEY_END:
+        retval = signals::highlightLast;
+        getting_input = false;
+        break;
       case KEY_UP:
       case MY_SHIFT_TAB:
         retval = signals::highlightPrev;

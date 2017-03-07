@@ -12,12 +12,13 @@ using namespace color_settings;
 
 /*******************************************************************************
 
-Setting item to be highlighted
+Setting item to be highlighted. Return value is 0 if _firstprint has not
+changed, 1 if it has.
 
 *******************************************************************************/
-void InputBox::highlightFirst() 
+int InputBox::highlightFirst() 
 { 
-  unsigned int i, nitems;
+  unsigned int i, nitems, retval;
 
   nitems = _items.size();
   if (nitems > 0)
@@ -32,11 +33,21 @@ void InputBox::highlightFirst()
       }
     }
   }
+
+  if (_firstprint == _header_lines) { retval = 0; }
+  else { retval = 1; }
+  _firstprint = _header_lines;
+
+  return retval;
 }
 
-void InputBox::highlightLast() 
+int InputBox::highlightLast() 
 { 
-  int i, nitems;
+  int i, nitems, rows, cols, rowsavail, y, firstprintstore;
+  unsigned int retval;
+
+  getmaxyx(_win, rows, cols);
+  rowsavail = rows-_reserved_rows;
 
   nitems = _items.size();
   if (nitems > 0) 
@@ -51,13 +62,22 @@ void InputBox::highlightLast()
       } 
     }
   }
+
+  y = _items[nitems-1]->posy();
+  firstprintstore = _firstprint;
+  if (y >= _firstprint + rowsavail) { _firstprint = y - rowsavail + 1; }
+  if (_firstprint == firstprintstore) { return 0; }
+  else { return 1; }
+
+  return retval;
 }
 
-void InputBox::highlightPrevious()
+int InputBox::highlightPrevious()
 {
   int i, nitems;
 
   nitems = _items.size();
+
   if ( (nitems > 0) && (_highlight > 0) ) 
   { 
     _prevhighlight = _highlight;
@@ -70,14 +90,16 @@ void InputBox::highlightPrevious()
       }
     }
   }
+
+  return determineFirstPrint();
 }
 
-void InputBox::highlightNext()
+int InputBox::highlightNext()
 {
   unsigned int i, nitems;
 
   nitems = _items.size();
-  if ( (nitems > 0) && (_highlight < _items.size()-1) ) 
+  if ( (nitems > 0) && (_highlight < int(_items.size())-1) ) 
   { 
     _prevhighlight = _highlight;
     for ( i = _highlight+1; i < nitems; i++ )
@@ -89,6 +111,32 @@ void InputBox::highlightNext()
       }
     }
   }
+
+  return determineFirstPrint();
+}
+
+/*******************************************************************************
+
+Determine first line to print based on current highlighted and number of
+available rows. Returns 1 if this number has changed; 0 if not.
+
+*******************************************************************************/
+int InputBox::determineFirstPrint()
+{
+  int rows, cols, rowsavail, firstprintstore, y;
+
+  if (_items.size() == 0) { return 0; }
+
+  getmaxyx(_win, rows, cols);
+  firstprintstore = _firstprint;
+
+  rowsavail = rows-_reserved_rows;
+  y = _items[_highlight]->posy();
+  if (y < _firstprint) { _firstprint = y; }
+  else if (y >= _firstprint + rowsavail) { _firstprint = y - rowsavail + 1; }
+
+  if (firstprintstore == _firstprint) { return 0; }
+  else { return 1; }
 }
 
 /*******************************************************************************
@@ -98,9 +146,9 @@ Draws window border, message, and info
 *******************************************************************************/
 void InputBox::redrawFrame() const
 {
-  int rows, cols, msglen, i;
-  int left;
+  int rows, cols, msglen, i, left;
   double mid;
+  unsigned int nitems;
 
   getmaxyx(_win, rows, cols);
 
@@ -169,6 +217,60 @@ void InputBox::redrawFrame() const
   mvwaddch(_win, 2, cols-1, ACS_RTEE);
   mvwaddch(_win, rows-3, 0, ACS_LTEE);
   mvwaddch(_win, rows-3, cols-1, ACS_RTEE);
+
+  // Symbols on right border to indicate scrolling
+
+  nitems = _items.size();
+  if (_firstprint != _header_lines) { mvwaddch(_win, _header_lines, cols-1,
+                                               ACS_UARROW); }
+  if (_items[nitems-1]->posy() > _firstprint + rows-_reserved_rows - 1)
+    mvwaddch(_win, rows-4, cols-1, ACS_DARROW);
+}
+
+/*******************************************************************************
+
+Redraws the previously and currently highlighted items
+
+*******************************************************************************/
+void InputBox::redrawChangedItems(bool force)
+{
+  int rows, cols, rowsavail, y_offset;
+
+  getmaxyx(_win, rows, cols);
+  rowsavail = rows-_reserved_rows;
+  y_offset = _firstprint - _header_lines;
+
+  if (_prevhighlight < int(_items.size()))
+  {
+    if ( (_items[_prevhighlight]->posy() >= _firstprint) &&
+         (_items[_prevhighlight]->posy() < _firstprint+rowsavail) )
+      _items[_prevhighlight]->draw(y_offset, force, false);
+  }
+  if (_highlight < int(_items.size()))
+    _items[_highlight]->draw(y_offset, force, true);
+}
+
+/*******************************************************************************
+
+Redraws all items that are currently visible
+
+*******************************************************************************/
+void InputBox::redrawAllItems(bool force)
+{
+  int rows, cols, rowsavail, i, nitems, y, y_offset;
+
+  getmaxyx(_win, rows, cols);
+  rowsavail = rows-_reserved_rows;
+  y_offset = _firstprint - _header_lines;
+
+  nitems = _items.size();
+  for ( i = 0; i < nitems; i++ ) 
+  { 
+    y = _items[i]->posy();
+    if (y >= _firstprint + rowsavail) { break; } 
+    else if (y >= _firstprint) { _items[i]->draw(y_offset,
+                                                 force, i==_highlight); }
+  }
 }
 
 /*******************************************************************************
@@ -183,8 +285,11 @@ InputBox::InputBox()
   _redraw_type = "all";
   _highlight = 0;
   _prevhighlight = 0;
-  _firstprint = 0;
   _reserved_rows = 6;
+  _header_lines = 3;
+  _firstprint = _header_lines;
+  _first_selectable = -1;
+  _last_selectable = -1;
 }
 
 InputBox::InputBox(WINDOW *win, const std::string & msg)
@@ -195,8 +300,11 @@ InputBox::InputBox(WINDOW *win, const std::string & msg)
   _redraw_type = "all";
   _highlight = 0;
   _prevhighlight = 0;
-  _firstprint = 0;
   _reserved_rows = 6;
+  _header_lines = 3;
+  _firstprint = _header_lines;
+  _first_selectable = -1;
+  _last_selectable = -1;
 }
 
 /*******************************************************************************
@@ -215,6 +323,12 @@ void InputBox::addItem(InputItem *item)
   item->setWindow(_win);
   _items.push_back(item);
   highlightFirst();
+
+  if (item->selectable())
+  {
+    if (_first_selectable == -1) { _first_selectable = nitems; }
+    _last_selectable = nitems;
+  }
 }
 
 /*******************************************************************************
@@ -254,7 +368,7 @@ void InputBox::minimumSize(int & height, int & width) const
     if (_items[i]->posy() < ymin) { ymin = _items[i]->posy(); }
     if (_items[i]->posy() > ymax) { ymax = _items[i]->posy(); }
   }
-  height = ymax - ymin + _reserved_rows;
+  height = ymax - ymin + 1 + _reserved_rows;
 
   // Minimum usable width
 
@@ -280,12 +394,6 @@ Redraws box and all input items
 *******************************************************************************/
 void InputBox::draw(bool force)
 {
-  int rows, cols;
-  unsigned int i, nitems;
-
-  nitems = _items.size();
-  getmaxyx(_win, rows, cols);
-
   if (force) { _redraw_type = "all"; }
 
   if (_redraw_type == "all") 
@@ -293,16 +401,9 @@ void InputBox::draw(bool force)
     wclear(_win);
     colors.setBackground(_win, fg_normal, bg_normal);
     redrawFrame();
-    for ( i = 0; i < nitems; i++ ) 
-    { 
-      _items[i]->draw(force, i==_highlight);  
-    }
+    redrawAllItems(force);
   }
-  else 
-  { 
-    _items[_prevhighlight]->draw(force, false); 
-    _items[_highlight]->draw(force, true); 
-  }
+  else { redrawChangedItems(force); }
   wrefresh(_win);
 }
 
@@ -314,6 +415,7 @@ User interaction with input items in the box
 std::string InputBox::exec()
 {
   bool getting_input;
+  int y_offset, check_redraw;
   std::string selection, retval;
 
   getting_input = true;
@@ -323,10 +425,11 @@ std::string InputBox::exec()
   
     draw();
     _redraw_type = "changed";
+    y_offset = _firstprint - _header_lines;
 
     // Get user input from highlighted item
 
-    selection = _items[_highlight]->exec();
+    selection = _items[_highlight]->exec(y_offset);
     if (selection == signals::resize)
     {
       retval = selection;
@@ -339,10 +442,32 @@ std::string InputBox::exec()
       _redraw_type = "all";
       getting_input = false;
     }
-    else if (selection == signals::highlightFirst) { highlightFirst(); }
-    else if (selection == signals::highlightLast) { highlightLast(); }
-    else if (selection == signals::highlightPrev) { highlightPrevious(); }
-    else if (selection == signals::highlightNext) { highlightNext(); }
+    else if (selection == signals::highlightFirst)
+    { 
+      if (highlightFirst() == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+    }
+    else if (selection == signals::highlightLast) 
+    { 
+      if (highlightLast() == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+    }
+    else if (selection == signals::highlightPrev)
+    { 
+      if (_highlight == _first_selectable)
+        check_redraw = highlightFirst();
+      else { check_redraw = highlightPrevious(); }
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+    }
+    else if (selection == signals::highlightNext)
+    {
+      if (_highlight == _last_selectable)
+        check_redraw = highlightLast();
+      else { check_redraw = highlightNext(); }
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+    }
     else
     {
       retval = selection;
