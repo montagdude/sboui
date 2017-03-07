@@ -16,7 +16,7 @@ using namespace color_settings;
 Places and sizes list box
 
 *******************************************************************************/
-void ComboBox::placeListBox()
+void ComboBox::placeListBox(int y_offset)
 {
   int width, height, top, left, begy, begx, rows, cols;
 
@@ -30,13 +30,14 @@ void ComboBox::placeListBox()
   _list.preferredSize(height, width);
 
   left = posx() + begx;
-  top = posy() + begy;
-  if (posy() + (height-1) <= rows-1) { top = posy() + begy; }
-  else if (posy() - (height-1) >= 0) { top = posy() + begy - (height-1); }
+  top = posy()-y_offset + begy;
+  if (posy()-y_offset + (height-1) <= rows-1) { top = posy()-y_offset + begy; }
+  else if (posy()-y_offset - (height-1) >= 0)
+    top = posy()-y_offset + begy - (height-1);
   else
   {
-    top = posy() + begy;
-    height = rows - posy();
+    top = posy()-y_offset + begy;
+    height = rows - (posy()-y_offset);
   }
   mvwin(_listwin, top, left);
   wresize(_listwin, height, width);
@@ -47,11 +48,11 @@ void ComboBox::placeListBox()
 User interaction with list
 
 *******************************************************************************/
-void ComboBox::execList()
+void ComboBox::execList(int y_offset)
 {
   int rows, cols, left, top;
 
-  placeListBox();
+  placeListBox(y_offset);
   _list.exec();
 
   getmaxyx(_win, rows, cols);
@@ -105,14 +106,16 @@ void ComboBox::addChoice(const std::string & choice)
 }
 
 void ComboBox::setChoice(unsigned int idx)
-{ 
-  placeListBox();
+{
+  // Calling placeListBox here ensures list window is proper dimensions when
+  // _firstprint is calculated
+
+  placeListBox(0);
   _list.setHighlight(idx); 
 }
-
 void ComboBox::setChoice(const std::string & choice)
-{ 
-  placeListBox();
+{
+  placeListBox(0);
   _list.setHighlight(choice); 
 }
 
@@ -187,7 +190,7 @@ std::string ComboBox::exec(int y_offset)
       // Space: display list box
 
       case ' ':
-        execList();
+        execList(y_offset);
         break;
 
       // Navigation keys

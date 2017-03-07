@@ -22,11 +22,11 @@ class ComboBox: public InputItem {
 
     /* Placing and sizing list box */
 
-    void placeListBox();
+    void placeListBox(int y_offset);
 
     /* User interaction with list */
 
-    void execList();
+    void execList(int y_offset);
 
   public:
 
