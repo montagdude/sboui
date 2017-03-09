@@ -1405,6 +1405,7 @@ void MainWindow::show()
   int check_quit;
   unsigned int i, ncategories;
   BuildListItem build;
+  ListItem *item;
 
   redrawAll();
 
@@ -1523,8 +1524,8 @@ void MainWindow::show()
 
         // Update tag setting since we are working with a local copy
 
-        _blistboxes[_category_idx].highlightedItem()->
-                             setBoolProp("tagged", build.getBoolProp("tagged"));
+        if ( (item = _blistboxes[_category_idx].highlightedItem()) )
+          item->setBoolProp("tagged", build.getBoolProp("tagged"));
 
         // Determine if categories should be tagged and redraw
 
