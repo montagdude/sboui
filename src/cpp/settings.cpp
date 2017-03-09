@@ -283,7 +283,7 @@ int read_config()
 
   if (! cfg.lookupValue("install_cmd", install_cmd))
   {
-    if (package_manager == "sbopkg") { install_cmd = "sbopkg -i"; }
+    if (package_manager == "sbopkg") { install_cmd = "sbopkg -B -i"; }
     else if (package_manager == "sbotools") { install_cmd = "sboinstall -r"; } 
     else
     {
@@ -295,7 +295,7 @@ int read_config()
 
   if (! cfg.lookupValue("upgrade_cmd", upgrade_cmd))
   {
-    if (package_manager == "sbopkg") { upgrade_cmd = "sbopkg -i"; }
+    if (package_manager == "sbopkg") { upgrade_cmd = "sbopkg -B -i"; }
     else if (package_manager == "sbotools") { upgrade_cmd = "sboupgrade -r"; } 
     else
     {
