@@ -16,8 +16,8 @@ using namespace settings;
  
 // Bash script with functions to query the repo and installed packages
 //FIXME: location should be set by preprocessor macro depending on configure --prefix=
-//std::string sboutil = "/usr/libexec/sboui/sboutil.sh";
-std::string sboutil = "/data/dprosser/software/sboui_files/sboui/src/shell/sboutil.sh";
+std::string sboutil = "/usr/libexec/sboui/sboutil.sh";
+//std::string sboutil = "/data/dprosser/software/sboui_files/sboui/src/shell/sboutil.sh";
 
 /*******************************************************************************
 

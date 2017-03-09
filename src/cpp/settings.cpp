@@ -205,8 +205,8 @@ int read_config()
 
   // Read config file
 
-  //try { cfg.readFile("/etc/sboui/sboui.cfg"); }
-  try { cfg.readFile("config/sboui.cfg"); }
+  try { cfg.readFile("/etc/sboui/sboui.cfg"); }
+  //try { cfg.readFile("config/sboui.cfg"); }
   catch(const FileIOException &fioex)
   {
     std::cerr << "Error: cannot read sboui.cfg." << std::endl;
@@ -272,7 +272,7 @@ int read_config()
   if (! cfg.lookupValue("sync_cmd", sync_cmd))
   { 
     if (package_manager == "sbopkg") { sync_cmd = "sbopkg -r"; }
-    else if (package_manager == "sbotools") { sync_cmd = "sbosnap fetch"; }
+    else if (package_manager == "sbotools") { sync_cmd = "sbosnap update"; }
     else
     {
       std::cerr << "Error: must specify sync_cmd for custom package_manager."
@@ -284,7 +284,7 @@ int read_config()
   if (! cfg.lookupValue("install_cmd", install_cmd))
   {
     if (package_manager == "sbopkg") { install_cmd = "sbopkg -i"; }
-    else if (package_manager == "sbotools") { sync_cmd = "sboinstall -r"; } 
+    else if (package_manager == "sbotools") { install_cmd = "sboinstall -r"; } 
     else
     {
       std::cerr << "Error: must specify install_cmd for custom package_manager."
@@ -296,7 +296,7 @@ int read_config()
   if (! cfg.lookupValue("upgrade_cmd", upgrade_cmd))
   {
     if (package_manager == "sbopkg") { upgrade_cmd = "sbopkg -i"; }
-    else if (package_manager == "sbotools") { sync_cmd = "sboupgrade -r"; } 
+    else if (package_manager == "sbotools") { upgrade_cmd = "sboupgrade -r"; } 
     else
     {
       std::cerr << "Error: must specify upgrade_cmd for custom package_manager."
