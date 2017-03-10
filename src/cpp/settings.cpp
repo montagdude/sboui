@@ -6,6 +6,10 @@
 #include "Color.h"
 #include "settings.h"
 
+#ifndef SYSCONFDIR
+  #define SYSCONFDIR "/etc/sboui"
+#endif
+
 namespace settings
 {
   std::string repo_dir;
@@ -205,7 +209,7 @@ int read_config()
 
   // Read config file
 
-  try { cfg.readFile("/etc/sboui/sboui.cfg"); }
+  try { cfg.readFile(SYSCONFDIR "/sboui.cfg"); }
   //try { cfg.readFile("config/sboui.cfg"); }
   catch(const FileIOException &fioex)
   {

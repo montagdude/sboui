@@ -80,14 +80,10 @@ sboui_SOURCES = include/Color.h \
                 src/cpp/MainWindow.cpp \
                 src/cpp/sboui.cpp 
 
-sboui_CPPFLAGS = -I$(top_srcdir)/include -DINSTALL_PREFIX=\"$(prefix)\"
+sboui_CPPFLAGS = -I$(top_srcdir)/include -DINSTALL_PREFIX=\"$(prefix)\" -DPKGLIBEXECDIR=\"$(pkglibexecdir)\" -DSYSCONFDIR=\"$(sysconfdir)\"
 sboui_CXXFLAGS = -g -Wall
 sboui_LDFLAGS = -lncurses -lconfig++
 
 pkglibexec_SCRIPTS = src/shell/sboutil.sh
-
-sbouiconfdir = $(prefix)/etc/$(PACKAGE_NAME)
-sbouiconf_DATA = etc/sboui.cfg
-
-sbouidatadir = $(prefix)/share/$(PACKAGE_NAME)
-sbouidata_DATA = etc/colors_dark.cfg etc/colors_light.cfg
+sysconf_DATA = etc/sboui.cfg
+dataroot_DATA = etc/colors_dark.cfg etc/colors_light.cfg
