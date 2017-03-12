@@ -1,0 +1,134 @@
+.TH SBOUI 8
+.SH NAME
+sboui \- ncurses user interface for SBo package managers
+.SH SYNOPSIS
+.B sboui
+[\fB\-f\fR \fIFILE\fR] 
+[\fB\-\-file\fR \fIFILE\fR] 
+.SH DESCRIPTION
+.B sboui
+is an ncurses-based user interface for
+.BR sbopkg ,
+.BR sbotools ,
+and similar tools to build and install software from SlackBuild scripts hosted at SlackBuilds.org (SBo).
+Unlike many Slackware system administration tools with 
+.BR dialog -based
+user interfaces,
+.B sboui
+is written in C++ utilizing low-level ncurses library calls.
+This approach allows much greater flexibility in the design of the user interface and also makes it very fast.
+The main features of
+.B sboui
+include:
+.IP \(bu
+A two-pane listing of software groups and names
+.IP \(bu
+Filters: all, installed, upgradable, tagged, and non-dependencies
+.IP \(bu
+Searching the local repository
+.IP \(bu
+Forward and inverse dependency resolution
+.IP \(bu
+Viewing and editing files in the local repository
+.IP \(bu
+Tagging multiple packages (or groups) to apply batch changes
+.IP \(bu
+Support for any custom SBo package manager meeting certain conditions described in \fBsboui.cfg\fR(5)
+.IP \(bu
+Fully configurable colors
+.PP
+.B Instructions
+.PP
+Before running
+.BR sboui ,
+an SBo packager must first be installed.
+It can be either
+.BR sbopkg ,
+.BR sbotools ,
+or a custom script.
+.B sboui
+also requires a configuration file,
+.IR /etc/sboui/sboui.cfg .
+The initial install will provide a default version of this file, while upgrades will add
+.I /etc/sboui/sboui.cfg.new
+that the user can choose to merge with or replace the original.
+See
+.BR sboui.cfg (5)
+for more information about the configuration file.
+Note also that most options can be changed at runtime in the options dialog window.
+.PP
+.B sboui
+is a keyboard-driven program.
+To switch the active pane, use the
+.I Tab
+key.
+Use the
+.I Up
+and
+.I Down
+arrow keys,
+.IR Home ,
+.IR End ,
+.IR PgUp ,
+and 
+.I PgDn
+to navigate lists and dialog boxes.
+When the right (or bottom, if using the vertical layout) list is active, press
+.I Enter
+to display possible actions for the highlighted software package.
+The
+.I q 
+key quits the program.
+The 
+.I ?
+key displays the full list of keyboard shortcuts.
+.SH OPTIONS
+.B sboui
+accepts one command-line option:
+.TP
+.BR \-f ", " \-\-file " " \fIFILE\fR
+Specify a configuration file other than
+.IR /etc/sboui/sboui.cfg .
+.SH EXIT STATUS
+The exit status is 0 if the configuration file was successfully read.
+If the configuration file could not be read or contains errors, the exit status is 1.
+Other errors that can occur during execution (e.g., a build failure for a package) are indicated to the user but do not affect the exit status.
+.SH FILES
+.TP
+.I /etc/sboui/sboui.cfg
+Global configuration file for
+.BR sboui .
+See
+.BR sboui.cfg (5)
+for more information about the entries in this file.
+An alternative file can be specified at runtime with the
+.B \-f
+or
+.B \-\-file
+option as described above.
+.TP
+Color theme file
+File defining colors for different UI elements.
+This file is an optional setting in
+.IR /etc/sboui/sboui.cfg .
+If not present, default color settings will be used.
+See
+.BR sboui.cfg (5)
+for more information about changing color settings.
+.SH BUGS
+Depending on the terminal, bright background colors may not actually appear bright or may cause blinking text.
+It is recommended to only use bright colors for the foreground.
+.PP
+Reinstall operations do not currently work with
+.B sbotools
+as the package manager, because it does not support reinstalling.
+.SH SEE ALSO
+.BR ncurses (3X),
+.BR sboui.cfg (5),
+.BR sbopkg (8),
+.BR sboinstall (1),
+.BR dialog (1),
+.BR removepkg (8),
+.BR su (1)
+.SH AUTHORS
+Daniel Prosser <dpross1100@msn.com>
