@@ -201,19 +201,22 @@ int read_color_theme(const std::string & color_theme_file)
 Reads settings from configuration file
 
 *******************************************************************************/
-int read_config()
+int read_config(const std::string & conf_file)
 {
   int check;
   Config cfg;
-  std::string response;
+  std::string my_conf_file, response;
 
   // Read config file
 
-  try { cfg.readFile(SYSCONFDIR "/sboui.cfg"); }
-  //try { cfg.readFile("config/sboui.cfg"); }
+  if (conf_file != "") { my_conf_file = conf_file; }
+  else { my_conf_file = SYSCONFDIR "/sboui.cfg"; }
+
+  try { cfg.readFile(my_conf_file.c_str()); }
   catch(const FileIOException &fioex)
   {
-    std::cerr << "Error: cannot read sboui.cfg." << std::endl;
+    std::cerr << "Error: cannot read configuration file " << my_conf_file
+              << "." << std::endl;
     return 1;
   }
   catch(const ParseException &pex)

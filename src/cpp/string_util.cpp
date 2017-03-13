@@ -8,12 +8,27 @@
 Converts an integer to string
 
 *******************************************************************************/
-std::string int2string(int inval)
+std::string int_to_string(int inval)
 {
   std::string outstr;
   std::stringstream ss;
 
   ss << inval;
+  ss >> outstr;
+  return outstr;
+}
+
+/*******************************************************************************
+
+Converts a char array to string
+
+*******************************************************************************/
+std::string chararray_to_string(char chararray[])
+{
+  std::string outstr;
+  std::stringstream ss;
+
+  ss << chararray;
   ss >> outstr;
   return outstr;
 }

@@ -34,6 +34,6 @@ namespace color_settings
 }
 
 void apply_color_settings();
-int read_config();
+int read_config(const std::string & conf_file="");
 int activate_color();
 void deactivate_color();

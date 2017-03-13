@@ -302,7 +302,7 @@ void MainWindow::filterAll()
   else if (nbuilds == 1)
     printStatus("1 SlackBuild in repository.");
   else 
-    printStatus(int2string(nbuilds) + " SlackBuilds in repository.");
+    printStatus(int_to_string(nbuilds) + " SlackBuilds in repository.");
 }
 
 /*******************************************************************************
@@ -331,7 +331,7 @@ void MainWindow::filterInstalled()
   else if (ninstalled == 1) 
     printStatus("1 installed SlackBuild.");
   else 
-    printStatus(int2string(ninstalled) + " installed SlackBuilds.");
+    printStatus(int_to_string(ninstalled) + " installed SlackBuilds.");
 }
 
 /*******************************************************************************
@@ -360,7 +360,7 @@ void MainWindow::filterUpgradable()
   else if (nupgradable == 1) 
     printStatus("1 upgradable SlackBuild.");
   else 
-    printStatus(int2string(nupgradable) + " upgradable SlackBuilds.");
+    printStatus(int_to_string(nupgradable) + " upgradable SlackBuilds.");
 }
 
 /*******************************************************************************
@@ -387,7 +387,7 @@ void MainWindow::filterTagged()
   else if (ntagged == 1) 
     printStatus("1 tagged SlackBuild.");
   else 
-    printStatus(int2string(ntagged) + " tagged SlackBuilds.");
+    printStatus(int_to_string(ntagged) + " tagged SlackBuilds.");
 }
 
 /*******************************************************************************
@@ -419,7 +419,7 @@ void MainWindow::filterNonDeps()
   else if (nnondeps == 1) 
     printStatus("1 non-dependency.");
   else 
-    printStatus(int2string(nnondeps) + " non-dependencies.");
+    printStatus(int_to_string(nnondeps) + " non-dependencies.");
 }
 
 /*******************************************************************************
@@ -447,7 +447,7 @@ void MainWindow::filterSearch(const std::string & searchterm,
   else if (nsearch == 1) 
     printStatus("1 match for " + searchterm + ".");
   else 
-    printStatus(int2string(nsearch) + " matches for " + searchterm + ".");
+    printStatus(int_to_string(nsearch) + " matches for " + searchterm + ".");
 }
 
 /*******************************************************************************
@@ -592,10 +592,10 @@ bool MainWindow::modifyPackage(BuildListItem & build,
     else if (ninstaller >= 1)
     { 
       if (action == "Remove")
-        printStatus(int2string(ninstaller-1) + 
+        printStatus(int_to_string(ninstaller-1) + 
                     " installed dependencies for " + build.name() + ".");
       else
-        printStatus(int2string(ninstaller-1) + 
+        printStatus(int_to_string(ninstaller-1) + 
                     " dependencies for " + build.name() + ".");
     }
     else
@@ -693,7 +693,7 @@ void MainWindow::showBuildOrder(BuildListItem & build)
 
   if (nbuildorder == 1) { printStatus(
                      "1 SlackBuild in build order for " + build.name() + "."); }
-  else { printStatus(int2string(nbuildorder) + 
+  else { printStatus(int_to_string(nbuildorder) + 
                      " SlackBuilds in build order for " + build.name() + "."); }
 
   buildorderwin = newwin(1, 1, 0, 0);
@@ -740,7 +740,7 @@ void MainWindow::showInverseReqs(BuildListItem & build)
                                    + build.name() + "."); }
   else if (ninvreqs == 1) { printStatus(
           "1 installed SlackBuild depends on " + build.name() + "."); }
-  else { printStatus(int2string(ninvreqs) + 
+  else { printStatus(int_to_string(ninvreqs) + 
            " installed SlackBuilds depend on " + build.name() + "."); }
 
   invreqwin = newwin(1, 1, 0, 0);
@@ -871,7 +871,7 @@ void MainWindow::applyTags(const std::string & action)
   else if (ndisplay == 1)
     printStatus("1 tagged SlackBuild to " + string_to_lower(action) + ".");
   else
-    printStatus(int2string(ndisplay) +
+    printStatus(int_to_string(ndisplay) +
                 " tagged SlackBuild to " + string_to_lower(action) + ".");
 
   tagwin = newwin(1, 1, 0, 0);

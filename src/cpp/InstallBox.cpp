@@ -398,10 +398,10 @@ int InstallBox::create(BuildListItem & build,
       if (action == "Remove")
       {
         setName(build.name() + 
-                " (" + int2string(nbuilds-1) + " installed deps)");
+                " (" + int_to_string(nbuilds-1) + " installed deps)");
       }
       else
-        setName(build.name() + " (" + int2string(nbuilds-1) + " deps)");
+        setName(build.name() + " (" + int_to_string(nbuilds-1) + " deps)");
     }
   }
 
