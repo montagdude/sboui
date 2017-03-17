@@ -834,7 +834,7 @@ int MainWindow::syncRepo()
   def_prog_mode();
   endwin();
 
-  check = sync();
+  check = sync_repo();
   reset_prog_mode();
 
   if (check == 0) 

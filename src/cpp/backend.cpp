@@ -338,7 +338,7 @@ int view_file(const std::string & path)
 Syncs/updates SlackBuilds repository
 
 *******************************************************************************/
-int sync() 
+int sync_repo() 
 { 
   int retval;
   std::string response;

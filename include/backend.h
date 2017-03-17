@@ -17,4 +17,4 @@ int upgrade_slackbuild(const BuildListItem & build);
 int remove_slackbuild(const BuildListItem & build);
 int view_readme(const BuildListItem & build);
 int view_file(const std::string & path);
-int sync();
+int sync_repo();
