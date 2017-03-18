@@ -51,12 +51,9 @@ install(FILES etc/sboui.cfg DESTINATION ${CONFDIR})
 install(FILES src/shell/sboutil.sh 
               DESTINATION ${LIBEXECDIR}
               PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-                          GROUP_READ GROUP_EXECUTE
-                          WORLD_READ WORLD_EXECUTE
+                          GROUP_READ             GROUP_EXECUTE
+                          WORLD_READ             WORLD_EXECUTE
 )
-set(COLOR_THEMES
-    etc/colors_dark.cfg
-    etc/colors_light.cfg
-)
+file(GLOB COLOR_THEMES etc/colors_*.cfg)
 install(FILES ${COLOR_THEMES} DESTINATION ${DATADIR})
 install(FILES man/sboui.8 DESTINATION ${MANDIR}/man8)
