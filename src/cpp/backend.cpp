@@ -12,16 +12,14 @@
 #include "settings.h"
 #include "backend.h"
 
-#ifndef PKGLIBEXECDIR
-  #define PKGLIBEXECDIR "/usr/libexec/sboui"
+#ifndef LIBEXECDIR
+  #define LIBEXECDIR "/usr/libexec"
 #endif
 
 using namespace settings;
  
 // Bash script with functions to query the repo and installed packages
-//FIXME: autoconf needs to set INSTALL_PREFIX
-std::string sboutil = PKGLIBEXECDIR "/sboutil.sh";
-//std::string sboutil = "/data/dprosser/software/sboui_files/sboui/src/shell/sboutil.sh";
+std::string sboutil = LIBEXECDIR "/sboutil.sh";
 
 /*******************************************************************************
 

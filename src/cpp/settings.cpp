@@ -6,10 +6,6 @@
 #include "Color.h"
 #include "settings.h"
 
-#ifndef SYSCONFDIR
-  #define SYSCONFDIR "/etc/sboui"
-#endif
-
 namespace settings
 {
   std::string repo_dir;
@@ -210,7 +206,7 @@ int read_config(const std::string & conf_file)
   // Read config file
 
   if (conf_file != "") { my_conf_file = conf_file; }
-  else { my_conf_file = SYSCONFDIR "/sboui.cfg"; }
+  else { my_conf_file = "/etc/sboui/sboui.cfg"; }
 
   try { cfg.readFile(my_conf_file.c_str()); }
   catch(const FileIOException &fioex)
