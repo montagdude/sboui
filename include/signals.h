@@ -16,4 +16,6 @@ namespace signals
   extern std::string keyTab;
   extern std::string keyEnter;
   extern std::string scroll;
+  extern std::string keyRight;
+  extern std::string keyLeft;
 }

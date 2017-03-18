@@ -557,6 +557,17 @@ std::string ListBox::exec()
       _redraw_type = "changed";
       break;
 
+    // Left/right arrows
+
+    case KEY_LEFT:
+      retval = signals::keyLeft;
+      _redraw_type = "changed";
+      break;
+    case KEY_RIGHT:
+      retval = signals::keyRight;
+      _redraw_type = "changed";
+      break;
+
     // Arrows/Home/End/PgUp/Dn: change highlighted value
 
     case KEY_UP:

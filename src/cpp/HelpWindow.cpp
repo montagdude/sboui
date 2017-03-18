@@ -167,6 +167,8 @@ void HelpWindow::createList()
   unsigned int i, nitems;
 
   addItem(new HelpItem("Main window", "", true, false));
+  addItem(new HelpItem("Activate left list", "Left arrow"));
+  addItem(new HelpItem("Activate right list", "Right arrow"));
   addItem(new HelpItem("Filter SlackBuilds", "f"));
   addItem(new HelpItem("Help / show shortcuts", "?"));
   addItem(new HelpItem("Options", "o"));

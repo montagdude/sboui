@@ -1432,9 +1432,10 @@ void MainWindow::show()
         _blistboxes[_category_idx].draw(true);
       }
 
-      // Tab signal
+      // Tab signal or right key
 
-      else if (selection == signals::keyTab)
+      else if ( (selection == signals::keyTab) ||
+                (selection == signals::keyRight) )
       {
         _clistbox.setActivated(false);
         _clistbox.draw();
@@ -1485,9 +1486,10 @@ void MainWindow::show()
         else { clearStatus(); }
       }
 
-      // Tab signal
+      // Tab signal or left key
       
-      else if (selection == signals::keyTab)
+      else if ( (selection == signals::keyTab) ||
+                (selection == signals::keyLeft) )
       {
         _blistboxes[_category_idx].setActivated(false);
         _blistboxes[_category_idx].draw();
