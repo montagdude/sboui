@@ -57,3 +57,4 @@ install(FILES src/shell/sboutil.sh
 file(GLOB COLOR_THEMES etc/colors_*.cfg)
 install(FILES ${COLOR_THEMES} DESTINATION ${DATADIR})
 install(FILES man/sboui.8 DESTINATION ${MANDIR}/man8)
+install(FILES man/sboui.cfg.5 DESTINATION ${MANDIR}/man5)

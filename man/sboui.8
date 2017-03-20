@@ -34,17 +34,17 @@ Tagging multiple packages (or groups) to apply batch changes
 .IP \(bu
 Support for any custom SBo package manager meeting certain conditions described in \fBsboui.cfg\fR(5)
 .IP \(bu
-Fully configurable colors
+Configurable colors
 .PP
 .B Instructions
 .PP
 Before running
 .BR sboui ,
 an SBo packager must first be installed.
-It can be either
+It can be
 .BR sbopkg ,
 .BR sbotools ,
-or a custom script.
+or a custom tool.
 .B sboui
 also requires a configuration file,
 .IR /etc/sboui/sboui.cfg .
@@ -60,7 +60,11 @@ Note also that most options can be changed at runtime in the options dialog wind
 is a keyboard-driven program.
 To switch the active pane, use the
 .I Tab
-key.
+key or the
+.I Right
+and
+.I Left
+arrow keys.
 Use the
 .I Up
 and
@@ -102,8 +106,6 @@ See
 for more information about the entries in this file.
 An alternative file can be specified at runtime with the
 .B \-f
-or
-.B \-\-file
 option as described above.
 .TP
 Color theme file

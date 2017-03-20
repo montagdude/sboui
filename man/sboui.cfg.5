@@ -1,0 +1,462 @@
+.TH SBOUI.CFG 5
+.SH NAME
+sboui.cfg \- configuration file for sboui
+.SH DESCRIPTION
+.I sboui.cfg
+contains settings for
+.BR sboui (8),
+an ncurses interface for SlackBuilds.org package managers.
+The system location for this file is at
+.IR /etc/sboui/sboui.cfg ,
+but the user may specify a different file by using the
+.B \-f
+command-line option when invoking
+.BR sboui .
+(See
+.BR sboui (8)
+for more information on command-line options.)
+This manual describes the configuration settings specified in
+.IR sboui.cfg .
+.TP
+Each setting in this file has the format:
+.IP
+{variable name} = {value}
+.PP
+Boolean values may be
+.B true
+or
+.BR false .
+String values must be enclosed with double quotes.
+Comments may be C-style (\fB//\fR), C++-style (\fB/*...*/\fR), or shell-style (\fB#\fR).
+Variable names, possible values, default values, whether each is required, and descriptions are listed below.
+.PP
+.TP
+.B color_theme_file
+.br
+[string]
+.br
+default: [none]
+.br
+required: no
+.IP
+File specifying colors for different UI elements.
+The
+.B color_theme_file
+uses the same {variable} = {value} syntax as
+.BR sboui.cfg .
+If this variable is not present, the file cannot be found, or there is an error in the file (including syntax errors and missing variables), the default color theme will be used.
+In the last two cases, a warning will be issued before the main window is displayed.
+.IP
+Variable names, which identify UI elements, are as follows:
+.BR fg_normal ,
+.BR bg_normal ,
+.BR fg_title ,
+.BR bg_title ,
+.BR fg_info ,
+.BR bg_info ,
+.BR fg_highlight_active ,
+.BR bg_highlight_active ,
+.BR fg_highlight_inactive ,
+.BR bg_highlight_inactive ,
+.BR header ,
+.BR header_popup ,
+.BR tagged ,
+.BR fg_popup ,
+.BR bg_popup ,
+.BR fg_warning ,
+.BR bg_warning ,
+.BR hotkey ,
+.BR fg_combobox ,
+and
+.BR bg_combobox .
+``fg`` signifies a foreground (text) color, while ``bg`` signifies a background color.
+.IP
+Each value in the color theme file is a string identifying any of the eight colors supported by ncurses:
+.BR black ,
+.BR blue ,
+.BR cyan ,
+.BR green ,
+.BR magenta ,
+.BR red ,
+.BR yellow ,
+or
+.BR white .
+In addition, the keyword
+.B bright
+may be prepended to the color string to activate the bold attribute for that element, which also normally makes the color lighter.
+This attribute generally only works for foreground elements.
+For background elements, it may have no effect or an unexpected effect (such as blinking), depending on the terminal.
+Therefore, it is only recommended for foreground elements.
+The actual appearance of these colors is dependent on the terminal configuration.
+.IP
+Two example color theme files are included with
+.BR sboui .
+.TP
+.B confirm_changes
+.br
+\fBtrue\fR|\fBfalse\fR
+.br
+default:
+.B true
+.br
+required: no
+.IP
+Whether or not to ask for confirmation before applying install, upgrade, reinstall, or remove operations.
+.IP
+If
+.BR true ,
+.B sboui
+will present a dialog box presenting any packages to be changed, and the user can toggle any of these on and off before proceeding.
+After performing an operation, the user will be notified of completion before returning to the main window.
+.IP
+If
+.BR false ,
+no dialog box will be presented.
+Instead, the default marked packages (the selected package and any dependencies to install or upgrade) will automatically be acted on, and the user will not be notified of completion.
+This option is useful for processing many tagged operations without requiring user intervention.
+If an error occurs during an operation, the user will still be notified before returning to the main window.
+.TP
+.B editor
+.br
+[string]
+.br
+default:
+.B vim
+.br
+required: no
+.IP
+Text editor used to view READMEs and other files.
+It can be the name of any executable in the $PATH, but since
+.B sboui
+is normally run as root, it is better to choose one that does not require X.
+.TP
+.B enable_color
+.br
+\fBtrue\fR|\fBfalse\fR
+.br
+default:
+.B true
+.br
+required: no
+.IP
+Whether or not to display the user interface in color.
+.IP
+If
+.B true
+and the terminal supports color, either the default colors will be used, or custom color settings will be read from the file specified by the
+.B color_theme_file
+variable.
+See the
+.B color_theme_file
+entry in this manual and the provided sample color theme files for more information about changing colors.
+.IP
+If
+.B false
+or the terminal does not support color, the user interface will be displayed in black and white.
+.TP
+.B install_clos
+.br
+[string]
+.br
+default: [none]
+.br
+required: no
+.IP
+Additional command-line options to pass to the package manager during install operations that are not already specified in the
+.B install_cmd
+variable.
+Care is necessary not to set options that conflict with those in
+.BR install_cmd .
+If the default setting for
+.B install_cmd
+is used, it is possible to see its value in the options window.
+.IP
+Note that these options will be applied during every install operation, including installation of dependencies.
+.TP
+.B install_cmd
+.br
+[string]
+.br
+default: [depends on
+.BR package_manager ]
+.br
+required: [for 
+\fBcustom package_manager\fR
+only]
+.IP
+Command used by the package manager to install a package.
+The full command executed by
+.B sboui
+to install a package is as follows:
+.RS 3
+.IP
+# \fBinstall_vars\fR \fBinstall_cmd\fR {package name} \fBinstall_clos\fR
+.RE
+.IP
+Because dependencies are resolved by
+.BR sboui ,
+the package manager should not also resolve dependencies.
+If the package manager's install command does resolve dependencies by default,
+.B install_cmd
+should include options to disable that behavior.
+It may also be desired to disable confirmation questions or notifications from the package manager during the install process, since
+.B sboui
+handles that as well.
+Otherwise, there may be duplicated questions and messages.
+This setting is only required for a
+\fBcustom package_manager\fB.
+.IP
+If
+.B sbopkg
+is used as the
+.BR package_manager ,
+the default value of this setting is \fBsbopkg -B -i\fR.
+.IP
+If
+.B sbotools
+is used as the
+.BR package_manager ,
+the default value of this setting is \fBsboinstall -r\fR.
+.IP
+For a
+.B custom
+.BR package_manager ,
+no default value is set, and
+.B sboui
+will exit with an error if this setting is not present.
+.TP
+.B install_vars
+.br
+[string]
+.br
+default: [none]
+.br
+required: no
+.IP
+Environment variables to pass to the package manager during install operations.
+These can be used, for example, to activate optional dependencies or other flags for the build process.
+.IP
+Note that these variables will be passed during every install operation, including installation of dependencies.
+.TP
+.B layout
+.br
+\fBhorizontal\fR|\fBvertical\fR
+.br
+default:
+.B horizontal
+.br
+required: no
+.IP
+Layout of the two list boxes in the main window.
+The
+.B horizontal
+layout places the two list boxes side-by-side, and the
+.B vertical
+layout places them on top of each other.
+The layout can also be changed at runtime either with the
+.I l
+keyboard shortcut or in the options window.
+.TP
+.B package_manager
+.br
+\fBsbopkg\fR|\fBsbotools\fR|\fBcustom\fR
+.br
+default: [none]
+.br
+required: yes
+.IP
+Executable responsible for running SlackBuild scripts, installing and upgrading packages, and syncing the local repository.
+.IP
+If a
+.B custom
+package manager is used, it must store a local copy of the SlackBuilds.org repository, and it must implement a valid
+.BR install_cmd ,
+.BR upgrade_cmd ,
+and
+.BR sync_cmd .
+Requirements for each of these commands are given in their respective entries in this manual.
+.IP
+If
+.B sbopkg
+or
+.B sbotools
+is used as the
+.BR package_manager ,
+.B sboui
+sets default values for each of these commands.
+.TP
+.B repo_dir
+.br
+[string]
+.br
+default: [none]
+.br
+required: yes
+.IP
+Path to the top level directory of the local SlackBuilds repository.
+Directories for each group (e.g., academic, audio, development, games, etc.) must be present at this path.
+Because each package manager may use a different location,
+.B sboui
+does not set a default value for this setting.
+.TP
+.B resolve_deps
+.br
+\fBtrue\fR|\fBfalse\fR
+.br
+default:
+.B true
+.br
+required: no
+.IP
+Whether or not to resolve dependencies when performing install, upgrade, reinstall, and remove operations.
+.IP
+If
+.BR true ,
+.B sboui
+will recursively search through the requirements listed in *.info files to determine the proper build order for the package.
+When creating the build order, dependencies needing to be installed or upgraded are marked for processing by default, but already-installed dependencies are not marked for removal or reinstallation. 
+The user is free to change these marks interactively in the dialog provided the
+.B confirm_changes
+setting is enabled.
+.IP
+If
+.BR false ,
+dependencies will not be resolved, and only the requested package will be marked for installation, upgrade, reinstallation, or removal.
+.IP
+Note that this option only applies to install, upgrade, reinstall, and remove operations.
+The ``Compute build order'' operation will resolve dependencies regardless of this setting.
+.TP
+.B sync_cmd
+.br
+[string]
+.br
+default: [depends on
+.BR package_manager ]
+.br
+required: [for 
+\fBcustom package_manager\fR
+only]
+.IP
+Command for package manager to sync (update) the local repository.
+Ideally, the package manager should also use this command to create the local repository if it is not present.
+This setting is only required for a
+\fBcustom package_manager\fB.
+.IP
+If
+.B sbopkg
+is used as the
+.BR package_manager ,
+the default value of this setting is \fBsbopkg -r\fR.
+.IP
+If
+.B sbotools
+is used as the
+.BR package_manager ,
+the default value of this setting is \fBsbosnap update\fR.
+.IP
+For a
+.B custom
+.BR package_manager ,
+no default value is set, and
+.B sboui
+will exit with an error if this setting is not present.
+.TP
+.B upgrade_clos
+.br
+[string]
+.br
+default: [none]
+.br
+required: no
+.IP
+Same as
+.BR install_clos ,
+but applying to upgrade operations.
+.TP
+.B upgrade_cmd
+.br
+[string]
+.br
+default: [depends on
+.BR package_manager ]
+.br
+required: [for 
+\fBcustom package_manager\fR
+only]
+.IP
+Command used by the package manager to upgrade a package.
+The full command executed by
+.B sboui
+to upgrade a package is as follows:
+.RS 3
+.IP
+# \fBupgrade_vars\fR \fBupgrade_cmd\fR {package name} \fBupgrade_clos\fR
+.RE
+.IP
+The considerations described in the
+.B install_cmd
+entry regarding the package manager's dependency resolution and notification settings also apply here.
+This setting is only required for a
+\fBcustom package_manager\fB.
+.IP
+If
+.B sbopkg
+is used as the
+.BR package_manager ,
+the default value of this setting is \fBsbopkg -B -i\fR.
+.IP
+If
+.B sbotools
+is used as the
+.BR package_manager ,
+the default value of this setting is \fBsboupgrade -r\fR.
+.IP
+For a
+.B custom
+.BR package_manager ,
+no default value is set, and
+.B sboui
+will exit with an error if this setting is not present.
+.TP
+.B upgrade_vars
+.br
+[string]
+.br
+default: [none]
+.br
+required: no
+.IP
+Same as
+.BR install_vars ,
+but applying to upgrade operations.
+.SH FILES
+.TP
+.I /etc/sboui/sboui.cfg
+Global configuration file for
+.BR sboui .
+.TP
+Color theme file
+File defining colors for different UI elements.
+This file is an optional setting in
+.IR /etc/sboui/sboui.cfg .
+If not present, default color settings will be used.
+.SH NOTES
+.B sboui
+uses the
+.B libconfig++
+library for parsing
+.B sboui.cfg
+and color theme files.
+For more information about this library see the project's website:
+.PP
+http://www.hyperrealm.com/libconfig/
+.SH SEE ALSO
+.BR sboui (8),
+.BR ncurses (3X),
+.BR sbopkg (8),
+.BR sboinstall (1),
+.BR dialog (1),
+.BR removepkg (8),
+.BR su (1)
+.SH AUTHORS
+Daniel Prosser <dpross1100@msn.com>
