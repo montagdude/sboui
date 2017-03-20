@@ -40,6 +40,30 @@ namespace color_settings
   std::string fg_combobox, bg_combobox;
 }
 
+namespace user_colors
+{
+  std::string fg_normal = "";
+  std::string bg_normal = "";
+  std::string fg_title = "";
+  std::string bg_title = "";
+  std::string fg_info = "";
+  std::string bg_info = "";
+  std::string fg_highlight_active = "";
+  std::string bg_highlight_active = "";
+  std::string fg_highlight_inactive = "";
+  std::string bg_highlight_inactive = "";
+  std::string header = "";
+  std::string header_popup = "";
+  std::string tagged = "";
+  std::string fg_popup = "";
+  std::string bg_popup = "";
+  std::string fg_warning = "";
+  std::string bg_warning = "";
+  std::string hotkey = "";
+  std::string fg_combobox = "";
+  std::string bg_combobox = "";
+}
+
 using namespace settings;
 using namespace color_settings;
 using namespace libconfig;
@@ -71,6 +95,65 @@ void set_default_colors()
   hotkey = "brightblack";
   fg_combobox = "blue";
   bg_combobox = "white";
+}
+
+/*******************************************************************************
+
+Copies user colors into color_settings variables. Returns 1 if any user color
+has not been set, 0 otherwise.
+
+*******************************************************************************/
+int set_from_user_colors()
+{
+  if (user_colors::fg_normal != "") { fg_normal = user_colors::fg_normal; }
+  else { return 1; }
+  if (user_colors::bg_normal != "") { bg_normal = user_colors::bg_normal; }
+  else { return 1; }
+  if (user_colors::fg_title != "") { fg_title = user_colors::fg_title; }
+  else { return 1; }
+  if (user_colors::bg_title != "") { bg_title = user_colors::bg_title; }
+  else { return 1; }
+  if (user_colors::fg_info != "") { fg_info = user_colors::fg_info; }
+  else { return 1; }
+  if (user_colors::bg_info != "") { bg_info = user_colors::bg_info; }
+  else { return 1; }
+  if (user_colors::fg_highlight_active != "")
+    fg_highlight_active = user_colors::fg_highlight_active;
+  else { return 1; }
+  if (user_colors::bg_highlight_active != "")
+    bg_highlight_active = user_colors::bg_highlight_active;
+  else { return 1; }
+  if (user_colors::fg_highlight_inactive != "")
+    fg_highlight_inactive = user_colors::fg_highlight_inactive;
+  else { return 1; }
+  if (user_colors::bg_highlight_inactive != "")
+    bg_highlight_inactive = user_colors::bg_highlight_inactive;
+  else { return 1; }
+  if (user_colors::header != "") { header = user_colors::header; }
+  else { return 1; }
+  if (user_colors::header_popup != "") 
+    header_popup = user_colors::header_popup;
+  else { return 1; }
+  if (user_colors::tagged != "") { tagged = user_colors::tagged; }
+  else { return 1; }
+  if (user_colors::fg_popup != "") { fg_popup = user_colors::fg_popup; }
+  else { return 1; }
+  if (user_colors::bg_popup != "") { bg_popup = user_colors::bg_popup; }
+  else { return 1; }
+  if (user_colors::fg_warning != "") { fg_warning = user_colors::fg_warning; }
+  else { return 1; }
+  if (user_colors::bg_warning != "") { bg_warning = user_colors::bg_warning; }
+  else { return 1; }
+  if (user_colors::hotkey != "") { hotkey = user_colors::hotkey; }
+  else { return 1; }
+  if (user_colors::fg_combobox != "")
+    fg_combobox = user_colors::fg_combobox;
+  else { return 1; }
+  if (user_colors::bg_combobox != "")
+    bg_combobox = user_colors::bg_combobox;
+  else { return 1; }
+
+  return 0;
 }
 
 /*******************************************************************************
@@ -133,26 +216,26 @@ int read_color_theme(const std::string & color_theme_file)
 
   // Store settings in vectors so we can read them in a loop
 
-  color_vars.push_back(&fg_normal);
-  color_vars.push_back(&bg_normal);
-  color_vars.push_back(&fg_title);
-  color_vars.push_back(&bg_title);
-  color_vars.push_back(&fg_info);
-  color_vars.push_back(&bg_info);
-  color_vars.push_back(&fg_highlight_active);
-  color_vars.push_back(&bg_highlight_active);
-  color_vars.push_back(&fg_highlight_inactive);
-  color_vars.push_back(&bg_highlight_inactive);
-  color_vars.push_back(&header);
-  color_vars.push_back(&header_popup);
-  color_vars.push_back(&tagged);
-  color_vars.push_back(&fg_popup);
-  color_vars.push_back(&bg_popup);
-  color_vars.push_back(&fg_warning);
-  color_vars.push_back(&bg_warning);
-  color_vars.push_back(&hotkey);
-  color_vars.push_back(&fg_combobox);
-  color_vars.push_back(&bg_combobox);
+  color_vars.push_back(&user_colors::fg_normal);
+  color_vars.push_back(&user_colors::bg_normal);
+  color_vars.push_back(&user_colors::fg_title);
+  color_vars.push_back(&user_colors::bg_title);
+  color_vars.push_back(&user_colors::fg_info);
+  color_vars.push_back(&user_colors::bg_info);
+  color_vars.push_back(&user_colors::fg_highlight_active);
+  color_vars.push_back(&user_colors::bg_highlight_active);
+  color_vars.push_back(&user_colors::fg_highlight_inactive);
+  color_vars.push_back(&user_colors::bg_highlight_inactive);
+  color_vars.push_back(&user_colors::header);
+  color_vars.push_back(&user_colors::header_popup);
+  color_vars.push_back(&user_colors::tagged);
+  color_vars.push_back(&user_colors::fg_popup);
+  color_vars.push_back(&user_colors::bg_popup);
+  color_vars.push_back(&user_colors::fg_warning);
+  color_vars.push_back(&user_colors::bg_warning);
+  color_vars.push_back(&user_colors::hotkey);
+  color_vars.push_back(&user_colors::fg_combobox);
+  color_vars.push_back(&user_colors::bg_combobox);
 
   color_names.push_back("fg_normal");
   color_names.push_back("bg_normal");
@@ -323,6 +406,7 @@ int read_config(const std::string & conf_file)
       std::getline(std::cin, response);
       set_default_colors();
     }
+    else { set_from_user_colors(); }
   }
   else 
   { 
@@ -346,7 +430,7 @@ int activate_color()
   {
     if (color_theme_file != "")
     {
-      check = read_color_theme(color_theme_file);
+      check = set_from_user_colors();
       if (check != 0) { set_default_colors(); }
     }
     else { set_default_colors(); }
