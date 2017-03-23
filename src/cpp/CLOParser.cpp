@@ -92,22 +92,24 @@ Prints various information messages
 *******************************************************************************/
 void CLOParser::printUsage() const
 {
-  std::string exename = _argv_str[0];
-  std::cout << "Usage: " << exename << " [OPTION]" << std::endl;
-  std::cout << "Try '" << exename << " --help' for more information."
-            << std::endl;
+  std::cout << "Usage: sboui [OPTION]" << std::endl;
+  std::cout << "Try 'sboui --help' for more information." << std::endl;
 }
 
 void CLOParser::printVersion(const std::string & version) const
 {
-  std::string exename = _argv_str[0];
-  std::cout << exename << " " << version << std::endl;
+  std::cout << "sboui " << version << std::endl;
+  std::cout << "Copyright (C) 2017 Daniel Prosser" << std::endl;
+  std::cout << "MIT License: https://opensource.org/licenses/MIT" << std::endl;
+  std::cout << "This is free software; you are free to change it and "
+            << "redistribute it." << std::endl;
+  std::cout << "This software is presented 'as is', without warranty "
+            << "of any kind." << std::endl;
 }
 
 void CLOParser::printHelp() const
 {
-  std::string exename = _argv_str[0];
-  std::cout << "Usage: " << exename << " [OPTION]" << std::endl;
+  std::cout << "Usage: sboui [OPTION]" << std::endl;
   std::cout << std::endl;
   std::cout << "Options:" << std::endl;
   std::cout << "  -f, --file FILE  Specify a custom configuration file"
@@ -117,7 +119,9 @@ void CLOParser::printHelp() const
   std::cout << "  --version        Display version number of sboui and exit"
             << std::endl;
   std::cout << std::endl;
-  std::cout << "See `man sboui` and `man sboui.cfg` for more information."
+  std::cout << "Report bugs to Daniel Prosser <dpross1100@msn.com>"
+            << std::endl;
+  std::cout << "sboui home page: https://github.com/montagdude/sboui"
             << std::endl;
 }
 
