@@ -112,7 +112,7 @@ class MainWindow {
 
     /* Constructor and destructor */
 
-    MainWindow();
+    MainWindow(const std::string & version);
     ~MainWindow();
 
     /* Window setup */

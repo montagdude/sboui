@@ -2,50 +2,30 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "string_util.h"
+#include "CLOParser.h"
 #include "curses.h"
 #include "settings.h"
 #include "MainWindow.h"
 
-void print_usage(const std::string & exename)
-{
-  std::cout << exename << ": invalid command line options. Usage:" << std::endl;
-  std::cout << exename << " [-f, --file FILE]" << std::endl;
-}
+#ifndef PACKAGE_VERSION
+  #define PACKAGE_VERSION ""
+#endif
 
 int main(int argc, char *argv[])
 {
-  int i, check;
-  std::vector<std::string> argv_str;
-  std::string conf_file = "";
+  int check;
+  CLOParser clos;
 
-  // Process command line arguments
+  // Parse command line arguments
 
-  for ( i = 0; i < argc; i++ )
-  {
-    argv_str.push_back(chararray_to_string(argv[i]));
-  }
+  check = clos.checkCLOs(argc, argv, PACKAGE_VERSION);
+  if (check == 1) { return check; }
+  else if (check == -1) { return 0; }
 
-  if ( (argc == 2) || (argc > 3) )
-  {
-    print_usage(argv_str[0]);
-    return 1;
-  }
-  else if (argc == 3)
-  {
-    if ( (argv_str[1] == "-f") || (argv_str[1] == "--file") )
-      conf_file = argv_str[2];
-    else
-    {
-      print_usage(argv_str[0]);
-      return 1;
-    }
-  }
+  // Read config file
 
-  // Read config files
-
-  if (conf_file == "") { check = read_config(); }
-  else { check = read_config(conf_file); }
+  if (clos.requestInputFile()) { check = read_config(clos.inputFile()); }
+  else { check = read_config(); }
   if (check != 0) { return check; }
 
   // Set up ncurses
@@ -59,9 +39,9 @@ int main(int argc, char *argv[])
   if (settings::enable_color) { activate_color(); }
   else { deactivate_color(); }
 
-  // User interaction loop
+  // User interaction loop (note: call constructor after setting colors)
 
-  MainWindow mainwindow;  // Call constructor after setting colors
+  MainWindow mainwindow(PACKAGE_VERSION);
   mainwindow.initialize();
   mainwindow.show();
 

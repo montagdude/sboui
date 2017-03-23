@@ -26,10 +26,6 @@
 #include "HelpWindow.h"
 #include "MainWindow.h"
 
-#ifndef PACKAGE_VERSION
-  #define PACKAGE_VERSION ""
-#endif
-
 using namespace color_settings;
 
 /*******************************************************************************
@@ -1045,7 +1041,7 @@ int MainWindow::displayError(const std::string & msg, const std::string & name,
 Constructor and destructor
 
 *******************************************************************************/
-MainWindow::MainWindow()
+MainWindow::MainWindow(const std::string & version)
 {
   _win1 = NULL;
   _win2 = NULL;
@@ -1054,7 +1050,7 @@ MainWindow::MainWindow()
   _installedlist.resize(0);
   _nondeplist.resize(0);
   _categories.resize(0);
-  _title = "sboui " PACKAGE_VERSION;
+  _title = "sboui " + version;
   _filter = "all SlackBuilds";
   _info = "f: Filter | /: Search | o: Options | ?: Help";
   _status = "";
