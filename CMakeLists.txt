@@ -39,11 +39,11 @@ endif (CURSES_FOUND)
 
 # Check for libconfig++
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-find_package(Config++ REQUIRED)
-if (CONFIG++_FOUND)
-  include_directories(${CONFIG++_INCLUDE_DIR})
-  target_link_libraries(sboui ${CONFIG++_LIBRARY})
-endif (CONFIG++_FOUND)
+find_package(Libconfig++ REQUIRED)
+if (HAS_LIBCONFIG++)
+  include_directories(${LIBCONFIG++_INCLUDE_DIR})
+  target_link_libraries(sboui ${LIBCONFIG++_LIBRARY})
+endif (HAS_LIBCONFIG++)
 
 # Install rules
 install(TARGETS sboui DESTINATION sbin)
