@@ -16,10 +16,10 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 set(CONFDIR /etc/sboui
     CACHE PATH "Directory to install sboui.conf."
 )
-set(LIBEXECDIR ${CMAKE_INSTALL_PREFIX}/libexec
+set(LIBEXECDIR ${CMAKE_INSTALL_PREFIX}/libexec/sboui
     CACHE PATH "Directory to install sboutil.sh."
 )
-set(DATADIR ${CMAKE_INSTALL_PREFIX}/share
+set(DATADIR ${CMAKE_INSTALL_PREFIX}/share/sboui
     CACHE PATH "Directory to install shared data."
 )
 set(MANDIR ${CMAKE_INSTALL_PREFIX}/man
@@ -40,10 +40,10 @@ endif (CURSES_FOUND)
 # Check for libconfig++
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 find_package(Libconfig++ REQUIRED)
-if (HAS_LIBCONFIG++)
+if (LIBCONFIG++_FOUND)
   include_directories(${LIBCONFIG++_INCLUDE_DIR})
   target_link_libraries(sboui ${LIBCONFIG++_LIBRARY})
-endif (HAS_LIBCONFIG++)
+endif (LIBCONFIG++_FOUND)
 
 # Install rules
 install(TARGETS sboui DESTINATION sbin)
