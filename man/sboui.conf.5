@@ -1,13 +1,13 @@
-.TH SBOUI.CFG 5
+.TH SBOUI.CONF 5
 .SH NAME
-sboui.cfg \- configuration file for sboui
+sboui.conf \- configuration file for sboui
 .SH DESCRIPTION
-.I sboui.cfg
+.I sboui.conf
 contains settings for
 .BR sboui (8),
 an ncurses interface for SlackBuilds.org package managers.
 The system location for this file is at
-.IR /etc/sboui/sboui.cfg ,
+.IR /etc/sboui/sboui.conf ,
 but the user may specify a different file by using the
 .B \-f
 command-line option when invoking
@@ -16,7 +16,7 @@ command-line option when invoking
 .BR sboui (8)
 for more information on command-line options.)
 This manual describes the configuration settings specified in
-.IR sboui.cfg .
+.IR sboui.conf .
 .TP
 Each setting in this file has the format:
 .IP
@@ -43,7 +43,7 @@ File specifying colors for different UI elements.
 The
 .B color_theme_file
 uses the same {variable} = {value} syntax as
-.BR sboui.cfg .
+.BR sboui.conf .
 If this variable is not present, the file cannot be found, or there is an error in the file (including syntax errors and missing variables), the default color theme will be used.
 In the last two cases, a warning will be issued before the main window is displayed.
 .IP
@@ -431,21 +431,21 @@ Same as
 but applying to upgrade operations.
 .SH FILES
 .TP
-.I /etc/sboui/sboui.cfg
+.I /etc/sboui/sboui.conf
 Global configuration file for
 .BR sboui .
 .TP
 Color theme file
 File defining colors for different UI elements.
 This file is an optional setting in
-.IR /etc/sboui/sboui.cfg .
+.IR /etc/sboui/sboui.conf .
 If not present, default color settings will be used.
 .SH NOTES
 .B sboui
 uses the
 .B libconfig++
 library for parsing
-.B sboui.cfg
+.B sboui.conf
 and color theme files.
 For more information about this library see the project's website:
 .PP

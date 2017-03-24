@@ -50,6 +50,6 @@ Installation Instructions
    for the header file and /usr/lib for the library), you may set the variables
    LIBCONFIG++_INCLUDE_DIR and LIBCONFIG++_LIBRARY.
 
-   By default, the sboui's configuration file, called sboui.cfg, will always be
+   By default, the sboui's configuration file, called sboui.conf, will always be
    installed in /etc/sboui, because that is where the program expects it to be.
    To override this location, set the CONFDIR variable as desired.

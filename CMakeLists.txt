@@ -14,7 +14,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
 # Some default install directories
 set(CONFDIR /etc/sboui
-    CACHE PATH "Directory to install sboui.cfg."
+    CACHE PATH "Directory to install sboui.conf."
 )
 set(LIBEXECDIR ${CMAKE_INSTALL_PREFIX}/libexec
     CACHE PATH "Directory to install sboutil.sh."
@@ -47,14 +47,14 @@ endif (HAS_LIBCONFIG++)
 
 # Install rules
 install(TARGETS sboui DESTINATION sbin)
-install(FILES etc/sboui.cfg DESTINATION ${CONFDIR})
+install(FILES etc/sboui.conf DESTINATION ${CONFDIR})
 install(FILES src/shell/sboutil.sh 
               DESTINATION ${LIBEXECDIR}
               PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
                           GROUP_READ             GROUP_EXECUTE
                           WORLD_READ             WORLD_EXECUTE
 )
-file(GLOB COLOR_THEMES etc/colors_*.cfg)
+file(GLOB COLOR_THEMES etc/colors.*)
 install(FILES ${COLOR_THEMES} DESTINATION ${DATADIR})
 install(FILES man/sboui.8 DESTINATION ${MANDIR}/man8)
-install(FILES man/sboui.cfg.5 DESTINATION ${MANDIR}/man5)
+install(FILES man/sboui.conf.5 DESTINATION ${MANDIR}/man5)

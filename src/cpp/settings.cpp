@@ -289,7 +289,7 @@ int read_config(const std::string & conf_file)
   // Read config file
 
   if (conf_file != "") { my_conf_file = conf_file; }
-  else { my_conf_file = "/etc/sboui/sboui.cfg"; }
+  else { my_conf_file = "/etc/sboui/sboui.conf"; }
 
   try { cfg.readFile(my_conf_file.c_str()); }
   catch(const FileIOException &fioex)
@@ -337,13 +337,13 @@ int read_config(const std::string & conf_file)
 
   if (! cfg.lookupValue("package_manager", package_manager))
   {
-    std::cerr << "Error: No package_manager setting in sboui.cfg." << std::endl;
+    std::cerr << "Error: No package_manager setting in sboui.conf." << std::endl;
     return 1;
   }
 
   if (! cfg.lookupValue("repo_dir", repo_dir))
   {
-    std::cerr << "Error: no repo_dir setting in sboui.cfg." << std::endl;
+    std::cerr << "Error: no repo_dir setting in sboui.conf." << std::endl;
     return 1;
   }
 

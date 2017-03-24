@@ -32,7 +32,7 @@ Viewing and editing files in the local repository
 .IP \(bu
 Tagging multiple packages (or groups) to apply batch changes
 .IP \(bu
-Support for any custom SBo package manager meeting certain conditions described in \fBsboui.cfg\fR(5)
+Support for any custom SBo package manager meeting certain conditions described in \fBsboui.conf\fR(5)
 .IP \(bu
 Configurable colors
 .PP
@@ -47,12 +47,12 @@ It can be
 or a custom tool.
 .B sboui
 also requires a configuration file,
-.IR /etc/sboui/sboui.cfg .
+.IR /etc/sboui/sboui.conf .
 The initial install will provide a default version of this file, while upgrades will add
-.I /etc/sboui/sboui.cfg.new
+.I /etc/sboui/sboui.conf.new
 that the user can choose to merge with or replace the original.
 See
-.BR sboui.cfg (5)
+.BR sboui.conf (5)
 for more information about the configuration file.
 Note also that most options can be changed at runtime in the options dialog window.
 .PP
@@ -93,7 +93,7 @@ are as follows:
 .BR \-f ", " \-\-file " " \fIFILE\fR
 .br
 Specify a configuration file other than
-.IR /etc/sboui/sboui.cfg .
+.IR /etc/sboui/sboui.conf .
 .TP
 .BR \-\-help
 .br
@@ -110,11 +110,11 @@ If invalid command line options are specified, the configuration file could not 
 Other errors that can occur during execution (e.g., a build failure for a package) are indicated to the user but do not affect the exit status.
 .SH FILES
 .TP
-.I /etc/sboui/sboui.cfg
+.I /etc/sboui/sboui.conf
 Global configuration file for
 .BR sboui .
 See
-.BR sboui.cfg (5)
+.BR sboui.conf (5)
 for more information about the entries in this file.
 An alternative file can be specified at runtime with the
 .B \-f
@@ -123,10 +123,10 @@ option as described above.
 Color theme file
 File defining colors for different UI elements.
 This file is an optional setting in
-.IR /etc/sboui/sboui.cfg .
+.IR /etc/sboui/sboui.conf .
 If not present, default color settings will be used.
 See
-.BR sboui.cfg (5)
+.BR sboui.conf (5)
 for more information about changing color settings.
 .SH BUGS
 Depending on the terminal, bright background colors may not actually appear bright or may cause blinking text.
@@ -137,7 +137,7 @@ Reinstall operations do not currently work with
 as the package manager, because it does not support reinstalling.
 .SH SEE ALSO
 .BR ncurses (3X),
-.BR sboui.cfg (5),
+.BR sboui.conf (5),
 .BR sbopkg (8),
 .BR sboinstall (1),
 .BR dialog (1),
