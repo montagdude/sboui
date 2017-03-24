@@ -100,7 +100,8 @@ void CLOParser::printVersion(const std::string & version) const
 {
   std::cout << "sboui " << version << std::endl;
   std::cout << "Copyright (C) 2017 Daniel Prosser" << std::endl;
-  std::cout << "MIT License: https://opensource.org/licenses/MIT" << std::endl;
+  std::cout << "Expat/MIT License: https://opensource.org/licenses/MIT"
+            << std::endl;
   std::cout << "This is free software; you are free to change it and "
             << "redistribute it." << std::endl;
   std::cout << "This software is presented 'as is', without warranty "
