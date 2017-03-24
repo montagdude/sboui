@@ -1,0 +1,11 @@
+Things to do before version 1.0
+================================================================================
+* More efficient internal search through sorted lists (currently use naive 
+  search)
+* Get rid of sboutil.sh shell script, which currently reads *.info files and
+  checks if a package is installed. (Do it all in C++ instead.)
+* Make a position notifier on the right side when scrolling in lists and input
+  boxes.
+* Add functionality to jump to a name in lists while typing.
+* Remove caveat in manpage about reinstalling not working with sbotools, once
+  that project fixes it (see https://github.com/pink-mist/sbotools/issues/58).

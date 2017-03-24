@@ -1,0 +1,55 @@
+Installation Instructions
+=========================
+
+   sboui uses a combination of CMake and Makefiles to build and install. CMake
+   is responsible for determining system-dependent parameters, such as locating
+   and testing the compiler and required libraries. It then generates Makefiles,
+   which are scripts that build (by invoking the compiler and linker) and
+   install the software. A basic workflow for building and installing is as
+   follows:
+
+   cd /path/to/sboui/top/dir
+   mkdir build
+   cd build
+     cmake ..
+     make
+     make install
+   cd ..
+
+   This process compile the software in the /path/to/sboui/top/dir/build
+   directory and install it to the default install path (root privileges may be
+   needed for the install step). Some influential variables that may be passed
+   to the cmake command include:
+
+   * CMAKE_CXX_COMPILER      (name of compiler executable)
+   * CMAKE_INSTALL_PREFIX    (location to install)
+   * CMAKE_BUILD_TYPE        (typically "Release" or "Debug")
+   * LIBCONFIG++_INCLUDE_DIR (location of libconfig++.h header file)
+   * LIBCONFIG++_LIBRARY     (full path to libconfig++ library)
+
+   Other variables are available as well. They can be viewed by navigating to
+   the build directory, running `cmake` to set up the build, and then running
+   `ccmake`. Any of these variables can be defined by passing them as options
+   to CMake as follows:
+
+   cmake \
+     -D{variable1 name}={variable1 value} \
+     -D{variable2 name}={variable2 value} \
+     (etc) \
+     ..
+
+   where {variableX name} and {variableX value} are substituted by the actual
+   names and values. String values are typically enclosed in quotes.
+
+   Note that the libconfig++ library is required, and the `cmake` command will
+   fail if it is not present. The project website for libconfig++ is:
+
+   http://www.hyperrealm.com/libconfig/
+
+   If libconfig++ is not installed in standard system paths (e.g., /usr/include
+   for the header file and /usr/lib for the library), you may set the variables
+   LIBCONFIG++_INCLUDE_DIR and LIBCONFIG++_LIBRARY.
+
+   By default, the sboui's configuration file, called sboui.cfg, will always be
+   installed in /etc/sboui, because that is where the program expects it to be.
+   To override this location, set the CONFDIR variable as desired.
