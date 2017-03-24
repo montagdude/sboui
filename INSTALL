@@ -29,7 +29,7 @@ Installation Instructions
 
    Other variables are available as well. They can be viewed by navigating to
    the build directory, running `cmake` to set up the build, and then running
-   `ccmake`. Any of these variables can be defined by passing them as options
+   `ccmake ..`. Any of these variables can be defined by passing them as options
    to CMake as follows:
 
    cmake \
