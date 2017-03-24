@@ -7,5 +7,6 @@ Things to do before version 1.0
 * Make a position notifier on the right side when scrolling in lists and input
   boxes.
 * Add functionality to jump to a name in lists while typing.
+* Use environment variable to get default editor.
 * Remove caveat in manpage about reinstalling not working with sbotools, once
   that project fixes it (see https://github.com/pink-mist/sbotools/issues/58).
