@@ -1,4 +1,12 @@
-2017-03-XX   Daniel Prosser <dpross1100@msn.com>
+2017-03-25   Daniel Prosser <dpross1100@msn.com>
+
+        verion 0.1.1
+        * Change some default settings in the source code and in the
+          default configuration file.
+        * Update documentation regarding reinstall operation with
+          sbotools.
+
+2017-03-24   Daniel Prosser <dpross1100@msn.com>
 
         verion 0.1
         Initial release
