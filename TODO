@@ -8,5 +8,6 @@ Things to do before version 1.0
   boxes.
 * Add functionality to jump to a name in lists while typing.
 * Use environment variable to get default editor.
-* Remove caveat in manpage about reinstalling not working with sbotools, once
-  that project fixes it (see https://github.com/pink-mist/sbotools/issues/58).
+* Make sure reinstalling works with sbotools once this functionality makes it
+  into an official sbotools release (it is in the latest git). May require
+  addition of a reinstall_cmd or similar.
