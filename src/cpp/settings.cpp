@@ -323,7 +323,7 @@ int read_config(const std::string & conf_file)
     std::getline(std::cin, response);
   }
 
-  if (! cfg.lookupValue("editor", editor)) { editor = "vim"; }
+  if (! cfg.lookupValue("editor", editor)) { editor = "vi"; }
 
   if (! cfg.lookupValue("install_clos", install_clos)) { install_clos = ""; }
 
