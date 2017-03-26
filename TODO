@@ -7,7 +7,6 @@ Things to do before version 1.0
 * Make a position notifier on the right side when scrolling in lists and input
   boxes.
 * Add functionality to jump to a name in lists while typing.
-* Use environment variable to get default editor.
 * Make sure reinstalling works with sbotools once this functionality makes it
   into an official sbotools release (it is in the latest git). May require
   addition of a reinstall_cmd or similar.

@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <curses.h>
+#include <cstdlib>   // getenv
+#include <sstream>
 #include <libconfig.h++>
 #include "Color.h"
 #include "settings.h"
@@ -285,6 +287,7 @@ int read_config(const std::string & conf_file)
   int check;
   Config cfg;
   std::string my_conf_file, response;
+  char *env_editor;
 
   // Read config file
 
@@ -323,7 +326,17 @@ int read_config(const std::string & conf_file)
     std::getline(std::cin, response);
   }
 
-  if (! cfg.lookupValue("editor", editor)) { editor = "vi"; }
+  if (! cfg.lookupValue("editor", editor))
+  {
+    env_editor = std::getenv("EDITOR");
+    if (env_editor != NULL)
+    { 
+      std::stringstream ss;
+      ss << env_editor;
+      ss >> editor;
+    }
+    else { editor = "vi"; }
+  }
 
   if (! cfg.lookupValue("install_clos", install_clos)) { install_clos = ""; }
 

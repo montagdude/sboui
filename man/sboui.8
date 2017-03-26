@@ -108,9 +108,19 @@ and exit.
 The exit status is 0 if the command line options are valid and the configuration file was successfully read.
 If invalid command line options are specified, the configuration file could not be read, or the configuration file contains errors, the exit status is 1.
 Other errors that can occur during execution (e.g., a build failure for a package) are indicated to the user but do not affect the exit status.
+.SH ENVIRONMENT
+.TP
+.B EDITOR
+.br
+Default editor used to view READMEs and other files, if none is specified in
+.IR /etc/sboui/sboui.conf .
+If this environment variable is not set,
+.B vi
+is used as the default instead.
 .SH FILES
 .TP
 .I /etc/sboui/sboui.conf
+.br
 Global configuration file for
 .BR sboui .
 See
@@ -121,6 +131,7 @@ An alternative file can be specified at runtime with the
 option as described above.
 .TP
 Color theme file
+.br
 File defining colors for different UI elements.
 This file is an optional setting in
 .IR /etc/sboui/sboui.conf .
