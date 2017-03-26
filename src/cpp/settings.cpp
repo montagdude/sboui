@@ -70,6 +70,8 @@ using namespace settings;
 using namespace color_settings;
 using namespace libconfig;
 
+const std::string default_conf_file = "/etc/sboui/sboui.conf";
+
 /*******************************************************************************
 
 Sets default colors
@@ -286,20 +288,44 @@ int read_config(const std::string & conf_file)
 {
   int check;
   Config cfg;
-  std::string my_conf_file, response;
-  char *env_editor;
+  std::string my_conf_file, home, response;
+  char *env_home, *env_editor;
 
-  // Read config file
+  // Determine config file to read
 
   if (conf_file != "") { my_conf_file = conf_file; }
-  else { my_conf_file = "/etc/sboui/sboui.conf"; }
+  else
+  {
+    env_home = std::getenv("HOME");
+    if (env_home != NULL)
+    { 
+      std::stringstream sshm;
+      sshm << env_home;
+      sshm >> home;
+      my_conf_file = home + "/.sboui.conf";
+    }
+    else { my_conf_file = ""; }
+  }
+
+  // Read default config file if no user file
 
   try { cfg.readFile(my_conf_file.c_str()); }
   catch(const FileIOException &fioex)
   {
-    std::cerr << "Error: cannot read configuration file " << my_conf_file
-              << "." << std::endl;
-    return 1;
+    my_conf_file = default_conf_file;
+    try { cfg.readFile(my_conf_file.c_str()); }
+    catch(const FileIOException &fioex1)
+    {
+      std::cerr << "Error: cannot read configuration file " << my_conf_file
+                << "." << std::endl;
+      return 1;
+    }
+    catch(const ParseException &pex1)
+    {
+      std::cerr << "Parse error at " << pex1.getFile() << ":" << pex1.getLine()
+                << " - " << pex1.getError() << std::endl;
+      return 1;
+    }
   }
   catch(const ParseException &pex)
   {
@@ -331,9 +357,9 @@ int read_config(const std::string & conf_file)
     env_editor = std::getenv("EDITOR");
     if (env_editor != NULL)
     { 
-      std::stringstream ss;
-      ss << env_editor;
-      ss >> editor;
+      std::stringstream ssed;
+      ssed << env_editor;
+      ssed >> editor;
     }
     else { editor = "vi"; }
   }
@@ -350,13 +376,15 @@ int read_config(const std::string & conf_file)
 
   if (! cfg.lookupValue("package_manager", package_manager))
   {
-    std::cerr << "Error: No package_manager setting in sboui.conf." << std::endl;
+    std::cerr << "Error: No package_manager setting in "
+              << my_conf_file << "." << std::endl;
     return 1;
   }
 
   if (! cfg.lookupValue("repo_dir", repo_dir))
   {
-    std::cerr << "Error: no repo_dir setting in sboui.conf." << std::endl;
+    std::cerr << "Error: no repo_dir setting in "
+              << my_conf_file << "." << std::endl;
     return 1;
   }
 

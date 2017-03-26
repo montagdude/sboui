@@ -47,8 +47,11 @@ It can be
 or a custom tool.
 .B sboui
 also requires a configuration file,
-.IR /etc/sboui/sboui.conf .
-The initial install will provide a default version of this file, while upgrades will add
+.I /etc/sboui/sboui.conf
+(the system-wide default) or
+.IR ~/.sboui.conf
+(per-user override of the system-wide default).
+The initial install will provide the former, while upgrades will add
 .I /etc/sboui/sboui.conf.new
 that the user can choose to merge with or replace the original.
 See
@@ -93,7 +96,9 @@ are as follows:
 .BR \-f ", " \-\-file " " \fIFILE\fR
 .br
 Specify a configuration file other than
-.IR /etc/sboui/sboui.conf .
+.I /etc/sboui/sboui.conf
+or
+.IR ~/.sboui.conf .
 .TP
 .BR \-\-help
 .br
@@ -112,8 +117,7 @@ Other errors that can occur during execution (e.g., a build failure for a packag
 .TP
 .B EDITOR
 .br
-Default editor used to view READMEs and other files, if none is specified in
-.IR /etc/sboui/sboui.conf .
+Default editor used to view READMEs and other files, if none is specified in the configuration file.
 If this environment variable is not set,
 .B vi
 is used as the default instead.
@@ -121,20 +125,21 @@ is used as the default instead.
 .TP
 .I /etc/sboui/sboui.conf
 .br
-Global configuration file for
+System-wide configuration file for
 .BR sboui .
 See
 .BR sboui.conf (5)
 for more information about the entries in this file.
-An alternative file can be specified at runtime with the
-.B \-f
-option as described above.
+.TP
+.I ~/.sboui.conf
+.br
+Per-user override of
+.IR /etc/sboui/sboui.conf .
 .TP
 Color theme file
 .br
 File defining colors for different UI elements.
-This file is an optional setting in
-.IR /etc/sboui/sboui.conf .
+This file can optionally be set as a variable in the configuration file.
 If not present, default color settings will be used.
 See
 .BR sboui.conf (5)
@@ -152,7 +157,6 @@ as the package manager, because this option is not yet available in the released
 .BR sbopkg (8),
 .BR sboinstall (1),
 .BR dialog (1),
-.BR removepkg (8),
 .BR su (1)
 .SH AUTHORS
 Daniel Prosser <dpross1100@msn.com>

@@ -6,17 +6,18 @@ sboui.conf \- configuration file for sboui
 contains settings for
 .BR sboui (8),
 an ncurses interface for SlackBuilds.org package managers.
-The system location for this file is at
+The system-wide file is
 .IR /etc/sboui/sboui.conf ,
-but the user may specify a different file by using the
+but
+.I ~/.sboui.conf
+overrides the system-wide file on a per-user basis.
+The user may also specify a different file at runtime via the
 .B \-f
-command-line option when invoking
-.BR sboui .
+command-line option.
 (See
 .BR sboui (8)
 for more information on command-line options.)
-This manual describes the configuration settings specified in
-.IR sboui.conf .
+This manual describes the configuration settings specified in the configuration file.
 .TP
 Each setting in this file has the format:
 .IP
@@ -43,7 +44,7 @@ File specifying colors for different UI elements.
 The
 .B color_theme_file
 uses the same {variable} = {value} syntax as
-.BR sboui.conf .
+.IR /etc/sboui/sboui.conf .
 If this variable is not present, the file cannot be found, or there is an error in the file (including syntax errors and missing variables), the default color theme will be used.
 In the last two cases, a warning will be issued before the main window is displayed.
 .IP
@@ -130,8 +131,7 @@ It can be the name of any executable in the $PATH, but since
 .B sboui
 is normally run as root, it is better to choose one that does not require X.
 .IP
-If the $EDITOR environment variable is set, it is used as the default in case this variable is not set in
-.IR /etc/sboui/sboui.conf .
+If the $EDITOR environment variable is set, it is used as the default in case this variable is not set in the configuration file.
 Otherwise,
 .B vi
 is used as the default.
@@ -438,21 +438,25 @@ but applying to upgrade operations.
 .SH FILES
 .TP
 .I /etc/sboui/sboui.conf
-Global configuration file for
+.br
+System-wide configuration file for
 .BR sboui .
 .TP
-Color theme file
-File defining colors for different UI elements.
-This file is an optional setting in
+.I ~/.sboui.conf
+.br
+Per-user override of
 .IR /etc/sboui/sboui.conf .
+.TP
+Color theme file
+.br
+File defining colors for different UI elements.
+This file can optionally be set as a variable in the configuration file.
 If not present, default color settings will be used.
 .SH NOTES
 .B sboui
 uses the
 .B libconfig++
-library for parsing
-.B sboui.conf
-and color theme files.
+library for parsing the configuration file and color theme files.
 For more information about this library see the project's website:
 .PP
 http://www.hyperrealm.com/libconfig/
@@ -462,7 +466,6 @@ http://www.hyperrealm.com/libconfig/
 .BR sbopkg (8),
 .BR sboinstall (1),
 .BR dialog (1),
-.BR removepkg (8),
-.BR su (1)
+.BR elvis (1),
 .SH AUTHORS
 Daniel Prosser <dpross1100@msn.com>
