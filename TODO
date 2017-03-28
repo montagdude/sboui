@@ -11,3 +11,8 @@ Things to do before version 1.0
   into an official sbotools release (it is in the latest git). May require
   addition of a reinstall_cmd or similar.
 * Make tagged entries and hotkeys stand out when color is disabled.
+* Show installed packages that appear in the repo but do not have the SBo tag?
+  This means, for example, chromium and qt5 installed from alien's packages and
+  could be upgraded via the version in the repo. If I implement this, a warning
+  should appear whenever a package from a different source is going to be
+  upgraded.

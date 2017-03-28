@@ -19,6 +19,7 @@ BuildListItem::BuildListItem()
   addProp("package_name", "");
   addBoolProp("tagged", false);
   addBoolProp("installed", false);
+  addBoolProp("foreign", false);
 }
 
 /*******************************************************************************
@@ -57,6 +58,10 @@ void BuildListItem::operator = (const ListItem & item)
   if (item.checkProp("installed"))
     setBoolProp("installed", item.getBoolProp("installed"));
   else { addBoolProp("installed", false); }
+
+  if (item.checkProp("foreign"))
+    setBoolProp("foreign", item.getBoolProp("foreign"));
+  else { addBoolProp("foreign", false); }
 }
 
 /*******************************************************************************
@@ -74,6 +79,8 @@ void BuildListItem::readPropsFromRepo()
     setBoolProp("installed", true);
     setProp("installed_version", pkg_info[0]);
     setProp("package_name", pkg_info[1]);
+    if (pkg_info[2] == "0") { setBoolProp("foreign", false); }
+    else { setBoolProp("foreign", true); }
   }
   else { setBoolProp("installed", false); }
 

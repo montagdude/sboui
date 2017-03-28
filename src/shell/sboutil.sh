@@ -7,8 +7,7 @@ function get_pkg_name ()
   local PKG=$1
 
   # Get rid of trailing stuff
-  local BUILD=${PKG%*_$TAG}
-  BUILD=${BUILD%*-*}  # Architecture-number
+  local BUILD=${PKG%*-*}  # Build-number
   BUILD=${BUILD%*-*}  # Architecture
   BUILD=${BUILD%*-*}  # Version
   echo $BUILD
@@ -21,8 +20,7 @@ function get_pkg_version ()
   local PKG=$1
 
   # Get rid of trailing stuff
-  local VERSION=${PKG%*_$TAG}
-  VERSION=${VERSION%*-*}  # Architecture-number
+  local VERSION=${PKG%*-*}  # Build-number
   VERSION=${VERSION%*-*}  # Architecture
 
   # Get rid of leading package name
@@ -33,14 +31,17 @@ function get_pkg_version ()
 
 ################################################################################
 # Returns version and package name of an installed SlackBuild. If not installed,
-# returns "not_installed" for both.
+# returns "not_installed" for both. Also checks whether the package originated
+# from the expected repository by checking the tag.
 function get_installed_info ()
 {
   local BUILD=$1
-  local PKGLIST=$(find /var/log/packages -maxdepth 1 -name "$BUILD*_$TAG")
+  local PKGLIST=$(find /var/log/packages -maxdepth 1 -name "$BUILD*")
   local VERSION="not_installed"
   local PKGNAME="not_installed"
+  local FOREIGN=0
   local PKG BUILDNAME
+  local TAGLEN=${#TAG}
 
   # There can be multiple packages fitting the pattern, so loop through them
   # and check against requested
@@ -48,6 +49,9 @@ function get_installed_info ()
     for PKG in $PKGLIST
     do
       PKG=$(basename "$PKG")
+      if [ "${PKG:(-$TAGLEN)}" != "$TAG" ]; then
+        FOREIGN=1
+      fi 
       BUILDNAME=$(get_pkg_name "$PKG")
       if [ "$BUILDNAME" == "$BUILD" ]; then
         VERSION=$(get_pkg_version "$PKG")
@@ -59,6 +63,7 @@ function get_installed_info ()
 
   echo $VERSION
   echo $PKGNAME
+  echo $FOREIGN
 }
 
 ################################################################################
@@ -78,7 +83,7 @@ function get_available_version ()
 # Lists installed SlackBuilds
 function list_installed ()
 {
-  local PKGLIST=$(find /var/log/packages -maxdepth 1 -name "$BUILD*_$TAG")
+  local PKGLIST=$(find /var/log/packages -maxdepth 1 -name "$BUILD*")
   local PKG
 
   for PKG in $PKGLIST
