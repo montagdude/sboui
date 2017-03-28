@@ -486,7 +486,7 @@ int MainWindow::showOptions()
   }
 
   clearStatus();
-  setInfo("f: Filter | /: Search | o: Options | ?: Help");
+  setInfo("s: Sync | f: Filter | /: Search | o: Options | ?: Help");
   delwin(optionswin);
   redrawAll(true);
   return 0;
@@ -526,7 +526,7 @@ int MainWindow::showHelp()
   }
 
   clearStatus();
-  setInfo("f: Filter | /: Search | o: Options | ?: Help");
+  setInfo("s: Sync | f: Filter | /: Search | o: Options | ?: Help");
   delwin(helpwin);
   redrawAll(true);
   return 0;
@@ -1052,7 +1052,7 @@ MainWindow::MainWindow(const std::string & version)
   _categories.resize(0);
   _title = "sboui " + version;
   _filter = "all SlackBuilds";
-  _info = "f: Filter | /: Search | o: Options | ?: Help";
+  _info = "s: Sync | f: Filter | /: Search | o: Options | ?: Help";
   _status = "";
   _category_idx = 0;
   _activated_listbox = 0;

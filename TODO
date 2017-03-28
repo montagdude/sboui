@@ -10,3 +10,4 @@ Things to do before version 1.0
 * Make sure reinstalling works with sbotools once this functionality makes it
   into an official sbotools release (it is in the latest git). May require
   addition of a reinstall_cmd or similar.
+* Make tagged entries and hotkeys stand out when color is disabled.
