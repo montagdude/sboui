@@ -67,19 +67,6 @@ function get_installed_info ()
 }
 
 ################################################################################
-# Gets SlackBuild version from string in .info file
-function get_available_version ()
-{
-  local BUILD=$1
-  local CATEGORY=$2
-
-  # Read .info file
-  . $REPO_DIR/$CATEGORY/$BUILD/$BUILD.info
-
-  echo $VERSION
-}
-
-################################################################################
 # Lists installed SlackBuilds
 function list_installed ()
 {
@@ -93,33 +80,12 @@ function list_installed ()
   done
 }
 
-################################################################################
-# Gets SlackBuild dependencies from string in .info file
-function get_reqs ()
-{
-  local BUILD=$1
-  local CATEGORY=$2
-
-  # Read .info file
-  . $REPO_DIR/$CATEGORY/$BUILD/$BUILD.info
-
-  if [ -n "$REQUIRES" ]; then
-    echo $REQUIRES
-  fi
-}
-
 case $1 in
     "get_installed_info")
         get_installed_info $2
         ;;
-    "get_available_version")
-        get_available_version $2 $3
-        ;;
     "list_installed")
         list_installed
-        ;;
-    "get_reqs")
-        get_reqs $2 $3
         ;;
     *)
         ;;

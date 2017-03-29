@@ -72,6 +72,7 @@ Reads properties from repo
 void BuildListItem::readPropsFromRepo()
 {
   std::vector<std::string> pkg_info;
+  std::vector<std::string> repo_info;
 
   pkg_info = get_installed_info(*this);
   if (pkg_info[0] != "not_installed")
@@ -84,8 +85,9 @@ void BuildListItem::readPropsFromRepo()
   }
   else { setBoolProp("installed", false); }
 
-  setProp("available_version", get_available_version(*this));
-  setProp("requires", get_reqs(*this));
+  repo_info = get_repo_info(*this);
+  setProp("available_version", repo_info[0]);
+  setProp("requires", repo_info[1]);
 }
 
 /*******************************************************************************

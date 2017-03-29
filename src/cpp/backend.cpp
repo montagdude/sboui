@@ -9,6 +9,7 @@
 #include "BuildListItem.h"
 #include "sorting.h"
 #include "string_util.h"
+#include "ShellReader.h"
 #include "settings.h"
 #include "backend.h"
 
@@ -117,44 +118,49 @@ std::vector<std::string> get_installed_info(const BuildListItem & build)
 
 /*******************************************************************************
 
-Gets available version of a SlackBuild from the repository
-
-*******************************************************************************/
-std::string get_available_version(const BuildListItem & build)
-{
-  char buffer[128];
-  FILE* fp;
-  std::string cmd, version;
-
-  cmd = env + sboutil + " get_available_version " + build.name() + " "
-                                                  + build.getProp("category");
-  fp = popen(cmd.c_str(), "r");
-  while (fgets(buffer, sizeof(buffer), fp) != NULL) { version = buffer; }
-  pclose(fp);
-
-  return trim(version);
-}
-
-/*******************************************************************************
-
 Gets SlackBuild requirements (dependencies) as string
 
 *******************************************************************************/
 std::string get_reqs(const BuildListItem & build)
 {
-  char buffer[1024];
-  FILE* fp;
-  std::string cmd, reqs;
+  ShellReader reader;
+  direntry info_file;
+  std::string reqs;
 
-  cmd = env + sboutil + " get_reqs " + build.name() + " "
-                                     + build.getProp("category");
-  fp = popen(cmd.c_str(), "r");
-  while (fgets(buffer, sizeof(buffer), fp) != NULL) { reqs = buffer; }
-  pclose(fp);
+  info_file.path = repo_dir + "/" + build.getProp("category") + "/" +
+                   build.name() + "/";
+  info_file.name = build.name() + ".info";
+
+  reader.open(info_file);
+  reader.read("REQUIRES", reqs);
+  reader.close();
 
   return reqs;
 }
 
+/*******************************************************************************
+
+Gets SlackBuild version and reqs from repository
+
+*******************************************************************************/
+std::vector<std::string> get_repo_info(const BuildListItem & build)
+{
+  ShellReader reader;
+  direntry info_file;
+  std::vector<std::string> output;
+
+  info_file.path = repo_dir + "/" + build.getProp("category") + "/" +
+                   build.name() + "/";
+  info_file.name = build.name() + ".info";
+
+  output.resize(2);
+  reader.open(info_file);
+  reader.read("VERSION", output[0]);
+  reader.read("REQUIRES", output[1]);
+  reader.close();
+
+  return output;
+}
 /*******************************************************************************
 
 Populates list of installed SlackBuilds. Also determines installed version,
