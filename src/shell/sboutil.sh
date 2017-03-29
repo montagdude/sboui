@@ -49,13 +49,13 @@ function get_installed_info ()
     for PKG in $PKGLIST
     do
       PKG=$(basename "$PKG")
-      if [ "${PKG:(-$TAGLEN)}" != "$TAG" ]; then
-        FOREIGN=1
-      fi 
       BUILDNAME=$(get_pkg_name "$PKG")
       if [ "$BUILDNAME" == "$BUILD" ]; then
         VERSION=$(get_pkg_version "$PKG")
         PKGNAME=$PKG
+        if [ "${PKG:(-$TAGLEN)}" != "$TAG" ]; then
+          FOREIGN=1
+        fi 
         break
       fi
     done

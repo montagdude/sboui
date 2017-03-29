@@ -76,6 +76,42 @@ std::string trim(const std::string & instr)
 
 /*******************************************************************************
 
+Removes leading whitespace
+
+*******************************************************************************/
+std::string remove_leading_whitespace(const std::string & instr)
+{
+  unsigned int i, trimlen, len;
+
+  len = instr.size();
+  trimlen = 0;
+  for ( i = 0; i < len; i++ )
+  {
+    if (instr[i] == ' ') { trimlen += 1; }
+    else { break; }
+  }
+
+  return instr.substr(trimlen, len-trimlen);
+}
+
+/*******************************************************************************
+
+Removes trailing comment from string
+
+*******************************************************************************/
+std::string remove_comment(const std::string & instr, char delim)
+{
+  std::size_t comment_pos;
+
+  comment_pos = instr.find_first_of(delim);
+  if (comment_pos != std::string::npos)
+    return instr.substr(0, comment_pos);
+  else
+    return instr;
+}
+
+/*******************************************************************************
+
 Splits a string into a vector of strings. Adapted from the answer here:
 http://stackoverflow.com/questions/236129/split-a-string-in-c#236803
 
