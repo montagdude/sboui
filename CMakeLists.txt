@@ -5,7 +5,7 @@ project(sboui)
 
 # Sources and include directories
 include_directories(include)
-file(GLOB SOURCES "src/cpp/*.cpp")
+file(GLOB SOURCES "src/*.cpp")
 add_executable(sboui ${SOURCES})
 
 # Default compiler flags
@@ -16,9 +16,6 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 set(CONFDIR /etc/sboui
     CACHE PATH "Directory to install sboui.conf."
 )
-set(LIBEXECDIR ${CMAKE_INSTALL_PREFIX}/libexec/sboui
-    CACHE PATH "Directory to install sboutil.sh."
-)
 set(DATADIR ${CMAKE_INSTALL_PREFIX}/share/sboui
     CACHE PATH "Directory to install shared data."
 )
@@ -28,7 +25,6 @@ set(MANDIR ${CMAKE_INSTALL_PREFIX}/man
 
 # Preprocessor definitions
 add_definitions(-DPACKAGE_VERSION=\"${SBOUI_VERSION}\")
-add_definitions(-DLIBEXECDIR=\"${LIBEXECDIR}\")
 
 # Check for curses library
 find_package(Curses REQUIRED)
@@ -48,12 +44,6 @@ endif (LIBCONFIG++_FOUND)
 # Install rules
 install(TARGETS sboui DESTINATION sbin)
 install(FILES etc/sboui.conf DESTINATION ${CONFDIR})
-install(FILES src/shell/sboutil.sh 
-              DESTINATION ${LIBEXECDIR}
-              PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-                          GROUP_READ             GROUP_EXECUTE
-                          WORLD_READ             WORLD_EXECUTE
-)
 file(GLOB COLOR_THEMES etc/colors.*)
 install(FILES ${COLOR_THEMES} DESTINATION ${DATADIR})
 install(FILES man/sboui.8 DESTINATION ${MANDIR}/man8)

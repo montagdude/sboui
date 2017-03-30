@@ -1,5 +1,4 @@
 #include <iostream>
-#include <stdio.h>    // popen
 #include <stdlib.h>   // system
 #include <sys/wait.h> // WEXITSTATUS, WIFEXITED
 #include <vector>
@@ -13,15 +12,8 @@
 #include "settings.h"
 #include "backend.h"
 
-#ifndef LIBEXECDIR
-  #define LIBEXECDIR "/usr/libexec"
-#endif
-
 using namespace settings;
  
-// Bash script with functions to query the repo and installed packages
-std::string sboutil = LIBEXECDIR "/sboutil.sh";
-
 /*******************************************************************************
 
 Gets list of SlackBuilds by reading repo directory. Returns 0 if successful,
@@ -70,50 +62,104 @@ int read_repo(std::vector<BuildListItem> & slackbuilds)
 
 /*******************************************************************************
 
-Returns list of installed SlackBuilds' names
+Gets basename of a file (removes path)
 
 *******************************************************************************/
-std::vector<std::string> list_installed_names()
+std::string basename(const std::string & fullpath)
+{
+  std::vector<std::string> splitpkg;
+
+  splitpkg = split(fullpath, '/');
+  return splitpkg[splitpkg.size()-1];
+}
+
+/*******************************************************************************
+
+Gets package name from entry in installed package list
+
+*******************************************************************************/
+std::string get_pkg_name(const std::string & pkg)
+{
+  std::vector<std::string> splitpkg;
+  unsigned int i, nsplit;
+  std::string name;
+
+  splitpkg = split(pkg, '-');
+  nsplit = splitpkg.size();
+  name = ""; 
+  for ( i = 0; i < nsplit-4; i++ ) { name += splitpkg[i] + "-"; }
+  name += splitpkg[nsplit-4];
+
+  return name;
+}
+
+/*******************************************************************************
+
+Gets package version from entry in installed package list
+
+*******************************************************************************/
+std::string get_pkg_version(const std::string & pkg)
+{
+  std::vector<std::string> splitpkg;
+  unsigned int nsplit;
+  std::string version;
+
+  splitpkg = split(pkg, '-');
+  nsplit = splitpkg.size();
+  version = splitpkg[nsplit-3];
+
+  return version;
+}
+
+/*******************************************************************************
+
+Returns list of all installed packages (not just the ones from the repo)
+
+*******************************************************************************/
+std::vector<std::string> list_installed_packages()
 {
   std::vector<std::string> pkglist;
-  char buffer[128];
-  FILE* fp;
-  std::string cmd, pkg;
+  DirListing packages_dir("/var/log/packages", false);
+  unsigned int npackages, i;
 
-  pkglist.resize(0);
-  cmd = env + sboutil + " list_installed";
-  fp = popen(cmd.c_str(), "r");
-  while (fgets(buffer, sizeof(buffer), fp) != NULL)
+  npackages = packages_dir.size();
+  for ( i = 0; i < npackages; i++ )
   {
-    pkg = buffer;
-    pkglist.push_back(trim(pkg));
-  } 
+    pkglist.push_back(basename(packages_dir(i).path + packages_dir(i).name));
+  }
 
   return pkglist;
 }
 
 /*******************************************************************************
 
-Gets version and package name for installed SlackBuild
+For installed SlackBuild, gets version, package name, and whether the tag
+matches the repo's tag. Returns 0 on success, 1 if package is not found.
 
 *******************************************************************************/
-std::vector<std::string> get_installed_info(const BuildListItem & build)
+int get_installed_info(const BuildListItem & build, std::string & version,
+                       std::string & name, bool & foreign)
 {
-  char buffer[128];
-  FILE* fp;
-  std::string cmd, pkg_info;
-  std::vector<std::string> output;
+  DirListing packages_dir("/var/log/packages", false);
+  unsigned int npackages, i;
+  std::string pkg, pkgname;
 
-  cmd = env + sboutil + " get_installed_info " + build.name();
-  fp = popen(cmd.c_str(), "r");
-  while (fgets(buffer, sizeof(buffer), fp) != NULL) 
-  { 
-    pkg_info = buffer;
-    output.push_back(trim(pkg_info));
-  }  
-  pclose(fp);
+  npackages = packages_dir.size();
+  for ( i = 0; i < npackages; i++ )
+  {
+    pkg = basename(packages_dir(i).path + packages_dir(i).name);
+    pkgname = get_pkg_name(pkg);
+    if (pkgname == build.name())
+    {
+      name = pkg;
+      version = get_pkg_version(pkg);
+      if (pkg.substr(pkg.size()-3,3) == "SBo") { foreign = false; }
+      else { foreign = true; }
+      return 0;
+    }
+  } 
 
-  return output;
+  return 1;
 }
 
 /*******************************************************************************
@@ -158,6 +204,7 @@ std::vector<std::string> get_repo_info(const BuildListItem & build)
 
   return output;
 }
+
 /*******************************************************************************
 
 Populates list of installed SlackBuilds. Also determines installed version,
@@ -167,19 +214,31 @@ available version, and dependencies for installed SlackBuilds.
 void list_installed(std::vector<BuildListItem> & slackbuilds,
                     std::vector<BuildListItem *> & installedlist)
 {
-  std::vector<std::string> installednames;
+  std::vector<std::string> installedpkgs;
+  std::string pkgname, pkgversion;
+  bool foreign;
   unsigned int ninstalled, i, j, nbuilds;
 
   installedlist.resize(0);
-  installednames = list_installed_names();
-  ninstalled = installednames.size();
+  installedpkgs = list_installed_packages();
+  ninstalled = installedpkgs.size();
   nbuilds = slackbuilds.size();
   for ( j = 0; j < ninstalled; j++ )
   {
+    pkgname = get_pkg_name(installedpkgs[j]);
     for ( i = 0; i < nbuilds; i++ )
     {
-      if (installednames[j] == slackbuilds[i].name())
+      if (pkgname == slackbuilds[i].name())
       {
+        pkgversion = get_pkg_version(installedpkgs[j]);
+        if (installedpkgs[j].substr(installedpkgs[j].size()-3,3) == "SBo")
+          foreign = false;
+        else { foreign = true; }
+
+        slackbuilds[i].setBoolProp("installed", true);
+        slackbuilds[i].setProp("installed_version", pkgversion);
+        slackbuilds[i].setProp("package_name", pkgname);
+        slackbuilds[i].setBoolProp("foreign", foreign);
         slackbuilds[i].readPropsFromRepo();
         installedlist.push_back(&slackbuilds[i]);
         break;

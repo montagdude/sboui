@@ -66,24 +66,38 @@ void BuildListItem::operator = (const ListItem & item)
 
 /*******************************************************************************
 
+Checks whether this BuildListItem is installed and gets information about it
+if so
+
+*******************************************************************************/
+void BuildListItem::readInstalledProps()
+{
+  std::string version, pkgname;
+  bool foreign;
+  int check;
+//FIXME: It would be faster to read the list of installed packages once and
+// then search through it here instead of calling get_installed_info for each
+// SlackBuild.
+
+  check = get_installed_info(*this, version, pkgname, foreign);
+  if (check == 0)
+  {
+    setBoolProp("installed", true);
+    setProp("installed_version", version);
+    setProp("package_name", pkgname);
+    setBoolProp("foreign", foreign);
+  }
+  else { setBoolProp("installed", false); }
+}
+
+/*******************************************************************************
+
 Reads properties from repo
 
 *******************************************************************************/
 void BuildListItem::readPropsFromRepo()
 {
-  std::vector<std::string> pkg_info;
   std::vector<std::string> repo_info;
-
-  pkg_info = get_installed_info(*this);
-  if (pkg_info[0] != "not_installed")
-  {
-    setBoolProp("installed", true);
-    setProp("installed_version", pkg_info[0]);
-    setProp("package_name", pkg_info[1]);
-    if (pkg_info[2] == "0") { setBoolProp("foreign", false); }
-    else { setBoolProp("foreign", true); }
-  }
-  else { setBoolProp("installed", false); }
 
   repo_info = get_repo_info(*this);
   setProp("available_version", repo_info[0]);

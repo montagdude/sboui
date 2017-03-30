@@ -22,6 +22,7 @@ class BuildListItem: public ListItem {
 
     // Reads properties from repo 
 
+    void readInstalledProps();
     void readPropsFromRepo();
 
     // Checks whether a SlackBuild can be upgraded

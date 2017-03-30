@@ -22,7 +22,6 @@ namespace settings
   std::string editor;
   std::string color_theme_file;
   std::string layout;
-  std::string env;
   bool resolve_deps, confirm_changes, enable_color;
 }
 
@@ -431,10 +430,6 @@ int read_config(const std::string & conf_file)
       return 1;
     }
   }
-
-  // Environment variables passed to sboutil
-
-  env = "REPO_DIR=" + repo_dir + " TAG=SBo ";
 
   // Color settings. Try to read user settings or revert to defaults.
 

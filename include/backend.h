@@ -5,7 +5,8 @@
 #include "BuildListItem.h"
 
 int read_repo(std::vector<BuildListItem> & slackbuilds);
-std::vector<std::string> get_installed_info(const BuildListItem & build);
+int get_installed_info(const BuildListItem & build, std::string & version,
+                       std::string & name, bool & foreign);
 std::string get_reqs(const BuildListItem & build);
 std::vector<std::string> get_repo_info(const BuildListItem & build);
 void list_installed(std::vector<BuildListItem> & slackbuilds,
