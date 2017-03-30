@@ -187,22 +187,19 @@ std::string get_reqs(const BuildListItem & build)
 Gets SlackBuild version and reqs from repository
 
 *******************************************************************************/
-std::vector<std::string> get_repo_info(const BuildListItem & build)
+void get_repo_info(const BuildListItem & build, std::string & available_version,
+                   std::string & reqs)
 {
   ShellReader reader;
   std::string info_file;
-  std::vector<std::string> output;
 
   info_file = repo_dir + "/" + build.getProp("category") + "/" +
               build.name() + "/" + build.name() + ".info";
 
-  output.resize(2);
   reader.open(info_file);
-  reader.read("VERSION", output[0]);
-  reader.read("REQUIRES", output[1]);
+  reader.read("VERSION", available_version);
+  reader.read("REQUIRES", reqs);
   reader.close();
-
-  return output;
 }
 
 /*******************************************************************************

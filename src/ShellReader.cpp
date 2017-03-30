@@ -156,6 +156,7 @@ int ShellReader::read(const std::string & varname, std::string & value)
 
   reading = true;
   check = 0;
+  rewind();
   while (reading)
   {
     if (_file.eof())

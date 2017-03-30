@@ -1,5 +1,4 @@
 #include <string>
-#include <vector>
 #include "backend.h"
 #include "ListItem.h"
 #include "BuildListItem.h"
@@ -97,11 +96,11 @@ Reads properties from repo
 *******************************************************************************/
 void BuildListItem::readPropsFromRepo()
 {
-  std::vector<std::string> repo_info;
+  std::string available_version, reqs;
 
-  repo_info = get_repo_info(*this);
-  setProp("available_version", repo_info[0]);
-  setProp("requires", repo_info[1]);
+  get_repo_info(*this, available_version, reqs);
+  setProp("available_version", available_version);
+  setProp("requires", reqs);
 }
 
 /*******************************************************************************
