@@ -304,7 +304,7 @@ int InstallBox::create(BuildListItem & build,
   unsigned int nreqs, i, nbuilds;
   bool tag;
   std::string action_applied;
-  std::vector<std::string> pkg_info;
+  std::vector<std::string> installedpkgs;
   std::string installed_version, available_version;
   std::vector<BuildListItem *> reqlist;
 
@@ -323,9 +323,10 @@ int InstallBox::create(BuildListItem & build,
 
   if (recheck)
   {
+    installedpkgs = list_installed_packages();
     for ( i = 0; i <= nreqs; i++ ) 
     { 
-      reqlist[i]->readInstalledProps();
+      reqlist[i]->readInstalledProps(installedpkgs);
       reqlist[i]->readPropsFromRepo();
     }
   }

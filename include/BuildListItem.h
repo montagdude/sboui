@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include "ListItem.h"
 
 /*******************************************************************************
@@ -22,7 +23,7 @@ class BuildListItem: public ListItem {
 
     // Reads properties from repo 
 
-    void readInstalledProps();
+    void readInstalledProps(std::vector<std::string> & installedpkgs);
     void readPropsFromRepo();
 
     // Checks whether a SlackBuild can be upgraded
