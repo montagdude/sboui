@@ -12,7 +12,7 @@ add_executable(sboui ${SOURCES})
 set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
-# Some default install directories
+# Some default directories
 set(CONFDIR /etc/sboui
     CACHE PATH "Directory to install sboui.conf."
 )
@@ -22,9 +22,13 @@ set(DATADIR ${CMAKE_INSTALL_PREFIX}/share/sboui
 set(MANDIR ${CMAKE_INSTALL_PREFIX}/man
     CACHE PATH "Base directory to install manuals."
 )
+set(PACKAGEDIR /var/log/packages
+    CACHE PATH "Location of installed packages list."
+)
 
 # Preprocessor definitions
 add_definitions(-DPACKAGE_VERSION=\"${SBOUI_VERSION}\")
+add_definitions(-DPACKAGE_DIR=\"${PACKAGEDIR}\")
 
 # Check for curses library
 find_package(Curses REQUIRED)

@@ -12,6 +12,10 @@
 #include "settings.h"
 #include "backend.h"
 
+#ifndef PACKAGE_DIR
+  #define PACKAGE_DIR "/var/log/packages"
+#endif
+
 using namespace settings;
  
 /*******************************************************************************
@@ -119,7 +123,7 @@ Returns list of all installed packages (not just the ones from the repo)
 std::vector<std::string> list_installed_packages()
 {
   std::vector<std::string> pkglist;
-  DirListing packages_dir("/var/log/packages", false);
+  DirListing packages_dir(PACKAGE_DIR, false);
   unsigned int npackages, i;
 
   npackages = packages_dir.size();
@@ -140,7 +144,7 @@ matches the repo's tag. Returns 0 on success, 1 if package is not found.
 int get_installed_info(const BuildListItem & build, std::string & version,
                        std::string & name, bool & foreign)
 {
-  DirListing packages_dir("/var/log/packages", false);
+  DirListing packages_dir(PACKAGE_DIR, false);
   unsigned int npackages, i;
   std::string pkg, pkgname;
 
