@@ -81,11 +81,18 @@ DirListing::DirListing()
   setFromCwd();
 }
 
-DirListing::DirListing(bool show_hidden)
+DirListing::DirListing(bool sort_listing)
 {
   _entries.resize(0);
   _path = "";
-  setFromCwd(show_hidden);
+  setFromCwd(sort_listing);
+}
+
+DirListing::DirListing(bool sort_listing, bool show_hidden)
+{
+  _entries.resize(0);
+  _path = "";
+  setFromCwd(sort_listing, show_hidden);
 }
 
 DirListing::DirListing(const std::string & path)
@@ -95,11 +102,19 @@ DirListing::DirListing(const std::string & path)
   if (setFromPath(path) == 1) { _path = ""; }
 }
 
-DirListing::DirListing(const std::string & path, bool show_hidden)
+DirListing::DirListing(const std::string & path, bool sort_listing)
 {
   _entries.resize(0);
   _path = path;
-  if (setFromPath(path, show_hidden) == 1) { _path = ""; }
+  if (setFromPath(path, sort_listing) == 1) { _path = ""; }
+}
+
+DirListing::DirListing(const std::string & path, bool sort_listing,
+                       bool show_hidden)
+{
+  _entries.resize(0);
+  _path = path;
+  if (setFromPath(path, sort_listing, show_hidden) == 1) { _path = ""; }
 }
 
 /*******************************************************************************
@@ -107,7 +122,8 @@ DirListing::DirListing(const std::string & path, bool show_hidden)
 Creates listing from path, optionally showing or hiding hidden entries
 
 *******************************************************************************/
-int DirListing::setFromPath(const std::string & path, bool show_hidden)
+int DirListing::setFromPath(const std::string & path, bool sort_listing,
+                            bool show_hidden)
 {
   DIR *pdir = NULL;
   struct dirent *pent = NULL;
@@ -152,7 +168,7 @@ int DirListing::setFromPath(const std::string & path, bool show_hidden)
 
   // Sort entries
 
-  sort();
+  if (sort_listing) { sort(); }
   
   return 0;
 } 
@@ -163,7 +179,7 @@ Creates listing from current working directory, optionally showing or hiding
 hidden entries
 
 *******************************************************************************/
-int DirListing::setFromCwd(bool show_hidden)
+int DirListing::setFromCwd(bool sort_listing, bool show_hidden)
 {
   char cpath[1024];   // Hopefully there won't be any path longer than this
   DIR *pdir = NULL;
@@ -209,7 +225,7 @@ int DirListing::setFromCwd(bool show_hidden)
 
   // Sort entries
 
-  sort();
+  if (sort_listing) { sort(); }
   
   return 0;
 } 
@@ -220,7 +236,7 @@ Navigates up from currently set directory, optionally showing or hiding hidden
 entries.
 
 *******************************************************************************/
-int DirListing::navigateUp(bool show_hidden)
+int DirListing::navigateUp(bool sort_listing, bool show_hidden)
 {
   std::size_t lastsep, firstsep;
   std::string newpath;
@@ -254,8 +270,8 @@ int DirListing::navigateUp(bool show_hidden)
 
   // Try to use new directory, or revert to the old one in case of failure
 
-  if (setFromPath(newpath, show_hidden) == 0) { return 0; }
-  else { return setFromPath(_path, show_hidden); }
+  if (setFromPath(newpath, sort_listing, show_hidden) == 0) { return 0; }
+  else { return setFromPath(_path, sort_listing, show_hidden); }
 }
 
 /*******************************************************************************

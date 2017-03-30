@@ -34,15 +34,18 @@ class DirListing {
     /* Constructors */
 
     DirListing();
-    DirListing(bool show_hidden);
+    DirListing(bool sort_listing);
+    DirListing(bool sort_listing, bool show_hidden);
     DirListing(const std::string & path);
-    DirListing(const std::string & path, bool show_hidden);
+    DirListing(const std::string & path, bool sort_listing);
+    DirListing(const std::string & path, bool sort_listing, bool show_hidden);
 
     /* Create listing */
 
-    int setFromPath(const std::string & path, bool show_hidden = false);
-    int setFromCwd(bool show_hidden = false);
-    int navigateUp(bool show_hidden = false);
+    int setFromPath(const std::string & path, bool sort_listing=true,
+                    bool show_hidden=false);
+    int setFromCwd(bool sort_listing=true, bool show_hidden=false);
+    int navigateUp(bool sort_listing=true, bool show_hidden=false);
 
     /* Sorts entries */
    
