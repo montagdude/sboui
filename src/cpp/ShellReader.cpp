@@ -1,7 +1,6 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include "DirListing.h"
 #include "string_util.h"
 #include "ShellReader.h"
 
@@ -124,9 +123,9 @@ ShellReader::~ShellReader() { if (_file_open) { _file.close(); } }
 Opens or closes a file. Returns 1 on error or 0 on success.
 
 *******************************************************************************/
-int ShellReader::open(const direntry & file)
+int ShellReader::open(const std::string & filename)
 {
-  _file.open((file.path + file.name).c_str());
+  _file.open((filename).c_str());
   if (not _file.is_open()) { return 1; }
   else { _file_open = true; }
 

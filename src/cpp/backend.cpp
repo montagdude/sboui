@@ -124,12 +124,10 @@ Gets SlackBuild requirements (dependencies) as string
 std::string get_reqs(const BuildListItem & build)
 {
   ShellReader reader;
-  direntry info_file;
-  std::string reqs;
+  std::string info_file, reqs;
 
-  info_file.path = repo_dir + "/" + build.getProp("category") + "/" +
-                   build.name() + "/";
-  info_file.name = build.name() + ".info";
+  info_file = repo_dir + "/" + build.getProp("category") + "/" +
+              build.name() + "/" + build.name() + ".info";
 
   reader.open(info_file);
   reader.read("REQUIRES", reqs);
@@ -146,12 +144,11 @@ Gets SlackBuild version and reqs from repository
 std::vector<std::string> get_repo_info(const BuildListItem & build)
 {
   ShellReader reader;
-  direntry info_file;
+  std::string info_file;
   std::vector<std::string> output;
 
-  info_file.path = repo_dir + "/" + build.getProp("category") + "/" +
-                   build.name() + "/";
-  info_file.name = build.name() + ".info";
+  info_file = repo_dir + "/" + build.getProp("category") + "/" +
+              build.name() + "/" + build.name() + ".info";
 
   output.resize(2);
   reader.open(info_file);

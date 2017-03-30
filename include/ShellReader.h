@@ -2,7 +2,6 @@
 
 #include <string>
 #include <fstream>
-#include "DirListing.h"
 
 /*******************************************************************************
 
@@ -33,7 +32,7 @@ class ShellReader {
 
     /* Opens or closes a file */
 
-    int open(const direntry & file);
+    int open(const std::string & filename);
     int close();
 
     /* Reads a variable from the file and stores as string */
