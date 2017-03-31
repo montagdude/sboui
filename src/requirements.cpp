@@ -8,27 +8,32 @@
 
 /*******************************************************************************
 
-Returns index of correct entry in _slackbuilds vector from given name. Returns
--1 if not found.
+Gets indices of correct entry in _slackbuilds vector from given name. Returns
+1 if not found, 0 if found.
 
 *******************************************************************************/
 int build_from_name(const std::string & name,
-                    std::vector<BuildListItem> & slackbuilds)
+                    std::vector<std::vector<BuildListItem> > & slackbuilds,
+                    int & idx0, int & idx1)
 {
-  int idx, i, nbuilds;
+  int i, j, nbuilds, ncategories;
 
-  idx = -1;
-  nbuilds = slackbuilds.size();
-  for ( i = 0; i < nbuilds; i++ )
+  ncategories = slackbuilds.size();
+  for ( i = 0; i < ncategories; i++ )
   {
-    if (slackbuilds[i].name() == name) 
+    nbuilds = slackbuilds[i].size();
+    for ( j = 0; j < nbuilds; j++ )
     { 
-      idx = i;
-      break;
+      if (slackbuilds[i][j].name() == name) 
+      { 
+        idx0 = i;
+        idx1 = j;
+        return 0;
+      }
     }
   }
 
-  return idx;
+  return 1;
 }
 
 /*******************************************************************************
@@ -88,11 +93,11 @@ requirement is not found in the list.
 *******************************************************************************/
 int get_reqs_recursive(const BuildListItem & build,
                        std::vector<BuildListItem *> & reqlist,
-                       std::vector<BuildListItem> & slackbuilds)
+                       std::vector<std::vector<BuildListItem> > & slackbuilds)
 {
   unsigned int i, ndeps;
   std::vector<std::string> deplist;
-  int idx, check;
+  int idx0, idx1, check;
 
   if (build.getBoolProp("installed")) { deplist = 
                                         split(build.getProp("requires")); }
@@ -104,10 +109,10 @@ int get_reqs_recursive(const BuildListItem & build,
   { 
     if (deplist[i] != "%README%")
     { 
-      idx = build_from_name(deplist[i], slackbuilds);
-      if (idx != -1) { add_req(&slackbuilds[idx], reqlist); }
+      check = build_from_name(deplist[i], slackbuilds, idx0, idx1);
+      if (check == 0) { add_req(&slackbuilds[idx0][idx1], reqlist); }
       else { return 1; }
-      check = get_reqs_recursive(slackbuilds[idx], reqlist, slackbuilds); 
+      check = get_reqs_recursive(slackbuilds[idx0][idx1], reqlist, slackbuilds); 
       if (check != 0) { return check; }
     }
   }
@@ -123,7 +128,7 @@ order.
 *******************************************************************************/
 int compute_reqs_order(const BuildListItem & build,
                        std::vector<BuildListItem *> & reqlist,
-                       std::vector<BuildListItem> & slackbuilds)
+                       std::vector<std::vector<BuildListItem> > & slackbuilds)
 {
   int check;
 

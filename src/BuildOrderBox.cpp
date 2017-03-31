@@ -281,7 +281,7 @@ succeeded or 1 if some could not be found in the repository.
 
 *******************************************************************************/
 int BuildOrderBox::create(BuildListItem & build,
-                          std::vector<BuildListItem> & slackbuilds) 
+                         std::vector<std::vector<BuildListItem> > & slackbuilds)
 {
   int check; 
   unsigned int nbuilds, i;

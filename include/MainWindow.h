@@ -28,7 +28,7 @@ class MainWindow {
     WINDOW *_win1, *_win2;
     CategoryListBox _clistbox;
     std::vector<BuildListBox> _blistboxes;
-    std::vector<BuildListItem> _slackbuilds;
+    std::vector<std::vector<BuildListItem> > _slackbuilds;
     std::vector<BuildListItem *> _installedlist, _nondeplist;
     std::vector<CategoryListItem> _categories;
     FilterBox _fbox;

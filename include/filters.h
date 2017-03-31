@@ -7,7 +7,7 @@
 #include "CategoryListBox.h"
 #include "BuildListBox.h"
 
-void filter_all(std::vector<BuildListItem> & slackbuilds,
+void filter_all(std::vector<std::vector<BuildListItem> > & slackbuilds,
                        std::vector<CategoryListItem> & categories,
                        WINDOW *blistboxwin, CategoryListBox & clistbox,
                        std::vector<BuildListBox> & blistboxes);
@@ -20,7 +20,7 @@ void filter_upgradable(std::vector<BuildListItem *> & installedlist,
                        WINDOW *blistboxwin, CategoryListBox & clistbox,
                        std::vector<BuildListBox> & blistboxes,
                        unsigned int & nupgradable);
-void filter_tagged(std::vector<BuildListItem> & slackbuilds,
+void filter_tagged(std::vector<std::vector<BuildListItem> > & slackbuilds,
                        std::vector<CategoryListItem> & categories,
                        WINDOW *blistboxwin, CategoryListBox & clistbox,
                        std::vector<BuildListBox> & blistboxes,
@@ -29,7 +29,7 @@ void filter_nondeps(std::vector<BuildListItem *> & nondeplist,
                        std::vector<CategoryListItem> & categories,
                        WINDOW *blistboxwin, CategoryListBox & clistbox,
                        std::vector<BuildListBox> & blistboxes);
-void filter_search(std::vector<BuildListItem> & slackbuilds,
+void filter_search(std::vector<std::vector<BuildListItem> > & slackbuilds,
                        std::vector<CategoryListItem> & categories,
                        WINDOW *blistboxwin, CategoryListBox & clistbox,
                        std::vector<BuildListBox> & blistboxes,

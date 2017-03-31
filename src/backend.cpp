@@ -24,7 +24,7 @@ Gets list of SlackBuilds by reading repo directory. Returns 0 if successful,
 1 if directory cannot be read.
 
 *******************************************************************************/
-int read_repo(std::vector<BuildListItem> & slackbuilds)
+int read_repo(std::vector<std::vector<BuildListItem> > & slackbuilds)
 {
   DirListing top_dir, category_dir;
   int stat;
@@ -45,6 +45,7 @@ int read_repo(std::vector<BuildListItem> & slackbuilds)
     cat_entry = top_dir(i);
     if (cat_entry.type == "dir")
     {
+      std::vector<BuildListItem> cat_builds;
       category_dir.setFromPath(cat_entry.path + "/" + cat_entry.name);
       nbuilds = category_dir.size();
       for ( j = 0; j < nbuilds; j++ )
@@ -55,10 +56,13 @@ int read_repo(std::vector<BuildListItem> & slackbuilds)
           BuildListItem build;
           build.setName(build_entry.name);
           build.setProp("category", cat_entry.name);
-          slackbuilds.push_back(build);
+          cat_builds.push_back(build);
         }
+        else { break; }   // Directories are listed first, so we're done
       }
+      slackbuilds.push_back(cat_builds);
     }
+    else { break; }       // Directories are listed first, so we're done
   }  
 
   return 0;
@@ -189,31 +193,35 @@ Populates list of installed SlackBuilds. Also determines installed version,
 available version, and dependencies for installed SlackBuilds.
 
 *******************************************************************************/
-void list_installed(std::vector<BuildListItem> & slackbuilds,
+void list_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
                     std::vector<BuildListItem *> & installedlist)
 {
   std::vector<std::string> installedpkgs;
   std::string pkgname, pkgversion, pkgbuild, pkgbuildnum;
-  unsigned int ninstalled, i, j, nbuilds;
+  unsigned int ninstalled, i, j, k, ncategories, nbuilds;
 
   installedlist.resize(0);
   installedpkgs = list_installed_packages();
   ninstalled = installedpkgs.size();
-  nbuilds = slackbuilds.size();
-  for ( j = 0; j < ninstalled; j++ )
+  ncategories = slackbuilds.size();
+  for ( k = 0; k < ninstalled; k++ )
   {
-    get_pkg_info(installedpkgs[j], pkgname, pkgversion, pkgbuildnum);
-    for ( i = 0; i < nbuilds; i++ )
+    get_pkg_info(installedpkgs[k], pkgname, pkgversion, pkgbuildnum);
+    for ( i = 0; i < ncategories; i++ )
     {
-      if (pkgname == slackbuilds[i].name())
-      {
-        slackbuilds[i].setBoolProp("installed", true);
-        slackbuilds[i].setProp("installed_version", pkgversion);
-        slackbuilds[i].setProp("package_name", installedpkgs[j]);
-        slackbuilds[i].setProp("package_build", pkgbuildnum);
-        slackbuilds[i].readPropsFromRepo();
-        installedlist.push_back(&slackbuilds[i]);
-        break;
+      nbuilds = slackbuilds[i].size();
+      for ( j = 0; j < nbuilds; j++ )
+      { 
+        if (pkgname == slackbuilds[i][j].name())
+        {
+          slackbuilds[i][j].setBoolProp("installed", true);
+          slackbuilds[i][j].setProp("installed_version", pkgversion);
+          slackbuilds[i][j].setProp("package_name", installedpkgs[i]);
+          slackbuilds[i][j].setProp("package_build", pkgbuildnum);
+          slackbuilds[i][j].readPropsFromRepo();
+          installedlist.push_back(&slackbuilds[i][j]);
+          break;
+        }
       }
     }
   } 

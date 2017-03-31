@@ -276,7 +276,7 @@ Displays all SlackBuilds
 *******************************************************************************/
 void MainWindow::filterAll()
 {
-  unsigned int nbuilds;
+  unsigned int i, nbuilds, ncategories;
   int choice;
 
   _filter = "all SlackBuilds";
@@ -284,7 +284,9 @@ void MainWindow::filterAll()
 
   _activated_listbox = 0;
   _category_idx = 0;
-  nbuilds = _slackbuilds.size();
+  ncategories = _slackbuilds.size();
+  nbuilds = 0;
+  for ( i = 0; i < ncategories; i++ ) { nbuilds += _slackbuilds[i].size(); }
 
   filter_all(_slackbuilds, _categories, _win2, _clistbox, _blistboxes);
 
@@ -1120,8 +1122,7 @@ Creates master list of SlackBuilds
 int MainWindow::readLists()
 {
   int check;
-  unsigned int i, j, nbuilds, ncategories; 
-  bool new_category;
+  unsigned int i, ncategories; 
 
   // Get list of SlackBuilds
 
@@ -1130,26 +1131,13 @@ int MainWindow::readLists()
 
   // Create list of categories
 
-  nbuilds = _slackbuilds.size();
-  for ( i = 0; i < nbuilds; i++ )
+  ncategories = _slackbuilds.size();
+  for ( i = 0; i < ncategories; i++ )
   { 
-    ncategories = _categories.size();
-    new_category = true;
-    for ( j = 0; j < ncategories; j++ )
-    {
-      if (_categories[j].name() == _slackbuilds[i].getProp("category"))
-      {
-        new_category = false;
-        break;
-      }
-    }
-    if (new_category)
-    {
-      CategoryListItem citem;
-      citem.setName(_slackbuilds[i].getProp("category"));
-      citem.setProp("category", _slackbuilds[i].getProp("category"));
-      _categories.push_back(citem);
-    } 
+    CategoryListItem citem;
+    citem.setName(_slackbuilds[i][0].getProp("category"));
+    citem.setProp("category", _slackbuilds[i][0].getProp("category"));
+    _categories.push_back(citem);
   }
 
   // Determine which are installed and their versions

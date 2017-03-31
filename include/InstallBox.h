@@ -42,7 +42,7 @@ class InstallBox: public BuildOrderBox {
     /* Creates list based on SlackBuild selected */
 
     int create(BuildListItem & build,
-               std::vector<BuildListItem> & slackbuilds,
+               std::vector<std::vector<BuildListItem> > & slackbuilds,
                const std::string & action, bool resolve_deps=true,
                bool recheck=false);
 

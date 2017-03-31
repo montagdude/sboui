@@ -41,7 +41,7 @@ class BuildOrderBox: public BuildListBox {
     /* Creates list based on SlackBuild selected */
 
     int create(BuildListItem & build,
-               std::vector<BuildListItem> & slackbuilds);
+               std::vector<std::vector<BuildListItem> > & slackbuilds);
 
     /* Draws frame, items, etc. as needed */
  
