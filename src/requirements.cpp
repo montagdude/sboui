@@ -2,64 +2,9 @@
 #include <vector>
 #include <algorithm>       // reverse
 #include "BuildListItem.h"
-#include "backend.h"       // get_reqs
+#include "backend.h"       // get_reqs, find_slackbuild, find_build_in_list
 #include "string_util.h"   // split
 #include "requirements.h"
-
-/*******************************************************************************
-
-Gets indices of correct entry in _slackbuilds vector from given name. Returns
-1 if not found, 0 if found.
-
-*******************************************************************************/
-int build_from_name(const std::string & name,
-                    std::vector<std::vector<BuildListItem> > & slackbuilds,
-                    int & idx0, int & idx1)
-{
-  int i, j, nbuilds, ncategories;
-
-  ncategories = slackbuilds.size();
-  for ( i = 0; i < ncategories; i++ )
-  {
-    nbuilds = slackbuilds[i].size();
-    for ( j = 0; j < nbuilds; j++ )
-    { 
-      if (slackbuilds[i][j].name() == name) 
-      { 
-        idx0 = i;
-        idx1 = j;
-        return 0;
-      }
-    }
-  }
-
-  return 1;
-}
-
-/*******************************************************************************
-
-Returns index of correct entry in installedlist vector from given name. Returns
--1 if not found.
-
-*******************************************************************************/
-int build_from_name(const std::string & name,
-                    std::vector<BuildListItem *> & installedlist)
-{
-  int idx, i, ninstalled;
-
-  idx = -1;
-  ninstalled = installedlist.size();
-  for ( i = 0; i < ninstalled; i++ )
-  {
-    if (installedlist[i]->name() == name) 
-    { 
-      idx = i;
-      break;
-    }
-  }
-
-  return idx;
-}
 
 /*******************************************************************************
 
@@ -109,7 +54,7 @@ int get_reqs_recursive(const BuildListItem & build,
   { 
     if (deplist[i] != "%README%")
     { 
-      check = build_from_name(deplist[i], slackbuilds, idx0, idx1);
+      check = find_slackbuild(deplist[i], slackbuilds, idx0, idx1);
       if (check == 0) { add_req(&slackbuilds[idx0][idx1], reqlist); }
       else { return 1; }
       check = get_reqs_recursive(slackbuilds[idx0][idx1], reqlist, slackbuilds); 

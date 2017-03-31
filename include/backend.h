@@ -5,6 +5,12 @@
 #include "BuildListItem.h"
 
 int read_repo(std::vector<std::vector<BuildListItem> > & slackbuilds);
+template<typename T>
+int find_build_in_list(const std::string & name, std::vector<T> & buildlist,
+                       int & idx, int & lbound, int & rbound);
+int find_slackbuild(const std::string & name,
+                    std::vector<std::vector<BuildListItem> > & slackbuilds,
+                    int & idx0, int & idx1);
 std::vector<std::string> list_installed_packages();
 void get_pkg_info(const std::string & pkg, std::string & name,
                   std::string & version, std::string & buildnum);

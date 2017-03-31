@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <cmath>      // floor
 #include "DirListing.h"
 #include "BuildListItem.h"
 #include "sorting.h"
@@ -67,6 +68,93 @@ int read_repo(std::vector<std::vector<BuildListItem> > & slackbuilds)
 
   return 0;
 } 
+
+/*******************************************************************************
+
+Overloaded template functions to turn reference into pointer
+http://stackoverflow.com/questions/14466620/c-template-specialization-calling-methods-on-types-that-could-be-pointers-or#14466705
+
+*******************************************************************************/
+template<typename T>
+T * ptr(T & obj) { return & obj; }
+
+template<typename T>
+T * ptr(T * obj) { return obj; }
+
+/*******************************************************************************
+
+Finds a SlackBuild by name in a sorted list. Returns 0 if found, 1 if not found.
+
+*******************************************************************************/
+template<typename T>
+int find_build_in_list(const std::string & name, std::vector<T> & buildlist,
+                       int & idx, int & lbound, int & rbound)
+{
+  int midbound;
+
+  // Check if outside the bounds
+
+  if ( (name < ptr(buildlist[lbound])->name()) ||
+       (name > ptr(buildlist[rbound])->name()) ) { return 1; }
+
+  // Check for match if bounds are right next to each other
+
+  if (rbound - lbound == 1)
+  {
+    if (name == ptr(buildlist[lbound])->name())
+    {
+      idx = lbound;
+      return 0;
+    }
+    else if (name == ptr(buildlist[rbound])->name())
+    {
+      idx = rbound;
+      return 0;
+    }
+    else { return 1; }
+  }
+
+  // Cut the list in half and try again
+
+  else
+  {
+    midbound = std::floor(double(lbound+rbound)/2.);
+    if (name <= ptr(buildlist[midbound])->name()) { rbound = midbound; }
+    else { lbound = midbound; }
+    return find_build_in_list(name, buildlist, idx, lbound, rbound);
+  }
+
+  return 1;
+}
+
+/*******************************************************************************
+
+Finds a SlackBuild by name in the _slackbuilds list. Returns 0 if found, 1 if
+not found.
+ 
+*******************************************************************************/
+int find_slackbuild(const std::string & name,
+                    std::vector<std::vector<BuildListItem> > & slackbuilds,
+                    int & idx0, int & idx1)
+{
+  int i, ncategories, nbuilds, check, lbound, rbound;
+
+  ncategories = slackbuilds.size();
+  for ( i = 0; i < ncategories; i++ )
+  {
+    nbuilds = slackbuilds[i].size();
+    lbound = 0;
+    rbound = nbuilds-1;
+    check = find_build_in_list(name, slackbuilds[i], idx1, lbound, rbound);
+    if (check == 0)
+    {
+      idx0 = i;
+      return 0;
+    }
+  }
+
+  return 1;
+}
 
 /*******************************************************************************
 
@@ -198,31 +286,24 @@ void list_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
 {
   std::vector<std::string> installedpkgs;
   std::string pkgname, pkgversion, pkgbuild, pkgbuildnum;
-  unsigned int ninstalled, i, j, k, ncategories, nbuilds;
+  unsigned int ninstalled, k;
+  int i, j, check;
 
   installedlist.resize(0);
   installedpkgs = list_installed_packages();
   ninstalled = installedpkgs.size();
-  ncategories = slackbuilds.size();
   for ( k = 0; k < ninstalled; k++ )
   {
     get_pkg_info(installedpkgs[k], pkgname, pkgversion, pkgbuildnum);
-    for ( i = 0; i < ncategories; i++ )
+    check = find_slackbuild(pkgname, slackbuilds, i, j);
+    if (check == 0)
     {
-      nbuilds = slackbuilds[i].size();
-      for ( j = 0; j < nbuilds; j++ )
-      { 
-        if (pkgname == slackbuilds[i][j].name())
-        {
-          slackbuilds[i][j].setBoolProp("installed", true);
-          slackbuilds[i][j].setProp("installed_version", pkgversion);
-          slackbuilds[i][j].setProp("package_name", installedpkgs[i]);
-          slackbuilds[i][j].setProp("package_build", pkgbuildnum);
-          slackbuilds[i][j].readPropsFromRepo();
-          installedlist.push_back(&slackbuilds[i][j]);
-          break;
-        }
-      }
+      slackbuilds[i][j].setBoolProp("installed", true);
+      slackbuilds[i][j].setProp("installed_version", pkgversion);
+      slackbuilds[i][j].setProp("package_name", installedpkgs[i]);
+      slackbuilds[i][j].setProp("package_build", pkgbuildnum);
+      slackbuilds[i][j].readPropsFromRepo();
+      installedlist.push_back(&slackbuilds[i][j]);
     }
   } 
 
