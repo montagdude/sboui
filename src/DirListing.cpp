@@ -1,10 +1,9 @@
-#include <algorithm>  // std::min
+#include <algorithm>  // std::min, std::sort
 #include <dirent.h>
 #include <unistd.h>
 #include <sstream>
 #include <string>
 #include <vector>
-#include "sorting.h"
 #include "DirListing.h"
 
 #ifdef MINGW
@@ -12,6 +11,70 @@
 #else
   std::string DirListing::separator = "/";
 #endif
+
+std::vector<std::string> type_order(9,"");
+
+/*******************************************************************************
+
+Compares two direntries by name. Returns true if the first argument is less than
+the second.
+
+*******************************************************************************/
+bool compare_direntries_by_name(const direntry & entry1,
+                                const direntry & entry2)
+{
+  return entry1.name < entry2.name;
+}
+
+/*******************************************************************************
+
+Compares two direntries by type. Returns true if the first argument is less than
+the second.
+
+*******************************************************************************/
+bool compare_direntries_by_type (const direntry & entry1,
+                                 const direntry & entry2)
+{
+  unsigned int i;
+  int rank1, rank2;
+
+  if (type_order[0] == "")
+  {
+    type_order[0] = "dir";
+    type_order[1] = "reg";
+    type_order[2] = "lnk";
+    type_order[3] = "fifo";
+    type_order[4] = "chr";
+    type_order[5] = "blk";
+    type_order[6] = "sock";
+    type_order[7] = "wht";
+    type_order[8] = "unknown";
+  }
+
+  // Get position of each type in type_order vector
+
+  rank1 = -1;
+  for ( i = 0; i < type_order.size(); i++ )
+  {
+    if (entry1.type == type_order[i])
+    {
+      rank1 = i;
+      break;
+    }
+  }
+
+  rank2 = -1;
+  for ( i = 0; i < type_order.size(); i++ )
+  {
+    if (entry2.type == type_order[i])
+    {
+      rank2 = i;
+      break;
+    }
+  }
+
+  return rank1 < rank2;
+}
 
 /*******************************************************************************
 
@@ -276,13 +339,32 @@ int DirListing::navigateUp(bool sort_listing, bool show_hidden)
 
 /*******************************************************************************
 
-Sorts entries by name and then by type 
+Sorts entries by type and then by name within each type
 
 *******************************************************************************/
 void DirListing::sort()
 {
-  sort_direntries(_entries, compare_by_name);
-  sort_direntries(_entries, compare_by_type);
+  unsigned int i, lbound, rbound, nentries;
+  std::string curtype;
+
+  std::sort(_entries.begin(), _entries.end(), compare_direntries_by_type);
+
+  lbound = 0;
+  rbound = 0;
+  nentries = _entries.size();
+  while (rbound < nentries)
+  {
+    curtype = _entries[lbound].type;
+    for ( i = lbound; i < nentries; i++ )
+    {
+      rbound = i;
+      if (_entries[i].type != curtype) { break; }
+    }
+    if (rbound == nentries-1) { rbound++; }
+    std::sort(_entries.begin()+lbound, _entries.begin()+rbound,
+              compare_direntries_by_name);
+    lbound = rbound;
+  }
 }
 
 /*******************************************************************************

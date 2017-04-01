@@ -5,9 +5,9 @@
 #include <string>
 #include <sstream>
 #include <cmath>      // floor
+#include <algorithm>  // sort
 #include "DirListing.h"
 #include "BuildListItem.h"
-#include "sorting.h"
 #include "string_util.h"
 #include "ShellReader.h"
 #include "settings.h"
@@ -18,7 +18,7 @@
 #endif
 
 using namespace settings;
- 
+
 /*******************************************************************************
 
 Gets list of SlackBuilds by reading repo directory. Returns 0 if successful,
@@ -277,6 +277,30 @@ void get_repo_info(const BuildListItem & build, std::string & available_version,
 
 /*******************************************************************************
 
+Compares entries by name. Returns true if the first argument is less than the
+second.
+
+*******************************************************************************/
+bool compare_builds_by_name(const BuildListItem *item1,
+                            const BuildListItem *item2)
+{
+  return item1->name() < item2->name();
+}
+
+/*******************************************************************************
+
+Compares entries by category. Returns true if the first argument is less than
+the second.
+
+*******************************************************************************/
+bool compare_builds_by_category(const BuildListItem *item1,
+                                const BuildListItem *item2)
+{
+  return item1->getProp("category") < item2->getProp("category");
+}
+ 
+/*******************************************************************************
+
 Populates list of installed SlackBuilds. Also determines installed version,
 available version, and dependencies for installed SlackBuilds.
 
@@ -285,8 +309,8 @@ void list_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
                     std::vector<BuildListItem *> & installedlist)
 {
   std::vector<std::string> installedpkgs;
-  std::string pkgname, pkgversion, pkgbuild, pkgbuildnum;
-  unsigned int ninstalled, k;
+  std::string pkgname, pkgversion, pkgbuild, pkgbuildnum, curcategory;
+  unsigned int ninstalled, k, lbound, rbound;
   int i, j, check;
 
   installedlist.resize(0);
@@ -307,10 +331,27 @@ void list_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
     }
   } 
 
-  // Sort by name and then by category
-
-  sort_list(installedlist, "name", compare_by_prop);
-  sort_list(installedlist, "category", compare_by_prop);
+  // Sort by category and then by name within each category
+  
+  std::sort(installedlist.begin(), installedlist.end(),
+            compare_builds_by_category);
+  
+  lbound = 0;
+  rbound = 0;
+  ninstalled = installedlist.size();
+  while (rbound < ninstalled)
+  {
+    curcategory = installedlist[lbound]->getProp("category");
+    for ( k = lbound; k < ninstalled; k++ )
+    {
+      rbound = k;
+      if (installedlist[k]->getProp("category") != curcategory) { break; }
+    }
+    if (rbound == ninstalled-1) { rbound++; }
+    std::sort(installedlist.begin()+lbound, installedlist.begin()+rbound,
+              compare_builds_by_name);
+    lbound = rbound;
+  }
 }
 
 /*******************************************************************************
