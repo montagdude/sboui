@@ -1,9 +1,8 @@
 Things to do before version 1.0
 ================================================================================
-* More efficient internal search through sorted lists (currently use naive 
-  search)
-* Get rid of sboutil.sh shell script, which currently reads *.info files and
-  checks if a package is installed. (Do it all in C++ instead.)
+* Display a warning when upgrading or reinstalling a package from a different
+  repo.
+* Add a "Cancel All" option for InstallBox when applying tags.
 * Make a position notifier on the right side when scrolling in lists and input
   boxes.
 * Add functionality to jump to a name in lists while typing.
@@ -11,8 +10,12 @@ Things to do before version 1.0
   into an official sbotools release (it is in the latest git). May require
   addition of a reinstall_cmd or similar.
 * Make tagged entries and hotkeys stand out when color is disabled.
-* Show installed packages that appear in the repo but do not have the SBo tag?
-  This means, for example, chromium and qt5 installed from alien's packages and
-  could be upgraded via the version in the repo. If I implement this, a warning
-  should appear whenever a package from a different source is going to be
-  upgraded.
+
+COMPLETED
+================================================================================
+* Show installed packages that appear in the repo but do not have the SBo tag.
+* Get rid of sboutil.sh shell script, which previously read *.info files and
+  and checked if a package is installed. (Do it all in C++ instead.)
+* More efficient internal search through sorted lists (previously used naive
+  search).
+* Replace inefficient bubble sort with sort function from C++ standard library.
