@@ -10,7 +10,7 @@
 
 namespace settings
 {
-  std::string repo_dir;
+  std::string repo_dir, repo_tag;
   std::string package_manager;
   std::string sync_cmd;
   std::string install_cmd;
@@ -386,6 +386,8 @@ int read_config(const std::string & conf_file)
               << my_conf_file << "." << std::endl;
     return 1;
   }
+
+  if (! cfg.lookupValue("repo_tag", repo_tag)) { repo_tag = "_SBo"; }
 
   if ( (package_manager != "sbopkg") && (package_manager != "sbotools") &&
        (package_manager != "custom") )

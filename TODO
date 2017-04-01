@@ -10,6 +10,8 @@ Things to do before version 1.0
   into an official sbotools release (it is in the latest git). May require
   addition of a reinstall_cmd or similar.
 * Make tagged entries and hotkeys stand out when color is disabled.
+* Log package manager output to file (per session). Then, will not need to pause
+  before returning to main window when an action is successful.
 
 COMPLETED
 ================================================================================

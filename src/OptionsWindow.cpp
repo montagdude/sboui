@@ -93,11 +93,11 @@ OptionsWindow::OptionsWindow()
   count = 0;
   line = 1; 
 
-  // Label for basic settings
+  // Label for ui settings
 
-  _basic.setColor(colors.getPair(header, bg_normal));
-  addItem(&_basic);
-  _items[count]->setName("Basic settings");
+  _ui_settings.setColor(colors.getPair(header, bg_normal));
+  addItem(&_ui_settings);
+  _items[count]->setName("User interface settings");
   _items[count]->setPosition(line,1);
   _items[count]->setWidth(_items[count]->name().size());
   count++;
@@ -156,6 +156,101 @@ OptionsWindow::OptionsWindow()
   _items[count]->setPosition(line,26);
   _items[count]->setWidth(20);
   count++;
+  line += 2;
+
+  // Package manager settings
+
+  _pm_settings.setColor(colors.getPair(header, bg_normal));
+  addItem(&_pm_settings);  
+  _items[count]->setName("Package manager settings");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(_items[count]->name().size());
+  count++;
+  line += 2;
+
+  // Label + ComboBox for package manager
+
+  addItem(new Label());
+  _items[count]->setName("Package manager");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(_items[count]->name().size());
+  count++;
+  line += 0;
+
+  _pmgr_box.setParent(this);
+  _pmgr_box.addChoice("sbopkg");
+  _pmgr_box.addChoice("sbotools");
+  _pmgr_box.addChoice("custom");
+  addItem(& _pmgr_box);
+  _items[count]->setPosition(line,26);
+  count++;
+  line += 1;
+  
+  // Labels + text input boxes for package manager settings
+
+  addItem(new Label());
+  _items[count]->setName("Repository directory");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(20);
+  count++;
+  line += 0;
+
+  addItem(&_repo_inp);
+  _items[count]->setPosition(line,26);
+  _items[count]->setWidth(20);
+  count++;
+  line += 1;
+
+  addItem(new Label());
+  _items[count]->setName("Repository tag");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(20);
+  count++;
+  line += 0;
+
+  addItem(&_tag_inp);
+  _items[count]->setPosition(line,26);
+  _items[count]->setWidth(20);
+  count++;
+  line += 1;
+
+  addItem(new Label());
+  _items[count]->setName("Sync command");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(20);
+  count++;
+  line += 0;
+
+  addItem(&_sync_inp);
+  _items[count]->setPosition(line,26);
+  _items[count]->setWidth(20);
+  count++;
+  line += 1;
+
+  addItem(new Label());
+  _items[count]->setName("Install command");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(20);
+  count++;
+  line += 0;
+
+  addItem(&_inst_inp);
+  _items[count]->setPosition(line,26);
+  _items[count]->setWidth(20);
+  count++;
+  line += 1;
+
+  addItem(new Label());
+  _items[count]->setName("Upgrade command");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(20);
+  count++;
+  line += 0;
+
+  addItem(&_upgr_inp);
+  _items[count]->setPosition(line,26);
+  _items[count]->setWidth(20);
+  count++;
   line += 1;
 
   addItem(new Label());
@@ -207,88 +302,6 @@ OptionsWindow::OptionsWindow()
   addItem(&_uvars_inp);
   _items[count]->setPosition(line,26);
   _items[count]->setWidth(20);
-  count++;
-  line += 2;
-
-  // Advanced settings
-
-  _advanced.setColor(colors.getPair(header, bg_normal));
-  addItem(&_advanced);  
-  _items[count]->setName("Advanced settings");
-  _items[count]->setPosition(line,1);
-  _items[count]->setWidth(_items[count]->name().size());
-  count++;
-  line += 2;
-
-  // Label + ComboBox for layout
-
-  addItem(new Label());
-  _items[count]->setName("Package manager");
-  _items[count]->setPosition(line,1);
-  _items[count]->setWidth(_items[count]->name().size());
-  count++;
-  line += 0;
-
-  _pmgr_box.setParent(this);
-  _pmgr_box.addChoice("sbopkg");
-  _pmgr_box.addChoice("sbotools");
-  _pmgr_box.addChoice("custom");
-  addItem(& _pmgr_box);
-  _items[count]->setPosition(line,26);
-  count++;
-  line += 1;
-  
-  // Labels + text input boxes for advanced settings
-
-  addItem(new Label());
-  _items[count]->setName("Repository directory");
-  _items[count]->setPosition(line,1);
-  _items[count]->setWidth(20);
-  count++;
-  line += 0;
-
-  addItem(&_repo_inp);
-  _items[count]->setPosition(line,26);
-  _items[count]->setWidth(20);
-  count++;
-  line += 1;
-
-  addItem(new Label());
-  _items[count]->setName("Sync command");
-  _items[count]->setPosition(line,1);
-  _items[count]->setWidth(20);
-  count++;
-  line += 0;
-
-  addItem(&_sync_inp);
-  _items[count]->setPosition(line,26);
-  _items[count]->setWidth(20);
-  count++;
-  line += 1;
-
-  addItem(new Label());
-  _items[count]->setName("Install command");
-  _items[count]->setPosition(line,1);
-  _items[count]->setWidth(20);
-  count++;
-  line += 0;
-
-  addItem(&_inst_inp);
-  _items[count]->setPosition(line,26);
-  _items[count]->setWidth(20);
-  count++;
-  line += 1;
-
-  addItem(new Label());
-  _items[count]->setName("Upgrade command");
-  _items[count]->setPosition(line,1);
-  _items[count]->setWidth(20);
-  count++;
-  line += 0;
-
-  addItem(&_upgr_inp);
-  _items[count]->setPosition(line,26);
-  _items[count]->setWidth(20);
 }
 
 OptionsWindow::~OptionsWindow()
@@ -300,8 +313,8 @@ OptionsWindow::~OptionsWindow()
   {
     if (_items[i]->itemType() == "Label")
     {
-      if ( (_items[i]->name() != "Basic settings") && 
-           (_items[i]->name() != "Advanced settings") )
+      if ( (_items[i]->name() != "User interface settings") && 
+           (_items[i]->name() != "Package manager settings") )
         delete _items[i];
     }
   }
@@ -329,6 +342,7 @@ void OptionsWindow::readSettings()
   _pmgr_box.setChoice(package_manager);
 
   _repo_inp.setText(repo_dir);
+  _tag_inp.setText(repo_tag);
   _sync_inp.setText(sync_cmd);
   _inst_inp.setText(install_cmd);
   _upgr_inp.setText(upgrade_cmd);
@@ -352,6 +366,7 @@ void OptionsWindow::applySettings() const
   package_manager = _pmgr_box.getStringProp();
 
   repo_dir = _repo_inp.getStringProp();
+  repo_tag = _tag_inp.getStringProp();
   sync_cmd = _sync_inp.getStringProp();
   install_cmd = _inst_inp.getStringProp();
   upgrade_cmd = _upgr_inp.getStringProp(); 

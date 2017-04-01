@@ -5,7 +5,9 @@ sboui.conf \- configuration file for sboui
 .I sboui.conf
 contains settings for
 .BR sboui (8),
-an ncurses interface for SlackBuilds.org package managers.
+an ncurses interface for
+.I SlackBuilds.org
+package managers.
 The system-wide file is
 .IR /etc/sboui/sboui.conf ,
 but
@@ -275,7 +277,9 @@ Executable responsible for running SlackBuild scripts, installing and upgrading 
 .IP
 If a
 .B custom
-package manager is used, it must store a local copy of the SlackBuilds.org repository, and it must implement a valid
+package manager is used, it must store a local copy of the
+.I SlackBuilds.org
+repository, and it must implement a valid
 .BR install_cmd ,
 .BR upgrade_cmd ,
 and
@@ -304,6 +308,31 @@ Directories for each group (e.g., academic, audio, development, games, etc.) mus
 Because each package manager may use a different location,
 .B sboui
 does not set a default value for this setting.
+.TP
+.B repo_tag
+.br
+[string]
+.br
+default:
+.B _SBo
+.br
+required: no
+.IP
+The last characters at the end of the names of packages installed from the SlackBuilds repository.
+This setting is used to identify packages that are present in the repository but were installed from somewhere else.
+For example, many Slackware users install packages from the Alien repository:
+.IP
+.IR www.slackware.com/~alien/slackbuilds/ .
+.IP
+Some of these packages are also available from
+.IR SlackBuilds.org ,
+but often with different software versions.
+When upgrading or reinstalling a package whose name does not end with
+.BR repo_tag ,
+a warning will be issued before proceeding, provided
+.B confirm_changes
+is enabled.
+This feature helps prevent the user from accidentally reinstalling one of these packages from the SlackBuilds repository.
 .TP
 .B resolve_deps
 .br
