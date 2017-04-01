@@ -218,7 +218,11 @@ bool check_installed(const BuildListItem & build,
   for ( i = 0; i < ninstalled; i++ )
   {
     get_pkg_info(installedpkgs[i], name, version, buildnum);
-    if (name == build.name()) { return true; }
+    if (name == build.name())
+    {
+      pkg = installedpkgs[i];
+      return true;
+    }
   }
     
   pkg = "";
