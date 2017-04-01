@@ -316,7 +316,7 @@ void list_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
     {
       slackbuilds[i][j].setBoolProp("installed", true);
       slackbuilds[i][j].setProp("installed_version", pkgversion);
-      slackbuilds[i][j].setProp("package_name", installedpkgs[i]);
+      slackbuilds[i][j].setProp("package_name", installedpkgs[k]);
       slackbuilds[i][j].setProp("package_build", pkgbuildnum);
       slackbuilds[i][j].readPropsFromRepo();
       installedlist.push_back(&slackbuilds[i][j]);
