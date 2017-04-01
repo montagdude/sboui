@@ -340,8 +340,16 @@ void list_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
       if (installedlist[k]->getProp("category") != curcategory) { break; }
     }
     if (rbound == ninstalled-1) { rbound++; }
-    std::sort(installedlist.begin()+lbound, installedlist.begin()+rbound,
-              compare_builds_by_name);
+
+    // Don't sort the last element if it is the only one of its type
+    
+    if ( (rbound == ninstalled) &&
+         (installedlist[rbound-1]->getProp("category") != curcategory) )
+      std::sort(installedlist.begin()+lbound, installedlist.begin()+rbound-1,
+                compare_builds_by_name);
+    else
+      std::sort(installedlist.begin()+lbound, installedlist.begin()+rbound,
+                compare_builds_by_name);
     lbound = rbound;
   }
 }

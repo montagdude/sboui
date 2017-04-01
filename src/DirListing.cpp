@@ -361,8 +361,15 @@ void DirListing::sort()
       if (_entries[i].type != curtype) { break; }
     }
     if (rbound == nentries-1) { rbound++; }
-    std::sort(_entries.begin()+lbound, _entries.begin()+rbound,
-              compare_direntries_by_name);
+
+   // Don't sort the last element if it is the only one of its type
+
+    if ( (rbound == nentries) && (_entries[rbound-1].type != curtype) )
+      std::sort(_entries.begin()+lbound, _entries.begin()+rbound-1,
+                compare_direntries_by_name);
+    else
+      std::sort(_entries.begin()+lbound, _entries.begin()+rbound,
+                compare_direntries_by_name);
     lbound = rbound;
   }
 }
