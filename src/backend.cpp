@@ -97,34 +97,26 @@ int find_build_in_list(const std::string & name, std::vector<T> & buildlist,
   if ( (name < ptr(buildlist[lbound])->name()) ||
        (name > ptr(buildlist[rbound])->name()) ) { return 1; }
 
-  // Check for match if bounds are right next to each other
+  // Check for match on bounds. Return if not found and bounds are consecutive.
 
-  if (rbound - lbound == 1)
+  if (name == ptr(buildlist[lbound])->name())
   {
-    if (name == ptr(buildlist[lbound])->name())
-    {
-      idx = lbound;
-      return 0;
-    }
-    else if (name == ptr(buildlist[rbound])->name())
-    {
-      idx = rbound;
-      return 0;
-    }
-    else { return 1; }
+    idx = lbound;
+    return 0;
   }
+  else if (name == ptr(buildlist[rbound])->name())
+  {
+    idx = rbound;
+    return 0;
+  }
+  else { if (rbound-lbound == 1) { return 1; } }
 
   // Cut the list in half and try again
 
-  else
-  {
-    midbound = std::floor(double(lbound+rbound)/2.);
-    if (name <= ptr(buildlist[midbound])->name()) { rbound = midbound; }
-    else { lbound = midbound; }
-    return find_build_in_list(name, buildlist, idx, lbound, rbound);
-  }
-
-  return 1;
+  midbound = std::floor(double(lbound+rbound)/2.);
+  if (name <= ptr(buildlist[midbound])->name()) { rbound = midbound; }
+  else { lbound = midbound; }
+  return find_build_in_list(name, buildlist, idx, lbound, rbound);
 }
 
 /*******************************************************************************
