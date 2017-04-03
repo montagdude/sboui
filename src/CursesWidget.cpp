@@ -3,10 +3,12 @@
 
 /*******************************************************************************
 
-Prints to end of line, padding with spaces and avoiding borders
+Prints to end of line, padding with spaces and avoiding borders.
+printable: number of spaces that can be printed on, including the current column
+  and any to the right. Defaults to window width - x - 1 (space for border).
 
 *******************************************************************************/
-void CursesWidget::printToEol(const std::string & msg) const
+void CursesWidget::printToEol(const std::string & msg, int printable) const
 {
   int i, y, x, rows, cols, nspaces, msglen;
 
@@ -15,14 +17,17 @@ void CursesWidget::printToEol(const std::string & msg) const
 
   /* Math: Number of columns: cols
            Cursor position: x
-           Number of spaces that can be printed to right = cols-1-x
+           Number of spaces that can be printed to right = printable-msglen
+           Default printable: cols-x-1
            => Because the last column is taken up by the border */
 
   msglen = msg.size();
-  if (msglen > cols-1-x) { wprintw(_win, msg.substr(0, cols-1-x).c_str()); }
+  if (printable == -1) { printable = cols-x-1; }
+  if (msglen > printable)
+    wprintw(_win, msg.substr(0, printable).c_str());
   else
   {
-    nspaces = std::max(cols-1-x-msglen, 0);
+    nspaces = std::max(printable-msglen, 0);
     wprintw(_win, msg.c_str());
     for ( i = 0; i < nspaces; i++ ) { wprintw(_win, " "); }
   }

@@ -13,7 +13,7 @@ class CursesWidget {
 
   protected:
 
-    void printToEol(const std::string & msg) const;
+    void printToEol(const std::string & msg, int printable_cols=-1) const;
     void printSpaces(int nspaces) const;
 
     WINDOW *_win;

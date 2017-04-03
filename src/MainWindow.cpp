@@ -40,7 +40,7 @@ void MainWindow::printStatus(const std::string & msg)
   getmaxyx(stdscr, rows, cols);
   move(rows-2, 0);
   clrtoeol();
-  printToEol(msg);
+  printToEol(msg, cols);
   _status = msg;
   refresh();
 }
@@ -79,14 +79,14 @@ void MainWindow::redrawHeaderFooter() const
   clrtoeol();
   colors.turnOn(stdscr, fg_title, bg_title);
   printSpaces(left-1);
-  printToEol(_title);
+  printToEol(_title, cols-(left-1));
   colors.turnOff(stdscr);
 
   // Print filter selection
 
   move(2, 0);
   clrtoeol();
-  printToEol("Showing: " + _filter);
+  printToEol("Showing: " + _filter, cols);
 
   // Draw footer
 
@@ -96,7 +96,7 @@ void MainWindow::redrawHeaderFooter() const
   clrtoeol();
   colors.turnOn(stdscr, fg_info, bg_info);
   printSpaces(left-1);
-  printToEol(_info);
+  printToEol(_info, cols-(left-1));
   colors.turnOff(stdscr);
 
   refresh();
