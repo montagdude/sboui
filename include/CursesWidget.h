@@ -20,7 +20,7 @@ class CursesWidget {
 
   public:
 
-    /* Constructors */
+    /* Constructor */
 
     CursesWidget();
 

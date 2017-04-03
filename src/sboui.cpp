@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
   MainWindow mainwindow(PACKAGE_VERSION);
   mainwindow.initialize();
-  mainwindow.show();
+  mainwindow.exec();
 
   endwin();
   return 0;

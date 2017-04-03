@@ -18,6 +18,7 @@ Things for 0.2
   things installed/upgraded/reinstalled/removed. Also, don't pause after
   syncing, just show a message box for success or failure.
 * Make tagged entries and hotkeys stand out when color is disabled.
+* Make dividers in info strings look nicer.
 * Submit to SlackBuilds.org.
 
 Completed since 0.1.1

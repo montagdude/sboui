@@ -21,7 +21,7 @@
 Main window
 
 *******************************************************************************/
-class MainWindow {
+class MainWindow: public CursesWidget {
 
   private:
 
@@ -39,8 +39,6 @@ class MainWindow {
     std::string _title, _filter, _info, _status;
     unsigned int _category_idx, _activated_listbox;
 
-    void printToEol(const std::string & msg) const;
-    void printSpaces(int nspaces) const;
     void printStatus(const std::string & msg);
     void clearStatus();
     void refreshStatus();
@@ -49,7 +47,6 @@ class MainWindow {
     void redrawWindowsHorz();
     void redrawWindowsVert();
     void redrawWindows(bool force=false);
-    void redrawAll(bool force=false);
     void toggleLayout();
 
     /* Clears windows, lists, etc. */
@@ -131,7 +128,16 @@ class MainWindow {
     void search();
     void showBuildActions(BuildListItem & build);
 
+    /* Not used, but needed for MainWindow to be derived from CursesWidget */
+
+    void minimumSize(int & height, int & width) const;
+    void preferredSize(int & height, int & width) const;
+
+    /* Redraws the main window */
+
+    void draw(bool force=false);
+
     /* Shows the main window */
 
-    void show();
+    std::string exec();
 };

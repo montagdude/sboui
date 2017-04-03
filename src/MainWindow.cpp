@@ -30,40 +30,6 @@ using namespace color_settings;
 
 /*******************************************************************************
 
-Prints to end of line, padding with spaces
-
-*******************************************************************************/
-void MainWindow::printToEol(const std::string & msg) const
-{
-  int i, y, x, rows, cols, nspaces, msglen;
-
-  getmaxyx(stdscr, rows, cols);
-  getyx(stdscr, y, x);
-
-  msglen = msg.size();
-  if (msglen > cols-x) { printw(msg.substr(0, cols-x).c_str()); }
-  else
-  {
-    nspaces = std::max(cols-x-msglen, 0);
-    printw(msg.c_str());
-    for ( i = 0; i < nspaces; i++ ) { printw(" "); }
-  }
-}
-
-/*******************************************************************************
-
-Prints a given number of spaces
-
-*******************************************************************************/
-void MainWindow::printSpaces(int nspaces) const
-{
-  int i;
-
-  for ( i = 0; i < nspaces; i++ ) { addch(' '); }
-}
-
-/*******************************************************************************
-
 Prints/clears status message
 
 *******************************************************************************/
@@ -223,22 +189,6 @@ void MainWindow::redrawWindows(bool force)
 
 /*******************************************************************************
 
-Redraws window
-
-*******************************************************************************/
-void MainWindow::redrawAll(bool force)
-{
-  clear();
-
-  // Draw stuff
-
-  redrawHeaderFooter(); 
-  redrawWindows(force);
-  refreshStatus();
-}
-
-/*******************************************************************************
-
 Toggles horizontal/vertical layout
 
 *******************************************************************************/
@@ -247,7 +197,7 @@ void MainWindow::toggleLayout()
   if (settings::layout == "horizontal") { settings::layout = "vertical"; }
   else { settings::layout = "horizontal"; }
 
-  redrawAll(true);
+  draw(true);
 }
 
 /*******************************************************************************
@@ -490,7 +440,7 @@ int MainWindow::showOptions()
   clearStatus();
   setInfo("s: Sync | f: Filter | /: Search | o: Options | ?: Help");
   delwin(optionswin);
-  redrawAll(true);
+  draw(true);
   return 0;
 }
 
@@ -530,7 +480,7 @@ int MainWindow::showHelp()
   clearStatus();
   setInfo("s: Sync | f: Filter | /: Search | o: Options | ?: Help");
   delwin(helpwin);
-  redrawAll(true);
+  draw(true);
   return 0;
 }
 
@@ -635,7 +585,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
       else if (selection == signals::resize) 
       { 
         placePopup(&installer, installerwin);
-        redrawAll(true);
+        draw(true);
       }
     }
     delwin(installerwin);
@@ -651,7 +601,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
     check = installer.applyChanges(nchanged, settings::confirm_changes);
     if (nchanged > 0) { needs_rebuild = true; }
     reset_prog_mode();
-    redrawAll(true);
+    draw(true);
     if (check != 0)
       displayError("One or more requested changes was not applied.");
   }
@@ -707,7 +657,7 @@ void MainWindow::showBuildOrder(BuildListItem & build)
     else if (selection == signals::resize) 
     { 
       placePopup(&buildorder, buildorderwin);
-      redrawAll(true);
+      draw(true);
     }
   }
 
@@ -754,7 +704,7 @@ void MainWindow::showInverseReqs(BuildListItem & build)
     else if (selection == signals::resize) 
     { 
       placePopup(&invreqs, invreqwin);
-      redrawAll(true);
+      draw(true);
     }
   }
 
@@ -804,7 +754,7 @@ void MainWindow::browseFiles(const BuildListItem & build)
         endwin();
         check = view_file(builddir + "/" + fname);
         reset_prog_mode();
-        redrawAll(true);
+        draw(true);
       }
       else { displayError("Can only view files and symlinks."); }
     }
@@ -812,7 +762,7 @@ void MainWindow::browseFiles(const BuildListItem & build)
     else if (selection == signals::resize) 
     { 
       placePopup(&browser, browserwin);
-      redrawAll(true);
+      draw(true);
     }
   }
 
@@ -896,13 +846,13 @@ void MainWindow::applyTags(const std::string & action)
     else if (selection == signals::resize) 
     { 
       placePopup(&_taglist, tagwin);
-      redrawAll(true);
+      draw(true);
     }
   }
 
   clearStatus();
   delwin(tagwin);
-  redrawAll(true);
+  draw(true);
 
   // Apply changes
 
@@ -917,7 +867,7 @@ void MainWindow::applyTags(const std::string & action)
         any_modified = modifyPackage(item, action, true);
         if (! needs_rebuild) { needs_rebuild = any_modified; }
       }
-      redrawAll(true);
+      draw(true);
     }
 
     // Rebuild lists if SlackBuilds were installed/upgraded/reinstalled/removed
@@ -1011,7 +961,7 @@ int MainWindow::displayError(const std::string & msg, const std::string & name,
   errbox.setMessage(msg);
   errbox.setInfo(info);
   placePopup(&errbox, errwin);
-  redrawAll(true);
+  draw(true);
 
   // Get user input
 
@@ -1024,7 +974,7 @@ int MainWindow::displayError(const std::string & msg, const std::string & name,
     {
       getting_selection = true;
       placePopup(&errbox, errwin);
-      redrawAll(true);
+      draw(true);
     }
     else if (selection == signals::keyEnter) { response = 1; }
     else { response = 0; }
@@ -1033,7 +983,7 @@ int MainWindow::displayError(const std::string & msg, const std::string & name,
   // Get rid of window
 
   delwin(errwin);
-  redrawAll(true);
+  draw(true);
 
   return response;
 }
@@ -1058,6 +1008,7 @@ MainWindow::MainWindow(const std::string & version)
   _status = "";
   _category_idx = 0;
   _activated_listbox = 0;
+  setWindow(stdscr);
 }
 
 MainWindow::~MainWindow() { clearData(); }
@@ -1086,7 +1037,7 @@ int MainWindow::initialize()
   initlistbox.setName("SlackBuilds");
   _blistboxes.push_back(initlistbox);
 
-  redrawAll(true);
+  draw(true);
 
   // Read SlackBuilds repository
 
@@ -1108,7 +1059,7 @@ int MainWindow::initialize()
     else if (_filter == "non-dependencies") { filterNonDeps(); }
     else { filterAll(); }
   }
-  redrawAll(true);
+  draw(true);
   setTagList();
 
   return retval;
@@ -1208,7 +1159,7 @@ void MainWindow::selectFilter()
     {
       getting_selection = true;
       placePopup(&_fbox, filterwin);
-      redrawAll(true);
+      draw(true);
       _fbox.draw(true);
     }
   }
@@ -1217,7 +1168,7 @@ void MainWindow::selectFilter()
   // Get rid of window and redraw
 
   delwin(filterwin);
-  redrawAll(true);
+  draw(true);
 }
 
 /*******************************************************************************
@@ -1247,7 +1198,7 @@ void MainWindow::search()
     if (selection == signals::resize)
     {
       placePopup(&_searchbox, searchwin);
-      redrawAll(true);
+      draw(true);
       _searchbox.draw(true);
     }
     else if (selection == signals::keyEnter)
@@ -1266,7 +1217,7 @@ void MainWindow::search()
   // Get rid of window and redraw
 
   delwin(searchwin);
-  redrawAll(true);
+  draw(true);
 }
 
 /*******************************************************************************
@@ -1309,7 +1260,7 @@ void MainWindow::showBuildActions(BuildListItem & build)
       endwin();
       view_readme(build); 
       reset_prog_mode();
-      redrawAll(true);
+      draw(true);
     }
     else if ( (selected == "Install") || (selection == "I") ||
               (selected == "Upgrade") || (selection == "U") ||
@@ -1326,43 +1277,43 @@ void MainWindow::showBuildActions(BuildListItem & build)
         action = "Remove";
 
       hideWindow(actionwin);
-      redrawAll(true);
+      draw(true);
       needs_rebuild = modifyPackage(build, action);
       if (needs_rebuild) { getting_selection = false; }
       else
       {
         placePopup(&actionbox, actionwin);
-        redrawAll(true);
+        draw(true);
       }
     }                                              
     else if ( (selected == "Compute build order") || (selection == "C") )
     { 
       hideWindow(actionwin);
-      redrawAll(true);
+      draw(true);
       showBuildOrder(build);
       placePopup(&actionbox, actionwin);
-      redrawAll(true);
+      draw(true);
     }                                              
     else if ( (selected == "List inverse deps") || (selection == "L") )
     { 
       hideWindow(actionwin);
-      redrawAll(true);
+      draw(true);
       showInverseReqs(build);
       placePopup(&actionbox, actionwin);
-      redrawAll(true);
+      draw(true);
     }                                              
     else if ( (selected == "Browse files") || (selection == "B") )
     {
       hideWindow(actionwin);
-      redrawAll(true);
+      draw(true);
       browseFiles(build);
       placePopup(&actionbox, actionwin);
-      redrawAll(true);
+      draw(true);
     }
     else if (selection == signals::resize)
     {
       placePopup(&actionbox, actionwin);
-      redrawAll(true);
+      draw(true);
       actionbox.draw(true);
     }
     else { getting_selection = false; }
@@ -1383,10 +1334,34 @@ void MainWindow::showBuildActions(BuildListItem & build)
 
 /*******************************************************************************
 
-Shows the main window
+Not used, but needed for MainWindow to be derived from CursesWidget
 
 *******************************************************************************/
-void MainWindow::show()
+void MainWindow::minimumSize(int & height, int & width) const {}
+void MainWindow::preferredSize(int & height, int & width) const {}
+
+/*******************************************************************************
+
+Redraws window
+
+*******************************************************************************/
+void MainWindow::draw(bool force)
+{
+  clear();
+
+  // Draw stuff
+
+  redrawHeaderFooter(); 
+  redrawWindows(force);
+  refreshStatus();
+}
+
+/*******************************************************************************
+
+Displays the main window
+
+*******************************************************************************/
+std::string MainWindow::exec()
 {
   std::string selection, statusmsg;
   bool getting_input, all_tagged;
@@ -1395,7 +1370,7 @@ void MainWindow::show()
   BuildListItem build;
   ListItem *item;
 
-  redrawAll();
+  draw();
 
   // Main event loop
 
@@ -1525,14 +1500,14 @@ void MainWindow::show()
           if (_blistboxes[i].allTagged())
             _clistbox.itemByIdx(i)->setBoolProp("tagged", true);
         }
-        redrawAll(true);
+        draw(true);
       }
     }
 
     // Key signals with the same action w/ either type of list box
 
     if (selection == "q") { getting_input = false; }
-    else if (selection == signals::resize) { redrawAll(true); }
+    else if (selection == signals::resize) { draw(true); }
     else if (selection == "f") { selectFilter(); }
     else if (selection == "/") { search(); }
     else if (selection == "s") { syncRepo(); }
@@ -1552,4 +1527,6 @@ void MainWindow::show()
     else if (selection == "r") { applyTags("Remove"); }
     else if (selection == "e") { applyTags("Reinstall"); }
   }
+
+  return signals::quit;
 }
