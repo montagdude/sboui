@@ -175,10 +175,11 @@ void apply_color_settings()
   colors.addPair(fg_highlight_inactive, bg_highlight_inactive);
   colors.addPair(header, bg_normal); 
   colors.addPair(header_popup, bg_popup); 
+  colors.addPair(fg_popup, bg_popup); 
   colors.addPair(tagged, bg_normal); 
   colors.addPair(tagged, bg_highlight_active); 
   colors.addPair(tagged, bg_highlight_inactive); 
-  colors.addPair(fg_popup, bg_popup); 
+  colors.addPair(tagged, bg_popup); 
   colors.addPair(fg_warning, bg_warning); 
   colors.addPair(hotkey, bg_normal); 
   colors.addPair(hotkey, bg_popup); 
