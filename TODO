@@ -1,7 +1,7 @@
 Things for 1.0
 ================================================================================
-* Use a blacklist to prevent installing/upgrading/reinstalling/removing
-  packages. (Should allow regular expressions.)
+* Add a package blacklist to prevent upgrading/reinstalling/removing packages
+  installed from a different repo.
 * Make a position notifier on the right side when scrolling in lists and input
   boxes.
 * Add functionality to jump to a name in lists while typing.
@@ -28,3 +28,4 @@ Completed since 0.1.1
 * More efficient internal search through sorted lists (previously used naive
   search).
 * Replace inefficient bubble sort with sort function from C++ standard library.
+* Add mc-like example color theme.
