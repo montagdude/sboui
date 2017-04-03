@@ -1,19 +1,26 @@
-Things to do before version 1.0
+Things for 1.0
 ================================================================================
-* Display a warning when upgrading or reinstalling a package from a different
-  repo.
-* Add a "Cancel All" option for InstallBox when applying tags.
+* Use a blacklist to prevent installing/upgrading/reinstalling/removing
+  packages. (Should allow regular expressions.)
 * Make a position notifier on the right side when scrolling in lists and input
   boxes.
 * Add functionality to jump to a name in lists while typing.
 * Make sure reinstalling works with sbotools once this functionality makes it
   into an official sbotools release (it is in the latest git). May require
   addition of a reinstall_cmd or similar.
-* Make tagged entries and hotkeys stand out when color is disabled.
-* Log package manager output to file (per session). Then, will not need to pause
-  before returning to main window when an action is successful.
 
-COMPLETED
+Things for 0.2
+================================================================================
+* Display a warning when upgrading or reinstalling a package from a different
+  repo.
+* Add a "Cancel All" option for InstallBox when applying tags.
+* Instead of pausing after applying changes, show a box listing the number of
+  things installed/upgraded/reinstalled/removed. Also, don't pause after
+  syncing, just show a message box for success or failure.
+* Make tagged entries and hotkeys stand out when color is disabled.
+* Submit to SlackBuilds.org.
+
+Completed since 0.1.1
 ================================================================================
 * Show installed packages that appear in the repo but do not have the SBo tag.
 * Get rid of sboutil.sh shell script, which previously read *.info files and
