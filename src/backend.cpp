@@ -167,7 +167,7 @@ Gets package info from entry in installed package list
 
 *******************************************************************************/
 void get_pkg_info(const std::string & pkg, std::string & name,
-                  std::string & version, std::string & buildnum)
+                  std::string & version)
 {
   std::vector<std::string> splitpkg;
   unsigned int i, nsplit;
@@ -178,7 +178,6 @@ void get_pkg_info(const std::string & pkg, std::string & name,
   for ( i = 0; i < nsplit-4; i++ ) { name += splitpkg[i] + "-"; }
   name += splitpkg[nsplit-4];
   version = splitpkg[nsplit-3];
-  buildnum = splitpkg[nsplit-1];
 }
 
 /*******************************************************************************
@@ -208,8 +207,7 @@ Checks if a SlackBuild is installed and sets info if so.
 *******************************************************************************/
 bool check_installed(const BuildListItem & build,
                      const std::vector<std::string> & installedpkgs,
-                     std::string & pkg, std::string & version,
-                     std::string & buildnum)
+                     std::string & pkg, std::string & version)
 {
   std::string name;
   unsigned int ninstalled, i;
@@ -217,7 +215,7 @@ bool check_installed(const BuildListItem & build,
   ninstalled = installedpkgs.size();
   for ( i = 0; i < ninstalled; i++ )
   {
-    get_pkg_info(installedpkgs[i], name, version, buildnum);
+    get_pkg_info(installedpkgs[i], name, version);
     if (name == build.name())
     {
       pkg = installedpkgs[i];
@@ -227,7 +225,6 @@ bool check_installed(const BuildListItem & build,
     
   pkg = "";
   version = "";
-  buildnum = "";
   return false;
 }
 
@@ -305,7 +302,7 @@ void list_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
                     std::vector<BuildListItem *> & installedlist)
 {
   std::vector<std::string> installedpkgs;
-  std::string pkgname, pkgversion, pkgbuild, pkgbuildnum, curcategory;
+  std::string pkgname, pkgversion, pkgbuild, curcategory;
   unsigned int ninstalled, k, lbound, rbound;
   int i, j, check;
 
@@ -314,14 +311,13 @@ void list_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
   ninstalled = installedpkgs.size();
   for ( k = 0; k < ninstalled; k++ )
   {
-    get_pkg_info(installedpkgs[k], pkgname, pkgversion, pkgbuildnum);
+    get_pkg_info(installedpkgs[k], pkgname, pkgversion);
     check = find_slackbuild(pkgname, slackbuilds, i, j);
     if (check == 0)
     {
       slackbuilds[i][j].setBoolProp("installed", true);
       slackbuilds[i][j].setProp("installed_version", pkgversion);
       slackbuilds[i][j].setProp("package_name", installedpkgs[k]);
-      slackbuilds[i][j].setProp("package_build", pkgbuildnum);
       slackbuilds[i][j].readPropsFromRepo();
       installedlist.push_back(&slackbuilds[i][j]);
     }

@@ -13,11 +13,10 @@ int find_slackbuild(const std::string & name,
                     int & idx0, int & idx1);
 std::vector<std::string> list_installed_packages();
 void get_pkg_info(const std::string & pkg, std::string & name,
-                  std::string & version, std::string & buildnum);
+                  std::string & version);
 bool check_installed(const BuildListItem & build, 
                      const std::vector<std::string> & installedpkgs,
-                     std::string & pkg, std::string & version,
-                     std::string & buildnum);
+                     std::string & pkg, std::string & version);
 std::string get_reqs(const BuildListItem & build);
 void get_repo_info(const BuildListItem & build, std::string & available_version,
                    std::string & reqs);
