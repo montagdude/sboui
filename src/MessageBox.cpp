@@ -180,11 +180,13 @@ void MessageBox::minimumSize(int & height, int & width) const
 void MessageBox::preferredSize(int & height, int & width) const
 {
   int reserved_rows, reserved_cols, msg_width;
+  std::vector<std::string> wrapped_msg;
+  unsigned int i, nlines;
 
   reserved_rows = 6 + 2*_margin_v;
   reserved_cols = 2;
 
-  // Preferred width -- pick some reasonable number (message width 30)
+  // Preferred width -- pick some reasonable number (message width 50)
 
   width = std::max(_name.size(), _info.size()) + reserved_cols;
   width = std::max(width, int(30+2+2*_margin_h));
@@ -192,7 +194,21 @@ void MessageBox::preferredSize(int & height, int & width) const
 
   // Required height based on width and message
 
-  height = reserved_rows + wrap_words(_message, msg_width ).size();
+  wrapped_msg = wrap_words(_message, msg_width);
+  nlines = wrapped_msg.size(); 
+  height = reserved_rows + nlines;
+
+  // Check width and adjust height accordingly
+
+  for ( i = 0; i < nlines; i++ )
+  {
+    if (int(wrapped_msg[i].size()) > msg_width)
+      msg_width = wrapped_msg[i].size(); 
+  }
+  width = msg_width+2+2*_margin_h;
+  wrapped_msg = wrap_words(_message, msg_width);
+  nlines = wrapped_msg.size(); 
+  height = reserved_rows + nlines;
 }
 
 /*******************************************************************************

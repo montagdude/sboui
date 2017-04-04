@@ -227,7 +227,7 @@ Displays all SlackBuilds
 void MainWindow::filterAll()
 {
   unsigned int i, nbuilds, ncategories;
-  int choice;
+  std::string choice;
 
   _filter = "all SlackBuilds";
   printStatus("Filtering by all SlackBuilds ...");
@@ -245,7 +245,7 @@ void MainWindow::filterAll()
     clearStatus();
     choice = displayError("Repository is empty. Run the sync command now?",
                           "Error", "Enter: Yes | Esc: No");
-    if (choice == 1) { syncRepo(); }
+    if (choice == signals::keyEnter) { syncRepo(); }
   } 
   else if (nbuilds == 1)
     printStatus("1 SlackBuild in repository.");
@@ -508,9 +508,10 @@ bool MainWindow::modifyPackage(BuildListItem & build,
 {
   WINDOW *installerwin;
   int check, nchanged, response;
-  std::string selection;
+  std::string selection, msg, choice;
   bool getting_input, needs_rebuild;
-  unsigned int ninstaller;
+  unsigned int i, ninstaller, nforeign;
+  std::vector<const BuildListItem *> foreign;
   InstallBox installer;
 
   if (settings::resolve_deps)
@@ -572,13 +573,35 @@ bool MainWindow::modifyPackage(BuildListItem & build,
       selection = installer.exec(); 
       if (selection == signals::keyEnter)
       {
+        // Warn about changing foreign packages
+
+        foreign = installer.checkForeign();
+        nforeign = foreign.size();
+        if (nforeign > 0)
+        {
+          msg = "The following packages are being changed but appear to have "
+              + std::string("been installed from a different repository:\n\n");
+          for ( i = 0; i < nforeign; i++ )
+          {
+            msg += foreign[i]->getProp("package_name") + "\n";
+          }
+          msg += "\nContinue anyway?";
+          choice = displayError(msg, "Warning",
+                                "Enter: Continue | Esc: Edit");
+          if (choice != signals::keyEnter) { continue; }
+        }
+
+        // Warn about skipping dependencies
+
         getting_input = false;
         response = 1;
         if (! installer.installingAllDeps())
         {
-          response = displayError("You have chosen to skip some dependencies." +
-                                  std::string(" Continue anyway? "), "Warning",
-                                  "Enter: Yes | Esc: No"); 
+          choice = displayError("You have chosen to skip some dependencies." +
+                                std::string(" Continue anyway? "), "Warning",
+                                "Enter: Yes | Esc: No"); 
+          if (choice == signals::keyEnter) { response = 1; }
+          else { response = 0; }
         }
       }
       else if (selection == signals::quit) { getting_input = false; }
@@ -941,15 +964,14 @@ void MainWindow::hideWindow(WINDOW *win) const
 
 /*******************************************************************************
 
-Displays an error message. Returns 1 for Enter/Ok, 0 for Esc/Cancel.
+Displays an error message. Returns response from message box.
 
 *******************************************************************************/
-int MainWindow::displayError(const std::string & msg, const std::string & name,
-                             const std::string & info)
+std::string  MainWindow::displayError(const std::string & msg,
+                             const std::string & name, const std::string & info)
 {
   std::string selection;
   bool getting_selection;
-  int response;
   MessageBox errbox;
   WINDOW *errwin;
 
@@ -976,8 +998,6 @@ int MainWindow::displayError(const std::string & msg, const std::string & name,
       placePopup(&errbox, errwin);
       draw(true);
     }
-    else if (selection == signals::keyEnter) { response = 1; }
-    else { response = 0; }
   }
 
   // Get rid of window
@@ -985,7 +1005,7 @@ int MainWindow::displayError(const std::string & msg, const std::string & name,
   delwin(errwin);
   draw(true);
 
-  return response;
+  return selection;
 }
 
 /*******************************************************************************

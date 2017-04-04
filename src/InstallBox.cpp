@@ -526,6 +526,36 @@ std::string InstallBox::exec()
 
 /*******************************************************************************
 
+Checks for packages to upgrade/remove/reinstall that were installed from a
+different repo (i.e., tag doesn't match)
+
+*******************************************************************************/
+std::vector<const BuildListItem *> InstallBox::checkForeign() const
+{
+  unsigned int nbuilds, i, taglen, pkgnamelen;
+  std::string pkgname;
+  std::vector<const BuildListItem *> foreign;
+
+  foreign.resize(0);
+  nbuilds = _builds.size();
+  taglen = settings::repo_tag.size();
+  for ( i = 0; i < nbuilds; i++ )
+  {
+    if ( (_builds[i].getBoolProp("installed")) &&
+         (_builds[i].getBoolProp("tagged")) )
+    {
+      pkgname = _builds[i].getProp("package_name"); 
+      pkgnamelen = pkgname.size(); 
+      if (pkgname.substr(pkgnamelen-taglen, pkgnamelen) != settings::repo_tag)
+        foreign.push_back(&_builds[i]);
+    }
+  }
+
+  return foreign;
+}
+
+/*******************************************************************************
+
 Install, upgrade, reinstall, or remove SlackBuild and dependencies. Returns 0 on
 success. Also counts number of SlackBuilds that were changed.
 

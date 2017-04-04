@@ -51,6 +51,10 @@ class InstallBox: public BuildOrderBox {
 
     std::string exec();
 
+    /* Make a list of packages from a different repo that will be changed */
+
+    std::vector<const BuildListItem *> checkForeign() const;
+
     /* Install, upgrade, remove, or reinstall SlackBuild and dependencies */
 
     int applyChanges(int & nchanged, bool notify_complete=true) const;
