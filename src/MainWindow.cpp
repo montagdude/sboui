@@ -972,7 +972,7 @@ std::string  MainWindow::displayError(const std::string & msg,
 {
   std::string selection;
   bool getting_selection;
-  MessageBox errbox;
+  MessageBox errbox(false);
   WINDOW *errwin;
 
   // Place message box

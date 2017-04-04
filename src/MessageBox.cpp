@@ -30,10 +30,12 @@ void MessageBox::redrawFrame() const
   left = std::floor(mid - double(namelen)/2.0) + 1;
   wmove(_win, 1, 1);
   wclrtoeol(_win);
-  colors.turnOn(_win, fg_title, bg_title);
+  if (_header_colorize) { colors.turnOn(_win, fg_title, bg_title); }
+  else { wattron(_win, A_BOLD); }
   printSpaces(left-1);
   printToEol(_name);
-  colors.turnOff(_win);
+  if (_header_colorize) { colors.turnOff(_win); }
+  else { wattroff(_win, A_BOLD); }
 
   // Info on bottom of window
 
@@ -41,10 +43,12 @@ void MessageBox::redrawFrame() const
   left = std::floor(mid - double(namelen)/2.0) + 1;
   wmove(_win, rows-2, 1);
   wclrtoeol(_win);
-  colors.turnOn(_win, fg_info, bg_info);
+  if (_header_colorize) { colors.turnOn(_win, fg_title, bg_title); }
+  else { wattron(_win, A_BOLD); }
   printSpaces(left-1);
   printToEol(_info);
-  colors.turnOff(_win);
+  if (_header_colorize) { colors.turnOff(_win); }
+  else { wattroff(_win, A_BOLD); }
 
   // Corners
 
@@ -122,7 +126,7 @@ void MessageBox::redrawMessage() const
 Constructors
 
 *******************************************************************************/
-MessageBox::MessageBox()
+MessageBox::MessageBox(bool header_colorize)
 {
   _win = NULL;
   _name = "";
@@ -131,9 +135,11 @@ MessageBox::MessageBox()
   _margin_v = 0;
   _margin_h = 0;
   _color_idx = -1;
+  _header_colorize = header_colorize;
 }
 
-MessageBox::MessageBox(WINDOW *win, const std::string & name)
+MessageBox::MessageBox(WINDOW *win, const std::string & name,
+                       bool header_colorize)
 {
   _win = win;
   _name = name;
@@ -142,6 +148,7 @@ MessageBox::MessageBox(WINDOW *win, const std::string & name)
   _margin_v = 0;
   _margin_h = 0;
   _color_idx = -1;
+  _header_colorize = header_colorize;
 }
 
 /*******************************************************************************
