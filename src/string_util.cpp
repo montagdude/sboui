@@ -135,23 +135,33 @@ Wraps words in a string into separate lines, returned as a vector of strings
 std::vector<std::string> wrap_words(const std::string & instr,
                                     unsigned int width)
 {
-  std::vector<std::string> wordvec, splitstr;
-  unsigned int nwords, i;
+  std::vector<std::string> wordvec, splitstr1, splitstr2;
+  unsigned int nwords, npars, i, j;
   std::string line;
 
-  splitstr = split(instr);
-  nwords = splitstr.size();
-  line = splitstr[0];
-  for ( i = 1; i < nwords; i++ )
-  { 
-    if (line.size() + 1 + splitstr[i].size() > width)
+  splitstr1 = split(instr, '\n');
+  npars = splitstr1.size();
+  for ( i = 0; i < npars; i++ )
+  {
+    if (splitstr1[i] == "")
     {
-      wordvec.push_back(line);
-      line = splitstr[i];
+      wordvec.push_back("");
+      continue;
     }
-    else { line += " " + splitstr[i]; }
+    splitstr2 = split(splitstr1[i]);
+    nwords = splitstr2.size();
+    line = splitstr2[0];
+    for ( j = 1; j < nwords; j++ )
+    { 
+      if (line.size() + 1 + splitstr2[j].size() > width)
+      {
+        wordvec.push_back(line);
+        line = splitstr2[j];
+      }
+      else { line += " " + splitstr2[j]; }
+    }
+    wordvec.push_back(line);
   }
-  wordvec.push_back(line);
 
   return wordvec;
 }
