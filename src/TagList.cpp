@@ -10,8 +10,6 @@
 #include "SelectionBox.h"
 #include "TagList.h"
 
-using namespace color_settings;
-
 /*******************************************************************************
  
 Redraws a single item. Note: doesn't check if the item is actually on the
@@ -35,20 +33,21 @@ void TagList::redrawSingleItem(unsigned int idx)
   {
     if (_activated) 
     { 
-      fg = fg_highlight_active;
-      bg = bg_highlight_active; 
+      fg = color_settings.fg_highlight_active;
+      bg = color_settings.bg_highlight_active; 
     }
     else
     {
-      fg = fg_highlight_inactive;
-      bg = bg_highlight_inactive; 
+      fg = color_settings.fg_highlight_inactive;
+      bg = color_settings.bg_highlight_inactive; 
     }
     if (colors.turnOn(_win, fg, bg) != 0)
     { 
       if (_activated) { wattron(_win, A_REVERSE); }
     }
   } 
-  else { colors.turnOn(_win, fg_popup, bg_popup); }
+  else { colors.turnOn(_win, color_settings.fg_popup,
+                             color_settings.bg_popup); }
 
   // Save highlight idx for redrawing later.
   // Note: prevents this method from being const.

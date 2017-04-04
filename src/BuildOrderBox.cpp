@@ -10,8 +10,6 @@
 #include "BuildListItem.h"
 #include "BuildOrderBox.h"
 
-using namespace color_settings;
-
 /*******************************************************************************
 
 Draws window border and title
@@ -31,7 +29,7 @@ void BuildOrderBox::redrawFrame() const
   left = std::floor(mid - double(namelen)/2.0) + 1;
   wmove(_win, rows-2, 1);
   wclrtoeol(_win);
-  colors.turnOn(_win, fg_info, bg_info);
+  colors.turnOn(_win, color_settings.fg_info, color_settings.bg_info);
   printSpaces(left-1);
   printToEol(_info);
   colors.turnOff(_win);
@@ -43,7 +41,7 @@ void BuildOrderBox::redrawFrame() const
   left = std::floor(mid - double(namelen)/2.0);
   right = left + namelen;
   wmove(_win, 0, left);
-  colors.turnOn(_win, fg_title, bg_title);
+  colors.turnOn(_win, color_settings.fg_title, color_settings.bg_title);
   wprintw(_win, _name.c_str());
   colors.turnOff(_win);
 
@@ -89,7 +87,7 @@ void BuildOrderBox::redrawFrame() const
   // Draw header
 
   wmove(_win, 1, 1);
-  colors.turnOn(_win, header_popup, bg_popup);
+  colors.turnOn(_win, color_settings.header_popup, color_settings.bg_popup);
   wprintw(_win, "Name");
 
   vlineloc = cols-2 - std::string("Installed").size();
@@ -146,15 +144,15 @@ void BuildOrderBox::redrawSingleItem(unsigned int idx)
   {
     if (_activated) 
     { 
-      if (_items[idx]->getBoolProp("tagged")) { fg = tagged; }
-      else { fg = fg_highlight_active; }
-      bg = bg_highlight_active; 
+      if (_items[idx]->getBoolProp("tagged")) { fg = color_settings.tagged; }
+      else { fg = color_settings.fg_highlight_active; }
+      bg = color_settings.bg_highlight_active; 
     }
     else
     {
-      if (_items[idx]->getBoolProp("tagged")) { fg = tagged; }
-      else { fg = fg_highlight_inactive; }
-      bg = bg_highlight_inactive; 
+      if (_items[idx]->getBoolProp("tagged")) { fg = color_settings.tagged; }
+      else { fg = color_settings.fg_highlight_inactive; }
+      bg = color_settings.bg_highlight_inactive; 
     }
     if (colors.turnOn(_win, fg, bg) != 0)
     { 
@@ -163,9 +161,9 @@ void BuildOrderBox::redrawSingleItem(unsigned int idx)
   } 
   else
   {
-    if (_items[idx]->getBoolProp("tagged")) { fg = tagged; }
-    else { fg = fg_popup; }
-    bg = bg_popup;
+    if (_items[idx]->getBoolProp("tagged")) { fg = color_settings.tagged; }
+    else { fg = color_settings.fg_popup; }
+    bg = color_settings.bg_popup;
     colors.turnOn(_win, fg, bg);
   }
 
@@ -311,7 +309,8 @@ void BuildOrderBox::draw(bool force)
   if (_redraw_type == "all")
   { 
     wclear(_win); 
-    colors.setBackground(_win, fg_popup, bg_popup);
+    colors.setBackground(_win, color_settings.fg_popup,
+                               color_settings.bg_popup);
   }
   if (_redraw_type != "none") { redrawFrame(); }
   if ( (_redraw_type == "all") || (_redraw_type == "items")) { 

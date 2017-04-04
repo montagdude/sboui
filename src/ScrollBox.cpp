@@ -9,8 +9,6 @@
 #include "AbstractListBox.h"
 #include "ScrollBox.h"
 
-using namespace color_settings;
-
 /*******************************************************************************
 
 Scrolls to first item. Return value is 0 if _firstprint has not changed, 1 if it
@@ -318,7 +316,8 @@ void ScrollBox::draw(bool force)
   if (_redraw_type == "all")
   { 
     wclear(_win); 
-    colors.setBackground(_win, fg_normal, bg_normal);
+    colors.setBackground(_win, color_settings.fg_normal,
+                               color_settings.bg_normal);
   }
   if (_redraw_type != "none") { redrawFrame(); }
   if ( (_redraw_type == "all") || (_redraw_type == "items")) { 

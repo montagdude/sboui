@@ -6,8 +6,6 @@
 #include "InputItem.h"
 #include "ToggleInput.h"
 
-using namespace color_settings;
-
 /*******************************************************************************
 
 Drawing
@@ -64,7 +62,8 @@ void ToggleInput::draw(int y_offset, bool force, bool highlight)
 
   if (highlight)
   {
-    if (colors.turnOn(_win, fg_highlight_active, bg_highlight_active) != 0)
+    if (colors.turnOn(_win, color_settings.fg_highlight_active,
+                            color_settings.bg_highlight_active) != 0)
       wattron(_win, A_REVERSE);
   }
 

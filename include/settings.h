@@ -16,21 +16,22 @@ namespace settings
   extern bool resolve_deps, confirm_changes, enable_color;
 }
 
-namespace color_settings
-{
-  extern Color colors;
-  extern std::string fg_normal, bg_normal;
-  extern std::string fg_title, bg_title;
-  extern std::string fg_info, bg_info;
-  extern std::string fg_highlight_active, bg_highlight_active;
-  extern std::string fg_highlight_inactive, bg_highlight_inactive;
-  extern std::string header, header_popup;
-  extern std::string tagged;
-  extern std::string fg_popup, bg_popup;
-  extern std::string fg_warning, bg_warning;
-  extern std::string hotkey;
-  extern std::string fg_combobox, bg_combobox;
-}
+extern Color colors;
+struct color_struct {
+  std::string fg_normal, bg_normal;
+  std::string fg_title, bg_title;
+  std::string fg_info, bg_info;
+  std::string fg_highlight_active, bg_highlight_active;
+  std::string fg_highlight_inactive, bg_highlight_inactive;
+  std::string header, header_popup;
+  std::string tagged;
+  std::string fg_popup, bg_popup;
+  std::string fg_warning, bg_warning;
+  std::string hotkey;
+  std::string fg_combobox, bg_combobox;
+  color_struct(); // Constructor
+};
+extern color_struct color_settings;
 
 void apply_color_settings();
 int read_config(const std::string & conf_file="");

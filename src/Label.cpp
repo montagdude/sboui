@@ -5,8 +5,6 @@
 #include "InputItem.h"
 #include "Label.h"
 
-using namespace color_settings;
-
 /*******************************************************************************
 
 Constructor

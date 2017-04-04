@@ -26,8 +26,6 @@
 #include "HelpWindow.h"
 #include "MainWindow.h"
 
-using namespace color_settings;
-
 /*******************************************************************************
 
 Prints/clears status message
@@ -77,7 +75,7 @@ void MainWindow::redrawHeaderFooter() const
   left = std::floor(mid - double(namelen)/2.0) + 1;
   move(0, 0);
   clrtoeol();
-  colors.turnOn(stdscr, fg_title, bg_title);
+  colors.turnOn(stdscr, color_settings.fg_title, color_settings.bg_title);
   printSpaces(left-1);
   printToEol(_title, cols-(left-1));
   colors.turnOff(stdscr);
@@ -94,7 +92,7 @@ void MainWindow::redrawHeaderFooter() const
   left = std::floor(mid - double(namelen)/2.0) + 1;
   move(rows-1, 0);
   clrtoeol();
-  colors.turnOn(stdscr, fg_info, bg_info);
+  colors.turnOn(stdscr, color_settings.fg_info, color_settings.bg_info);
   printSpaces(left-1);
   printToEol(_info, cols-(left-1));
   colors.turnOff(stdscr);

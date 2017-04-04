@@ -8,8 +8,6 @@
 #include "SelectionBox.h"
 #include "DirListBox.h"
 
-using namespace color_settings;
-
 /*******************************************************************************
  
 Redraws a single item. Note: doesn't check if the item is actually on the
@@ -30,13 +28,13 @@ void DirListBox::redrawSingleItem(unsigned int idx)
   {
     if (_activated) 
     { 
-      fg = fg_highlight_active; 
-      bg = bg_highlight_active; 
+      fg = color_settings.fg_highlight_active; 
+      bg = color_settings.bg_highlight_active; 
     }
     else
     {
-      fg = fg_highlight_inactive; 
-      bg = bg_highlight_inactive; 
+      fg = color_settings.fg_highlight_inactive; 
+      bg = color_settings.bg_highlight_inactive; 
     }
     if (colors.turnOn(_win, fg, bg) != 0)
     { 

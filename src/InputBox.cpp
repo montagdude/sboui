@@ -8,8 +8,6 @@
 #include "InputItem.h"
 #include "InputBox.h"
 
-using namespace color_settings;
-
 /*******************************************************************************
 
 Setting item to be highlighted. Return value is 0 if _firstprint has not
@@ -237,7 +235,7 @@ void InputBox::redrawFrame() const
   left = std::floor(mid - double(msglen)/2.0) + 1;
   wmove(_win, 1, 1);
   wclrtoeol(_win);
-  colors.turnOn(_win, fg_title, bg_title);
+  colors.turnOn(_win, color_settings.fg_title, color_settings.bg_title);
   printSpaces(left-1);
   printToEol(_msg);
   colors.turnOff(_win);
@@ -248,7 +246,7 @@ void InputBox::redrawFrame() const
   left = std::floor(mid - double(msglen)/2.0) + 1;
   wmove(_win, rows-2, 1);
   wclrtoeol(_win);
-  colors.turnOn(_win, fg_info, bg_info);
+  colors.turnOn(_win, color_settings.fg_info, color_settings.bg_info);
   printSpaces(left-1);
   printToEol(_info);
   colors.turnOff(_win);
@@ -477,7 +475,8 @@ void InputBox::draw(bool force)
   if (_redraw_type == "all") 
   { 
     wclear(_win);
-    colors.setBackground(_win, fg_normal, bg_normal);
+    colors.setBackground(_win, color_settings.fg_normal,
+                               color_settings.bg_normal);
     redrawFrame();
     redrawAllItems(force);
   }

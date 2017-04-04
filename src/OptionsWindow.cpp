@@ -10,7 +10,6 @@
 #include "OptionsWindow.h"
 
 using namespace settings;
-using namespace color_settings;
 
 /*******************************************************************************
 
@@ -95,7 +94,8 @@ OptionsWindow::OptionsWindow()
 
   // Label for ui settings
 
-  _ui_settings.setColor(colors.getPair(header, bg_normal));
+  _ui_settings.setColor(colors.getPair(color_settings.header,
+                                       color_settings.bg_normal));
   addItem(&_ui_settings);
   _items[count]->setName("User interface settings");
   _items[count]->setPosition(line,1);
@@ -160,7 +160,8 @@ OptionsWindow::OptionsWindow()
 
   // Package manager settings
 
-  _pm_settings.setColor(colors.getPair(header, bg_normal));
+  _pm_settings.setColor(colors.getPair(color_settings.header,
+                                       color_settings.bg_normal));
   addItem(&_pm_settings);  
   _items[count]->setName("Package manager settings");
   _items[count]->setPosition(line,1);

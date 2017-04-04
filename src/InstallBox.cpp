@@ -13,8 +13,6 @@
 #include "BuildListItem.h"
 #include "InstallBox.h"
 
-using namespace color_settings;
-
 /*******************************************************************************
 
 Draws window border and title
@@ -34,7 +32,7 @@ void InstallBox::redrawFrame() const
   left = std::floor(mid - double(namelen)/2.0) + 1;
   wmove(_win, rows-2, 1);
   wclrtoeol(_win);
-  colors.turnOn(_win, fg_info, bg_info);
+  colors.turnOn(_win, color_settings.fg_info, color_settings.bg_info);
   printSpaces(left-1);
   printToEol(_info);
   colors.turnOff(_win);
@@ -46,7 +44,7 @@ void InstallBox::redrawFrame() const
   left = std::floor(mid - double(namelen)/2.0);
   right = left + namelen;
   wmove(_win, 0, left);
-  colors.turnOn(_win, fg_title, bg_title);
+  colors.turnOn(_win, color_settings.fg_title, color_settings.bg_title);
   wprintw(_win, _name.c_str());
   colors.turnOff(_win);
 
@@ -92,7 +90,7 @@ void InstallBox::redrawFrame() const
   // Draw header
 
   wmove(_win, 1, 1);
-  colors.turnOn(_win, header_popup, bg_popup);
+  colors.turnOn(_win, color_settings.header_popup, color_settings.bg_popup);
   wprintw(_win, "Name");
 
   vlineloc = cols-2 - std::string(" Reinstall ").size();
@@ -149,20 +147,21 @@ void InstallBox::redrawSingleItem(unsigned int idx)
   {
     if (_activated) 
     { 
-      fg = fg_highlight_active;
-      bg = bg_highlight_active; 
+      fg = color_settings.fg_highlight_active;
+      bg = color_settings.bg_highlight_active; 
     }
     else
     {
-      fg = fg_highlight_inactive;
-      bg = bg_highlight_inactive; 
+      fg = color_settings.fg_highlight_inactive;
+      bg = color_settings.bg_highlight_inactive; 
     }
     if (colors.turnOn(_win, fg, bg) != 0)
     { 
       if (_activated) { wattron(_win, A_REVERSE); }
     }
   } 
-  else { colors.turnOn(_win, fg_popup, bg_popup); }
+  else { colors.turnOn(_win, color_settings.fg_popup,
+                             color_settings.bg_popup); }
 
   // Save highlight idx for redrawing later.
   // Note: prevents this method from being const.
