@@ -30,10 +30,10 @@ void MessageBox::redrawFrame() const
   left = std::floor(mid - double(namelen)/2.0) + 1;
   wmove(_win, 1, 1);
   wclrtoeol(_win);
-  wattron(_win, A_BOLD);
+  colors.turnOn(_win, fg_title, bg_title);
   printSpaces(left-1);
   printToEol(_name);
-  wattroff(_win, A_BOLD);
+  colors.turnOff(_win);
 
   // Info on bottom of window
 
@@ -41,10 +41,10 @@ void MessageBox::redrawFrame() const
   left = std::floor(mid - double(namelen)/2.0) + 1;
   wmove(_win, rows-2, 1);
   wclrtoeol(_win);
-  wattron(_win, A_BOLD);
+  colors.turnOn(_win, fg_info, bg_info);
   printSpaces(left-1);
   printToEol(_info);
-  wattroff(_win, A_BOLD);
+  colors.turnOff(_win);
 
   // Corners
 
@@ -130,6 +130,7 @@ MessageBox::MessageBox()
   _info = "Enter: Ok | Esc: Cancel";
   _margin_v = 0;
   _margin_h = 0;
+  _color_idx = -1;
 }
 
 MessageBox::MessageBox(WINDOW *win, const std::string & name)
@@ -140,6 +141,7 @@ MessageBox::MessageBox(WINDOW *win, const std::string & name)
   _info = "Enter: Ok | Esc: Cancel";
   _margin_v = 0;
   _margin_h = 0;
+  _color_idx = -1;
 }
 
 /*******************************************************************************
@@ -150,6 +152,7 @@ Set attributes
 void MessageBox::setName(const std::string & name) { _name = name; }
 void MessageBox::setMessage(const std::string & msg) { _message = msg; }
 void MessageBox::setInfo(const std::string & info) { _info = info; }
+void MessageBox::setColor(int color_idx) { _color_idx = color_idx; }
 
 /*******************************************************************************
 
@@ -201,7 +204,8 @@ called, there is no _redraw_type for it.
 void MessageBox::draw(bool force)
 {
   wclear(_win);
-  colors.setBackground(_win, fg_warning, bg_warning);
+  if (_color_idx == -1) { colors.setBackground(_win, fg_warning, bg_warning); }
+  else { colors.setBackground(_win, _color_idx); }
   redrawFrame();
   redrawMessage();
   wrefresh(_win);

@@ -15,6 +15,7 @@ class MessageBox: public CursesWidget {
 
     std::string _name, _message, _info;
     unsigned int _margin_v, _margin_h;
+    int _color_idx;
 
     void redrawFrame() const;
     void redrawMessage() const;
@@ -31,6 +32,7 @@ class MessageBox: public CursesWidget {
     void setName(const std::string & name);
     void setMessage(const std::string & msg);
     void setInfo (const std::string & info); 
+    void setColor(int color_idx);
 
     /* Get attributes */
 
