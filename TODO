@@ -18,7 +18,6 @@ Things for 0.2
   things installed/upgraded/reinstalled/removed. Also, don't pause after
   syncing, just show a message box for success or failure.
 * Make tagged entries and hotkeys stand out when color is disabled.
-* Make dividers in info strings look nicer.
 * Submit to SlackBuilds.org.
 
 Completed since 0.1.1
@@ -30,3 +29,4 @@ Completed since 0.1.1
   search).
 * Replace inefficient bubble sort with sort function from C++ standard library.
 * Add mc-like example color theme.
+* Render pipes in info strings as vertical lines.

@@ -3,14 +3,16 @@
 
 /*******************************************************************************
 
-Prints to end of line, padding with spaces and avoiding borders.
+Prints to end of line, padding with spaces and avoiding borders. Renders pipes
+as ACS_VLINEs.
+
 printable: number of spaces that can be printed on, including the current column
-  and any to the right. Defaults to window width - x - 1 (space for border).
+    and any to the right. Defaults to window width - x - 1 (space for border).
 
 *******************************************************************************/
 void CursesWidget::printToEol(const std::string & msg, int printable) const
 {
-  int i, y, x, rows, cols, nspaces, msglen;
+  int i, y, x, rows, cols, nprint, nspaces, msglen;
 
   getmaxyx(_win, rows, cols);
   getyx(_win, y, x);
@@ -23,14 +25,15 @@ void CursesWidget::printToEol(const std::string & msg, int printable) const
 
   msglen = msg.size();
   if (printable == -1) { printable = cols-x-1; }
-  if (msglen > printable)
-    wprintw(_win, msg.substr(0, printable).c_str());
-  else
+
+  nprint = std::min(msglen, printable);
+  for ( i = 0; i < nprint; i++ )
   {
-    nspaces = std::max(printable-msglen, 0);
-    wprintw(_win, msg.c_str());
-    for ( i = 0; i < nspaces; i++ ) { wprintw(_win, " "); }
+    if (msg[i] == '|') { waddch(_win, ACS_VLINE); }
+    else { waddch(_win, msg[i]); }
   }
+  nspaces = std::max(printable-msglen, 0);
+  printSpaces(nspaces);
 }
 
 /*******************************************************************************
