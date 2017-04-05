@@ -22,13 +22,7 @@ int main(int argc, char *argv[])
   if (check == 1) { return check; }
   else if (check == -1) { return 0; }
 
-  // Read config file
-
-  if (clos.requestInputFile()) { check = read_config(clos.inputFile()); }
-  else { check = read_config(); }
-  if (check != 0) { return check; }
-
-  // Set up ncurses
+  // Set up ncurses (needed because we set colors while reading config file)
 
   initscr();
   curs_set(0);
@@ -36,8 +30,16 @@ int main(int argc, char *argv[])
   noecho();
   set_escdelay(25);
   keypad(stdscr, TRUE);
-  if (settings::enable_color) { activate_color(); }
-  else { deactivate_color(); }
+
+  // Read config file. Temporarily leave ncurses mode so that stdin/out work
+  // properly for this step.
+
+  def_prog_mode();
+  endwin();
+  if (clos.requestInputFile()) { check = read_config(clos.inputFile()); }
+  else { check = read_config(); }
+  if (check != 0) { return check; }
+  reset_prog_mode();
 
   // User interaction loop (note: call constructor after setting colors)
 

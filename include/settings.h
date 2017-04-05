@@ -11,7 +11,7 @@ namespace settings
   extern std::string install_clos, install_vars;
   extern std::string upgrade_clos, upgrade_vars;
   extern std::string editor; 
-  extern std::string color_theme_file;
+  extern std::string color_theme, color_theme_file;
   extern std::string layout;
   extern bool resolve_deps, confirm_changes, enable_color;
 }

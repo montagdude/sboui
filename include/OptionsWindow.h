@@ -19,10 +19,10 @@ class OptionsWindow: public InputBox {
 
     TextInput _iclos_inp, _ivars_inp, _uclos_inp, _uvars_inp, _editor_inp;
     TextInput _repo_inp, _tag_inp, _sync_inp, _inst_inp, _upgr_inp;
+    TextInput _color_inp;
     ToggleInput _resolve_toggle, _confirm_toggle, _color_toggle;
-    Label _ui_settings, _pm_settings;
-    Label _basic, _advanced;
-    ComboBox _layout_box, _pmgr_box;
+    Label _ui_settings, _color_settings, _pm_settings;
+    ComboBox _layout_box, _color_box, _pmgr_box;
 
     /* Drawing */
 
@@ -38,7 +38,7 @@ class OptionsWindow: public InputBox {
     /* Read/apply settings */
 
     void readSettings();
-    void applySettings() const; 
+    int applySettings() const; 
 
     /* Window sizing and placement */
 

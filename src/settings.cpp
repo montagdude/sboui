@@ -20,7 +20,7 @@ namespace settings
   std::string upgrade_clos;
   std::string upgrade_vars;
   std::string editor;
-  std::string color_theme_file;
+  std::string color_theme, color_theme_file;
   std::string layout;
   bool resolve_deps, confirm_changes, enable_color;
 }
@@ -232,7 +232,8 @@ void apply_color_settings()
 
 /*******************************************************************************
 
-Reads color theme configuration file
+Reads color theme configuration file. Returns 1 if cannot read color theme
+file, 2 if there is a parse error, 3 if an item is missing, or 0 for success.
 
 *******************************************************************************/
 int read_color_theme(const std::string & color_theme_file)
@@ -249,14 +250,14 @@ int read_color_theme(const std::string & color_theme_file)
   try { color_cfg.readFile(color_theme_file.c_str()); }
   catch(const FileIOException &fioex)
   {
-    std::cerr << "Error cannot read color theme file." << std::endl;
+    std::cerr << "Error: cannot read color theme file." << std::endl;
     return 1;
   }
   catch(const ParseException &pex)
   {
     std::cerr << "Parse error at " << pex.getFile() << ":" << pex.getLine()
               << " - " << pex.getError() << std::endl;
-    return 1;
+    return 2;
   }
 
   // Store settings in vectors so we can read them in a loop
@@ -312,7 +313,7 @@ int read_color_theme(const std::string & color_theme_file)
     if (! color_cfg.lookupValue(color_names[i], *color_vars[i]))
     {
       std::cerr << "Error: '" + color_names[i] + "'" + missing_msg << std::endl;
-      retval = 1;
+      retval = 3;
       break;
     }
   }
@@ -382,10 +383,8 @@ int read_config(const std::string & conf_file)
   if (! cfg.lookupValue("confirm_changes", confirm_changes)) 
     confirm_changes = true;
 
-  if (! cfg.lookupValue("enable_color", enable_color)) { enable_color = true; }
-
   if (! cfg.lookupValue("layout", layout)) { layout = "horizontal"; }
-  if ( (layout != "horizontal") && (layout != "vertical") )
+  else if ( (layout != "horizontal") && (layout != "vertical") )
   {
     layout = "horizontal";
     std::cout << "Unrecognized layout option. Using default." << std::endl;
@@ -477,29 +476,29 @@ int read_config(const std::string & conf_file)
 
   // Color settings. Try to read user settings or revert to defaults.
 
-  if (cfg.lookupValue("color_theme_file", color_theme_file))
-  { 
-    check = read_color_theme(color_theme_file); 
-    if (check != 0)
-    {
-      std::cout << "Using default colors. Press Enter to continue ...";
-      std::getline(std::cin, response);
-      set_default_colors();
-    }
-    else { set_from_user_colors(); }
-  }
-  else 
-  { 
+  if (! cfg.lookupValue("enable_color", enable_color)) { enable_color = true; }
+  if (! cfg.lookupValue("color_theme", color_theme)) { color_theme = "dark"; }
+  if (! cfg.lookupValue("color_theme_file", color_theme_file))
     color_theme_file = "";
-    set_default_colors(); 
+  if (enable_color)
+  {
+    check = activate_color();
+    if (check != 0) 
+    {
+      std::cout << "Press Enter to continue ...";
+      std::getline(std::cin, response);
+    }
   }
+  else { deactivate_color(); }
 
   return 0;
 }
 
 /*******************************************************************************
 
-Enables color. Returns 1 if terminal does not support color; 0 otherwise.
+Enables color. Returns 1 if color theme file requested but could not be read,
+2 for parse error in color theme file, 3 for missing item in color theme file,
+4 if terminal does not support color, or 0 otherwise.
 
 *******************************************************************************/
 int activate_color()
@@ -510,22 +509,32 @@ int activate_color()
 
   if (dark.fg_normal == "") { define_color_themes(); }
 
+  check = 0;
   if (has_colors())
   {
-    if (color_theme_file != "")
+    if (color_theme == "dark") { color_settings = dark; }
+    else if (color_theme == "light") { color_settings = light; }
+    else if (color_theme == "mc-like") { color_settings = mc_like; }
+    else if (color_theme == "from_file")
     {
-      check = set_from_user_colors();
-      if (check != 0) { set_default_colors(); }
+      check = read_color_theme(color_theme_file);
+      if (check == 0) { set_from_user_colors(); }
+      else
+      { 
+        std::cout << "Using default colors." << std::endl;
+        set_default_colors();
+      }
     }
     else { set_default_colors(); }
     apply_color_settings();
     enable_color = true;
-    return 0;
+    return check;
   }
   else
   {
     enable_color = false;
-    return 1;
+    std::cerr << "Color is not supported in this terminal." << std::endl;
+    return 4;
   }
 }
 

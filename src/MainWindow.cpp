@@ -404,8 +404,9 @@ Shows options window
 int MainWindow::showOptions()
 {
   WINDOW *optionswin;
-  std::string selection;
+  std::string selection, errmsg;
   bool getting_input;
+  int check;
 
   clear();
   setInfo("Enter: Apply settings | Esc: Back to main");
@@ -417,6 +418,7 @@ int MainWindow::showOptions()
   _options.readSettings();
 
   getting_input = true;
+  check = 0;
   while (getting_input)
   {
     selection = _options.exec(); 
@@ -431,8 +433,30 @@ int MainWindow::showOptions()
     else if (selection == signals::keyEnter) 
     {
       getting_input = false;
-      _options.applySettings();
+      check = _options.applySettings();
     }
+  }
+
+  // Error messages for problems with color theme file
+
+  if (check != 0)
+  {
+    switch (check) {
+      case 1:
+        errmsg = "Unable to read color theme file. Using default color theme.";
+        break;
+      case 2:
+        errmsg = "Parse error in color theme file. Using default color theme.";
+        break;
+      case 3:
+        errmsg = "Missing field in color theme file. "
+               + std::string("Using default color theme.");
+        break;
+      case 4:
+        errmsg = "Color is not supported in this terminal.";
+        break;
+    }
+    displayError(errmsg);
   }
 
   clearStatus();

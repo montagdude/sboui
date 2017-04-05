@@ -92,7 +92,7 @@ OptionsWindow::OptionsWindow()
   count = 0;
   line = 1; 
 
-  // Label for ui settings
+  // UI settings
 
   _ui_settings.setColor(colors.getPair(color_settings.header,
                                        color_settings.bg_normal));
@@ -102,8 +102,6 @@ OptionsWindow::OptionsWindow()
   _items[count]->setWidth(_items[count]->name().size());
   count++;
   line += 2;
-
-  // Toggle inputs
 
   addItem(&_resolve_toggle);
   _items[count]->setName("Resolve dependencies");
@@ -118,15 +116,6 @@ OptionsWindow::OptionsWindow()
   _items[count]->setWidth(_items[count]->name().size());
   count++;
   line += 1;
-
-  addItem(&_color_toggle);
-  _items[count]->setName("Enable color");
-  _items[count]->setPosition(line,1);
-  _items[count]->setWidth(_items[count]->name().size());
-  count++;
-  line += 2;
-
-  // Label + ComboBox for layout
 
   addItem(new Label());
   _items[count]->setName("List layout");
@@ -143,8 +132,6 @@ OptionsWindow::OptionsWindow()
   count++;
   line += 1;
 
-  // Labels + text input boxes for basic settings
-
   addItem(new Label());
   _items[count]->setName("Editor");
   _items[count]->setPosition(line,1);
@@ -153,6 +140,54 @@ OptionsWindow::OptionsWindow()
   line += 0;
 
   addItem(&_editor_inp);
+  _items[count]->setPosition(line,26);
+  _items[count]->setWidth(20);
+  count++;
+  line += 2;
+
+  // Color settings
+
+  _color_settings.setColor(colors.getPair(color_settings.header,
+                                          color_settings.bg_normal));
+  addItem(&_color_settings);  
+  _items[count]->setName("Color settings");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(_items[count]->name().size());
+  count++;
+  line += 2;
+
+  addItem(&_color_toggle);
+  _items[count]->setName("Enable color");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(_items[count]->name().size());
+  count++;
+  line += 1;
+
+  addItem(new Label());
+  _items[count]->setName("Color theme");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(24);
+  count++;
+  line += 0;
+
+  _color_box.setParent(this);
+  _color_box.addChoice("dark");
+  _color_box.addChoice("light");
+  _color_box.addChoice("mc-like");
+  _color_box.addChoice("from_file");
+  addItem(& _color_box);
+  _items[count]->setPosition(line,26);
+  count++;
+  line += 1;
+
+  addItem(new Label());
+  _items[count]->setName("Color theme file");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(24);
+  count++;
+  line += 0;
+
+  addItem(&_color_inp);
   _items[count]->setPosition(line,26);
   _items[count]->setWidth(20);
   count++;
@@ -168,8 +203,6 @@ OptionsWindow::OptionsWindow()
   _items[count]->setWidth(_items[count]->name().size());
   count++;
   line += 2;
-
-  // Label + ComboBox for package manager
 
   addItem(new Label());
   _items[count]->setName("Package manager");
@@ -187,8 +220,6 @@ OptionsWindow::OptionsWindow()
   count++;
   line += 1;
   
-  // Labels + text input boxes for package manager settings
-
   addItem(new Label());
   _items[count]->setName("Repository directory");
   _items[count]->setPosition(line,1);
@@ -315,6 +346,7 @@ OptionsWindow::~OptionsWindow()
     if (_items[i]->itemType() == "Label")
     {
       if ( (_items[i]->name() != "User interface settings") && 
+           (_items[i]->name() != "Color settings") &&
            (_items[i]->name() != "Package manager settings") )
         delete _items[i];
     }
@@ -330,47 +362,51 @@ void OptionsWindow::readSettings()
 {
   _resolve_toggle.setEnabled(resolve_deps);
   _confirm_toggle.setEnabled(confirm_changes);
-  _color_toggle.setEnabled(enable_color);
-
   _layout_box.setChoice(layout);
-
   _editor_inp.setText(editor);
-  _iclos_inp.setText(install_clos);
-  _ivars_inp.setText(install_vars);
-  _uclos_inp.setText(upgrade_clos);
-  _uvars_inp.setText(upgrade_vars);
+
+  _color_toggle.setEnabled(enable_color);
+  _color_box.setChoice(color_theme);
+  _color_inp.setText(color_theme_file);
 
   _pmgr_box.setChoice(package_manager);
-
   _repo_inp.setText(repo_dir);
   _tag_inp.setText(repo_tag);
   _sync_inp.setText(sync_cmd);
   _inst_inp.setText(install_cmd);
   _upgr_inp.setText(upgrade_cmd);
+  _iclos_inp.setText(install_clos);
+  _ivars_inp.setText(install_vars);
+  _uclos_inp.setText(upgrade_clos);
+  _uvars_inp.setText(upgrade_vars);
 }
 
-void OptionsWindow::applySettings() const
+int OptionsWindow::applySettings() const
 {
+  int check = 0;
+
   resolve_deps = _resolve_toggle.getBoolProp();
   confirm_changes = _confirm_toggle.getBoolProp();
-  if (_color_toggle.getBoolProp()) { activate_color(); }
+  layout = _layout_box.getStringProp();
+  editor = _editor_inp.getStringProp();
+
+  color_theme = _color_box.getStringProp();
+  color_theme_file = _color_inp.getStringProp();
+  if (_color_toggle.getBoolProp()) { check = activate_color(); }
   else { deactivate_color(); }
 
-  layout = _layout_box.getStringProp();
-
-  editor = _editor_inp.getStringProp();
-  install_clos = _iclos_inp.getStringProp();
-  install_vars = _ivars_inp.getStringProp();
-  upgrade_clos = _uclos_inp.getStringProp();
-  upgrade_vars = _uvars_inp.getStringProp();
-
   package_manager = _pmgr_box.getStringProp();
-
   repo_dir = _repo_inp.getStringProp();
   repo_tag = _tag_inp.getStringProp();
   sync_cmd = _sync_inp.getStringProp();
   install_cmd = _inst_inp.getStringProp();
   upgrade_cmd = _upgr_inp.getStringProp(); 
+  install_clos = _iclos_inp.getStringProp();
+  install_vars = _ivars_inp.getStringProp();
+  upgrade_clos = _uclos_inp.getStringProp();
+  upgrade_vars = _uvars_inp.getStringProp();
+
+  return check;
 }
 
 /*******************************************************************************

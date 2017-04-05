@@ -34,6 +34,27 @@ Comments may be C-style (\fB//\fR), C++-style (\fB/*...*/\fR), or shell-style (\
 Variable names, possible values, default values, whether each is required, and descriptions are listed below.
 .PP
 .TP
+.B color_theme
+.br
+[string]
+.br
+default:
+.B dark
+.br
+required: no
+.IP
+Defines colors to use for different elements of the user interface.
+The value may be
+.BR dark ,
+.BR light ,
+.BR mc-like ,
+or
+.BR from_file .
+The first three themes are built into
+.BR sboui .
+In the last case, the color theme is defined by the
+.BR color_theme_file .
+.TP
 .B color_theme_file
 .br
 [string]
@@ -42,13 +63,15 @@ default: [none]
 .br
 required: no
 .IP
-File specifying colors for different UI elements.
+File specifying colors for different UI elements, used only if
+.B color_theme
+is
+.BR from_file .
+If any errors are encountered when trying to read this file, the default color theme will be used instead.
 The
 .B color_theme_file
 uses the same {variable} = {value} syntax as
 .IR /etc/sboui/sboui.conf .
-If this variable is not present, the file cannot be found, or there is an error in the file (including syntax errors and missing variables), the default color theme will be used.
-In the last two cases, a warning will be issued before the main window is displayed.
 .IP
 Variable names, which identify UI elements, are as follows:
 .BR fg_normal ,
@@ -92,7 +115,7 @@ For background elements, it may have no effect or an unexpected effect (such as 
 Therefore, it is only recommended for foreground elements.
 The actual appearance of these colors is dependent on the terminal configuration.
 .IP
-Two example color theme files are included with
+Example color theme files are included with
 .BR sboui .
 .TP
 .B confirm_changes
