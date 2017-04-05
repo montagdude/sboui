@@ -173,7 +173,7 @@ OptionsWindow::OptionsWindow()
   _color_box.setParent(this);
   _color_box.addChoice("dark");
   _color_box.addChoice("light");
-  _color_box.addChoice("mc-like");
+  _color_box.addChoice("commander");
   _color_box.addChoice("from_file");
   addItem(& _color_box);
   _items[count]->setPosition(line,26);

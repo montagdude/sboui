@@ -26,7 +26,7 @@ namespace settings
 }
 
 Color colors;
-color_struct color_settings, dark, light, mc_like, user;
+color_struct color_settings, dark, light, commander, user;
 
 using namespace settings;
 using namespace libconfig;
@@ -111,26 +111,26 @@ void define_color_themes()
   light.fg_combobox = "white";
   light.bg_combobox = "black";
   
-  mc_like.fg_normal = "white";
-  mc_like.bg_normal = "blue";
-  mc_like.fg_title = "brightwhite";
-  mc_like.bg_title = "cyan";
-  mc_like.fg_info = "brightwhite";
-  mc_like.bg_info = "cyan";
-  mc_like.fg_highlight_active = "black";
-  mc_like.bg_highlight_active = "cyan";
-  mc_like.fg_highlight_inactive = "white";
-  mc_like.bg_highlight_inactive = "black";
-  mc_like.header = "brightyellow";
-  mc_like.header_popup = "blue";
-  mc_like.tagged = "brightyellow";
-  mc_like.fg_popup = "black";
-  mc_like.bg_popup = "white";
-  mc_like.fg_warning = "white";
-  mc_like.bg_warning = "red";
-  mc_like.hotkey = "blue";
-  mc_like.fg_combobox = "black";
-  mc_like.bg_combobox = "white";
+  commander.fg_normal = "white";
+  commander.bg_normal = "blue";
+  commander.fg_title = "brightwhite";
+  commander.bg_title = "cyan";
+  commander.fg_info = "brightwhite";
+  commander.bg_info = "cyan";
+  commander.fg_highlight_active = "black";
+  commander.bg_highlight_active = "cyan";
+  commander.fg_highlight_inactive = "white";
+  commander.bg_highlight_inactive = "black";
+  commander.header = "brightyellow";
+  commander.header_popup = "blue";
+  commander.tagged = "brightyellow";
+  commander.fg_popup = "black";
+  commander.bg_popup = "white";
+  commander.fg_warning = "white";
+  commander.bg_warning = "red";
+  commander.hotkey = "blue";
+  commander.fg_combobox = "black";
+  commander.bg_combobox = "white";
 }
 
 /*******************************************************************************
@@ -498,7 +498,7 @@ int read_config(const std::string & conf_file)
 
 Enables color. Returns 1 if color theme file requested but could not be read,
 2 for parse error in color theme file, 3 for missing item in color theme file,
-4 if terminal does not support color, or 0 otherwise.
+4 if terminal does not support color, 5 for invalid color_theme, or 0 otherwise.
 
 *******************************************************************************/
 int activate_color()
@@ -514,18 +514,20 @@ int activate_color()
   {
     if (color_theme == "dark") { color_settings = dark; }
     else if (color_theme == "light") { color_settings = light; }
-    else if (color_theme == "mc-like") { color_settings = mc_like; }
+    else if (color_theme == "commander") { color_settings = commander; }
     else if (color_theme == "from_file")
     {
       check = read_color_theme(color_theme_file);
       if (check == 0) { set_from_user_colors(); }
-      else
-      { 
-        std::cout << "Using default colors." << std::endl;
-        set_default_colors();
-      }
+      else { set_default_colors(); }
     }
-    else { set_default_colors(); }
+    else
+    {
+      std::cerr << "Unrecognized color theme '" + color_theme + "'."
+                << std::endl;
+      set_default_colors();
+      check = 5;
+    }
     apply_color_settings();
     enable_color = true;
     return check;

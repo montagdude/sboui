@@ -31,5 +31,6 @@ Completed since 0.1.1
 * More efficient internal search through sorted lists (previously used naive
   search).
 * Replace inefficient bubble sort with sort function from C++ standard library.
-* Add mc-like example color theme.
+* Add 'commander' example color theme.
+* Add built-in color themes and ability to change them from options window.
 * Render pipes in info strings as vertical lines.
