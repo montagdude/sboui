@@ -458,6 +458,7 @@ int MainWindow::showOptions()
     }
     displayError(errmsg);
   }
+  else { displayMessage("Settings were successfully applied."); }
 
   clearStatus();
   setInfo("s: Sync | f: Filter | /: Search | o: Options | ?: Keys");
@@ -989,7 +990,7 @@ void MainWindow::hideWindow(WINDOW *win) const
 Displays an error message. Returns response from message box.
 
 *******************************************************************************/
-std::string  MainWindow::displayError(const std::string & msg,
+std::string MainWindow::displayError(const std::string & msg,
                              const std::string & name, const std::string & info)
 {
   std::string selection;
@@ -1025,6 +1026,54 @@ std::string  MainWindow::displayError(const std::string & msg,
   // Get rid of window
 
   delwin(errwin);
+  draw(true);
+
+  return selection;
+}
+
+/*******************************************************************************
+
+Displays an info message. Returns response from message box.
+
+*******************************************************************************/
+std::string MainWindow::displayMessage(const std::string & msg,
+                             const std::string & name, const std::string & info)
+{
+  std::string selection;
+  bool getting_selection;
+  MessageBox msgbox;
+  WINDOW *msgwin;
+
+  // Place message box
+
+  msgwin = newwin(1, 1, 0, 0);
+  msgbox.setWindow(msgwin);
+  msgbox.setName(name);
+  msgbox.setMessage(msg);
+  msgbox.setInfo(info);
+  msgbox.setColor(colors.getPair(color_settings.fg_popup,
+                                 color_settings.bg_popup));
+  placePopup(&msgbox, msgwin);
+  draw(true);
+
+  // Get user input
+
+  getting_selection = true;
+  while (getting_selection)
+  {
+    selection = msgbox.exec();
+    getting_selection = false;
+    if (selection == signals::resize)
+    {
+      getting_selection = true;
+      placePopup(&msgbox, msgwin);
+      draw(true);
+    }
+  }
+
+  // Get rid of window
+
+  delwin(msgwin);
   draw(true);
 
   return selection;

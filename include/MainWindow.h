@@ -96,6 +96,9 @@ class MainWindow: public CursesWidget {
     std::string displayError(const std::string & msg,
                              const std::string & name="Error",
                              const std::string & info="Enter: Dismiss");
+    std::string displayMessage(const std::string & msg,
+                               const std::string & name="Information",
+                               const std::string & info="Enter: Dismiss");
 
     /* Sets size of popup boxes */
 
