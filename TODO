@@ -8,7 +8,6 @@ Things for 1.0
 * Make sure reinstalling works with sbotools once this functionality makes it
   into an official sbotools release (it is in the latest git). May require
   addition of a reinstall_cmd or similar.
-* Selectable color themes in options window.
 
 Things for 0.2
 ================================================================================
@@ -33,4 +32,5 @@ Completed since 0.1.1
 * Replace inefficient bubble sort with sort function from C++ standard library.
 * Add 'commander' example color theme.
 * Add built-in color themes and ability to change them from options window.
+* Display a message after successfully applying settings.
 * Render pipes in info strings as vertical lines.

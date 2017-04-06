@@ -242,7 +242,7 @@ void MainWindow::filterAll()
   {
     clearStatus();
     choice = displayError("Repository is empty. Run the sync command now?",
-                          "Error", "Enter: Yes | Esc: No");
+                          true, "Error", "Enter: Yes | Esc: No");
     if (choice == signals::keyEnter) { syncRepo(); }
   } 
   else if (nbuilds == 1)
@@ -530,7 +530,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
                                const std::string & action, bool recheck)
 {
   WINDOW *installerwin;
-  int check, nchanged, response;
+  int check, nchanged, ninstalled, nupgraded, nreinstalled, nremoved, response;
   std::string selection, msg, choice;
   bool getting_input, needs_rebuild;
   unsigned int i, ninstaller, nforeign;
@@ -609,7 +609,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
             msg += foreign[i]->getProp("package_name") + "\n";
           }
           msg += "\nContinue anyway?";
-          choice = displayError(msg, "Warning",
+          choice = displayError(msg, true, "Warning",
                                 "Enter: Continue | Esc: Edit");
           if (choice != signals::keyEnter) { continue; }
         }
@@ -621,8 +621,8 @@ bool MainWindow::modifyPackage(BuildListItem & build,
         if (! installer.installingAllDeps())
         {
           choice = displayError("You have chosen to skip some dependencies." +
-                                std::string(" Continue anyway? "), "Warning",
-                                "Enter: Yes | Esc: No"); 
+                                std::string(" Continue anyway? "), true,
+                                "Warning", "Enter: Yes | Esc: No"); 
           if (choice == signals::keyEnter) { response = 1; }
           else { response = 0; }
         }
@@ -644,12 +644,20 @@ bool MainWindow::modifyPackage(BuildListItem & build,
   {
     def_prog_mode();
     endwin();
-    check = installer.applyChanges(nchanged, settings::confirm_changes);
+    check = installer.applyChanges(ninstalled, nupgraded, nreinstalled,
+                                   nremoved);
+    nchanged = ninstalled + nupgraded + nreinstalled + nremoved;
     if (nchanged > 0) { needs_rebuild = true; }
     reset_prog_mode();
     draw(true);
     if (check != 0)
       displayError("One or more requested changes was not applied.");
+    else
+      displayMessage("All changes were successfully applied. Summary:\n\n"
+             + std::string("Installed: ") + int_to_string(ninstalled) + "\n"
+             + std::string("Upgraded: ") + int_to_string(nupgraded) + "\n"
+             + std::string("Reinstalled: ") + int_to_string(nreinstalled) + "\n"
+             + std::string("Removed: ") + int_to_string(nreinstalled), false);
   }
 
   clearStatus();
@@ -680,7 +688,7 @@ void MainWindow::showBuildOrder(BuildListItem & build)
     clearStatus();
     displayError("Unable to find one or more dependencies of " + build.name() +
                  std::string(" in repository. Build order will be incomplete."),
-                 "Warning");
+                 true, "Warning");
   }
 
   nbuildorder = buildorder.numItems();
@@ -990,12 +998,12 @@ void MainWindow::hideWindow(WINDOW *win) const
 Displays an error message. Returns response from message box.
 
 *******************************************************************************/
-std::string MainWindow::displayError(const std::string & msg,
+std::string MainWindow::displayError(const std::string & msg, bool centered,
                              const std::string & name, const std::string & info)
 {
   std::string selection;
   bool getting_selection;
-  MessageBox errbox(false);
+  MessageBox errbox(false, centered);
   WINDOW *errwin;
 
   // Place message box
@@ -1036,12 +1044,12 @@ std::string MainWindow::displayError(const std::string & msg,
 Displays an info message. Returns response from message box.
 
 *******************************************************************************/
-std::string MainWindow::displayMessage(const std::string & msg,
+std::string MainWindow::displayMessage(const std::string & msg, bool centered,
                              const std::string & name, const std::string & info)
 {
   std::string selection;
   bool getting_selection;
-  MessageBox msgbox;
+  MessageBox msgbox(true, centered);
   WINDOW *msgwin;
 
   // Place message box

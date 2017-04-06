@@ -559,7 +559,8 @@ Install, upgrade, reinstall, or remove SlackBuild and dependencies. Returns 0 on
 success. Also counts number of SlackBuilds that were changed.
 
 *******************************************************************************/
-int InstallBox::applyChanges(int & nchanged, bool notify_complete) const
+int InstallBox::applyChanges(int & ninstalled, int & nupgraded,
+                             int & nreinstalled, int & nremoved) const
 {
   unsigned int nbuilds, i;
   int retval;
@@ -569,7 +570,10 @@ int InstallBox::applyChanges(int & nchanged, bool notify_complete) const
 
   nbuilds = _builds.size();
   retval = 0;
-  nchanged = 0;
+  ninstalled = 0;
+  nupgraded = 0;
+  nreinstalled = 0;
+  nremoved = 0;
   for ( i = 0; i < nbuilds; i++ )
   {
     if (_builds[i].getBoolProp("tagged"))
@@ -597,11 +601,21 @@ int InstallBox::applyChanges(int & nchanged, bool notify_complete) const
         }
         else { std::cout << " An error occurred. "; }
       }
-      else { nchanged++; }
+      else
+      {
+        if (_builds[i].getProp("action") == "Install")
+          ninstalled++;
+        else if (_builds[i].getProp("action") == "Upgrade")
+          nupgraded++;
+        else if (_builds[i].getProp("action") == "Reinstall")
+          nreinstalled++; 
+        else
+          nremoved++; 
+      }
     }
   }
 
-  if ( retval != 0 || (nchanged > 0 && notify_complete) )
+  if (retval != 0)
   {
     std::cout << "Press Enter to return ...";
     std::getline(std::cin, response);

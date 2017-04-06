@@ -57,5 +57,6 @@ class InstallBox: public BuildOrderBox {
 
     /* Install, upgrade, remove, or reinstall SlackBuild and dependencies */
 
-    int applyChanges(int & nchanged, bool notify_complete=true) const;
+    int applyChanges(int & ninstalled, int & nupgraded, int & nreinstalled,
+                     int & nremoved) const;
 };

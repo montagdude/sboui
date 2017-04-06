@@ -16,7 +16,7 @@ class MessageBox: public CursesWidget {
     std::string _name, _message, _info;
     unsigned int _margin_v, _margin_h;
     int _color_idx;
-    bool _header_colorize;
+    bool _header_colorize, _centered;
 
     void redrawFrame() const;
     void redrawMessage() const;
@@ -25,9 +25,9 @@ class MessageBox: public CursesWidget {
 
     /* Constructors */
 
-    MessageBox(bool header_colorize=true);
+    MessageBox(bool header_colorize=true, bool centered=true);
     MessageBox(WINDOW *win, const std::string & name,
-               bool header_colorize=true);
+               bool header_colorize=true, bool centered=true);
 
     /* Set attributes */
 

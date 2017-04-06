@@ -116,7 +116,7 @@ void MessageBox::redrawMessage() const
     mid = double(cols-2)/2.0;
     left = std::floor(mid - double(len)/2.0) + 1;
     wmove(_win, 3+_margin_v+i, 1);
-    printSpaces(left-1);
+    if (_centered) { printSpaces(left-1); }
     wprintw(_win, wrapped_message[i].c_str());
   }
 }
@@ -126,7 +126,7 @@ void MessageBox::redrawMessage() const
 Constructors
 
 *******************************************************************************/
-MessageBox::MessageBox(bool header_colorize)
+MessageBox::MessageBox(bool header_colorize, bool centered)
 {
   _win = NULL;
   _name = "";
@@ -136,10 +136,11 @@ MessageBox::MessageBox(bool header_colorize)
   _margin_h = 0;
   _color_idx = -1;
   _header_colorize = header_colorize;
+  _centered = centered;
 }
 
 MessageBox::MessageBox(WINDOW *win, const std::string & name,
-                       bool header_colorize)
+                       bool header_colorize, bool centered)
 {
   _win = win;
   _name = name;
@@ -149,6 +150,7 @@ MessageBox::MessageBox(WINDOW *win, const std::string & name,
   _margin_h = 0;
   _color_idx = -1;
   _header_colorize = header_colorize;
+  _centered = centered;
 }
 
 /*******************************************************************************

@@ -93,10 +93,10 @@ class MainWindow: public CursesWidget {
 
     /* Displays an error message */
 
-    std::string displayError(const std::string & msg,
+    std::string displayError(const std::string & msg, bool centered=true,
                              const std::string & name="Error",
                              const std::string & info="Enter: Dismiss");
-    std::string displayMessage(const std::string & msg,
+    std::string displayMessage(const std::string & msg, bool centered=true,
                                const std::string & name="Information",
                                const std::string & info="Enter: Dismiss");
 
