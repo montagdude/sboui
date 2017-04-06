@@ -657,7 +657,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
              + std::string("Installed: ") + int_to_string(ninstalled) + "\n"
              + std::string("Upgraded: ") + int_to_string(nupgraded) + "\n"
              + std::string("Reinstalled: ") + int_to_string(nreinstalled) + "\n"
-             + std::string("Removed: ") + int_to_string(nreinstalled), false);
+             + std::string("Removed: ") + int_to_string(nremoved), false);
   }
 
   clearStatus();
