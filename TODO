@@ -8,12 +8,9 @@ Things for 1.0
 
 Things for 0.2
 ================================================================================
-* Add a "Cancel All" option for InstallBox when applying tags.
 * Don't re-read entire repo after applying changes, only update installed
   status and related info.
 * Make tagged entries and hotkeys stand out when color is disabled.
-* Do reinstalls by removing and then installing again. (Otherwise, it doesn't
-  work with sbotools.)
 * Submit to SlackBuilds.org.
 
 Completed since 0.1.1
@@ -32,3 +29,7 @@ Completed since 0.1.1
 * Render pipes in info strings as vertical lines.
 * Only pause and ask the user to press Enter when applying changes or syncing
   if there is an error. Otherwise, just show a message box when it is complete.
+* Do reinstalls by removing and then installing again. (Otherwise, it doesn't
+  work with sbotools.)
+* Change options to "Ok | Skip | Cancel" for InstallBox when applying tags
+  (allows user to cancel all operations instead of just the current one).

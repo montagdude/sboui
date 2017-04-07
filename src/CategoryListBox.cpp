@@ -119,6 +119,7 @@ void CategoryListBox::redrawSingleItem(unsigned int idx)
     if (colors.turnOn(_win, fg, bg) != 0)
     { 
       if (_activated) { wattron(_win, A_REVERSE); }
+      if (_items[idx]->getBoolProp("tagged")) { wattron(_win, A_BOLD); }
     }
   } 
   else
@@ -126,7 +127,10 @@ void CategoryListBox::redrawSingleItem(unsigned int idx)
     if (_items[idx]->getBoolProp("tagged")) { fg = color_settings.tagged; }
     else { fg = color_settings.fg_normal; }
     bg = color_settings.bg_normal;
-    colors.turnOn(_win, fg, bg);
+    if (colors.turnOn(_win, fg, bg) != 0)
+    {
+      if (_items[idx]->getBoolProp("tagged")) { wattron(_win, A_BOLD); }
+    }
   }
 
   // Save highlight idx for redrawing later.
@@ -143,6 +147,7 @@ void CategoryListBox::redrawSingleItem(unsigned int idx)
   if (colors.turnOff(_win) != 0)
   {
     if ( (int(idx) == _highlight) && _activated ) { wattroff(_win, A_REVERSE); }
+    if (_items[idx]->getBoolProp("tagged")) { wattroff(_win, A_BOLD); }
   }
 }
 

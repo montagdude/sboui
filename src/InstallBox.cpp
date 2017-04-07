@@ -211,7 +211,7 @@ InstallBox::InstallBox()
 InstallBox::InstallBox(WINDOW *win, const std::string & name)
 {
   _reserved_rows = 6;
-  _info = "Enter: Ok | Space: Toggle | Esc: Cancel"; 
+  _info = "Enter: Ok | Esc: Cancel"; 
   _builds.resize(0);
   _win = win;
   _name = name;
@@ -297,7 +297,7 @@ succeeded or 1 if some could not be found in the repository.
 int InstallBox::create(BuildListItem & build,
                        std::vector<std::vector<BuildListItem> > & slackbuilds,
                        const std::string & action, bool resolve_deps,
-                       bool recheck) 
+                       bool batch) 
 {
   int check; 
   unsigned int nreqs, i, nbuilds;
@@ -318,10 +318,11 @@ int InstallBox::create(BuildListItem & build,
   nreqs = reqlist.size();
   reqlist.push_back(&build);
 
-  // Re-check install status if requested
+  // Re-check install status and show different options in batch mode
 
-  if (recheck)
+  if (batch)
   {
+    _info = "Enter: Ok | Esc: Skip | c: Cancel"; 
     installedpkgs = list_installed_packages();
     for ( i = 0; i <= nreqs; i++ ) 
     { 

@@ -44,7 +44,7 @@ class InstallBox: public BuildOrderBox {
     int create(BuildListItem & build,
                std::vector<std::vector<BuildListItem> > & slackbuilds,
                const std::string & action, bool resolve_deps=true,
-               bool recheck=false);
+               bool batch=false);
 
     /* User interaction loop. Differs from standard BuildListBox exec() in
        that the space bar is used to tag (select/unselect) items */

@@ -79,7 +79,7 @@ class MainWindow: public CursesWidget {
 
     bool modifyPackage(BuildListItem & build, const std::string & action,
                        int & ninstalled, int & nupgraded, int & nreinstalled,
-                       int & nremoved, bool batch=false);
+                       int & nremoved, bool & cancel_all, bool batch=false);
     void showBuildOrder(BuildListItem & build);
     void showInverseReqs(BuildListItem & build);
     void browseFiles(const BuildListItem & build);

@@ -531,25 +531,20 @@ if anything was changed, false otherwise.
 bool MainWindow::modifyPackage(BuildListItem & build,
                                const std::string & action, int & ninstalled,
                                int & nupgraded, int & nreinstalled,
-                               int & nremoved, bool batch)
+                               int & nremoved, bool & cancel_all, bool batch)
 {
   WINDOW *installerwin;
   int check, nchanged_orig, nchanged_new, response;
   std::string selection, msg, choice;
-  bool recheck, getting_input, needs_rebuild;
+  bool getting_input, needs_rebuild;
   unsigned int i, ninstaller, nforeign;
   std::vector<const BuildListItem *> foreign;
   InstallBox installer;
 
-  // Re-check installed status when running in batch mode (may have changed
-  // due to previous calls of this method)
-
-  recheck = batch;
-
   if (settings::resolve_deps)
     printStatus("Computing dependencies for " + build.name() + " ...");
   check = installer.create(build, _slackbuilds, action, settings::resolve_deps,
-                           recheck);
+                           batch);
 
   if (check != 0) 
   { 
@@ -593,6 +588,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
 
   needs_rebuild = false;
   response = 0;
+  cancel_all = false;
   if (settings::confirm_changes)
   {
     installerwin = newwin(1, 1, 0, 0);
@@ -637,6 +633,11 @@ bool MainWindow::modifyPackage(BuildListItem & build,
         }
       }
       else if (selection == signals::quit) { getting_input = false; }
+      else if ( (selection == "c") && (batch) )
+      {
+        getting_input = false;
+        cancel_all = true;
+      }
       else if (selection == signals::resize) 
       { 
         placePopup(&installer, installerwin);
@@ -872,7 +873,7 @@ void MainWindow::applyTags(const std::string & action)
   WINDOW *tagwin;
   unsigned int ndisplay, i;
   int ninstalled, nupgraded, nreinstalled, nremoved;
-  bool getting_input, apply_changes, any_modified, needs_rebuild;
+  bool getting_input, cancel_all, apply_changes, any_modified, needs_rebuild;
   std::string selection;
   BuildListItem item;
 
@@ -935,10 +936,11 @@ void MainWindow::applyTags(const std::string & action)
       if (item.getBoolProp("tagged"))
       { 
         any_modified = modifyPackage(item, action, ninstalled, nupgraded,
-                                     nreinstalled, nremoved, true);
+                                     nreinstalled, nremoved, cancel_all, true);
         if (! needs_rebuild) { needs_rebuild = any_modified; }
       }
       draw(true);
+      if (cancel_all) { break; }
     }
     displayMessage("Summary of applied changes:\n\n"
          + std::string("Installed: ") + int_to_string(ninstalled) + "\n"
@@ -1351,7 +1353,7 @@ void MainWindow::showBuildActions(BuildListItem & build)
   WINDOW *actionwin;
   std::string selection, selected, action;
   int ninstalled, nupgraded, nreinstalled, nremoved;
-  bool getting_selection, needs_rebuild;
+  bool getting_selection, cancel_all, needs_rebuild;
   BuildActionBox actionbox;
 
   // Set up windows and dialog
@@ -1405,7 +1407,7 @@ void MainWindow::showBuildActions(BuildListItem & build)
       nreinstalled = 0;
       nremoved = 0;
       needs_rebuild = modifyPackage(build, action, ninstalled, nupgraded,
-                                    nreinstalled, nremoved);
+                                    nreinstalled, nremoved, cancel_all);
       if (needs_rebuild) { getting_selection = false; }
       else
       {
