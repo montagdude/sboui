@@ -506,8 +506,11 @@ int sync_repo()
   std::string response;
 
   retval = run_command(sync_cmd);
-  std::cout << "Press Enter to return ...";
-  std::getline(std::cin, response);
+  if (retval != 0)
+  {
+    std::cout << "Press Enter to return ...";
+    std::getline(std::cin, response);
+  }
 
   return retval;
 }

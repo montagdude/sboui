@@ -12,9 +12,6 @@ Things for 1.0
 Things for 0.2
 ================================================================================
 * Add a "Cancel All" option for InstallBox when applying tags.
-* Instead of pausing after applying changes, show a box listing the number of
-  things installed/upgraded/reinstalled/removed. Also, don't pause after
-  syncing, just show a message box for success or failure.
 * Don't re-read entire repo after applying changes, only update installed
   status and related info.
 * Make tagged entries and hotkeys stand out when color is disabled.
@@ -34,3 +31,5 @@ Completed since 0.1.1
 * Add built-in color themes and ability to change them from options window.
 * Display a message after successfully applying settings.
 * Render pipes in info strings as vertical lines.
+* Only pause and ask the user to press Enter when applying changes or syncing
+  if there is an error. Otherwise, just show a message box when it is complete.
