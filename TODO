@@ -15,6 +15,8 @@ Things for 0.2
 * Don't re-read entire repo after applying changes, only update installed
   status and related info.
 * Make tagged entries and hotkeys stand out when color is disabled.
+* Do reinstalls by removing and then installing again. (Otherwise, it doesn't
+  work with sbotools.)
 * Submit to SlackBuilds.org.
 
 Completed since 0.1.1
