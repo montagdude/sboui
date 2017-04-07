@@ -458,7 +458,9 @@ int MainWindow::showOptions()
     }
     displayError(errmsg);
   }
-  else { displayMessage("Settings were successfully applied."); }
+  else
+    if (selection == signals::keyEnter)
+      displayMessage("Settings were successfully applied.");
 
   clearStatus();
   setInfo("s: Sync | f: Filter | /: Search | o: Options | ?: Keys");
