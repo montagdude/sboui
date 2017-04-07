@@ -527,15 +527,22 @@ if anything was changed, false otherwise.
 
 *******************************************************************************/
 bool MainWindow::modifyPackage(BuildListItem & build,
-                               const std::string & action, bool recheck)
+                               const std::string & action, int & ninstalled,
+                               int & nupgraded, int & nreinstalled,
+                               int & nremoved, bool batch)
 {
   WINDOW *installerwin;
-  int check, nchanged, ninstalled, nupgraded, nreinstalled, nremoved, response;
+  int check, nchanged_orig, nchanged_new, response;
   std::string selection, msg, choice;
-  bool getting_input, needs_rebuild;
+  bool recheck, getting_input, needs_rebuild;
   unsigned int i, ninstaller, nforeign;
   std::vector<const BuildListItem *> foreign;
   InstallBox installer;
+
+  // Re-check installed status when running in batch mode (may have changed
+  // due to previous calls of this method)
+
+  recheck = batch;
 
   if (settings::resolve_deps)
     printStatus("Computing dependencies for " + build.name() + " ...");
@@ -644,22 +651,23 @@ bool MainWindow::modifyPackage(BuildListItem & build,
   {
     def_prog_mode();
     endwin();
+    nchanged_orig = ninstalled + nupgraded + nreinstalled + nremoved;
     check = installer.applyChanges(ninstalled, nupgraded, nreinstalled,
                                    nremoved);
-    nchanged = ninstalled + nupgraded + nreinstalled + nremoved;
-    if (nchanged > 0) { needs_rebuild = true; }
+    nchanged_new = ninstalled + nupgraded + nreinstalled + nremoved;
+    if (nchanged_new > nchanged_orig) { needs_rebuild = true; }
     reset_prog_mode();
     draw(true);
     if (check != 0)
       displayError("One or more requested changes was not applied.");
     else
-      displayMessage("All changes were successfully applied. Summary:\n\n"
+      if (! batch)
+        displayMessage("All changes were successfully applied. Summary:\n\n"
              + std::string("Installed: ") + int_to_string(ninstalled) + "\n"
              + std::string("Upgraded: ") + int_to_string(nupgraded) + "\n"
              + std::string("Reinstalled: ") + int_to_string(nreinstalled) + "\n"
              + std::string("Removed: ") + int_to_string(nremoved), false);
   }
-
   clearStatus();
 
   return needs_rebuild;
@@ -860,6 +868,7 @@ void MainWindow::applyTags(const std::string & action)
 {
   WINDOW *tagwin;
   unsigned int ndisplay, i;
+  int ninstalled, nupgraded, nreinstalled, nremoved;
   bool getting_input, apply_changes, any_modified, needs_rebuild;
   std::string selection;
   BuildListItem item;
@@ -913,16 +922,26 @@ void MainWindow::applyTags(const std::string & action)
   needs_rebuild = false;
   if (apply_changes)
   {
+    ninstalled = 0;
+    nupgraded = 0;
+    nreinstalled = 0;
+    nremoved = 0;
     for ( i = 0; i < ndisplay; i++ ) 
     {
       item = _taglist.itemByIdx(i);
       if (item.getBoolProp("tagged"))
       { 
-        any_modified = modifyPackage(item, action, true);
+        any_modified = modifyPackage(item, action, ninstalled, nupgraded,
+                                     nreinstalled, nremoved, true);
         if (! needs_rebuild) { needs_rebuild = any_modified; }
       }
       draw(true);
     }
+    displayMessage("Summary of applied changes:\n\n"
+         + std::string("Installed: ") + int_to_string(ninstalled) + "\n"
+         + std::string("Upgraded: ") + int_to_string(nupgraded) + "\n"
+         + std::string("Reinstalled: ") + int_to_string(nreinstalled) + "\n"
+         + std::string("Removed: ") + int_to_string(nremoved), false);
 
     // Rebuild lists if SlackBuilds were installed/upgraded/reinstalled/removed
 
@@ -1328,6 +1347,7 @@ void MainWindow::showBuildActions(BuildListItem & build)
 {
   WINDOW *actionwin;
   std::string selection, selected, action;
+  int ninstalled, nupgraded, nreinstalled, nremoved;
   bool getting_selection, needs_rebuild;
   BuildActionBox actionbox;
 
@@ -1377,7 +1397,12 @@ void MainWindow::showBuildActions(BuildListItem & build)
 
       hideWindow(actionwin);
       draw(true);
-      needs_rebuild = modifyPackage(build, action);
+      ninstalled = 0;
+      nupgraded = 0;
+      nreinstalled = 0;
+      nremoved = 0;
+      needs_rebuild = modifyPackage(build, action, ninstalled, nupgraded,
+                                    nreinstalled, nremoved);
       if (needs_rebuild) { getting_selection = false; }
       else
       {

@@ -570,10 +570,6 @@ int InstallBox::applyChanges(int & ninstalled, int & nupgraded,
 
   nbuilds = _builds.size();
   retval = 0;
-  ninstalled = 0;
-  nupgraded = 0;
-  nreinstalled = 0;
-  nremoved = 0;
   for ( i = 0; i < nbuilds; i++ )
   {
     if (_builds[i].getBoolProp("tagged"))
