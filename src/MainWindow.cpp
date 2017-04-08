@@ -854,11 +854,7 @@ int MainWindow::syncRepo()
   {
     clearData();
     initialize();
-    displayMessage("Sync complete.");
   }
-  else 
-    displayError("Sync command failed. Ensure package manager is "
-                 + std::string("installed and network is connected."));
 
   return check;
 }

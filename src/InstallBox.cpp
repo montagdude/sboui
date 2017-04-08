@@ -623,7 +623,7 @@ int InstallBox::applyChanges(int & ninstalled, int & nupgraded,
 
   if (retval != 0)
   {
-    std::cout << "Press Enter to return ...";
+    std::cout << "Press Enter to return to main window ...";
     std::getline(std::cin, response);
   }
 

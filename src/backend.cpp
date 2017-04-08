@@ -467,7 +467,8 @@ int view_readme(const BuildListItem & build)
   retval = run_command(cmd);
   if (retval != 0)
   {
-    std::cout << "Unable to view README. Press Enter to continue ...";
+    std::cout << "Unable to view README. "
+              << "Press Enter to return to main window ...";
     std::getline(std::cin, response);
   }
 
@@ -488,7 +489,8 @@ int view_file(const std::string & path)
   retval = run_command(cmd);
   if (retval != 0)
   {
-    std::cout << "Unable to view file. Press Enter to continue ...";
+    std::cout << "Unable to view file. "
+              << "Press Enter to return to main window ...";
     std::getline(std::cin, response);
   }
 
@@ -506,11 +508,8 @@ int sync_repo()
   std::string response;
 
   retval = run_command(sync_cmd);
-  if (retval != 0)
-  {
-    std::cout << "Press Enter to return ...";
-    std::getline(std::cin, response);
-  }
+  std::cout << "Press Enter to return to main window ...";
+  std::getline(std::cin, response);
 
   return retval;
 }
