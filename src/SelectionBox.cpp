@@ -152,9 +152,9 @@ void SelectionBox::redrawSingleItem(unsigned int idx)
     if ( i == hidx )
     { 
       colors.turnOff(_win);
-      colors.turnOn(_win, color_pair2);
+      if (colors.turnOn(_win, color_pair2) != 0) { wattron(_win, A_BOLD); }
       wprintw(_win, _items[idx]->name().substr(i,1).c_str());
-      colors.turnOff(_win);
+      if (colors.turnOff(_win) != 0) { wattroff(_win, A_BOLD); } 
       colors.turnOn(_win, color_pair1);
     }
     else { wprintw(_win, _items[idx]->name().substr(i,1).c_str()); }

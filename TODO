@@ -5,12 +5,16 @@ Things for 1.0
 * Make a position notifier on the right side when scrolling in lists and input
   boxes.
 * Add functionality to jump to a name in lists while typing.
+* Show a message after syncing instead of pausing, once sbopkg and sbotools are
+  changed to give an error when sync fails.
+* Do reinstalls in a single command once sbotools supports it.
 
 Things for 0.2
 ================================================================================
 * Don't re-read entire repo after applying changes, only update installed
   status and related info.
-* Make tagged entries and hotkeys stand out when color is disabled.
+* Since latest versions of sbopkg and sbotools do not give an error when the
+  sync command fails, always pause after syncing instead of showing a message.
 * Submit to SlackBuilds.org.
 
 Completed since 0.1.1
@@ -33,3 +37,4 @@ Completed since 0.1.1
   work with sbotools.)
 * Change options to "Ok | Skip | Cancel" for InstallBox when applying tags
   (allows user to cancel all operations instead of just the current one).
+* Make tagged entries and hotkeys stand out when color is disabled.
