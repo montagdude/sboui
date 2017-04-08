@@ -730,7 +730,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
     if (check != 0)
       displayError("One or more requested changes was not applied.");
     else
-      if (! batch)
+      if ( (! batch) && (needs_rebuild) )
         displayMessage("All changes were successfully applied. Summary:\n\n"
              + std::string("Installed: ") + int_to_string(ninstalled) + "\n"
              + std::string("Upgraded: ") + int_to_string(nupgraded) + "\n"
@@ -1004,11 +1004,12 @@ void MainWindow::applyTags(const std::string & action)
       draw(true);
       if (cancel_all) { break; }
     }
-    displayMessage("Summary of applied changes:\n\n"
-         + std::string("Installed: ") + int_to_string(ninstalled) + "\n"
-         + std::string("Upgraded: ") + int_to_string(nupgraded) + "\n"
-         + std::string("Reinstalled: ") + int_to_string(nreinstalled) + "\n"
-         + std::string("Removed: ") + int_to_string(nremoved), false);
+    if (needs_rebuild)
+      displayMessage("Summary of applied changes:\n\n"
+           + std::string("Installed: ") + int_to_string(ninstalled) + "\n"
+           + std::string("Upgraded: ") + int_to_string(nupgraded) + "\n"
+           + std::string("Reinstalled: ") + int_to_string(nreinstalled) + "\n"
+           + std::string("Removed: ") + int_to_string(nremoved), false);
 
     // Rebuild lists if SlackBuilds were installed/upgraded/reinstalled/removed
 
