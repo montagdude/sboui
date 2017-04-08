@@ -1168,7 +1168,8 @@ int MainWindow::initialize()
   if (retval != 0) 
   { 
     clearStatus();
-    displayError("Error reading SlackBuilds repository."); 
+    displayError("Error reading SlackBuilds repository. Please make sure that "
+               + std::string("you have set repo_dir correctly in sboui.conf."));
   }
   else 
   { 
