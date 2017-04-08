@@ -261,8 +261,6 @@ void MainWindow::rebuild()
 
   _nondeplist.resize(0);
   _taglist.clearList();
-  _category_idx = 0;
-  _activated_listbox = 0;
 
   // Clear information that may have changed from slackbuilds list
 
@@ -282,6 +280,7 @@ void MainWindow::rebuild()
   // Rebuild installed list 
 
   list_installed(_slackbuilds, _installedlist);
+  draw(true);
 }
 
 /*******************************************************************************
