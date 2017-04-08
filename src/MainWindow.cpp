@@ -280,7 +280,13 @@ void MainWindow::rebuild()
   // Rebuild installed list 
 
   list_installed(_slackbuilds, _installedlist);
-  if (filter != "all SlackBuilds") { filterAll(); }
+
+  // Re-filter for any filter whose data could have changed
+
+  if (_filter == "installed SlackBuilds") { filterInstalled(); }
+  else if (_filter == "upgradable SlackBuilds") { filterUpgradable(); } 
+  else if (_filter == "non-dependencies") { filterNonDeps(); } 
+
   draw(true);
 }
 
