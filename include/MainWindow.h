@@ -49,9 +49,11 @@ class MainWindow: public CursesWidget {
     void redrawWindows(bool force=false);
     void toggleLayout();
 
-    /* Clears windows, lists, etc. */
+    /* Clearing and setting up lists, etc. */
 
     void clearData();
+    int readLists();
+    void rebuild();
 
     /* Filters lists */
 
@@ -120,7 +122,6 @@ class MainWindow: public CursesWidget {
     /* Window setup */
 
     int initialize();
-    int readLists();
 
     /* Set properties */
 

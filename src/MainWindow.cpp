@@ -219,6 +219,73 @@ void MainWindow::clearData()
 
 /*******************************************************************************
 
+Creates master list of SlackBuilds
+
+*******************************************************************************/
+int MainWindow::readLists()
+{
+  int check;
+  unsigned int i, ncategories; 
+
+  // Get list of SlackBuilds
+
+  check = read_repo(_slackbuilds); 
+  if (check != 0) { return check; }
+
+  // Create list of categories
+
+  ncategories = _slackbuilds.size();
+  for ( i = 0; i < ncategories; i++ )
+  { 
+    CategoryListItem citem;
+    citem.setName(_slackbuilds[i][0].getProp("category"));
+    citem.setProp("category", _slackbuilds[i][0].getProp("category"));
+    _categories.push_back(citem);
+  }
+
+  // Determine which are installed and their versions
+
+  list_installed(_slackbuilds, _installedlist);
+
+  return 0;
+}
+
+/*******************************************************************************
+
+Rebuilds lists after applying changes
+
+*******************************************************************************/
+void MainWindow::rebuild()
+{
+  unsigned int i, ninstalled;
+
+  _nondeplist.resize(0);
+  _taglist.clearList();
+  _category_idx = 0;
+  _activated_listbox = 0;
+
+  // Clear information that may have changed from slackbuilds list
+
+  ninstalled = _installedlist.size();
+  for ( i = 0; i < ninstalled; i++ )
+  {
+    if (_installedlist[i]->getBoolProp("installed"))
+    {
+      _installedlist[i]->setBoolProp("installed", false);
+      _installedlist[i]->setProp("installed_version", "");
+      _installedlist[i]->setProp("available_version", "");
+      _installedlist[i]->setProp("requires", "");
+      _installedlist[i]->setProp("package_name", "");
+    }
+  }
+
+  // Rebuild installed list 
+
+  list_installed(_slackbuilds, _installedlist);
+}
+
+/*******************************************************************************
+
 Displays all SlackBuilds
 
 *******************************************************************************/
@@ -946,11 +1013,7 @@ void MainWindow::applyTags(const std::string & action)
 
     // Rebuild lists if SlackBuilds were installed/upgraded/reinstalled/removed
 
-    if (needs_rebuild)
-    { 
-      clearData();
-      initialize();
-    }
+    if (needs_rebuild) { rebuild(); }
   } 
 }
 
@@ -1187,39 +1250,6 @@ int MainWindow::initialize()
 
 /*******************************************************************************
 
-Creates master list of SlackBuilds
-
-*******************************************************************************/
-int MainWindow::readLists()
-{
-  int check;
-  unsigned int i, ncategories; 
-
-  // Get list of SlackBuilds
-
-  check = read_repo(_slackbuilds); 
-  if (check != 0) { return check; }
-
-  // Create list of categories
-
-  ncategories = _slackbuilds.size();
-  for ( i = 0; i < ncategories; i++ )
-  { 
-    CategoryListItem citem;
-    citem.setName(_slackbuilds[i][0].getProp("category"));
-    citem.setProp("category", _slackbuilds[i][0].getProp("category"));
-    _categories.push_back(citem);
-  }
-
-  // Determine which are installed and their versions
-
-  list_installed(_slackbuilds, _installedlist);
-
-  return 0;
-}
-
-/*******************************************************************************
-
 Sets properties
 
 *******************************************************************************/
@@ -1451,11 +1481,7 @@ void MainWindow::showBuildActions(BuildListItem & build)
 
   // Rebuild lists if SlackBuilds were installed/upgraded/reinstalled/removed
 
-  if (needs_rebuild)
-  { 
-    clearData();
-    initialize();
-  }
+  if (needs_rebuild) { rebuild(); }
 }
 
 /*******************************************************************************
