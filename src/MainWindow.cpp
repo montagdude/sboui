@@ -280,6 +280,7 @@ void MainWindow::rebuild()
   // Rebuild installed list 
 
   list_installed(_slackbuilds, _installedlist);
+  if (filter != "all SlackBuilds") { filterAll(); }
   draw(true);
 }
 
