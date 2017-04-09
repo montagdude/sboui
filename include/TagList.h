@@ -40,6 +40,10 @@ class TagList: public SelectionBox {
     void removeItem(unsigned int idx);
     void clearList();
 
+    /* Get properties */
+
+    unsigned int numTagged() const;
+
     /* Create _items list to display based on action */
 
     unsigned int getDisplayList(const std::string & action);

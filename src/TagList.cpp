@@ -137,6 +137,13 @@ void TagList::clearList()
 
 /*******************************************************************************
 
+Get properties
+
+*******************************************************************************/
+unsigned int TagList::numTagged() const { return _tagged.size(); }
+
+/*******************************************************************************
+
 Creates _items list to display based on requested action. Returns number of
 items in list.
 

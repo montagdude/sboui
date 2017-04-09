@@ -257,34 +257,45 @@ Rebuilds lists after applying changes
 *******************************************************************************/
 void MainWindow::rebuild()
 {
-  unsigned int i, ninstalled;
-
-  _nondeplist.resize(0);
-  _taglist.clearList();
+  unsigned int k, ninstalled;
+  int i, j, ntagged;
 
   // Clear information that may have changed from slackbuilds list
 
   ninstalled = _installedlist.size();
-  for ( i = 0; i < ninstalled; i++ )
+  for ( k = 0; k < ninstalled; k++ )
   {
-    if (_installedlist[i]->getBoolProp("installed"))
+    if (_installedlist[k]->getBoolProp("installed"))
     {
-      _installedlist[i]->setBoolProp("installed", false);
-      _installedlist[i]->setProp("installed_version", "");
-      _installedlist[i]->setProp("available_version", "");
-      _installedlist[i]->setProp("requires", "");
-      _installedlist[i]->setProp("package_name", "");
+      _installedlist[k]->setBoolProp("installed", false);
+      _installedlist[k]->setProp("installed_version", "");
+      _installedlist[k]->setProp("available_version", "");
+      _installedlist[k]->setProp("requires", "");
+      _installedlist[k]->setProp("package_name", "");
     }
   }
 
+  // Clear tags
+
+  ntagged = _taglist.numTagged();
+  for ( k = 0; int(k) < ntagged; k++ )
+  {
+    find_slackbuild(_taglist.itemByIdx(k).name(), _slackbuilds, i, j);
+    _slackbuilds[i][j].setBoolProp("tagged", false);
+  }
+  _taglist.clearList();
+
   // Rebuild installed list 
 
+  _nondeplist.resize(0);
   list_installed(_slackbuilds, _installedlist);
 
-  // Re-filter for any filter whose data could have changed
+  // Re-filter (data, tags could have changed)
 
-  if (_filter == "installed SlackBuilds") { filterInstalled(); }
+  if (_filter == "all SlackBuilds") { filterAll(); }
+  else if (_filter == "installed SlackBuilds") { filterInstalled(); }
   else if (_filter == "upgradable SlackBuilds") { filterUpgradable(); } 
+  else if (_filter == "tagged SlackBuilds") { filterTagged(); } 
   else if (_filter == "non-dependencies") { filterNonDeps(); } 
 
   draw(true);
