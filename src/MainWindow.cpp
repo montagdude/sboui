@@ -280,7 +280,7 @@ void MainWindow::rebuild()
   ntagged = _taglist.numTagged();
   for ( k = 0; int(k) < ntagged; k++ )
   {
-    find_slackbuild(_taglist.itemByIdx(k).name(), _slackbuilds, i, j);
+    find_slackbuild(_taglist.taggedByIdx(k).name(), _slackbuilds, i, j);
     _slackbuilds[i][j].setBoolProp("tagged", false);
   }
   _taglist.clearList();

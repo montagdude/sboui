@@ -52,7 +52,8 @@ class TagList: public SelectionBox {
 
     std::string exec();
 
-    /* Returns BuildListItem by index in _items list */
+    /* Returns BuildListItem by index in _items or _tagged list */
 
     BuildListItem itemByIdx(unsigned int idx) const;
+    BuildListItem taggedByIdx(unsigned int idx) const;
 };

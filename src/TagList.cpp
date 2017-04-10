@@ -292,8 +292,8 @@ std::string TagList::exec()
 
 /*******************************************************************************
 
-Converts item in _items list to BuildListItem. Careful: does not perform bounds
-checks!
+Converts item in _items or _tagged list to BuildListItem. Careful: does not 
+perform bounds checks!
 
 *******************************************************************************/
 BuildListItem TagList::itemByIdx(unsigned int idx) const
@@ -301,6 +301,15 @@ BuildListItem TagList::itemByIdx(unsigned int idx) const
   BuildListItem item;
 
   item = *_items[idx];
+
+  return item;
+}
+
+BuildListItem TagList::taggedByIdx(unsigned int idx) const
+{
+  BuildListItem item;
+
+  item = _tagged[idx];
 
   return item;
 }
