@@ -333,6 +333,8 @@ void MainWindow::filterAll()
     printStatus("1 SlackBuild in repository.");
   else 
     printStatus(int_to_string(nbuilds) + " SlackBuilds in repository.");
+
+  setTagList();
 }
 
 /*******************************************************************************
@@ -362,6 +364,8 @@ void MainWindow::filterInstalled()
     printStatus("1 installed SlackBuild.");
   else 
     printStatus(int_to_string(ninstalled) + " installed SlackBuilds.");
+
+  setTagList();
 }
 
 /*******************************************************************************
@@ -391,6 +395,8 @@ void MainWindow::filterUpgradable()
     printStatus("1 upgradable SlackBuild.");
   else 
     printStatus(int_to_string(nupgradable) + " upgradable SlackBuilds.");
+
+  setTagList();
 }
 
 /*******************************************************************************
@@ -418,6 +424,8 @@ void MainWindow::filterTagged()
     printStatus("1 tagged SlackBuild.");
   else 
     printStatus(int_to_string(ntagged) + " tagged SlackBuilds.");
+
+  setTagList();
 }
 
 /*******************************************************************************
@@ -450,6 +458,8 @@ void MainWindow::filterNonDeps()
     printStatus("1 non-dependency.");
   else 
     printStatus(int_to_string(nnondeps) + " non-dependencies.");
+
+  setTagList();
 }
 
 /*******************************************************************************
@@ -478,6 +488,8 @@ void MainWindow::filterSearch(const std::string & searchterm,
     printStatus("1 match for " + searchterm + ".");
   else 
     printStatus(int_to_string(nsearch) + " matches for " + searchterm + ".");
+
+  setTagList();
 }
 
 /*******************************************************************************
@@ -1261,7 +1273,6 @@ int MainWindow::initialize()
     else { filterAll(); }
   }
   draw(true);
-  setTagList();
 
   return retval;
 }
@@ -1331,7 +1342,6 @@ void MainWindow::selectFilter()
       _fbox.draw(true);
     }
   }
-  setTagList();
 
   // Get rid of window and redraw
 
@@ -1377,7 +1387,6 @@ void MainWindow::search()
         filterSearch(_searchbox.searchString(), _searchbox.caseSensitive(),
                      _searchbox.wholeWord());
       }
-      setTagList();
     }
     else if (selection == signals::quit) { getting_input = false; }
   }
