@@ -221,7 +221,7 @@ The full command executed by
 to install a package is as follows:
 .RS 3
 .IP
-# \fBinstall_vars\fR \fBinstall_cmd\fR {package name} \fBinstall_clos\fR
+# \fBinstall_vars\fR \fBinstall_cmd\fR {software name} \fBinstall_clos\fR
 .RE
 .IP
 Because dependencies are resolved by
@@ -230,10 +230,11 @@ the package manager should not also resolve dependencies.
 If the package manager's install command does resolve dependencies by default,
 .B install_cmd
 should include options to disable that behavior.
-It may also be desired to disable confirmation questions or notifications from the package manager during the install process, since
+This command should disable confirmation questions or notifications from the package manager during the install process, since
 .B sboui
 handles that as well.
 Otherwise, there may be duplicated questions and messages.
+When there is an error, the command should exit with an error code other than 0.
 This setting is only required for a
 \fBcustom package_manager\fB.
 .IP
@@ -255,6 +256,13 @@ For a
 no default value is set, and
 .B sboui
 will exit with an error if this setting is not present.
+.IP
+.BR WARNING :
+sboui will execute whatever is written in this command (most likely as root) without trying to determine whether it is harmful or not.
+\fBDO NOT\fR set this variable or any of the related variables (\fBinstall_vars\fR or \fBinstall_clos\fR) to any command that may damage your system.
+Neither
+.B sboui
+nor the author(s) are responsible for any damaged caused to your system by setting this command in a harmful way.
 .TP
 .B install_vars
 .br
@@ -396,7 +404,7 @@ required: [for
 only]
 .IP
 Command for package manager to sync (update) the local repository.
-Ideally, the package manager should also use this command to create the local repository if it is not present.
+When there is an error, the command should exit with an error code other than 0.
 This setting is only required for a
 \fBcustom package_manager\fB.
 .IP
@@ -418,6 +426,13 @@ For a
 no default value is set, and
 .B sboui
 will exit with an error if this setting is not present.
+.IP
+.BR WARNING :
+sboui will execute whatever is written in this command (most likely as root) without trying to determine whether it is harmful or not.
+\fBDO NOT\fR set this variable to any command that may damage your system.
+Neither
+.B sboui
+nor the author(s) are responsible for any damaged caused to your system by setting this command in a harmful way.
 .TP
 .B upgrade_clos
 .br
@@ -448,7 +463,7 @@ The full command executed by
 to upgrade a package is as follows:
 .RS 3
 .IP
-# \fBupgrade_vars\fR \fBupgrade_cmd\fR {package name} \fBupgrade_clos\fR
+# \fBupgrade_vars\fR \fBupgrade_cmd\fR {software name} \fBupgrade_clos\fR
 .RE
 .IP
 The considerations described in the
@@ -475,6 +490,13 @@ For a
 no default value is set, and
 .B sboui
 will exit with an error if this setting is not present.
+.IP
+.BR WARNING :
+sboui will execute whatever is written in this command (most likely as root) without trying to determine whether it is harmful or not.
+\fBDO NOT\fR set this variable or any of the related variables (\fBupgrade_vars\fR or \fBupgrade_clos\fR) to any command that may damage your system.
+Neither
+.B sboui
+nor the author(s) are responsible for any damaged caused to your system by setting this command in a harmful way.
 .TP
 .B upgrade_vars
 .br

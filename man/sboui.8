@@ -1,6 +1,6 @@
 .TH SBOUI 8
 .SH NAME
-sboui \- ncurses user interface for SBo package managers
+sboui \- ncurses user interface for SlackBuilds.org package managers
 .SH SYNOPSIS
 .B sboui
 [\fB\-f\fR, \fB\-\-file\fR \fIFILE\fR] 
@@ -20,21 +20,21 @@ The main features of
 .B sboui
 include:
 .IP \(bu
-A two-pane listing of software groups and names
+Two-pane browsable listing of software groups and names
 .IP \(bu
 Filters: all, installed, upgradable, tagged, and non-dependencies
 .IP \(bu
-Searching the local repository
+Search the repository
 .IP \(bu
-Forward and inverse dependency resolution
+Dependency resolution: forward and inverse mode
 .IP \(bu
-Viewing and editing files in the local repository
+View and edit files in the repository
 .IP \(bu
-Tagging multiple packages (or groups) to apply batch changes
+Tag multiple packages (or groups) to apply batch changes
 .IP \(bu
-Support for any custom SBo package manager meeting certain conditions described in \fBsboui.conf\fR(5)
+Comes with several built-in color themes and supports custom themes
 .IP \(bu
-Configurable colors
+Designed for and tested to work flawlessly with sbopkg and sbotools, but it is easy to set it up to work with your own custom package manager
 .PP
 .B Instructions
 .PP
@@ -147,9 +147,6 @@ for more information about changing color settings.
 .SH BUGS
 Depending on the terminal, bright background colors may not actually appear bright or may cause blinking text.
 It is recommended to only use bright colors for the foreground.
-.PP
-sbopkg and sbotools do not exit with an error if the sync command fails.
-Therefore, sboui won't know that it failed either, and it will display a message indicating it succeeded.
 .SH SEE ALSO
 .BR ncurses (3X),
 .BR sboui.conf (5),
