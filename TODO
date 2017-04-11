@@ -8,35 +8,3 @@ Things for 1.0
 * Show a message after syncing instead of pausing, once sbopkg and sbotools are
   changed to give an error when sync fails.
 * Do reinstalls in a single command once sbotools supports it.
-
-Things for 0.2
-================================================================================
-* Submit to SlackBuilds.org.
-
-Completed since 0.1.1
-================================================================================
-* Show installed packages that appear in the repo but do not have the SBo tag.
-* Display a warning and option to edit when upgrading/reinstalling/removing
-  a package from a different repo.
-* Get rid of sboutil.sh shell script, which previously read *.info files and
-  and checked if a package is installed. (Do it all in C++ instead.)
-* More efficient internal search through sorted lists (previously used naive
-  search).
-* Replace inefficient bubble sort with sort function from C++ standard library.
-* Add 'commander' example color theme.
-* Add built-in color themes and ability to change them from options window.
-* Display a message after successfully applying settings.
-* Render pipes in info strings as vertical lines.
-* Only pause and ask the user to press Enter when installing/upgrading/
-  reinstalling/removing if there is an error. Otherwise, just show a message
-  box when it is complete.
-* Do reinstalls by removing and then installing again. (Otherwise, it doesn't
-  work with sbotools.)
-* Change options to "Ok | Skip | Cancel" for InstallBox when performing actions
-  on tagged SlackBuilds (allows user to cancel all operations instead of just
-  the current one).
-* Make tagged entries and hotkeys stand out when color is disabled.
-* Since latest versions of sbopkg and sbotools do not give an error when the
-  sync command fails, always pause after syncing instead of showing a message.
-* Don't re-read entire repo after installing/upgrading/reinstalling/removing,
-  only update installed status and related info.
