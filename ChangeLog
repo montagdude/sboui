@@ -1,3 +1,35 @@
+2017-04-10   Daniel Prosser <dpross1100@msn.com>
+
+        version 0.2
+        * Default editor to $EDITOR environment variable, if present
+        * Add ~/.sboui.conf as override for system-wide configuration file
+        * Show sync keyboard shortcut in MainWindow info bar
+        * Show installed packages from the repo even if they have different tag
+        * Remove sboutil.sh shell script and implement its functions in C++
+        * More efficient internal search through SlackBuilds lists
+        * More efficient internal sorting algorithm
+        * Add color pair for (tagged, bg_popup) -- was missing previously
+        * Fix a bug in CMake module that checks for libconfig++
+        * Add "commander" color theme
+        * Render pipes in info displays as vertical lines
+        * Allow message boxes to handle newlines
+        * Improve sizing logic for message boxes
+        * Add information message boxes (not just errors and warnings)
+        * Warn about changing packages installed from different repository
+        * Change "Help" to "Keys" in main window info
+        * Clarify some entries in the keyboard shortcuts window
+        * Allow color themes to be selected from the options window
+        * Display a message after successfully changing settings
+        * Show a message + summary instead of pausing after installing, etc.
+        * Reinstall by removing then installing again (needed for sbotools)
+        * Add skip / cancel options when applying tags
+        * Make tagged items and hotkeys visible when color is disabled
+        * Always pause after syncing instead of showing a message box
+          (because sbopkg and sbotools don't exit with error on sync failure)
+        * Give a more useful error message when reading repo fails
+        * Add standard repo_dir location for sbotools as comment in sboui.conf
+        * Don't re-read the entire repository after install, upgrade, etc.
+
 2017-03-25   Daniel Prosser <dpross1100@msn.com>
 
         verion 0.1.1
