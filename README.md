@@ -109,6 +109,6 @@ do the following for the best user experience:
 Screenshots
 ================================================================================
 ![alt tag](https://raw.githubusercontent.com/montagdude/sboui/master/screenshots/filters.png)
-![alt tag](https://raw.githubusercontent.com/montagdude/sboui/master/screenshots/filters.png)
+![alt tag](https://raw.githubusercontent.com/montagdude/sboui/master/screenshots/commander.png)
 ![alt tag](https://raw.githubusercontent.com/montagdude/sboui/master/screenshots/search.png)
 ![alt tag](https://raw.githubusercontent.com/montagdude/sboui/master/screenshots/install.png)
