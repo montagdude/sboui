@@ -547,6 +547,10 @@ Disables color
 *******************************************************************************/
 void deactivate_color()
 {
+  // Define built-in themes if not done yet
+
+  if (dark.fg_normal == "") { define_color_themes(); }
+
   if (has_colors()) 
   { 
     set_default_colors();
