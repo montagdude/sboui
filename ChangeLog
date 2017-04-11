@@ -29,6 +29,7 @@
         * Give a more useful error message when reading repo fails
         * Add standard repo_dir location for sbotools as comment in sboui.conf
         * Don't re-read the entire repository after install, upgrade, etc.
+        * Make sure color themes are defined even if colors are disabled
 
 2017-03-25   Daniel Prosser <dpross1100@msn.com>
 
