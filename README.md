@@ -105,3 +105,10 @@ do the following for the best user experience:
   they do by default, this behavior should be disabled in the specification of
   sync_cmd, install_cmd, and upgrade_cmd when used with sboui.) Otherwise,
   there may be duplicate prompts from sboui and the package manager.
+
+Screenshots
+================================================================================
+![alt tag](https://raw.githubusercontent.com/montagdude/sboui/master/screenshots/filters.png)
+![alt tag](https://raw.githubusercontent.com/montagdude/sboui/master/screenshots/filters.png)
+![alt tag](https://raw.githubusercontent.com/montagdude/sboui/master/screenshots/search.png)
+![alt tag](https://raw.githubusercontent.com/montagdude/sboui/master/screenshots/install.png)
