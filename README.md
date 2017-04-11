@@ -12,7 +12,7 @@ interface and also makes it very fast. The main features of sboui include:
 * Search the repository
 * Dependency resolution: forward and inverse mode
 * View and edit files in the repository
-* Tag multiple packages (or groups) to apply batch changes
+* Tag multiple packages (or entire groups) to apply batch changes
 * Comes with several built-in color themes and supports custom themes
 * Designed for and tested to work flawlessly with sbopkg and sbotools, but it is
   easy to set it up to work with your own custom package manager
@@ -25,10 +25,10 @@ custom build, see the instructions in the included file called INSTALL.
 
 Use
 ================================================================================
-The basic concept of sboui is to list software from SlackBuilds.org using a two-
-pane listing organized by groups. Switch between the right and left panes using
-the arrow keys or Tab, and navigate within a pane using the arrow keys, Home,
-End or PageUp/PageDown.
+The basic concept of sboui is to browse software from SlackBuilds.org using a 
+two-pane listing organized by groups. Switch between the right and left panes
+with the arrow keys or Tab, and navigate within a pane using the arrow keys,
+Home, End or PageUp/PageDown.
 
 The first thing you normally will want to do after starting sboui is to sync the
 local repository with the official remote SlackBuilds.org repository. This
@@ -47,11 +47,11 @@ dependencies is easy; just select it, choose "Install," and press Enter to build
 and install it and all its dependencies. You can also interactively choose to
 skip some dependencies or turn off dependency resolution completely if desired.
 
-sboui also provides filters. When you start the program, all SlackBuilds in the
-repository will be listed. The f key allows you to select from several filters
-to show only those SlackBuilds meeting certain criteria (e.g., installed,
-upgradable, tagged, and others). You can also filter by a search criterion with
-the / key.
+sboui also provides filters to display only a subset of software in the two
+panes. When you start the program, all SlackBuilds in the repository will be
+listed. The f key allows you to select from several filters to show only those
+SlackBuilds meeting certain criteria (e.g., installed, upgradable, tagged, and
+others). You can also filter by a search criterion with the / key.
 
 It's often desired to apply changes in batch. For example, you may want to
 upgrade everything on your system that you have installed from SlackBuilds.org.
@@ -69,7 +69,7 @@ key) and have fun!
 Using sboui with custom package managers
 ================================================================================
 sboui is designed for and tested to work with sbopkg and sbotools, but it is
-also easy to use it with custome package managers or scripts. There are just a
+also easy to use it with custom package managers or scripts. There are just a
 few requirements:
 
 * The package manager must store a local copy of the SlackBuilds.org repository
