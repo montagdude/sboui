@@ -288,6 +288,16 @@ bool InstallBox::installingAllDeps() const
   return true;
 }
 
+bool InstallBox::installingRequested() const
+{
+  int nitems;
+
+  nitems = _items.size();
+  if ( (_items[nitems-1]->getProp("action") != "Remove") &&
+       (_items[nitems-1]->getBoolProp("tagged")) ) { return true; }
+  else { return false; }
+}
+
 /*******************************************************************************
 
 Creates list based on SlackBuild selected. Returns 0 if dependency resolution

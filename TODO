@@ -8,3 +8,8 @@ Things for 1.0
 * Show a message after syncing instead of pausing, once sbopkg and sbotools are
   changed to give an error when sync fails.
 * Do reinstalls in a single command once sbotools supports it.
+
+Completed
+================================================================================
+* Don't warn about skipping dependencies unless actually installing the
+  requested package

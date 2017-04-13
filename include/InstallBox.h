@@ -38,6 +38,7 @@ class InstallBox: public BuildOrderBox {
     void minimumSize(int & height, int & width) const;
     void preferredSize(int & height, int & width) const;
     bool installingAllDeps() const;
+    bool installingRequested() const;
 
     /* Creates list based on SlackBuild selected */
 

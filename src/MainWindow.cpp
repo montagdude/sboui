@@ -719,7 +719,8 @@ bool MainWindow::modifyPackage(BuildListItem & build,
 
         getting_input = false;
         response = 1;
-        if (! installer.installingAllDeps())
+        if ( (! installer.installingAllDeps()) &&
+             (installer.installingRequested()) )
         {
           choice = displayError("You have chosen to skip some dependencies." +
                                 std::string(" Continue anyway? "), true,
