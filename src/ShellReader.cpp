@@ -125,7 +125,7 @@ Opens or closes a file. Returns 1 on error or 0 on success.
 *******************************************************************************/
 int ShellReader::open(const std::string & filename)
 {
-  _file.open((filename).c_str());
+  _file.open(filename.c_str());
   if (not _file.is_open()) { return 1; }
   else { _file_open = true; }
 
@@ -135,7 +135,11 @@ int ShellReader::open(const std::string & filename)
 int ShellReader::close()
 {
   if (! _file_open) { return 1; }
-  else { _file_open = false; }
+  else 
+  {
+    _file.close();
+    _file_open = false;
+  }
 
   return 0;
 }
