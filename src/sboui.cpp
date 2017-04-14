@@ -5,6 +5,7 @@
 #include "CLOParser.h"
 #include "curses.h"
 #include "settings.h"
+#include "backend.h"
 #include "MainWindow.h"
 
 #ifndef PACKAGE_VERSION
@@ -40,6 +41,10 @@ int main(int argc, char *argv[])
   else { check = read_config(); }
   if (check != 0) { return check; }
   reset_prog_mode();
+
+  // Read blacklist
+
+  package_blacklist.read("/etc/sboui/package_blacklist"); 
 
   // User interaction loop (note: call constructor after setting colors)
 

@@ -1,20 +1,16 @@
 # Set up project
 cmake_minimum_required(VERSION 2.8.8)
-set(SBOUI_VERSION 0.2)
+set(SBOUI_VERSION SET_BEFORE_RELEASE!)
 project(sboui)
 
 # Sources and include directories
 include_directories(include)
 file(GLOB SOURCES "src/*.cpp")
-list(REMOVE_ITEM SOURCES "${CMAKE_SOURCE_DIR}/src/Blacklist.cpp")
-
-# Build Blacklist separately because it's the only thing that needs C++11
-add_library(BLACKLIST OBJECT "src/Blacklist.cpp")
-set_property(TARGET BLACKLIST PROPERTY CXX_STANDARD 11)
-set_property(TARGET BLACKLIST PROPERTY CXX_STANDARD_REQUIRED ON)
 
 # Create executable
-add_executable(sboui $<TARGET_OBJECTS:BLACKLIST> ${SOURCES})
+add_executable(sboui ${SOURCES})
+set_property(TARGET sboui PROPERTY CXX_STANDARD 11)
+set_property(TARGET sboui PROPERTY CXX_STANDARD_REQUIRED ON)
 
 # Default compiler flags
 set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall")

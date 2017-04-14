@@ -2,12 +2,16 @@ Things for 1.0
 ================================================================================
 * Add a package blacklist to prevent upgrading/reinstalling/removing packages
   installed from a different repo.
+* Add a "Blacklisted" filter.
 * Make a position notifier on the right side when scrolling in lists and input
   boxes.
 * Add functionality to jump to a name in lists while typing.
 * Show a message after syncing instead of pausing, once sbopkg and sbotools are
   changed to give an error when sync fails.
 * Do reinstalls in a single command once sbotools supports it.
+* Smarter checks for success or failure when installing/upgrading/reinstalling/
+  removing.
+* Error checking when reading repo: missing .info files, bad package names.
 
 Completed
 ================================================================================

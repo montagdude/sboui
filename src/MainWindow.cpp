@@ -1415,7 +1415,7 @@ void MainWindow::showBuildActions(BuildListItem & build)
 
   actionwin = newwin(1, 1, 0, 0);
   actionbox.setWindow(actionwin);
-  actionbox.setName("Actions for " + build.name());
+  actionbox.setName(build.name() + " actions");
   actionbox.create(build);
   placePopup(&actionbox, actionwin);
 
@@ -1586,8 +1586,13 @@ std::string MainWindow::exec()
         build = *_blistboxes[_category_idx].highlightedItem();
         if (build.getBoolProp("installed"))
         {
-          statusmsg = "Installed: " + build.getProp("installed_version") +
-            " -> Available: " + build.getProp("available_version");
+          if (build.getBoolProp("blacklisted"))
+            statusmsg = "Installed: " + build.getProp("installed_version") +
+              " -> Available: " + build.getProp("available_version") +
+              " (blacklisted)";
+          else
+            statusmsg = "Installed: " + build.getProp("installed_version") +
+              " -> Available: " + build.getProp("available_version");
           printStatus(statusmsg);
         }
         else { clearStatus(); }
@@ -1618,8 +1623,13 @@ std::string MainWindow::exec()
         build = *_blistboxes[_category_idx].highlightedItem();
         if (build.getBoolProp("installed"))
         {
-          statusmsg = "Installed: " + build.getProp("installed_version") +
-            " -> Available: " + build.getProp("available_version");
+          if (build.getBoolProp("blacklisted"))
+            statusmsg = "Installed: " + build.getProp("installed_version") +
+              " -> Available: " + build.getProp("available_version") +
+              " (blacklisted)";
+          else
+            statusmsg = "Installed: " + build.getProp("installed_version") +
+              " -> Available: " + build.getProp("available_version");
           printStatus(statusmsg);
         }
         else { clearStatus(); }

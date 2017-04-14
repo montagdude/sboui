@@ -18,6 +18,7 @@ BuildListItem::BuildListItem()
   addProp("requires", "");
   addProp("package_name", "");
   addBoolProp("installed", false);
+  addBoolProp("blacklisted", false);
   addBoolProp("tagged", false);
 }
 
@@ -50,13 +51,17 @@ void BuildListItem::operator = (const ListItem & item)
     setProp("package_name", item.getProp("package_name"));
   else { addProp("package_name", ""); }
 
-  if (item.checkProp("tagged"))
-    setBoolProp("tagged", item.getBoolProp("tagged"));
-  else { addBoolProp("tagged", false); }
-
   if (item.checkProp("installed"))
     setBoolProp("installed", item.getBoolProp("installed"));
   else { addBoolProp("installed", false); }
+
+  if (item.checkProp("blacklisted"))
+    setBoolProp("blacklisted", item.getBoolProp("blacklisted"));
+  else { addBoolProp("blacklisted", false); }
+
+  if (item.checkProp("tagged"))
+    setBoolProp("tagged", item.getBoolProp("tagged"));
+  else { addBoolProp("tagged", false); }
 }
 
 /*******************************************************************************
@@ -67,13 +72,15 @@ if so
 *******************************************************************************/
 void BuildListItem::readInstalledProps(std::vector<std::string> & installedpkgs)
 {
-  std::string pkg, version;
+  std::string pkg, version, arch, build;
 
-  if (check_installed(*this, installedpkgs, pkg, version))
+  if (check_installed(*this, installedpkgs, pkg, version, arch, build))
   {
     setBoolProp("installed", true);
     setProp("installed_version", version);
     setProp("package_name", pkg);
+    setBoolProp("blacklisted", package_blacklist.blacklisted(pkg, _name, 
+                               version, arch, build));
   }
   else { setBoolProp("installed", false); }
 }

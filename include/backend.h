@@ -3,6 +3,9 @@
 #include <string>
 #include <vector>
 #include "BuildListItem.h"
+#include "Blacklist.h"
+
+extern Blacklist package_blacklist;
 
 int read_repo(std::vector<std::vector<BuildListItem> > & slackbuilds);
 template<typename T>
@@ -12,11 +15,13 @@ int find_slackbuild(const std::string & name,
                     std::vector<std::vector<BuildListItem> > & slackbuilds,
                     int & idx0, int & idx1);
 std::vector<std::string> list_installed_packages();
-void get_pkg_info(const std::string & pkg, std::string & name,
-                  std::string & version);
+int get_pkg_info(const std::string & pkg, std::string & name,
+                 std::string & version, std::string & arch,
+                 std::string & build);
 bool check_installed(const BuildListItem & build, 
                      const std::vector<std::string> & installedpkgs,
-                     std::string & pkg, std::string & version);
+                     std::string & pkg, std::string & version,
+                     std::string & arch, std::string & pkgbuild);
 std::string get_reqs(const BuildListItem & build);
 void get_repo_info(const BuildListItem & build, std::string & available_version,
                    std::string & reqs);

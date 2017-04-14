@@ -29,4 +29,7 @@ class Blacklist {
        fullname */
 
     bool blacklisted(const std::string & pkg) const;
+    bool blacklisted(const std::string & pkg, const std::string & name,
+                     const std::string & version, const std::string & arch,
+                     const std::string & build) const;
 };

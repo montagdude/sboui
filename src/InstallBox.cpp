@@ -20,7 +20,8 @@ Draws window border and title
 *******************************************************************************/
 void InstallBox::redrawFrame() const
 {
-  int rows, cols, namelen, i, nspaces, vlineloc;
+  int rows, cols, namelen, i, nspaces, action_cols, vlineloc;
+  unsigned int j, nitems, actionlen;
   double mid, left, right;
 
   getmaxyx(_win, rows, cols);
@@ -93,7 +94,14 @@ void InstallBox::redrawFrame() const
   colors.turnOn(_win, color_settings.header_popup, color_settings.bg_popup);
   wprintw(_win, "Name");
 
-  vlineloc = cols-2 - std::string(" Reinstall ").size();
+  nitems = _items.size();
+  action_cols = 0;
+  for ( j = 0; j < nitems; j++ )
+  {
+    actionlen = _items[j]->getProp("action").size() + 1;
+    if (actionlen > action_cols) { action_cols = actionlen; }
+  }
+  vlineloc = cols-2 - action_cols - 1;
   nspaces = vlineloc - std::string("Name").size();
   for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
 
@@ -127,14 +135,22 @@ screen or not.
 void InstallBox::redrawSingleItem(unsigned int idx)
 {
   std::string fg, bg;
-  int nspaces, vlineloc, printlen, rows, cols, i;
+  int nspaces, actionlen, action_cols, vlineloc, printlen, rows, cols, i;
+  unsigned int j, nitems;
 
   getmaxyx(_win, rows, cols);
 
   // Print divider before applying color
 
-  vlineloc = cols-2 - std::string(" Reinstall ").size() - 1;
-  wmove(_win, idx-_firstprint+3, vlineloc+1);
+  nitems = _items.size();
+  action_cols = 0;
+  for ( j = 0; j < nitems; j++ )
+  {
+    actionlen = _items[j]->getProp("action").size() + 1;
+    if (actionlen > action_cols) { action_cols = actionlen; }
+  }
+  vlineloc = cols-2 - action_cols - 1;
+  wmove(_win, idx-_firstprint+3, vlineloc);
   waddch(_win, ACS_VLINE);
 
   // Go to item location, optionally highlight, and print item
@@ -170,8 +186,8 @@ void InstallBox::redrawSingleItem(unsigned int idx)
 
   // Print item with selection, spaces, divider, action
 
-  printlen = std::min(int(_items[idx]->name().size()), vlineloc-4);
-  nspaces = vlineloc - 4 - (_items[idx]->name().size());
+  printlen = std::min(int(_items[idx]->name().size()), vlineloc-5);
+  nspaces = vlineloc - 5 - (_items[idx]->name().size());
 
   if (_items[idx]->getBoolProp("tagged")) { wprintw(_win, "[X] "); }
   else { wprintw(_win, "[ ] "); }
@@ -180,7 +196,7 @@ void InstallBox::redrawSingleItem(unsigned int idx)
 
   for ( i = 0; int(i) < nspaces; i++ ) { waddch(_win, ' '); }
 
-  wmove(_win, idx-_firstprint+3, vlineloc+2);
+  wmove(_win, idx-_firstprint+3, vlineloc+1);
   waddch(_win, ' ');
   printToEol(_items[idx]->getProp("action"));
 
@@ -224,7 +240,7 @@ Get attributes
 *******************************************************************************/
 void InstallBox::minimumSize(int & height, int & width) const
 {
-  int namelen, reserved_cols, action_cols;
+  int namelen, actionlen, reserved_cols, action_cols;
   unsigned int i, nitems;
 
   // Minimum usable height
@@ -234,12 +250,14 @@ void InstallBox::minimumSize(int & height, int & width) const
 
   // Minimum usable width
 
-  action_cols = std::string(" Reinstall ").size() + 1; // Room for divider
   reserved_cols = 2;
-  width = _name.size() + action_cols;
+  width = _name.size();
+  action_cols = 0;
   if (int(_info.size()) > width) { width = _info.size(); }
   for ( i = 0; i < nitems; i++ )
   {
+    actionlen = _items[i]->getProp("action").size() + 1;
+    if (actionlen > action_cols) { action_cols = actionlen; }
     namelen = _items[i]->name().size() + 4 + action_cols;
     if (namelen > width) { width = namelen; }
   }
@@ -248,7 +266,7 @@ void InstallBox::minimumSize(int & height, int & width) const
 
 void InstallBox::preferredSize(int & height, int & width) const
 {
-  int namelen, reserved_cols, widthpadding, action_cols;
+  int namelen, actionlen, reserved_cols, widthpadding, action_cols;
   unsigned int i, nitems;
 
   // Preferred height: no scrolling
@@ -258,13 +276,15 @@ void InstallBox::preferredSize(int & height, int & width) const
 
   // Preferred width: minimum usable + some padding
 
-  action_cols = std::string(" Reinstall ").size() + 1; // Room for divider
   widthpadding = 6;
   reserved_cols = 2;
-  width = _name.size() + action_cols;
+  width = _name.size();
+  action_cols = 0;
   if (int(_info.size()) > width) { width = _info.size(); }
   for ( i = 0; i < nitems; i++ )
   {
+    actionlen = _items[i]->getProp("action").size() + 1;
+    if (actionlen > action_cols) { action_cols = actionlen; }
     namelen = _items[i]->name().size() + 4 + action_cols;
     if (namelen > width) { width = namelen; }
   }
@@ -397,6 +417,18 @@ int InstallBox::create(BuildListItem & build,
 
   for ( i = 0; i < nbuilds; i++ ) { addItem(&_builds[i]); }
 
+  // Untag any blacklisted package
+
+  for ( i = 0; i < nbuilds; i++ )
+  {
+    if ( (_builds[i].getBoolProp("installed")) &&
+         (_builds[i].getBoolProp("blacklisted")) )
+    {
+      _builds[i].setBoolProp("tagged", false);
+      _builds[i].setProp("action", "(blacklisted)");
+    }
+  }
+
   // Set window title
 
   if (! resolve_deps)
@@ -517,11 +549,15 @@ std::string InstallBox::exec()
 
     case ' ':
       retval = " ";
-      _items[_highlight]->setBoolProp("tagged", 
+      if (! _items[_highlight]->getBoolProp("blacklisted"))
+      {
+        _items[_highlight]->setBoolProp("tagged", 
                                  (! _items[_highlight]->getBoolProp("tagged")));
-      check_redraw = highlightNext();
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
+        check_redraw = highlightNext();
+        if (check_redraw == 1) { _redraw_type = "all"; }
+        else { _redraw_type = "changed"; }
+      }
+      else { _redraw_type = "none"; }
       break;
 
     default:

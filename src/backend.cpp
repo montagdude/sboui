@@ -11,6 +11,7 @@
 #include "string_util.h"
 #include "ShellReader.h"
 #include "settings.h"
+#include "Blacklist.h"
 #include "backend.h"
 
 #ifndef PACKAGE_DIR
@@ -18,6 +19,8 @@
 #endif
 
 using namespace settings;
+
+Blacklist package_blacklist;
 
 /*******************************************************************************
 
@@ -163,21 +166,34 @@ std::string basename(const std::string & fullpath)
 
 /*******************************************************************************
 
-Gets package info from entry in installed package list
+Gets package info from entry in installed package list. Returns 1 if package
+name is badly formed; 0 otherwise.
 
 *******************************************************************************/
-void get_pkg_info(const std::string & pkg, std::string & name,
-                  std::string & version)
+int get_pkg_info(const std::string & pkg, std::string & name,
+                 std::string & version, std::string & arch,
+                 std::string & build)
 {
   std::vector<std::string> splitpkg;
   unsigned int i, nsplit;
 
+  name = "";
+  version = "";
+  arch = "";
+  build = "";
+
   splitpkg = split(pkg, '-');
   nsplit = splitpkg.size();
+  if (nsplit < 4) { return 1; }
+
   name = ""; 
   for ( i = 0; i < nsplit-4; i++ ) { name += splitpkg[i] + "-"; }
   name += splitpkg[nsplit-4];
   version = splitpkg[nsplit-3];
+  arch = splitpkg[nsplit-2];
+  build = splitpkg[nsplit-1];
+
+  return 0;
 }
 
 /*******************************************************************************
@@ -207,7 +223,8 @@ Checks if a SlackBuild is installed and sets info if so.
 *******************************************************************************/
 bool check_installed(const BuildListItem & build,
                      const std::vector<std::string> & installedpkgs,
-                     std::string & pkg, std::string & version)
+                     std::string & pkg, std::string & version,
+                     std::string & arch, std::string & pkgbuild)
 {
   std::string name;
   unsigned int ninstalled, i;
@@ -215,7 +232,7 @@ bool check_installed(const BuildListItem & build,
   ninstalled = installedpkgs.size();
   for ( i = 0; i < ninstalled; i++ )
   {
-    get_pkg_info(installedpkgs[i], name, version);
+    get_pkg_info(installedpkgs[i], name, version, arch, pkgbuild);
     if (name == build.name())
     {
       pkg = installedpkgs[i];
@@ -225,6 +242,9 @@ bool check_installed(const BuildListItem & build,
     
   pkg = "";
   version = "";
+  arch = "";
+  pkgbuild = "";
+
   return false;
 }
 
@@ -302,7 +322,7 @@ void list_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
                     std::vector<BuildListItem *> & installedlist)
 {
   std::vector<std::string> installedpkgs;
-  std::string pkgname, pkgversion, pkgbuild, curcategory;
+  std::string name, version, arch, build, curcategory;
   unsigned int ninstalled, k, lbound, rbound;
   int i, j, check;
 
@@ -311,14 +331,17 @@ void list_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
   ninstalled = installedpkgs.size();
   for ( k = 0; k < ninstalled; k++ )
   {
-    get_pkg_info(installedpkgs[k], pkgname, pkgversion);
-    check = find_slackbuild(pkgname, slackbuilds, i, j);
+    get_pkg_info(installedpkgs[k], name, version, arch, build);
+    check = find_slackbuild(name, slackbuilds, i, j);
     if (check == 0)
     {
       slackbuilds[i][j].setBoolProp("installed", true);
-      slackbuilds[i][j].setProp("installed_version", pkgversion);
+      slackbuilds[i][j].setProp("installed_version", version);
       slackbuilds[i][j].setProp("package_name", installedpkgs[k]);
       slackbuilds[i][j].readPropsFromRepo();
+      slackbuilds[i][j].setBoolProp("blacklisted",
+                        package_blacklist.blacklisted(installedpkgs[k], name,
+                                                      version, arch, build));
       installedlist.push_back(&slackbuilds[i][j]);
     }
   } 

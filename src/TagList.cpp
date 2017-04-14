@@ -167,11 +167,13 @@ unsigned int TagList::getDisplayList(const std::string & action)
     }
     else if (action == "Upgrade")
     {
-      if (item.upgradable()) { add_item = true; }
+      if ( (item.upgradable()) && (! item.getBoolProp("blacklisted")) )
+        add_item = true;
     }
     else if ( (action == "Remove") || (action == "Reinstall") )
     {
-      if (item.getBoolProp("installed")) { add_item = true; }
+      if ( (item.getBoolProp("installed")) &&
+           (! item.getBoolProp("blacklisted")) ) { add_item = true; }
     }
        
     if (add_item) { _items.push_back(&_tagged[i]); }
