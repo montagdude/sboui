@@ -44,7 +44,9 @@ int main(int argc, char *argv[])
 
   // Read blacklist
 
-  package_blacklist.read("/etc/sboui/package_blacklist"); 
+  //package_blacklist.read("/etc/sboui/package_blacklist"); 
+// For testing only
+package_blacklist.read("/data/dprosser/software/sboui_files/sboui/etc/package_blacklist"); 
 
   // User interaction loop (note: call constructor after setting colors)
 

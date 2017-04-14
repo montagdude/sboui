@@ -117,8 +117,11 @@ bool BuildListItem::upgradable() const
 
   if (getBoolProp("installed"))
   {
-    if (getProp("installed_version").substr(0,len) != 
-        getProp("available_version")) { test = true; }
+    if (! getBoolProp("blacklisted"))
+    {
+      if (getProp("installed_version").substr(0,len) != 
+          getProp("available_version")) { test = true; }
+    }
   }
 
   return test;

@@ -3,6 +3,7 @@ Things for 1.0
 * Add a package blacklist to prevent upgrading/reinstalling/removing packages
   installed from a different repo.
 * Add a "Blacklisted" filter.
+* Remove blacklisted packages from upgradable filter.
 * Make a position notifier on the right side when scrolling in lists and input
   boxes.
 * Add functionality to jump to a name in lists while typing.
