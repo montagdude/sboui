@@ -12,8 +12,8 @@ int find_slackbuild(const std::string & name,
                     std::vector<std::vector<BuildListItem> > & slackbuilds,
                     int & idx0, int & idx1);
 std::vector<std::string> list_installed_packages();
-void get_pkg_info(const std::string & pkg, std::string & name,
-                  std::string & version);
+int get_pkg_info(const std::string & pkg, std::string & name,
+                 std::string & version);
 bool check_installed(const BuildListItem & build, 
                      const std::vector<std::string> & installedpkgs,
                      std::string & pkg, std::string & version);
