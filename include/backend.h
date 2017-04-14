@@ -22,7 +22,7 @@ bool check_installed(const BuildListItem & build,
                      const std::vector<std::string> & installedpkgs,
                      std::string & pkg, std::string & version,
                      std::string & arch, std::string & pkgbuild);
-std::string get_reqs(const BuildListItem & build);
+int get_reqs(const BuildListItem & build, std::string & reqs);
 void get_repo_info(const BuildListItem & build, std::string & available_version,
                    std::string & reqs);
 void list_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,

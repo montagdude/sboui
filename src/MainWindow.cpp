@@ -672,12 +672,20 @@ bool MainWindow::modifyPackage(BuildListItem & build,
   check = installer.create(build, _slackbuilds, action, settings::resolve_deps,
                            batch);
 
-  if (check != 0) 
+  if (check == 1) 
   { 
     clearStatus();
     displayError("Unable to find one or more dependencies of " + build.name() +
                  std::string(" in repository. Disable dependency resolution ") +
                  std::string("to ignore this error."));
+    return false;
+  }
+  else if (check == 2)
+  { 
+    clearStatus();
+    displayError("A .info file seems to be missing from the repository, so " +
+                 std::string("build order is incomplete. Syncing may fix ") +
+                 std::string("this problem."));
     return false;
   }
 
@@ -821,12 +829,19 @@ void MainWindow::showBuildOrder(BuildListItem & build)
   check = buildorder.create(build, _slackbuilds);
   buildorder.setTagList(&_taglist);
 
-  if (check != 0) 
+  if (check == 1) 
   { 
     clearStatus();
     displayError("Unable to find one or more dependencies of " + build.name() +
                  std::string(" in repository. Build order will be incomplete."),
                  true, "Warning");
+  }
+  else if (check == 2)
+  { 
+    clearStatus();
+    displayError("A .info file seems to be missing from the repository, so " +
+                 std::string("build order will be incomplete. Syncing may ") +
+                 std::string("fix this problem."), true, "Warning");
   }
 
   nbuildorder = buildorder.numItems();

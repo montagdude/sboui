@@ -33,7 +33,8 @@ void add_req(BuildListItem * build,
 
 Recursively computes list of requirements for a SlackBuild. List must be
 reversed after calling this to get the proper build order. Returns 1 if a
-requirement is not found in the list.
+requirement is not found in the list, 2 if a .info file is missing, or 0
+otherwise
 
 *******************************************************************************/
 int get_reqs_recursive(const BuildListItem & build,
@@ -42,11 +43,17 @@ int get_reqs_recursive(const BuildListItem & build,
 {
   unsigned int i, ndeps;
   std::vector<std::string> deplist;
+  std::string reqs;
   int idx0, idx1, check;
 
   if (build.getBoolProp("installed")) { deplist = 
                                         split(build.getProp("requires")); }
-  else { deplist = split(get_reqs(build)); }
+  else 
+  {
+    check = get_reqs(build, reqs);
+    if (check == 0) { deplist = split(reqs); }
+    else { return 2; }
+  }
   
   check = 0;
   ndeps = deplist.size();
