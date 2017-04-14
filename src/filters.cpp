@@ -222,74 +222,6 @@ void filter_upgradable(std::vector<BuildListItem *> & installedlist,
 
 /*******************************************************************************
 
-Filters lists by tagged SlackBuilds
-
-*******************************************************************************/
-void filter_tagged(std::vector<std::vector<BuildListItem> > & slackbuilds,
-                   std::vector<CategoryListItem> & categories,
-                   WINDOW *blistboxwin, CategoryListBox & clistbox,
-                   std::vector<BuildListBox> & blistboxes,
-                   unsigned int & ntagged)
-{
-  unsigned int i, j, ncategories, nbuilds, nfiltered_categories;
-  bool category_found;
-  BuildListBox initlistbox;
-
-  ncategories = categories.size();
-  blistboxes.resize(0);
-  clistbox.clearList();
-  clistbox.setActivated(true);
-  ntagged = 0; 
-  nfiltered_categories = 0;
-
-  for ( i = 0; i < ncategories; i++ )
-  {
-    category_found = false;
-    nbuilds = slackbuilds[i].size();
-    for ( j = 0; j < nbuilds; j++ )
-    {
-      if (slackbuilds[i][j].getBoolProp("tagged"))
-      {
-        if (! category_found)
-        {
-          category_found = true;
-          clistbox.addItem(&categories[i]);
-          BuildListBox blistbox;
-          blistbox.setWindow(blistboxwin);
-          blistbox.setName(categories[i].name());
-          blistbox.setActivated(false);
-          nfiltered_categories++;
-          blistboxes.push_back(blistbox);
-        }
-        blistboxes[nfiltered_categories-1].addItem(&slackbuilds[i][j]);
-        ntagged++;
-      }
-    }
-  } 
-
-  // Check whether categories should be tagged
-
-  for ( i = 0; i < nfiltered_categories; i++ )
-  {
-    if (blistboxes[i].allTagged()) 
-      clistbox.itemByIdx(i)->setBoolProp("tagged", true);
-    else 
-      clistbox.itemByIdx(i)->setBoolProp("tagged", false);
-  }
-
-  // Initialize with empty lists if filter is empty
-
-  if (ntagged == 0)
-  {
-    initlistbox.setWindow(blistboxwin);
-    initlistbox.setActivated(false);
-    initlistbox.setName("SlackBuilds");
-    blistboxes.push_back(initlistbox);
-  }
-}
-
-/*******************************************************************************
-
 Filters lists by non-dependencies 
 
 *******************************************************************************/
@@ -437,6 +369,75 @@ void filter_search(std::vector<std::vector<BuildListItem> > & slackbuilds,
   // Initialize with empty lists if filter is empty
 
   if (nsearch == 0)
+  {
+    initlistbox.setWindow(blistboxwin);
+    initlistbox.setActivated(false);
+    initlistbox.setName("SlackBuilds");
+    blistboxes.push_back(initlistbox);
+  }
+}
+
+/*******************************************************************************
+
+Filters lists by BoolProp
+
+*******************************************************************************/
+void filter_by_prop(std::vector<std::vector<BuildListItem> > & slackbuilds,
+                    const std::string & propname,
+                    std::vector<CategoryListItem> & categories,
+                    WINDOW *blistboxwin, CategoryListBox & clistbox,
+                    std::vector<BuildListBox> & blistboxes,
+                    unsigned int & nfiltered)
+{
+  unsigned int i, j, ncategories, nbuilds, nfiltered_categories;
+  bool category_found;
+  BuildListBox initlistbox;
+
+  ncategories = categories.size();
+  blistboxes.resize(0);
+  clistbox.clearList();
+  clistbox.setActivated(true);
+  nfiltered = 0; 
+  nfiltered_categories = 0;
+
+  for ( i = 0; i < ncategories; i++ )
+  {
+    category_found = false;
+    nbuilds = slackbuilds[i].size();
+    for ( j = 0; j < nbuilds; j++ )
+    {
+      if (slackbuilds[i][j].getBoolProp(propname))
+      {
+        if (! category_found)
+        {
+          category_found = true;
+          clistbox.addItem(&categories[i]);
+          BuildListBox blistbox;
+          blistbox.setWindow(blistboxwin);
+          blistbox.setName(categories[i].name());
+          blistbox.setActivated(false);
+          nfiltered_categories++;
+          blistboxes.push_back(blistbox);
+        }
+        blistboxes[nfiltered_categories-1].addItem(&slackbuilds[i][j]);
+        nfiltered++;
+      }
+    }
+  } 
+
+  // Check whether categories should be tagged
+
+  for ( i = 0; i < nfiltered_categories; i++ )
+  {
+    if (blistboxes[i].allTagged()) 
+      clistbox.itemByIdx(i)->setBoolProp("tagged", true);
+    else 
+      clistbox.itemByIdx(i)->setBoolProp("tagged", false);
+  }
+
+  // Initialize with empty lists if filter is empty
+
+  if (nfiltered == 0)
   {
     initlistbox.setWindow(blistboxwin);
     initlistbox.setActivated(false);

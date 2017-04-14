@@ -11,6 +11,8 @@ Constructors and destructor
 *******************************************************************************/
 FilterBox::FilterBox()
 {
+  unsigned int i;
+
   _name = "Select a filter";
   _info = "Enter: Ok | Esc: Cancel";
   _reserved_rows = 6;
@@ -19,17 +21,16 @@ FilterBox::FilterBox()
   addItem(new ListItem("Installed"));
   addItem(new ListItem("Upgradable"));
   addItem(new ListItem("Tagged"));
+  addItem(new ListItem("Blacklisted"));
   addItem(new ListItem("Non-dependencies"));
 
-  _items[0]->setHotKey(0);
-  _items[1]->setHotKey(0);
-  _items[2]->setHotKey(0);
-  _items[3]->setHotKey(0);
-  _items[4]->setHotKey(0);
+  for ( i = 0; i < 6; i++ ) { _items[i]->setHotKey(0); }
 }
 
 FilterBox::FilterBox(WINDOW *win, const std::string & name)
 {
+  unsigned int i;
+
   _win = win;
   _name = name;
   _info = "Enter: Ok | Esc: Cancel";
@@ -39,13 +40,10 @@ FilterBox::FilterBox(WINDOW *win, const std::string & name)
   addItem(new ListItem("Installed"));
   addItem(new ListItem("Upgradable"));
   addItem(new ListItem("Tagged"));
+  addItem(new ListItem("Blacklisted"));
   addItem(new ListItem("Non-dependencies"));
 
-  _items[0]->setHotKey(0);
-  _items[1]->setHotKey(0);
-  _items[2]->setHotKey(0);
-  _items[3]->setHotKey(0);
-  _items[4]->setHotKey(0);
+  for ( i = 0; i < 6; i++ ) { _items[i]->setHotKey(0); }
 }
 
 FilterBox::~FilterBox()

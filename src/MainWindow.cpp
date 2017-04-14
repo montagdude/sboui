@@ -295,6 +295,7 @@ void MainWindow::rebuild()
   if (_filter == "installed SlackBuilds") { filterInstalled(); }
   else if (_filter == "upgradable SlackBuilds") { filterUpgradable(); } 
   else if (_filter == "tagged SlackBuilds") { filterTagged(); } 
+  else if (_filter == "blacklisted SlackBuilds") { filterBlacklisted(); }
   else if (_filter == "non-dependencies") { filterNonDeps(); } 
   else { filterAll(); }
 
@@ -415,8 +416,8 @@ void MainWindow::filterTagged()
   _activated_listbox = 0;
   ntagged = 0;
 
-  filter_tagged(_slackbuilds, _categories, _win2, _clistbox, _blistboxes, 
-                ntagged);
+  filter_by_prop(_slackbuilds, "tagged", _categories, _win2, _clistbox,
+                 _blistboxes, ntagged);
 
   if (ntagged == 0) 
     printStatus("No tagged SlackBuilds."); 
@@ -424,6 +425,35 @@ void MainWindow::filterTagged()
     printStatus("1 tagged SlackBuild.");
   else 
     printStatus(int_to_string(ntagged) + " tagged SlackBuilds.");
+
+  setTagList();
+}
+
+/*******************************************************************************
+
+Displays blacklisted SlackBuilds
+
+*******************************************************************************/
+void MainWindow::filterBlacklisted()
+{
+  unsigned int nblacklisted;
+
+  _filter = "blacklisted SlackBuilds";
+  printStatus("Filtering by blacklisted SlackBuilds ...");
+
+  _category_idx = 0;
+  _activated_listbox = 0;
+  nblacklisted = 0;
+
+  filter_by_prop(_slackbuilds, "blacklisted", _categories, _win2, _clistbox,
+                 _blistboxes, nblacklisted);
+
+  if (nblacklisted == 0) 
+    printStatus("No blacklisted SlackBuilds."); 
+  else if (nblacklisted == 1) 
+    printStatus("1 blacklisted SlackBuild.");
+  else 
+    printStatus(int_to_string(nblacklisted) + " blacklisted SlackBuilds.");
 
   setTagList();
 }
@@ -1270,6 +1300,7 @@ int MainWindow::initialize()
     if (_filter == "installed SlackBuilds") { filterInstalled(); }
     else if (_filter == "upgradable SlackBuilds") { filterUpgradable(); }
     else if (_filter == "tagged SlackBuilds") { filterTagged(); }
+    else if (_filter == "blacklisted SlackBuilds") { filterBlacklisted(); }
     else if (_filter == "non-dependencies") { filterNonDeps(); }
     else { filterAll(); }
   }
@@ -1331,6 +1362,10 @@ void MainWindow::selectFilter()
     }
     // Tagged items could have changed, so allow this one to be re-selected
     else if ( (selected == "Tagged") || (selection == "T") ) { filterTagged(); }
+    else if ( (selected == "Blacklisted") || (selection == "B") )
+    {
+      if (_filter != "blacklisted SlackBuilds") { filterBlacklisted(); } 
+    }
     else if ( (selected == "Non-dependencies") || (selection == "N") )
     {
       if (_filter != "non-dependencies") { filterNonDeps(); } 

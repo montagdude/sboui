@@ -20,11 +20,6 @@ void filter_upgradable(std::vector<BuildListItem *> & installedlist,
                        WINDOW *blistboxwin, CategoryListBox & clistbox,
                        std::vector<BuildListBox> & blistboxes,
                        unsigned int & nupgradable);
-void filter_tagged(std::vector<std::vector<BuildListItem> > & slackbuilds,
-                       std::vector<CategoryListItem> & categories,
-                       WINDOW *blistboxwin, CategoryListBox & clistbox,
-                       std::vector<BuildListBox> & blistboxes,
-                       unsigned int & ntagged);
 void filter_nondeps(std::vector<BuildListItem *> & nondeplist,
                        std::vector<CategoryListItem> & categories,
                        WINDOW *blistboxwin, CategoryListBox & clistbox,
@@ -35,3 +30,9 @@ void filter_search(std::vector<std::vector<BuildListItem> > & slackbuilds,
                        std::vector<BuildListBox> & blistboxes,
                        unsigned int & nsearch, const std::string & searchterm,
                        bool case_sensitive, bool whole_word);
+void filter_by_prop(std::vector<std::vector<BuildListItem> > & slackbuilds,
+                       const std::string & propname,
+                       std::vector<CategoryListItem> & categories,
+                       WINDOW *blistboxwin, CategoryListBox & clistbox,
+                       std::vector<BuildListBox> & blistboxes,
+                       unsigned int & nfiltered);
