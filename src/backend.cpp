@@ -321,17 +321,23 @@ available version, and dependencies for installed SlackBuilds.
 void list_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
                     std::vector<BuildListItem *> & installedlist)
 {
-  std::vector<std::string> installedpkgs;
-  std::string name, version, arch, build, curcategory;
+  std::vector<std::string> installedpkgs, pkg_errors;
+  std::string name, version, arch, build, curcategory, response;
   unsigned int ninstalled, k, lbound, rbound;
-  int i, j, check;
+  int i, j, check, pkgcheck;
 
   installedlist.resize(0);
   installedpkgs = list_installed_packages();
   ninstalled = installedpkgs.size();
   for ( k = 0; k < ninstalled; k++ )
   {
-    get_pkg_info(installedpkgs[k], name, version, arch, build);
+    // Check for invalid package names
+    pkgcheck = get_pkg_info(installedpkgs[k], name, version, arch, build);
+    if (pkgcheck != 0)
+    {
+      pkg_errors.push_back(installedpkgs[k]);
+      continue;
+    }
     check = find_slackbuild(name, slackbuilds, i, j);
     if (check == 0)
     {
@@ -374,6 +380,23 @@ void list_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
       std::sort(installedlist.begin()+lbound, installedlist.begin()+rbound,
                 compare_builds_by_name);
     lbound = rbound;
+  }
+
+  // Warn about invalid package names
+
+  if (pkg_errors.size() > 0)
+  {
+    def_prog_mode();
+    endwin();
+    std::cout << "Warning: "
+              << "the following packages have invalid names and were ignored:"
+              << std::endl;
+    for ( k = 0; k < pkg_errors.size(); k++ )
+    {
+      std::cout << pkg_errors[k] << std::endl;
+    }
+    std::cout << "Press Enter to continue to main window ...";
+    std::getline(std::cin, response);
   }
 }
 
