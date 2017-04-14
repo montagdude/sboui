@@ -236,19 +236,24 @@ bool check_installed(const BuildListItem & build,
 Gets SlackBuild requirements (dependencies) as string
 
 *******************************************************************************/
-std::string get_reqs(const BuildListItem & build)
+int get_reqs(const BuildListItem & build, std::string & reqs)
 {
   ShellReader reader;
-  std::string info_file, reqs;
+  std::string info_file;
+  int check;
 
   info_file = repo_dir + "/" + build.getProp("category") + "/" +
               build.name() + "/" + build.name() + ".info";
 
-  reader.open(info_file);
-  reader.read("REQUIRES", reqs);
-  reader.close();
+  reqs = "";
+  check = reader.open(info_file);
+  if (check == 0)
+  {
+    reader.read("REQUIRES", reqs);
+    reader.close();
+  }
 
-  return reqs;
+  return check;
 }
 
 /*******************************************************************************
