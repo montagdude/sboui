@@ -90,13 +90,19 @@ void BuildListItem::readInstalledProps(std::vector<std::string> & installedpkgs)
 Reads properties from repo
 
 *******************************************************************************/
-void BuildListItem::readPropsFromRepo()
+int BuildListItem::readPropsFromRepo()
 {
   std::string available_version, reqs;
+  int check;
 
-  get_repo_info(*this, available_version, reqs);
-  setProp("available_version", available_version);
-  setProp("requires", reqs);
+  check = get_repo_info(*this, available_version, reqs);
+  if (check == 0)
+  {
+    setProp("available_version", available_version);
+    setProp("requires", reqs);
+  }
+
+  return check;
 }
 
 /*******************************************************************************
