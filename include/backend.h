@@ -26,7 +26,8 @@ int get_reqs(const BuildListItem & build, std::string & reqs);
 void get_repo_info(const BuildListItem & build, std::string & available_version,
                    std::string & reqs);
 void list_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
-                    std::vector<BuildListItem *> & installedlist);
+                    std::vector<BuildListItem *> & installedlist,
+                    std::vector<std::string> & pkg_errors);
 void list_nondeps(const std::vector<BuildListItem *> & installedlist,
                         std::vector<BuildListItem *> & nondeplist);
 int install_slackbuild(const BuildListItem & build);

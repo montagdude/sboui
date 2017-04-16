@@ -222,7 +222,7 @@ void MainWindow::clearData()
 Creates master list of SlackBuilds
 
 *******************************************************************************/
-int MainWindow::readLists()
+int MainWindow::readLists(std::vector<std::string> & pkg_errors)
 {
   int check;
   unsigned int i, ncategories; 
@@ -245,7 +245,7 @@ int MainWindow::readLists()
 
   // Determine which are installed and their versions
 
-  list_installed(_slackbuilds, _installedlist);
+  list_installed(_slackbuilds, _installedlist, pkg_errors);
 
   return 0;
 }
@@ -259,6 +259,7 @@ void MainWindow::rebuild()
 {
   unsigned int k, ninstalled;
   int i, j, ntagged;
+  std::vector<std::string> pkg_errors;
 
   // Clear information that may have changed from slackbuilds list
 
@@ -288,7 +289,7 @@ void MainWindow::rebuild()
   // Rebuild installed list 
 
   _nondeplist.resize(0);
-  list_installed(_slackbuilds, _installedlist);
+  list_installed(_slackbuilds, _installedlist, pkg_errors);
 
   // Re-filter (data, tags could have changed)
 
@@ -346,12 +347,13 @@ Displays installed SlackBuilds
 void MainWindow::filterInstalled()
 {
   unsigned int ninstalled;
+  std::vector<std::string> pkg_errors;
 
   _filter = "installed SlackBuilds";
   printStatus("Filtering by installed SlackBuilds ...");
 
   if (_installedlist.size() == 0) 
-    list_installed(_slackbuilds, _installedlist); 
+    list_installed(_slackbuilds, _installedlist, pkg_errors); 
 
   _activated_listbox = 0;
   _category_idx = 0;
@@ -377,11 +379,12 @@ Displays upgradable SlackBuilds
 void MainWindow::filterUpgradable()
 {
   unsigned int nupgradable;
+  std::vector<std::string> pkg_errors;
 
   _filter = "upgradable SlackBuilds";
   printStatus("Filtering by upgradable SlackBuilds ...");
   if (_installedlist.size() == 0) 
-    list_installed(_slackbuilds, _installedlist); 
+    list_installed(_slackbuilds, _installedlist, pkg_errors); 
 
   _category_idx = 0;
   _activated_listbox = 0;
@@ -467,12 +470,13 @@ SlackBuild
 void MainWindow::filterNonDeps()
 {
   unsigned int nnondeps;
+  std::vector<std::string> pkg_errors;
 
   _filter = "non-dependencies";
   printStatus("Filtering by non-dependencies ...");
 
   if (_installedlist.size() == 0) 
-    list_installed(_slackbuilds, _installedlist); 
+    list_installed(_slackbuilds, _installedlist, pkg_errors); 
   if (_nondeplist.size() == 0)
     list_nondeps(_installedlist, _nondeplist);
 
@@ -1276,10 +1280,13 @@ MainWindow::~MainWindow() { clearData(); }
 First time window setup
 
 *******************************************************************************/
-int MainWindow::initialize()
+int MainWindow::initialize(bool check_pkg_errors)
 {
   BuildListBox initlistbox;
   int retval;
+  std::vector<std::string> pkg_errors;
+  std::string errmsg;
+  unsigned int i, npkgerr;
 
   // Create windows (note: geometry gets set in redrawWindows);
 
@@ -1300,9 +1307,7 @@ int MainWindow::initialize()
   // Read SlackBuilds repository
 
   printStatus("Reading SlackBuilds repository ...");
-  retval = readLists();
-
-  // Set filter 
+  retval = readLists(pkg_errors);
 
   if (retval != 0) 
   { 
@@ -1312,6 +1317,19 @@ int MainWindow::initialize()
   }
   else 
   { 
+    // Warning for bad package names
+
+    npkgerr = pkg_errors.size();
+    if ( (check_pkg_errors) && (npkgerr > 0) )
+    {
+      errmsg = "The following installed packages have invalid names "
+             + std::string("and were ignored:\n");
+      for ( i = 0; i < npkgerr; i++ ) { errmsg += "\n" + pkg_errors[i]; }
+      displayError(errmsg, true, "Warning");
+    }
+
+    // Set filter
+
     if (_filter == "installed SlackBuilds") { filterInstalled(); }
     else if (_filter == "upgradable SlackBuilds") { filterUpgradable(); }
     else if (_filter == "tagged SlackBuilds") { filterTagged(); }
