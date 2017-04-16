@@ -281,9 +281,10 @@ Rebuilds lists after applying changes
 *******************************************************************************/
 void MainWindow::rebuild()
 {
-  unsigned int k, ninstalled;
+  unsigned int k, ninstalled, nmissing;
   int i, j, ntagged;
   std::vector<std::string> pkg_errors, missing_info;
+  std::string errmsg;
 
   // Clear information that may have changed from slackbuilds list
 
@@ -314,6 +315,17 @@ void MainWindow::rebuild()
 
   _nondeplist.resize(0);
   list_installed(_slackbuilds, _installedlist, pkg_errors, missing_info);
+
+  // Warning for missing info files
+
+  nmissing = missing_info.size();
+  if (nmissing > 0)
+  {
+    errmsg = "The following installed SlackBuilds are missing .info files:\n";
+    for ( k = 0; k < nmissing; k++ ) { errmsg += "\n" + missing_info[k]; }
+    errmsg += "\n\nYou should run the sync command to fix this problem.";
+    displayError(errmsg);
+  }
 
   // Re-filter (data, tags could have changed)
 
