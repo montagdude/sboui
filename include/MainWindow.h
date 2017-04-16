@@ -52,7 +52,7 @@ class MainWindow: public CursesWidget {
     /* Clearing and setting up lists, etc. */
 
     void clearData();
-    int readLists(std::vector<std::string> & pkg_errors);
+    int readLists();
     void rebuild();
 
     /* Filters lists */
@@ -121,7 +121,7 @@ class MainWindow: public CursesWidget {
 
     /* Window setup */
 
-    int initialize(bool check_pkg_errors=false);
+    int initialize();
 
     /* Set properties */
 

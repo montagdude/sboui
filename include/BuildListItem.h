@@ -24,7 +24,7 @@ class BuildListItem: public ListItem {
     // Reads properties from repo 
 
     void readInstalledProps(std::vector<std::string> & installedpkgs);
-    void readPropsFromRepo();
+    int readPropsFromRepo();
 
     // Checks whether a SlackBuild can be upgraded
 

@@ -261,19 +261,25 @@ int get_reqs(const BuildListItem & build, std::string & reqs)
 Gets SlackBuild version and reqs from repository
 
 *******************************************************************************/
-void get_repo_info(const BuildListItem & build, std::string & available_version,
-                   std::string & reqs)
+int get_repo_info(const BuildListItem & build, std::string & available_version,
+                  std::string & reqs)
 {
   ShellReader reader;
   std::string info_file;
+  int check;
 
   info_file = repo_dir + "/" + build.getProp("category") + "/" +
               build.name() + "/" + build.name() + ".info";
 
-  reader.open(info_file);
-  reader.read("VERSION", available_version);
-  reader.read("REQUIRES", reqs);
-  reader.close();
+  check = reader.open(info_file);
+  if (check == 0)
+  { 
+    reader.read("VERSION", available_version);
+    reader.read("REQUIRES", reqs);
+    reader.close();
+  }
+
+  return check;
 }
 
 /*******************************************************************************
@@ -309,14 +315,17 @@ invalid names and stores them in pkg_errors variable.
 *******************************************************************************/
 void list_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
                     std::vector<BuildListItem *> & installedlist,
-                    std::vector<std::string> & pkg_errors)
+                    std::vector<std::string> & pkg_errors,
+                    std::vector<std::string> & missing_info)
 {
   std::vector<std::string> installedpkgs;
   std::string pkgname, pkgversion, pkgbuild, curcategory, response;
   unsigned int ninstalled, k, lbound, rbound;
-  int i, j, check, pkgcheck;
+  int i, j, check, pkgcheck, infocheck;
 
   installedlist.resize(0);
+  pkg_errors.resize(0);
+  missing_info.resize(0);
   installedpkgs = list_installed_packages();
   ninstalled = installedpkgs.size();
   for ( k = 0; k < ninstalled; k++ )
@@ -335,7 +344,12 @@ void list_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
       slackbuilds[i][j].setBoolProp("installed", true);
       slackbuilds[i][j].setProp("installed_version", pkgversion);
       slackbuilds[i][j].setProp("package_name", installedpkgs[k]);
-      slackbuilds[i][j].readPropsFromRepo();
+
+      // Check for missing .info file
+
+      infocheck = slackbuilds[i][j].readPropsFromRepo();
+      if (infocheck != 0) { missing_info.push_back(slackbuilds[i][j].name()); }
+      
       installedlist.push_back(&slackbuilds[i][j]);
     }
   } 
