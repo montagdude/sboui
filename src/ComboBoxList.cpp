@@ -167,7 +167,7 @@ User interaction: show display until user hits Enter or Esc
 *******************************************************************************/
 std::string ComboBoxList::exec()
 {
-  int ch, check_redraw;
+  int ch, check_redraw, highlightstore;
   std::string retval;
   bool getting_input;
 
@@ -178,6 +178,7 @@ std::string ComboBoxList::exec()
   if (_highlight == 0) { highlightFirst(); }
 
   getting_input = true;
+  highlightstore = _highlight;
   while (getting_input)
   {
     // Draw list elements
@@ -243,6 +244,7 @@ std::string ComboBoxList::exec()
   
       case MY_ESC:
         retval = signals::quit;
+        _highlight = highlightstore;
         _redraw_type = "all";
         getting_input = false;
         break;
