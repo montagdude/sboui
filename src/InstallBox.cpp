@@ -99,7 +99,7 @@ void InstallBox::redrawFrame() const
   for ( j = 0; j < nitems; j++ )
   {
     actionlen = _items[j]->getProp("action").size() + 1;
-    if (actionlen > action_cols) { action_cols = actionlen; }
+    if (int(actionlen) > action_cols) { action_cols = actionlen; }
   }
   vlineloc = cols-2 - action_cols - 1;
   nspaces = vlineloc - std::string("Name").size();

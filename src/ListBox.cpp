@@ -241,7 +241,7 @@ void ListBox::redrawSingleItem(unsigned int idx)
 
   // Go to item location, optionally highlight, and print item
 
-  wmove(_win, idx-_firstprint+1, 1);
+  wmove(_win, idx-_firstprint+_header_rows, 1);
 
   // Turn on highlight color
 

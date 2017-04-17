@@ -31,7 +31,7 @@ void ComboBoxList::redrawSingleItem(unsigned int idx)
 
   // Go to item location, optionally highlight, and print item
 
-  wmove(_win, idx-_firstprint, 0);
+  wmove(_win, idx-_firstprint+_header_rows, 0);
 
   // Turn on highlight color
 
@@ -82,11 +82,17 @@ void ComboBoxList::redrawSingleItem(unsigned int idx)
 Constructors
 
 *******************************************************************************/
-ComboBoxList::ComboBoxList() { _reserved_rows = 0; }
+ComboBoxList::ComboBoxList()
+{ 
+  _reserved_rows = 0;
+  _header_rows = 0;
+}
+
 ComboBoxList::ComboBoxList(WINDOW *win) 
 {
   _win = win;
   _reserved_rows = 0; 
+  _header_rows = 0;
 }
 
 /*******************************************************************************

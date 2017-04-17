@@ -18,7 +18,7 @@ class AbstractListBox: public CursesWidget {
 
     std::string _name, _redraw_type;
     std::vector<ListItem *> _items;
-    unsigned int _reserved_rows;
+    unsigned int _reserved_rows, _header_rows;
     int _firstprint;
 
     virtual void redrawFrame() const = 0;

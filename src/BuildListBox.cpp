@@ -116,7 +116,7 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
   // Print divider before applying color
 
   vlineloc = cols-2 - std::string("Installed").size() - 1;
-  wmove(_win, idx-_firstprint+3, vlineloc+1);
+  wmove(_win, idx-_firstprint+_header_rows, vlineloc+1);
   waddch(_win, ACS_VLINE);
 
   // Go to item location, optionally highlight, and print item
@@ -190,6 +190,7 @@ Constructors
 BuildListBox::BuildListBox()
 { 
   _reserved_rows = 4; 
+  _header_rows = 3;
   _taglist = NULL;
 }
 BuildListBox::BuildListBox(WINDOW *win, const std::string & name)
@@ -197,6 +198,7 @@ BuildListBox::BuildListBox(WINDOW *win, const std::string & name)
   _win = win;
   _name = name;
   _reserved_rows = 4;
+  _header_rows = 3;
   _taglist = NULL;
 }
 

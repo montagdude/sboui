@@ -15,6 +15,7 @@ AbstractListBox::AbstractListBox()
   _items.resize(0);
   _firstprint = 0;
   _reserved_rows = 2;
+  _header_rows = 1;
 }
 
 AbstractListBox::AbstractListBox(WINDOW *win, const std::string & name)
@@ -25,6 +26,7 @@ AbstractListBox::AbstractListBox(WINDOW *win, const std::string & name)
   _items.resize(0);
   _firstprint = 0;
   _reserved_rows = 2;
+  _header_rows = 1;
 }
 
 /*******************************************************************************
