@@ -1,3 +1,21 @@
+2017-04-17   Daniel Prosser <dpross1100@msn.com>
+
+        version 0.2.1
+        * Don't warn about skipping dependencies unless actually installing the
+          package
+        * Actually close .info file in ShellReader::close() (had no noticeable
+          effect in use)
+        * Check for and warn about invalid installed package names (previously
+          would segfault) 
+        * Check for and warn about missing .info files when encountered
+        * Better check for upgradable pacakges. A package is considered
+          upgradable if installed_version != upgradable_version, except when
+          the only difference is a trailing tag starting with an underscore in
+          installed_version (some packages for kernel modules are like this). 
+          Previously, anything after the available_version text was considered
+          a tag, even if it didn't begin with an underscore.
+        * Restore original selection after pressing Esc in ComboBoxes.
+
 2017-04-10   Daniel Prosser <dpross1100@msn.com>
 
         version 0.2
