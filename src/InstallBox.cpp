@@ -71,22 +71,15 @@ void InstallBox::redrawFrame() const
 
   for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, 0, ACS_VLINE); }
 
-  // Right border
+  // Right border for header and footer
 
-  for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, cols-1, ACS_VLINE); }
+  mvwaddch(_win, 1, cols-1, ACS_VLINE);
+  mvwaddch(_win, rows-2, cols-1, ACS_VLINE);
 
   // Bottom border
 
   wmove(_win, rows-1, 1);
   for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
-
-  // Symbols on right border to indicate scrolling
-
-  if (_firstprint != 0) { mvwaddch(_win, 3, cols-1, ACS_UARROW); }
-  if (int(_items.size()) > _firstprint + rows-4)
-  {
-    mvwaddch(_win, rows-4, cols-1, ACS_DARROW);
-  }
 
   // Draw header
 
@@ -150,7 +143,7 @@ void InstallBox::redrawSingleItem(unsigned int idx)
     if (actionlen > action_cols) { action_cols = actionlen; }
   }
   vlineloc = cols-2 - action_cols - 1;
-  wmove(_win, idx-_firstprint+3, vlineloc);
+  wmove(_win, idx-_firstprint+_header_rows, vlineloc);
   waddch(_win, ACS_VLINE);
 
   // Go to item location, optionally highlight, and print item
@@ -219,14 +212,12 @@ Constructors
 *******************************************************************************/
 InstallBox::InstallBox()
 { 
-  _reserved_rows = 6;
   _info = "Enter: Ok | Esc: Cancel"; 
   _builds.resize(0);
 }
 
 InstallBox::InstallBox(WINDOW *win, const std::string & name)
 {
-  _reserved_rows = 6;
   _info = "Enter: Ok | Esc: Cancel"; 
   _builds.resize(0);
   _win = win;

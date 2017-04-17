@@ -14,7 +14,6 @@ BuildActionBox::BuildActionBox()
 {
   _name = "Select an action";
   _info = "Enter: Ok | Esc: Cancel";
-  _reserved_rows = 6;
 }
 
 BuildActionBox::BuildActionBox(WINDOW *win, const std::string & name)
@@ -22,7 +21,6 @@ BuildActionBox::BuildActionBox(WINDOW *win, const std::string & name)
   _win = win;
   _name = name;
   _info = "Enter: Ok | Esc: Cancel";
-  _reserved_rows = 6;
 }
 
 BuildActionBox::BuildActionBox(WINDOW *win, const std::string & name,
@@ -31,7 +29,6 @@ BuildActionBox::BuildActionBox(WINDOW *win, const std::string & name,
   _win = win;
   _name = name;
   _info = "Enter: Ok | Esc: Cancel";
-  _reserved_rows = 6;
   create(build);
 }
 

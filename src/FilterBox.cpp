@@ -15,7 +15,6 @@ FilterBox::FilterBox()
 
   _name = "Select a filter";
   _info = "Enter: Ok | Esc: Cancel";
-  _reserved_rows = 6;
 
   addItem(new ListItem("All"));
   addItem(new ListItem("Installed"));
@@ -34,7 +33,6 @@ FilterBox::FilterBox(WINDOW *win, const std::string & name)
   _win = win;
   _name = name;
   _info = "Enter: Ok | Esc: Cancel";
-  _reserved_rows = 6;
 
   addItem(new ListItem("All"));
   addItem(new ListItem("Installed"));

@@ -11,15 +11,9 @@
 Constructors
 
 *******************************************************************************/
-InvReqBox::InvReqBox()
-{ 
-  _reserved_rows = 6;
-  _info = "Esc: Back"; 
-}
-
+InvReqBox::InvReqBox() { _info = "Esc: Back"; }
 InvReqBox::InvReqBox(WINDOW *win, const std::string & name)
 {
-  _reserved_rows = 6;
   _info = "Esc: Back";
   _win = win;
   _name = name;

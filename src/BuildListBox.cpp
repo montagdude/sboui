@@ -49,27 +49,19 @@ void BuildListBox::redrawFrame() const
   for ( i = 1; int(i) < left-1; i++ ) { waddch(_win, ACS_HLINE); }
   wmove(_win, 0, right+1);
   for ( i = right+1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
+
+  // Right border for header
+
+  mvwaddch(_win, 1, cols-1, ACS_VLINE);
   
   // Left border
 
   for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, 0, ACS_VLINE); }
 
-  // Right border
-
-  for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, cols-1, ACS_VLINE); }
-
   // Bottom border
 
   wmove(_win, rows-1, 1);
   for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
-
-  // Symbols on right border to indicate scrolling
-
-  if (_firstprint != 0) { mvwaddch(_win, 3, cols-1, ACS_UARROW); }
-  if (int(_items.size()) > _firstprint + rows-4)
-  {
-    mvwaddch(_win, rows-2, cols-1, ACS_DARROW);
-  }
 
   // Draw header
 

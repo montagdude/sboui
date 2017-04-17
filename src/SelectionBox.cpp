@@ -62,22 +62,15 @@ void SelectionBox::redrawFrame() const
 
   for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, 0, ACS_VLINE); }
 
-  // Right border
+  // Right border for header and footer
 
-  for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, cols-1, ACS_VLINE); }
+  mvwaddch(_win, 1, cols-1, ACS_VLINE);
+  mvwaddch(_win, rows-2, cols-1, ACS_VLINE);
 
   // Bottom border
 
   wmove(_win, rows-1, 1);
   for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
-
-  // Symbols on right border to indicate scrolling
-
-  if (_firstprint != 0) { mvwaddch(_win, 3, cols-1, ACS_UARROW); }
-  if (_items.size() > _firstprint + rows-_reserved_rows)
-  {
-    mvwaddch(_win, rows-4, cols-1, ACS_DARROW);
-  }
 
   // Horizontal dividers for header and footer
 
@@ -107,7 +100,7 @@ void SelectionBox::redrawSingleItem(unsigned int idx)
 
   // Go to item location, optionally highlight, and print item
 
-  wmove(_win, idx-_firstprint+3, 1);
+  wmove(_win, idx-_firstprint+_header_rows, 1);
 
   // Turn on highlight color
 
@@ -178,6 +171,7 @@ SelectionBox::SelectionBox()
 {
   _info = "Enter: Ok | Esc: Cancel";
   _reserved_rows = 6;
+  _header_rows = 3;
 }
 
 SelectionBox::SelectionBox(WINDOW *win, const std::string & name)
@@ -186,6 +180,7 @@ SelectionBox::SelectionBox(WINDOW *win, const std::string & name)
   _name = name;
   _info = "Enter: Ok | Esc: Cancel";
   _reserved_rows = 6;
+  _header_rows = 3;
 }
 
 /*******************************************************************************
@@ -264,7 +259,11 @@ void SelectionBox::draw(bool force)
     colors.setBackground(_win, color_settings.fg_popup,
                                color_settings.bg_popup);
   }
-  if (_redraw_type != "none") { redrawFrame(); }
+  if (_redraw_type != "none")
+  { 
+    redrawFrame(); 
+    redrawScrollIndicator();
+  }
   if ( (_redraw_type == "all") || (_redraw_type == "items") ) {
                                                             redrawAllItems(); }
   else if (_redraw_type == "changed") { redrawChangedItems(); }

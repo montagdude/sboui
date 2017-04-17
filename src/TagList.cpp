@@ -78,18 +78,11 @@ void TagList::redrawSingleItem(unsigned int idx)
 Constructors
 
 *******************************************************************************/
-TagList::TagList() 
-{ 
-  _reserved_rows = 6; 
-  _header_rows = 3;
-  _tagged.resize(0);
-}
+TagList::TagList() { _tagged.resize(0); }
 TagList::TagList(WINDOW *win, const std::string & name)
 {
   _win = win;
   _name = name;
-  _reserved_rows = 6;
-  _header_rows = 3;
   _tagged.resize(0);
 }
 
