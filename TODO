@@ -5,12 +5,10 @@ Things for 1.0
 
 Things for 0.3
 ================================================================================
-* Make a position notifier on the right side when scrolling in lists and input
-  boxes.
 * Add functionality to jump to a name in lists while typing.
 * Smarter checks for whether changes were actually applied, and try multiple
   methods for upgrades and reinstalls if needed.
-* Add "Show package info" action
+* Add "Show package info" action.
 
 Completed for 0.3
 ================================================================================
@@ -18,6 +16,8 @@ Completed for 0.3
   installed from a different repo.
 * Add a "Blacklisted" filter.
 * Remove blacklisted packages from upgradable filter.
+* Make a position notifier on the right side when scrolling in lists and input
+  boxes.
 
 Completed for 0.2.1
 ================================================================================

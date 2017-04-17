@@ -224,7 +224,6 @@ void InputBox::redrawFrame() const
 {
   int rows, cols, msglen, i, left;
   double mid;
-  unsigned int nitems;
 
   getmaxyx(_win, rows, cols);
 
@@ -271,9 +270,9 @@ void InputBox::redrawFrame() const
 
   for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, 0, ACS_VLINE); }
 
-  // Right border
+  // Right border for header
 
-  for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, cols-1, ACS_VLINE); }
+  mvwaddch(_win, 1, cols-1, ACS_VLINE);
 
   // Bottom border
 
@@ -293,14 +292,52 @@ void InputBox::redrawFrame() const
   mvwaddch(_win, 2, cols-1, ACS_RTEE);
   mvwaddch(_win, rows-3, 0, ACS_LTEE);
   mvwaddch(_win, rows-3, cols-1, ACS_RTEE);
+}
 
-  // Symbols on right border to indicate scrolling
+/*******************************************************************************
 
+Redraws right border between header and footer and scroll indicators
+
+*******************************************************************************/
+void InputBox::redrawScrollIndicator() const
+{
+  int rows, cols, i, rowsavail, maxscroll, pos;
+  bool need_up, need_dn;
+  unsigned int nitems;
+
+  // Check if a scroll indicator is needed
+
+  getmaxyx(_win, rows, cols);
+  rowsavail = rows-_reserved_rows;
+
+  need_up = false;
+  need_dn = false;
   nitems = _items.size();
-  if (_firstprint != _header_rows) { mvwaddch(_win, _header_rows, cols-1,
-                                               ACS_UARROW); }
+  if (_firstprint != _header_rows) { need_up = true; }
   if (_items[nitems-1]->posy() > _firstprint + rows-_reserved_rows - 1)
-    mvwaddch(_win, rows-4, cols-1, ACS_DARROW);
+    need_dn = true;
+
+  // Draw right border
+
+  for ( i = _header_rows; i < int(_header_rows)+rowsavail; i++ )
+  {
+    mvwaddch(_win, i, cols-1, ACS_VLINE);
+  }
+
+  // Draw up and down arrows
+
+  if (need_up) { mvwaddch(_win, _header_rows, cols-1, ACS_UARROW); }
+  if (need_dn) { mvwaddch(_win, _header_rows+rowsavail-1, cols-1, ACS_DARROW); }
+
+  // Draw position indicator
+
+  if ( (need_up) || (need_dn) )
+  {
+    maxscroll = _items[nitems-1]->posy() - rowsavail;
+    pos = std::floor(double(_firstprint-_header_rows) /
+                     double(maxscroll)*(rowsavail-1));
+    mvwaddch(_win, _header_rows+pos, cols-1, ACS_DIAMOND);
+  }
 }
 
 /*******************************************************************************
@@ -478,9 +515,14 @@ void InputBox::draw(bool force)
     colors.setBackground(_win, color_settings.fg_normal,
                                color_settings.bg_normal);
     redrawFrame();
+    redrawScrollIndicator();
     redrawAllItems(force);
   }
-  else { redrawChangedItems(force); }
+  else
+  {
+    redrawChangedItems(force);
+    redrawScrollIndicator();
+  }
   wrefresh(_win);
 }
 

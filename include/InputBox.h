@@ -37,6 +37,7 @@ class InputBox: public CursesWidget {
     /* Drawing */
     
     virtual void redrawFrame() const;
+    virtual void redrawScrollIndicator() const;
     void redrawChangedItems(bool force);
     void redrawAllItems(bool force);
 
