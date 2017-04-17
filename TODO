@@ -18,19 +18,3 @@ Completed for 0.3
 * Remove blacklisted packages from upgradable filter.
 * Make a position notifier on the right side when scrolling in lists and input
   boxes.
-
-Completed for 0.2.1
-================================================================================
-* Don't warn about skipping dependencies unless actually installing the
-  requested package
-* Actually close file in ShellReader::close() (had no noticeable effect in use)
-* Check for and warn about invalid package names
-* Check for and warn about missing .info files on startup, after sync, after
-  install/upgrade/reinstall/remove, and when computing dependencies
-* Better check for upgradable packages. Packages are now marked as upgradable
-  whenever installed_version != available_version, except for when
-  installed_version also has a trailing tag starting with by an underscore.
-  (Kernel module SlackBuilds often do this.) Previously, anything added after
-  the available_version text would be considered a tag, which could result in
-  packages not being labeled upgradable when they actually should be.
-* Restore original selection after pressing Esc in ComboBoxes.
