@@ -112,21 +112,31 @@ Checks whether SlackBuild can be upgraded
 *******************************************************************************/
 bool BuildListItem::upgradable() const
 {
-  std::size_t len;
+  std::size_t ilen, alen;
   bool test;
+  std::string installed, available;
 
   test = false;
-  len = getProp("available_version").size();
+  installed = getProp("installed_version");
+  available = getProp("available_version");
 
-  // Allow installed version to match even if it has trailing stuff after the
-  // available_version string. Happens with some packages like kernel modules.
+  // Allow installed version to match even if it has a trailing underscore
+  // after the available_version string. Happens with some packages like kernel
+  // modules. If there are other patterns that should also be considered here,
+  // hopefully someone will tell me.
 
-  if (getBoolProp("installed"))
+  if ( (getBoolProp("installed")) && (! getBoolProp("blacklisted")) )
   {
-    if (! getBoolProp("blacklisted"))
+    if (installed != available)
     {
-      if (getProp("installed_version").substr(0,len) != 
-          getProp("available_version")) { test = true; }
+      ilen = installed.size();
+      alen = available.size();
+      test = true;
+      if (ilen > alen)
+      {
+        if ( (installed.substr(0,alen) == available) &&
+             (installed[alen] == '_') ) { test = false; }
+      }
     }
   }
 
