@@ -32,9 +32,9 @@ int InputBox::highlightFirst()
     }
   }
 
-  if (_firstprint == _header_lines) { retval = 0; }
+  if (_firstprint == _header_rows) { retval = 0; }
   else { retval = 1; }
-  _firstprint = _header_lines;
+  _firstprint = _header_rows;
 
   return retval;
 }
@@ -125,11 +125,11 @@ int InputBox::highlightPreviousPage()
   // Determine how far to page
 
   firstprintstore = _firstprint;
-  if (_firstprint - rowsavail <= _header_lines)
+  if (_firstprint - rowsavail <= _header_rows)
   {
-    if (_items[_highlight]->posy() - rowsavail <= _header_lines)
+    if (_items[_highlight]->posy() - rowsavail <= _header_rows)
       return highlightFirst();
-    _firstprint = _header_lines;
+    _firstprint = _header_rows;
   }
   else { _firstprint -= rowsavail; }
 
@@ -297,7 +297,7 @@ void InputBox::redrawFrame() const
   // Symbols on right border to indicate scrolling
 
   nitems = _items.size();
-  if (_firstprint != _header_lines) { mvwaddch(_win, _header_lines, cols-1,
+  if (_firstprint != _header_rows) { mvwaddch(_win, _header_rows, cols-1,
                                                ACS_UARROW); }
   if (_items[nitems-1]->posy() > _firstprint + rows-_reserved_rows - 1)
     mvwaddch(_win, rows-4, cols-1, ACS_DARROW);
@@ -314,7 +314,7 @@ void InputBox::redrawChangedItems(bool force)
 
   getmaxyx(_win, rows, cols);
   rowsavail = rows-_reserved_rows;
-  y_offset = _firstprint - _header_lines;
+  y_offset = _firstprint - _header_rows;
 
   if (_prevhighlight < int(_items.size()))
   {
@@ -337,7 +337,7 @@ void InputBox::redrawAllItems(bool force)
 
   getmaxyx(_win, rows, cols);
   rowsavail = rows-_reserved_rows;
-  y_offset = _firstprint - _header_lines;
+  y_offset = _firstprint - _header_rows;
 
   nitems = _items.size();
   for ( i = 0; i < nitems; i++ ) 
@@ -362,8 +362,8 @@ InputBox::InputBox()
   _highlight = 0;
   _prevhighlight = 0;
   _reserved_rows = 6;
-  _header_lines = 3;
-  _firstprint = _header_lines;
+  _header_rows = 3;
+  _firstprint = _header_rows;
   _first_selectable = -1;
   _last_selectable = -1;
 }
@@ -377,8 +377,8 @@ InputBox::InputBox(WINDOW *win, const std::string & msg)
   _highlight = 0;
   _prevhighlight = 0;
   _reserved_rows = 6;
-  _header_lines = 3;
-  _firstprint = _header_lines;
+  _header_rows = 3;
+  _firstprint = _header_rows;
   _first_selectable = -1;
   _last_selectable = -1;
 }
@@ -502,7 +502,7 @@ std::string InputBox::exec()
   
     draw();
     _redraw_type = "changed";
-    y_offset = _firstprint - _header_lines;
+    y_offset = _firstprint - _header_rows;
 
     // Get user input from highlighted item
 

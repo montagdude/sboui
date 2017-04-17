@@ -99,9 +99,7 @@ Constructors and destructor
 *******************************************************************************/
 SearchBox::SearchBox()
 {
-  _reserved_rows = 6;
-  _header_lines = 3;
-  _firstprint = _header_lines;
+  _firstprint = _header_rows;
   _msg = "Search repository";
 
   addItem(new Label());

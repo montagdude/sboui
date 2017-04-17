@@ -69,7 +69,7 @@ void OptionsWindow::redrawFrame() const
   // Symbols on right border to indicate scrolling
 
   nitems = _items.size();
-  if (_firstprint != _header_lines) { mvwaddch(_win, _header_lines, cols-1,
+  if (_firstprint != _header_rows) { mvwaddch(_win, _header_rows, cols-1,
                                                ACS_UARROW); }
   if (_items[nitems-1]->posy() > _firstprint + rows-_reserved_rows - 1)
     mvwaddch(_win, rows-2, cols-1, ACS_DARROW);
@@ -85,8 +85,8 @@ OptionsWindow::OptionsWindow()
   int count, line;
 
   _reserved_rows = 2;
-  _header_lines = 1;
-  _firstprint = _header_lines;
+  _header_rows = 1;
+  _firstprint = _header_rows;
   _msg = "Options";
 
   count = 0;
