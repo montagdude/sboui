@@ -10,6 +10,7 @@ Things for 0.3
 * Add functionality to jump to a name in lists while typing.
 * Smarter checks for whether changes were actually applied, and try multiple
   methods for upgrades and reinstalls if needed.
+* Add "Show package info" action
 
 Completed for 0.3
 ================================================================================
