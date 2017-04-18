@@ -52,6 +52,7 @@ endif (LIBCONFIG++_FOUND)
 # Install rules
 install(TARGETS sboui DESTINATION sbin)
 install(FILES etc/sboui.conf DESTINATION ${CONFDIR})
+install(FILES etc/package_blacklist DESTINATION ${CONFDIR})
 file(GLOB COLOR_THEMES etc/colors.*)
 install(FILES ${COLOR_THEMES} DESTINATION ${DATADIR})
 install(FILES man/sboui.8 DESTINATION ${MANDIR}/man8)

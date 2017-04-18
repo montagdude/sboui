@@ -1,0 +1,21 @@
+# This is sboui's blacklist file. It operates only on the names of installed
+# packages, not any SlackBuild name in the repo. That means that any package
+# listed here can be installed, but they cannot be removed, upgraded, or
+# reinstalled.
+ 
+# Example blacklisting packages by name:
+#avl
+#vlc
+#i3
+ 
+# You can blacklist using regular expressions
+#
+# You don't need to use the full regex here, because all of the following
+# will be checked for the regex: name, version, arch, build, and full package
+# name.
+#
+# This one will blacklist all Alien Bob packages
+#[0-9]+alien
+#
+# This one would blacklist anything with "flash" in the name
+#(.*)flash(.*)
