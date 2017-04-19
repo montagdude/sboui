@@ -1616,7 +1616,7 @@ void MainWindow::showBuildActions(BuildListItem & build)
       draw(true);
       actionbox.draw(true);
     }
-    else { getting_selection = false; }
+    else if (selection == signals::quit) { getting_selection = false; }
   }
 
   // Get rid of window (redraw happens in MainWindow::show())
