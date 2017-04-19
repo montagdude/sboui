@@ -4,9 +4,9 @@
 #include <vector>
 #include <string>
 #include <sstream>
-#include <cmath>      // floor
 #include <algorithm>  // sort
 #include "DirListing.h"
+#include "ListItem.h"
 #include "BuildListItem.h"
 #include "string_util.h"
 #include "ShellReader.h"
@@ -74,56 +74,6 @@ int read_repo(std::vector<std::vector<BuildListItem> > & slackbuilds)
 
 /*******************************************************************************
 
-Overloaded template functions to turn reference into pointer
-http://stackoverflow.com/questions/14466620/c-template-specialization-calling-methods-on-types-that-could-be-pointers-or#14466705
-
-*******************************************************************************/
-template<typename T>
-T * ptr(T & obj) { return & obj; }
-
-template<typename T>
-T * ptr(T * obj) { return obj; }
-
-/*******************************************************************************
-
-Finds a SlackBuild by name in a sorted list. Returns 0 if found, 1 if not found.
-
-*******************************************************************************/
-template<typename T>
-int find_build_in_list(const std::string & name, std::vector<T> & buildlist,
-                       int & idx, int & lbound, int & rbound)
-{
-  int midbound;
-
-  // Check if outside the bounds
-
-  if ( (name < ptr(buildlist[lbound])->name()) ||
-       (name > ptr(buildlist[rbound])->name()) ) { return 1; }
-
-  // Check for match on bounds. Return if not found and bounds are consecutive.
-
-  if (name == ptr(buildlist[lbound])->name())
-  {
-    idx = lbound;
-    return 0;
-  }
-  else if (name == ptr(buildlist[rbound])->name())
-  {
-    idx = rbound;
-    return 0;
-  }
-  else { if (rbound-lbound == 1) { return 1; } }
-
-  // Cut the list in half and try again
-
-  midbound = std::floor(double(lbound+rbound)/2.);
-  if (name <= ptr(buildlist[midbound])->name()) { rbound = midbound; }
-  else { lbound = midbound; }
-  return find_build_in_list(name, buildlist, idx, lbound, rbound);
-}
-
-/*******************************************************************************
-
 Finds a SlackBuild by name in the _slackbuilds list. Returns 0 if found, 1 if
 not found.
  
@@ -140,7 +90,7 @@ int find_slackbuild(const std::string & name,
     nbuilds = slackbuilds[i].size();
     lbound = 0;
     rbound = nbuilds-1;
-    check = find_build_in_list(name, slackbuilds[i], idx1, lbound, rbound);
+    check = find_name_in_list(name, slackbuilds[i], idx1, lbound, rbound);
     if (check == 0)
     {
       idx0 = i;

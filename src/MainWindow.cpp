@@ -24,6 +24,7 @@
 #include "TagList.h"
 #include "OptionsWindow.h"
 #include "HelpWindow.h"
+#include "QuickSearch.h"
 #include "MainWindow.h"
 
 /*******************************************************************************
@@ -31,14 +32,16 @@
 Prints/clears status message
 
 *******************************************************************************/
-void MainWindow::printStatus(const std::string & msg)
+void MainWindow::printStatus(const std::string & msg, bool bold)
 {
   int rows, cols;
 
   getmaxyx(stdscr, rows, cols);
   move(rows-2, 0);
   clrtoeol();
+  if (bold) { attron(A_BOLD); }
   printToEol(msg, cols);
+  if (bold) { attroff(A_BOLD); }
   _status = msg;
   refresh();
 }
@@ -1288,6 +1291,29 @@ std::string MainWindow::displayMessage(const std::string & msg, bool centered,
 
 /*******************************************************************************
 
+Prints package version information as status for installed SlackBuild
+
+*******************************************************************************/
+void MainWindow::printPackageVersion(const BuildListItem & build)
+{
+  std::string statusmsg;
+
+  if (build.getBoolProp("installed"))
+  {
+    if (build.getBoolProp("blacklisted"))
+      statusmsg = "Installed: " + build.getProp("installed_version") +
+        " -> Available: " + build.getProp("available_version") +
+        " (blacklisted)";
+    else
+      statusmsg = "Installed: " + build.getProp("installed_version") +
+        " -> Available: " + build.getProp("available_version");
+    printStatus(statusmsg);
+  }
+  else { clearStatus(); }
+}
+
+/*******************************************************************************
+
 Constructor and destructor
 
 *******************************************************************************/
@@ -1604,6 +1630,65 @@ void MainWindow::showBuildActions(BuildListItem & build)
 
 /*******************************************************************************
 
+Performs a "quick search," jumping in the active list as the user types
+
+*******************************************************************************/
+void MainWindow::quickSearch()
+{
+  int rows, cols, check;
+  QuickSearch qsearch;
+  bool searching;
+  std::string selection, entry;
+  BuildListItem build;
+
+  getmaxyx(stdscr, rows, cols);
+
+  qsearch.setWindow(stdscr);
+  qsearch.setPosition(rows-2, 14); 
+  qsearch.setWidth(cols-14);
+  printStatus("Quick search: ", true);
+
+  searching = true;
+  while (searching)
+  {
+    selection = qsearch.exec(0);
+    if (selection == signals::resize)
+    {  
+      getmaxyx(stdscr, rows, cols);
+      qsearch.setPosition(rows-2, 14); 
+      qsearch.setWidth(cols-14);
+      draw(true);
+      printStatus("Quick search: ", true);
+      qsearch.draw(0, true, false);
+    }
+    else if ( (selection == signals::keyEnter) || (selection == signals::quit) )
+      searching = false;
+    else if (selection != "ignore")
+    {
+      entry = qsearch.getStringProp();
+      if (_activated_listbox == 0)
+      {
+        check = _clistbox.highlightSearch(entry);
+        if (check == 0)
+        {
+          _category_idx = _clistbox.highlight(); 
+          _blistboxes[_category_idx].draw(true);
+        }
+      }
+      else { _blistboxes[_category_idx].highlightSearch(entry); }
+    }
+  }
+
+  if (_activated_listbox == 1)
+  {
+    build = *_blistboxes[_category_idx].highlightedItem();
+    printPackageVersion(build);
+  }
+  else { clearStatus(); }
+}
+
+/*******************************************************************************
+
 Not used, but needed for MainWindow to be derived from CursesWidget
 
 *******************************************************************************/
@@ -1633,7 +1718,7 @@ Displays the main window
 *******************************************************************************/
 std::string MainWindow::exec()
 {
-  std::string selection, statusmsg;
+  std::string selection;
   bool getting_input, all_tagged;
   int check_quit;
   unsigned int i, ncategories;
@@ -1674,18 +1759,7 @@ std::string MainWindow::exec()
         // Display status message for installed SlackBuild
 
         build = *_blistboxes[_category_idx].highlightedItem();
-        if (build.getBoolProp("installed"))
-        {
-          if (build.getBoolProp("blacklisted"))
-            statusmsg = "Installed: " + build.getProp("installed_version") +
-              " -> Available: " + build.getProp("available_version") +
-              " (blacklisted)";
-          else
-            statusmsg = "Installed: " + build.getProp("installed_version") +
-              " -> Available: " + build.getProp("available_version");
-          printStatus(statusmsg);
-        }
-        else { clearStatus(); }
+        printPackageVersion(build);
       }
 
       // Tag signal: tag/untag all items in category
@@ -1711,18 +1785,7 @@ std::string MainWindow::exec()
         // Display status message for installed SlackBuild
 
         build = *_blistboxes[_category_idx].highlightedItem();
-        if (build.getBoolProp("installed"))
-        {
-          if (build.getBoolProp("blacklisted"))
-            statusmsg = "Installed: " + build.getProp("installed_version") +
-              " -> Available: " + build.getProp("available_version") +
-              " (blacklisted)";
-          else
-            statusmsg = "Installed: " + build.getProp("installed_version") +
-              " -> Available: " + build.getProp("available_version");
-          printStatus(statusmsg);
-        }
-        else { clearStatus(); }
+        printPackageVersion(build);
       }
 
       // Tab signal or left key
@@ -1806,6 +1869,8 @@ std::string MainWindow::exec()
     else if (selection == "u") { applyTags("Upgrade"); }
     else if (selection == "r") { applyTags("Remove"); }
     else if (selection == "e") { applyTags("Reinstall"); }
+    else if ( (selection.size() == 1) && (selection[0] == 0x13) )  // Ctrl-s
+      quickSearch(); 
   }
 
   return signals::quit;

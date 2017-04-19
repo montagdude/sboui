@@ -39,7 +39,7 @@ class MainWindow: public CursesWidget {
     std::string _title, _filter, _info, _status;
     unsigned int _category_idx, _activated_listbox;
 
-    void printStatus(const std::string & msg);
+    void printStatus(const std::string & msg, bool bold=false);
     void clearStatus();
     void refreshStatus();
 
@@ -104,6 +104,10 @@ class MainWindow: public CursesWidget {
                                const std::string & name="Information",
                                const std::string & info="Enter: Dismiss");
 
+    /* Prints package version information as status */
+
+    void printPackageVersion(const BuildListItem & build);
+
     /* Sets size of popup boxes */
 
     void popupSize(int & height, int & width, CursesWidget *popup) const;
@@ -134,6 +138,10 @@ class MainWindow: public CursesWidget {
     void selectFilter();
     void search();
     void showBuildActions(BuildListItem & build);
+
+    /* Quick search in active list */
+
+    void quickSearch();
 
     /* Not used, but needed for MainWindow to be derived from CursesWidget */
 

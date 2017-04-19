@@ -11,7 +11,7 @@ String input item
 *******************************************************************************/
 class TextInput: public InputItem {
 
-  private:
+  protected:
 
     std::string _entry;
     unsigned int _firsttext, _cursidx;
@@ -38,7 +38,7 @@ class TextInput: public InputItem {
     /* User interaction */
 
     void draw(int y_offset, bool force=false, bool highlight=false);
-    std::string exec(int y_offset);
+    virtual std::string exec(int y_offset);
 
     /* Accessing properties. */
 

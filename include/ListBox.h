@@ -63,6 +63,10 @@ class ListBox: public AbstractListBox {
     virtual void minimumSize(int & height, int & width) const;
     virtual void preferredSize(int & height, int & width) const;
 
+    /* Sets highlight by search for string */
+
+    int highlightSearch(const std::string & pattern); 
+
     /* Returns pointer to item */
 
     ListItem * highlightedItem();

@@ -2,15 +2,13 @@
 
 #include <string>
 #include <vector>
+#include <cmath>   // floor
 #include "BuildListItem.h"
 #include "Blacklist.h"
 
 extern Blacklist package_blacklist;
 
 int read_repo(std::vector<std::vector<BuildListItem> > & slackbuilds);
-template<typename T>
-int find_build_in_list(const std::string & name, std::vector<T> & buildlist,
-                       int & idx, int & lbound, int & rbound);
 int find_slackbuild(const std::string & name,
                     std::vector<std::vector<BuildListItem> > & slackbuilds,
                     int & idx0, int & idx1);
@@ -37,3 +35,85 @@ int remove_slackbuild(const BuildListItem & build);
 int view_readme(const BuildListItem & build);
 int view_file(const std::string & path);
 int sync_repo();
+
+/*******************************************************************************
+
+Overloaded template functions to turn reference into pointer
+http://stackoverflow.com/questions/14466620/c-template-specialization- \
+calling-methods-on-types-that-could-be-pointers-or#14466705
+
+*******************************************************************************/
+template<typename T>
+T * ptr(T & obj) { return & obj; }
+
+template<typename T>
+T * ptr(T * obj) { return obj; }
+
+/*******************************************************************************
+
+Finds an item by name in a sorted list. If whole_word is set to false, it
+will only search the first N characters of items in the list, where N is the
+length of the input name. Returns 0 if found, 1 if not found.
+
+Note: the implementation is placed in the header file to avoid the need for
+explicit instantiation of the template.
+
+*******************************************************************************/
+template<typename T>
+int find_name_in_list(const std::string & name, std::vector<T> & list,
+                      int & idx, int & lbound, int & rbound,
+                      bool whole_word=true)
+{
+  int midbound;
+  unsigned int namelen;
+  std::string leftcheck, rightcheck, midcheck;
+
+  if (name == "") { return 1; }
+
+  if (whole_word)
+  {
+    leftcheck = ptr(list[lbound])->name();
+    rightcheck = ptr(list[rbound])->name();
+  }
+  else
+  {
+    namelen = name.size();
+    leftcheck = ptr(list[lbound])->name().substr(0,namelen);
+    rightcheck = ptr(list[rbound])->name().substr(0,namelen);
+  }
+
+  // Check if outside the bounds
+
+  if ( (name < leftcheck) || (name > rightcheck) ) { return 1; }
+
+  // Check bounds for match
+
+  if (name == leftcheck)
+  {
+    if ( (whole_word) || (rbound-lbound == 1) )
+    {
+      idx = lbound;
+      return 0;
+    }
+  }
+  else if (name == rightcheck)
+  {
+    if ( (whole_word) || (rbound-lbound == 1) )
+    {
+      idx = rbound;
+      return 0;
+    }
+  }
+  else { if (rbound-lbound == 1) { return 1; } }
+  
+  // Cut the list in half and try again
+
+  midbound = std::floor(double(lbound+rbound)/2.);
+  if (whole_word) { midcheck = ptr(list[midbound])->name(); }
+  else { midcheck = ptr(list[midbound])->name().substr(0,namelen); }
+
+  if (name <= midcheck) { rbound = midbound; }
+  else { lbound = midbound; }
+
+  return find_name_in_list(name, list, idx, lbound, rbound, whole_word);
+}

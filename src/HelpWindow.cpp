@@ -162,6 +162,7 @@ void HelpWindow::createList()
   addItem(new HelpItem("Filter SlackBuilds", "f"));
   addItem(new HelpItem("Help / show shortcuts", "?"));
   addItem(new HelpItem("Options", "o"));
+  addItem(new HelpItem("Quick search in active list", "Ctrl+s"));
   addItem(new HelpItem("Quit", "q"));
   addItem(new HelpItem("Search", "/"));
   addItem(new HelpItem("Switch active list", "Tab"));

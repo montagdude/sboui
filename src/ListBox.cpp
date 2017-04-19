@@ -1,10 +1,11 @@
 #include <string>
 #include <curses.h>
-#include <cmath>     // floor
-#include <algorithm> // max, min
+#include <cmath>      // floor
+#include <algorithm>  // max, min
 #include "Color.h"
 #include "settings.h"
 #include "signals.h"
+#include "backend.h"  // find_name_in_list
 #include "ListItem.h"
 #include "AbstractListBox.h"
 #include "ListBox.h"
@@ -470,6 +471,30 @@ void ListBox::preferredSize(int & height, int & width) const
     if (namelen > width) { width = namelen; }
   }
   width += reserved_cols + widthpadding;
+}
+
+/*******************************************************************************
+
+Sets highlight based on a search. It doesn't have to be an exact match; the
+first item that begins with the typed string will be highlighted. Returns 0
+on successful match or 1 otherwise.
+
+*******************************************************************************/
+int ListBox::highlightSearch(const std::string & pattern)
+{
+  int check, idx, lbound, rbound;
+
+  lbound = 0;
+  rbound = numItems()-1;
+  check = find_name_in_list(pattern, _items, idx, lbound, rbound, false);
+  if (check == 0)
+  {
+    _highlight = idx;
+    determineFirstPrint();
+    draw(true);
+  }
+
+  return 0; 
 }
 
 /*******************************************************************************

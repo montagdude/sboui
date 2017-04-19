@@ -2,7 +2,7 @@
 #include <vector>
 #include <algorithm>       // reverse
 #include "BuildListItem.h"
-#include "backend.h"       // get_reqs, find_slackbuild, find_build_in_list
+#include "backend.h"       // get_reqs, find_slackbuild
 #include "string_util.h"   // split
 #include "requirements.h"
 
