@@ -13,3 +13,4 @@ Things for 0.3
 * Smarter checks for whether changes were actually applied, and try multiple
   methods for upgrades and reinstalls if needed.
 * Add a "Show package info" action.
+* Add option to search in READMEs.
