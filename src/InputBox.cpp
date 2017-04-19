@@ -432,7 +432,7 @@ void InputBox::addItem(InputItem *item)
 
   getmaxyx(_win, rows, cols);
   nitems = _items.size();
-  if (item->autoPosition()) { item->setPosition(nitems+3,1); }
+  if (item->autoPosition()) { item->setPosition(nitems+_header_rows,1); }
   item->setWindow(_win);
   _items.push_back(item);
   highlightFirst();
