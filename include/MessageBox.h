@@ -19,7 +19,7 @@ class MessageBox: public CursesWidget {
     bool _header_colorize, _centered;
 
     void redrawFrame() const;
-    void redrawMessage() const;
+    virtual void redrawMessage() const;
 
   public:
 
@@ -38,8 +38,8 @@ class MessageBox: public CursesWidget {
 
     /* Get attributes */
 
-    void minimumSize(int & height, int & width) const;
-    void preferredSize(int & height, int & width) const;
+    virtual void minimumSize(int & height, int & width) const;
+    virtual void preferredSize(int & height, int & width) const;
 
     /* Draws frame and message */
  

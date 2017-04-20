@@ -25,6 +25,7 @@
 #include "OptionsWindow.h"
 #include "HelpWindow.h"
 #include "QuickSearch.h"
+#include "PackageInfoBox.h"
 #include "MainWindow.h"
 
 /*******************************************************************************
@@ -964,6 +965,69 @@ void MainWindow::showInverseReqs(BuildListItem & build)
 
 /*******************************************************************************
 
+Shows package information about selected SlackBuild
+
+*******************************************************************************/
+void MainWindow::showPackageInfo(BuildListItem & build)
+{
+  std::vector<std::string> installedpkgs;
+  std::string selection, msg;
+  bool getting_selection;
+  PackageInfoBox pkginfo;
+  WINDOW *pkginfowin;
+
+  // Set up message
+
+  installedpkgs = list_installed_packages();
+  build.readInstalledProps(installedpkgs);
+  build.readPropsFromRepo();
+
+  msg =  "SlackBuild name: " + build.name() + "\n";
+  if (build.getBoolProp("installed"))
+  {
+    msg += "Installed: yes\n";
+    msg += "Installed version: " + build.getProp("installed_version") + "\n";
+  }
+  else { msg += "Installed: no\n"; }
+  msg += "Available version: " + build.getProp("available_version") + "\n";
+  if (build.getBoolProp("installed"))
+  {
+    msg += "Package name: " + build.getProp("package_name") + "\n";
+    if (build.getBoolProp("blacklisted")) { msg += "Blacklisted: yes"; }
+    else { msg += "Blacklisted: no"; }
+  } 
+
+  // Place message box
+
+  pkginfowin = newwin(1, 1, 0, 0);
+  pkginfo.setWindow(pkginfowin);
+  pkginfo.setMessage(msg);
+  placePopup(&pkginfo, pkginfowin);
+  draw(true);
+
+  // Get user input
+
+  getting_selection = true;
+  while (getting_selection)
+  {
+    selection = pkginfo.exec();
+    getting_selection = false;
+    if (selection == signals::resize)
+    {
+      getting_selection = true;
+      placePopup(&pkginfo, pkginfowin);
+      draw(true);
+    }
+  }
+
+  // Get rid of window
+
+  delwin(pkginfowin);
+  draw(true);
+}
+
+/*******************************************************************************
+
 Displays a file browser in the directory of a given SlackBuild
 
 *******************************************************************************/
@@ -1602,6 +1666,14 @@ void MainWindow::showBuildActions(BuildListItem & build)
       placePopup(&actionbox, actionwin);
       draw(true);
     }                                              
+    else if ( (selected == "Show package info") || (selection == "S") )
+    {
+      hideWindow(actionwin);
+      draw(true);
+      showPackageInfo(build);
+      placePopup(&actionbox, actionwin);
+      draw(true);
+    }
     else if ( (selected == "Browse files") || (selection == "B") )
     {
       hideWindow(actionwin);

@@ -85,6 +85,7 @@ class MainWindow: public CursesWidget {
                        int & nremoved, bool & cancel_all, bool batch=false);
     void showBuildOrder(BuildListItem & build);
     void showInverseReqs(BuildListItem & build);
+    void showPackageInfo(BuildListItem & build);
     void browseFiles(const BuildListItem & build);
 
     /* Sync/update */

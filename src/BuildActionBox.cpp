@@ -98,6 +98,10 @@ void BuildActionBox::create(const BuildListItem & build)
   _items[count]->setHotKey(0);
    count++;
 
+  addItem(new ListItem("Show package info"));
+  _items[count]->setHotKey(0);
+   count++;
+
   addItem(new ListItem("Browse files"));
   _items[count]->setHotKey(0);
    count++;

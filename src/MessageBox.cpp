@@ -2,7 +2,7 @@
 #include <vector>
 #include <curses.h>
 #include <cmath>     // floor
-#include <algorithm> // min
+#include <algorithm> // max
 #include "Color.h"
 #include "settings.h"
 #include "signals.h"
