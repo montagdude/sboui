@@ -16,7 +16,7 @@ class SearchBox: public InputBox {
   private:
 
     TextInput _entryitem;
-    ToggleInput _caseitem, _wholeitem;
+    ToggleInput _caseitem, _wholeitem, _descitem;
 
     /* Drawing */
 
@@ -38,6 +38,7 @@ class SearchBox: public InputBox {
     std::string searchString() const;
     bool caseSensitive() const;
     bool wholeWord() const;
+    bool searchDescriptions() const;
 
     /* Draws frame, items, etc. as needed */
 

@@ -6,6 +6,8 @@
 #include "CategoryListBox.h"
 #include "BuildListBox.h"
 #include "string_util.h"
+#include "settings.h"   // repo_dir
+#include "filters.h"
 
 /*******************************************************************************
 
@@ -307,10 +309,11 @@ void filter_search(std::vector<std::vector<BuildListItem> > & slackbuilds,
                    WINDOW *blistboxwin, CategoryListBox & clistbox,
                    std::vector<BuildListBox> & blistboxes,
                    unsigned int & nsearch, const std::string & searchterm,
-                   bool case_sensitive, bool whole_word)
+                   bool case_sensitive, bool whole_word,
+                   bool search_descriptions)
 {
   unsigned int i, j, nbuilds, ncategories, nsearch_categories;
-  std::string term, tomatch;
+  std::string term, tomatch, desc_file;
   bool match, category_found;
   BuildListBox initlistbox;
 
@@ -338,6 +341,17 @@ void filter_search(std::vector<std::vector<BuildListItem> > & slackbuilds,
       else { tomatch = string_to_lower(slackbuilds[i][j].name()); }
       if (whole_word) { match = (term == tomatch); }
       else { match = (tomatch.find(term) != std::string::npos); }
+
+      // Check for search term in slack-desc file
+
+      if ( (! match) && (search_descriptions) )
+      {
+        desc_file = settings::repo_dir + "/" + 
+                    slackbuilds[i][j].getProp("category") + "/"  +
+                    slackbuilds[i][j].name() + "/slack-desc";
+        match = find_in_file(searchterm, desc_file, whole_word, case_sensitive);
+      }
+
       if (! match) { continue; }
 
       if (! category_found)

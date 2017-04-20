@@ -29,7 +29,8 @@ void filter_search(std::vector<std::vector<BuildListItem> > & slackbuilds,
                        WINDOW *blistboxwin, CategoryListBox & clistbox,
                        std::vector<BuildListBox> & blistboxes,
                        unsigned int & nsearch, const std::string & searchterm,
-                       bool case_sensitive, bool whole_word);
+                       bool case_sensitive, bool whole_word,
+                       bool search_descriptions);
 void filter_by_prop(std::vector<std::vector<BuildListItem> > & slackbuilds,
                        const std::string & propname,
                        std::vector<CategoryListItem> & categories,

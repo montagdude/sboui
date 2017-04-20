@@ -14,3 +14,6 @@ extern std::vector<std::string> split(const std::string & instr,
                                       char delim=' ');
 extern std::vector<std::string> wrap_words(const std::string & instr,
                                            unsigned int width);
+extern bool find_in_file(const std::string & pattern,
+                         const std::string & filename, bool whole_word=false,
+                         bool case_sensitive=false);

@@ -1,5 +1,6 @@
 #include <string>
 #include <sstream>
+#include <fstream>
 #include <vector>
 #include "string_util.h"
 
@@ -164,4 +165,78 @@ std::vector<std::string> wrap_words(const std::string & instr,
   }
 
   return wordvec;
+}
+
+/*******************************************************************************
+
+Searches in a file for a pattern. Returns true if found, or false if not found
+or file can't be read.
+
+*******************************************************************************/
+bool find_in_file(const std::string & pattern, const std::string & filename,
+                  bool whole_word, bool case_sensitive)
+{
+  std::ifstream file;
+  std::string searchpattern, line;
+  std::vector<std::string> splitline;
+  bool match;
+  std::size_t pos;
+  unsigned int i, nwords, wordlen;
+  char last;
+
+  file.open(filename.c_str());
+  if (not file.is_open()) { return false; }
+
+  if (case_sensitive) { searchpattern = pattern; }
+  else { searchpattern = string_to_lower(pattern); }
+
+  match = false;
+  while (! file.eof())
+  {
+    std::getline(file, line);
+
+    // Skip comments
+
+    if (line[0] == '#') { continue; }
+
+    if (! case_sensitive) { line = string_to_lower(line); }
+
+    // Search for pattern in entire line
+
+    if (! whole_word) 
+    {
+      pos = line.find(searchpattern);
+      if (pos != std::string::npos) { match = true; }
+    }
+    
+    // Search individual words
+
+    else
+    {
+      splitline = split(line, ' ');
+      nwords = splitline.size();
+      for ( i = 0; i < nwords; i++ )
+      {
+        if (splitline[i] == searchpattern) { match = true; }
+        else
+        {
+          wordlen = splitline[i].size();
+          if (splitline[i].substr(0,wordlen-1) == searchpattern)
+          {
+            // Check for punctuation
+
+            last = splitline[i][wordlen-1];
+            if ( (last == '.') || (last == ',') || (last == ';') ||
+                 (last == ':') || (last == ')') || (last == '?') ||
+                 (last == '!') ) { match = true; }
+          }
+        }
+        if (match) { break; }
+      }
+    }
+    if (match) { break; }
+  }
+
+  file.close();
+  return match;
 }
