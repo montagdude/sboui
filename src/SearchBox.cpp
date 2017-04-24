@@ -123,11 +123,11 @@ SearchBox::SearchBox()
   _wholeitem.setWidth(30);
   _wholeitem.setPosition(7,1);
 
-  addItem(&_descitem);
-  _descitem.setName("Search slack-desc files");
-  _descitem.setEnabled(false);
-  _descitem.setWidth(30);
-  _descitem.setPosition(8,1);
+  addItem(&_readmeitem);
+  _readmeitem.setName("Search READMEs");
+  _readmeitem.setEnabled(false);
+  _readmeitem.setWidth(30);
+  _readmeitem.setPosition(8,1);
 }
 
 SearchBox::~SearchBox() { delete _items[0]; }
@@ -151,7 +151,7 @@ std::string SearchBox::searchString() const
 
 bool SearchBox::caseSensitive() const { return _caseitem.getBoolProp(); }
 bool SearchBox::wholeWord() const { return _wholeitem.getBoolProp(); }
-bool SearchBox::searchDescriptions() const { return _descitem.getBoolProp(); }
+bool SearchBox::searchREADMEs() const { return _readmeitem.getBoolProp(); }
 
 /*******************************************************************************
 

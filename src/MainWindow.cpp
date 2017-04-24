@@ -543,13 +543,13 @@ Filters SlackBuilds by search term
 *******************************************************************************/
 void MainWindow::filterSearch(const std::string & searchterm, 
                               bool case_sensitive, bool whole_word,
-                              bool search_descriptions)
+                              bool search_readmes)
 {
   unsigned int nsearch;
 
   _filter = "search for " + searchterm;
-  if (search_descriptions)
-    printStatus("Searching for " + searchterm + " in name and slack-desc ...");
+  if (search_readmes)
+    printStatus("Searching for " + searchterm + " in name and README ...");
   else
     printStatus("Searching for " + searchterm + " ...");
 
@@ -559,7 +559,7 @@ void MainWindow::filterSearch(const std::string & searchterm,
 
   filter_search(_slackbuilds, _categories, _win2, _clistbox, _blistboxes,
                 nsearch, searchterm, case_sensitive, whole_word,
-                search_descriptions);
+                search_readmes);
 
   if (nsearch == 0)
     printStatus("No matches for " + searchterm + ".");
@@ -1571,7 +1571,7 @@ void MainWindow::search()
       if (_searchbox.searchString().size() > 0)
       {
         filterSearch(_searchbox.searchString(), _searchbox.caseSensitive(),
-                     _searchbox.wholeWord(), _searchbox.searchDescriptions());
+                     _searchbox.wholeWord(), _searchbox.searchREADMEs());
       }
     }
     else if (selection == signals::quit) { getting_input = false; }

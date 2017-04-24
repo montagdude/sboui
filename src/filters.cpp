@@ -310,10 +310,10 @@ void filter_search(std::vector<std::vector<BuildListItem> > & slackbuilds,
                    std::vector<BuildListBox> & blistboxes,
                    unsigned int & nsearch, const std::string & searchterm,
                    bool case_sensitive, bool whole_word,
-                   bool search_descriptions)
+                   bool search_readmes)
 {
   unsigned int i, j, nbuilds, ncategories, nsearch_categories;
-  std::string term, tomatch, desc_file;
+  std::string term, tomatch, readme_file;
   bool match, category_found;
   BuildListBox initlistbox;
 
@@ -342,14 +342,15 @@ void filter_search(std::vector<std::vector<BuildListItem> > & slackbuilds,
       if (whole_word) { match = (term == tomatch); }
       else { match = (tomatch.find(term) != std::string::npos); }
 
-      // Check for search term in slack-desc file
+      // Check for search term in README
 
-      if ( (! match) && (search_descriptions) )
+      if ( (! match) && (search_readmes) )
       {
-        desc_file = settings::repo_dir + "/" + 
+        readme_file = settings::repo_dir + "/" + 
                     slackbuilds[i][j].getProp("category") + "/"  +
-                    slackbuilds[i][j].name() + "/slack-desc";
-        match = find_in_file(searchterm, desc_file, whole_word, case_sensitive);
+                    slackbuilds[i][j].name() + "/README";
+        match = find_in_file(searchterm, readme_file, whole_word,
+                             case_sensitive);
       }
 
       if (! match) { continue; }
