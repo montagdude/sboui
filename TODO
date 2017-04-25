@@ -7,6 +7,10 @@ Things for 0.3
 ================================================================================
 * Smarter checks for whether changes were actually applied, and try multiple
   methods for upgrades and reinstalls if needed.
+* Instead of the rebuild function, recheck status for SlackBuilds in the build
+  order after the action is complete. Then re-display the build actions box.
+  This also would remove the need to have a "recheck" option for the InstallBox.
+* Add a "view command line output" command.
 
 Completed for 0.3
 ================================================================================
