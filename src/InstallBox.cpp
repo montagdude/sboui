@@ -598,7 +598,7 @@ success. Also counts number of SlackBuilds that were changed.
 
 *******************************************************************************/
 int InstallBox::applyChanges(int & ninstalled, int & nupgraded,
-                             int & nreinstalled, int & nremoved) const
+                             int & nreinstalled, int & nremoved)
 {
   unsigned int nbuilds, i;
   int retval;

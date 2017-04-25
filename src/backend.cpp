@@ -417,13 +417,23 @@ int run_command(const std::string & cmd)
 Installs a SlackBuild
 
 *******************************************************************************/
-int install_slackbuild(const BuildListItem & build)
+int install_slackbuild(BuildListItem & build)
 {
   std::string cmd;
+  int check;
+  std::vector<std::string> installedpkgs;
 
   cmd = install_vars + " " + install_cmd + " " + build.name() + " " + 
         install_clos;
-  return run_command(cmd);
+  check = run_command(cmd);
+  if (check != 0) { return check; }
+
+  // Check to make sure it was actually installed
+
+  installedpkgs = list_installed_packages();
+  build.readInstalledProps(installedpkgs);
+  if (build.getBoolProp("installed")) { return 0; }
+  else { return 1; }
 }
 
 /*******************************************************************************
@@ -431,13 +441,32 @@ int install_slackbuild(const BuildListItem & build)
 Upgrades a SlackBuild
 
 *******************************************************************************/
-int upgrade_slackbuild(const BuildListItem & build)
+int upgrade_slackbuild(BuildListItem & build)
 {
   std::string cmd;
+  int check;
+  std::vector<std::string> installedpkgs;
 
   cmd = upgrade_vars + " " + upgrade_cmd + " " + build.name() + " " +
         upgrade_clos;
-  return run_command(cmd);
+  check = run_command(cmd);
+  if (check != 0) { return check; }
+
+  // If upgrade didn't work (maybe package manager doesn't think it's 
+  //  upgradable), reinstall instead
+
+  installedpkgs = list_installed_packages();
+  build.readInstalledProps(installedpkgs);
+  build.readPropsFromRepo();
+  if (build.upgradable())
+  {
+    check = remove_slackbuild(build);
+    if (check != 0) { return check; }
+    check = install_slackbuild(build); 
+    if (check != 0) { return check; }
+  }
+
+  return 0;
 }
 
 /*******************************************************************************
@@ -445,12 +474,22 @@ int upgrade_slackbuild(const BuildListItem & build)
 Removes a SlackBuild
 
 *******************************************************************************/
-int remove_slackbuild(const BuildListItem & build)
+int remove_slackbuild(BuildListItem & build)
 {
   std::string cmd;
+  int check;
+  std::vector<std::string> installedpkgs;
 
   cmd = "removepkg " + build.getProp("package_name");
-  return run_command(cmd);
+  check = run_command(cmd);
+  if (check != 0) { return check; }
+
+  // Check to make sure it was actually removed
+
+  installedpkgs = list_installed_packages();
+  build.readInstalledProps(installedpkgs);
+  if (build.getBoolProp("installed")) { return 1; }
+  else { return 0; }
 }
 
 /*******************************************************************************
