@@ -25,14 +25,14 @@ Creates list based on SlackBuild selected. Returns 0 if dependency resolution
 succeeded or 1 if some could not be found in the repository.
 
 *******************************************************************************/
-void InvReqBox::create(BuildListItem & build,
-                       std::vector<BuildListItem *> & installedlist) 
+void InvReqBox::create(const BuildListItem & build,
+                       std::vector<std::vector<BuildListItem> > & slackbuilds)
 {
   unsigned int i, nbuilds;
   std::vector<BuildListItem *> invreqlist;
 
   setName(build.name() + " inverse deps");
-  compute_inv_reqs(build, invreqlist, installedlist);
+  compute_inv_reqs(build, invreqlist, slackbuilds);
 
   nbuilds = invreqlist.size();
   for ( i = 0; i < nbuilds; i++ ) { addItem(invreqlist[i]); }

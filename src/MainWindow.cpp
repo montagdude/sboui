@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include <iostream>
 #include <cmath>     // floor
 #include <curses.h>
 #include "Color.h"
@@ -213,8 +214,6 @@ void MainWindow::clearData()
   if (_win2) { delwin(_win2); }
   _blistboxes.resize(0);
   _slackbuilds.resize(0);
-  _installedlist.resize(0);
-  _nondeplist.resize(0);
   _categories.resize(0);
   _taglist.clearList();
   _category_idx = 0;
@@ -251,7 +250,7 @@ int MainWindow::readLists()
 
   // Determine which are installed and get other info
 
-  list_installed(_slackbuilds, _installedlist, pkg_errors, missing_info);
+  determine_installed(_slackbuilds, pkg_errors, missing_info);
 
   // Warning for bad package names
 
@@ -285,25 +284,10 @@ Rebuilds lists after applying changes
 *******************************************************************************/
 void MainWindow::rebuild()
 {
-  unsigned int k, ninstalled, nmissing;
+  unsigned int k;
   int i, j, ntagged;
   std::vector<std::string> pkg_errors, missing_info;
   std::string errmsg;
-
-  // Clear information that may have changed from slackbuilds list
-
-  ninstalled = _installedlist.size();
-  for ( k = 0; k < ninstalled; k++ )
-  {
-    if (_installedlist[k]->getBoolProp("installed"))
-    {
-      _installedlist[k]->setBoolProp("installed", false);
-      _installedlist[k]->setProp("installed_version", "");
-      _installedlist[k]->setProp("available_version", "");
-      _installedlist[k]->setProp("requires", "");
-      _installedlist[k]->setProp("package_name", "");
-    }
-  }
 
   // Clear tags
 
@@ -314,22 +298,6 @@ void MainWindow::rebuild()
     _slackbuilds[i][j].setBoolProp("tagged", false);
   }
   _taglist.clearList();
-
-  // Rebuild installed list 
-
-  _nondeplist.resize(0);
-  list_installed(_slackbuilds, _installedlist, pkg_errors, missing_info);
-
-  // Warning for missing info files
-
-  nmissing = missing_info.size();
-  if (nmissing > 0)
-  {
-    errmsg = "The following installed SlackBuilds are missing .info files:\n";
-    for ( k = 0; k < nmissing; k++ ) { errmsg += "\n" + missing_info[k]; }
-    errmsg += "\n\nYou should run the sync command to fix this problem.";
-    displayError(errmsg);
-  }
 
   // Re-filter (data, tags could have changed)
 
@@ -392,14 +360,11 @@ void MainWindow::filterInstalled()
   _filter = "installed SlackBuilds";
   printStatus("Filtering by installed SlackBuilds ...");
 
-  if (_installedlist.size() == 0) 
-    list_installed(_slackbuilds, _installedlist, pkg_errors, missing_info);
-
   _activated_listbox = 0;
   _category_idx = 0;
-  ninstalled = _installedlist.size();
 
-  filter_installed(_installedlist, _categories, _win2, _clistbox, _blistboxes);
+  filter_by_prop(_slackbuilds, "installed", _categories, _win2, _clistbox,
+                 _blistboxes, ninstalled);
 
   if (ninstalled == 0) 
     printStatus("No installed SlackBuilds.");
@@ -423,15 +388,13 @@ void MainWindow::filterUpgradable()
 
   _filter = "upgradable SlackBuilds";
   printStatus("Filtering by upgradable SlackBuilds ...");
-  if (_installedlist.size() == 0) 
-    list_installed(_slackbuilds, _installedlist, pkg_errors, missing_info); 
 
   _category_idx = 0;
   _activated_listbox = 0;
   nupgradable = 0;
 
-  filter_upgradable(_installedlist, _categories, _win2, _clistbox, _blistboxes,
-                    nupgradable);
+  filter_by_prop(_slackbuilds, "upgradable", _categories, _win2, _clistbox,
+                 _blistboxes, nupgradable);
 
   if (nupgradable == 0) 
     printStatus("No upgradable SlackBuilds."); 
@@ -515,16 +478,12 @@ void MainWindow::filterNonDeps()
   _filter = "non-dependencies";
   printStatus("Filtering by non-dependencies ...");
 
-  if (_installedlist.size() == 0) 
-    list_installed(_slackbuilds, _installedlist, pkg_errors, missing_info);
-  if (_nondeplist.size() == 0)
-    list_nondeps(_installedlist, _nondeplist);
-
   _category_idx = 0;
   _activated_listbox = 0;
-  nnondeps = _nondeplist.size();
+  nnondeps = 0;
 
-  filter_nondeps(_nondeplist, _categories, _win2, _clistbox, _blistboxes);
+  filter_nondeps(_slackbuilds, _categories, _win2, _clistbox, _blistboxes,
+                 nnondeps);
 
   if (nnondeps == 0) 
     printStatus("No non-dependencies."); 
@@ -926,7 +885,7 @@ void MainWindow::showBuildOrder(BuildListItem & build)
 Shows installed SlackBuilds depending on a given SlackBuild
 
 *******************************************************************************/
-void MainWindow::showInverseReqs(BuildListItem & build)
+void MainWindow::showInverseReqs(const BuildListItem & build)
 {
   WINDOW *invreqwin;
   std::string selection;
@@ -936,7 +895,7 @@ void MainWindow::showInverseReqs(BuildListItem & build)
 
   printStatus("Computing installed SlackBuilds depending on "
               + build.name() + " ...");
-  invreqs.create(build, _installedlist);
+  invreqs.create(build, _slackbuilds);
   invreqs.setTagList(&_taglist);
 
   ninvreqs = invreqs.numItems();
@@ -975,7 +934,6 @@ Shows package information about selected SlackBuild
 *******************************************************************************/
 void MainWindow::showPackageInfo(BuildListItem & build)
 {
-  std::vector<std::string> installedpkgs;
   std::string selection, msg;
   bool getting_selection;
   PackageInfoBox pkginfo;
@@ -983,6 +941,8 @@ void MainWindow::showPackageInfo(BuildListItem & build)
 
   // Set up message
 
+//FIXME: shouldn't need this
+std::vector<std::string> installedpkgs;
   installedpkgs = list_installed_packages();
   build.readInstalledProps(installedpkgs);
   build.readPropsFromRepo();
@@ -1207,6 +1167,22 @@ void MainWindow::applyTags(const std::string & action)
 
 /*******************************************************************************
 
+Drops to command line to view output
+
+*******************************************************************************/
+void MainWindow::viewCommandLine() const
+{
+  std::string response;
+
+  def_prog_mode();
+  endwin();
+  std::cout << "Press Enter to return to main window ...";
+  std::getline(std::cin, response);
+  reset_prog_mode();
+}
+
+/*******************************************************************************
+
 Sets size and position of popup boxes
 
 *******************************************************************************/
@@ -1392,8 +1368,6 @@ MainWindow::MainWindow(const std::string & version)
   _win2 = NULL;
   _blistboxes.resize(0);
   _slackbuilds.resize(0);
-  _installedlist.resize(0);
-  _nondeplist.resize(0);
   _categories.resize(0);
   _title = "sboui " + version;
   _filter = "all SlackBuilds";
@@ -1942,6 +1916,7 @@ std::string MainWindow::exec()
       if (check_quit == 1) { getting_input = false; }
     }
     else if (selection == "l") { toggleLayout(); }
+    else if (selection == "c") { viewCommandLine(); }
     else if (selection == "i") { applyTags("Install"); }
     else if (selection == "u") { applyTags("Upgrade"); }
     else if (selection == "r") { applyTags("Remove"); }

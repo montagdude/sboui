@@ -29,7 +29,6 @@ class MainWindow: public CursesWidget {
     CategoryListBox _clistbox;
     std::vector<BuildListBox> _blistboxes;
     std::vector<std::vector<BuildListItem> > _slackbuilds;
-    std::vector<BuildListItem *> _installedlist, _nondeplist;
     std::vector<CategoryListItem> _categories;
     FilterBox _fbox;
     SearchBox _searchbox;
@@ -84,7 +83,7 @@ class MainWindow: public CursesWidget {
                        int & ninstalled, int & nupgraded, int & nreinstalled,
                        int & nremoved, bool & cancel_all, bool batch=false);
     void showBuildOrder(BuildListItem & build);
-    void showInverseReqs(BuildListItem & build);
+    void showInverseReqs(const BuildListItem & build);
     void showPackageInfo(BuildListItem & build);
     void browseFiles(const BuildListItem & build);
 
@@ -95,6 +94,10 @@ class MainWindow: public CursesWidget {
     /* Apply action to tagged SlackBuilds */
 
     void applyTags(const std::string & action);
+
+    /* View command line output */
+ 
+    void viewCommandLine() const;
 
     /* Displays an error message */
 

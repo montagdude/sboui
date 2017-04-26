@@ -22,6 +22,6 @@ class InvReqBox: public BuildOrderBox {
 
     /* Creates list based on SlackBuild selected */
 
-    void create(BuildListItem & build,
-                std::vector<BuildListItem *> & installedlist);
+    void create(const BuildListItem & build,
+                std::vector<std::vector<BuildListItem> > & slackbuilds);
 };

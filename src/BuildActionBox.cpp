@@ -76,7 +76,7 @@ void BuildActionBox::create(const BuildListItem & build)
       _items[count]->setHotKey(0);
       count++;
 
-      if (build.upgradable())
+      if (build.getBoolProp("upgradable"))
       {
         addItem(new ListItem("Upgrade"));
         _items[count]->setHotKey(0);

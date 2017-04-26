@@ -275,22 +275,19 @@ bool compare_builds_by_category(const BuildListItem *item1,
  
 /*******************************************************************************
 
-Populates list of installed SlackBuilds. Also determines installed version,
-available version, and dependencies for installed SlackBuilds. Checks for
-invalid names and stores them in pkg_errors variable.
+Determines which SlackBuilds are installed and sets related properties. Also
+checks for invalid names and missing .info files.
 
 *******************************************************************************/
-void list_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
-                    std::vector<BuildListItem *> & installedlist,
-                    std::vector<std::string> & pkg_errors,
-                    std::vector<std::string> & missing_info)
+void determine_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
+                         std::vector<std::string> & pkg_errors,
+                         std::vector<std::string> & missing_info)
 {
   std::vector<std::string> installedpkgs;
   std::string name, version, arch, build, curcategory, response;
   unsigned int ninstalled, k, lbound, rbound;
   int i, j, check, pkgcheck, infocheck;
 
-  installedlist.resize(0);
   pkg_errors.resize(0);
   missing_info.resize(0);
   installedpkgs = list_installed_packages();
@@ -320,78 +317,7 @@ void list_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
       slackbuilds[i][j].setBoolProp("blacklisted",
                         package_blacklist.blacklisted(installedpkgs[k], name,
                                                       version, arch, build));
-      installedlist.push_back(&slackbuilds[i][j]);
     }
-  } 
-
-  // Sort by category and then by name within each category
-  
-  std::sort(installedlist.begin(), installedlist.end(),
-            compare_builds_by_category);
-  
-  lbound = 0;
-  rbound = 0;
-  ninstalled = installedlist.size();
-  while (rbound < ninstalled)
-  {
-    curcategory = installedlist[lbound]->getProp("category");
-    for ( k = lbound; k < ninstalled; k++ )
-    {
-      rbound = k;
-      if (installedlist[k]->getProp("category") != curcategory) { break; }
-    }
-    if (rbound == ninstalled-1) { rbound++; }
-
-    // Don't sort the last element if it is the only one of its type
-    
-    if ( (rbound == ninstalled) &&
-         (installedlist[rbound-1]->getProp("category") != curcategory) )
-      std::sort(installedlist.begin()+lbound, installedlist.begin()+rbound-1,
-                compare_builds_by_name);
-    else
-      std::sort(installedlist.begin()+lbound, installedlist.begin()+rbound,
-                compare_builds_by_name);
-    lbound = rbound;
-  }
-}
-
-/*******************************************************************************
-
-Populates list of installed SlackBuilds that are not required by any other 
-installed SlackBuild
-
-*******************************************************************************/
-void list_nondeps(const std::vector<BuildListItem *> & installedlist,
-                        std::vector<BuildListItem *> & nondeplist)
-{
-  unsigned int i, j, k, ninstalled, ndeps;
-  bool isdep;
-  std::vector<std::string> deplist;
-
-  nondeplist.resize(0);
-
-  // N^2 (max) loop through installed packages to see which are dependencies
-
-  ninstalled = installedlist.size();
-  for ( i = 0; i < ninstalled; i++ )
-  {
-    isdep = false;
-    for ( j = 0; j < ninstalled; j++ )
-    {
-      if (j == i) { continue; }
-      deplist = split(installedlist[j]->getProp("requires"));
-      ndeps = deplist.size();
-      for ( k = 0; k < ndeps; k++ )
-      {
-        if (deplist[k] == installedlist[i]->name())
-        {
-          isdep = true;
-          break;
-        }
-      }
-      if (isdep) { break; }
-    } 
-    if (! isdep) { nondeplist.push_back(installedlist[i]); }
   } 
 }
 
@@ -458,7 +384,7 @@ int upgrade_slackbuild(BuildListItem & build)
   installedpkgs = list_installed_packages();
   build.readInstalledProps(installedpkgs);
   build.readPropsFromRepo();
-  if (build.upgradable())
+  if (build.getBoolProp("upgradable"))
   {
     check = remove_slackbuild(build);
     if (check != 0) { return check; }

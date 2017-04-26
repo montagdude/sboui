@@ -2,7 +2,7 @@
 #include <vector>
 #include <algorithm>       // reverse
 #include "BuildListItem.h"
-#include "backend.h"       // get_reqs, find_slackbuild
+#include "backend.h"       // get_reqs, find_slackbuild, list_installed
 #include "string_util.h"   // split
 #include "requirements.h"
 
@@ -128,8 +128,11 @@ Computes list of installed SlackBuilds that depend on a given SlackBuild
 *******************************************************************************/
 void compute_inv_reqs(const BuildListItem & build,
                       std::vector<BuildListItem *> & invreqlist,
-                      std::vector<BuildListItem *> & installedlist)
+                      std::vector<std::vector<BuildListItem> > & slackbuilds)
 {
+  std::vector<BuildListItem *> installedlist;
+
   invreqlist.resize(0);
+  installedlist = list_installed(slackbuilds);
   get_inverse_reqs_recursive(build, invreqlist, installedlist);
 }

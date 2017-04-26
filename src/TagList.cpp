@@ -162,7 +162,8 @@ unsigned int TagList::getDisplayList(const std::string & action)
     }
     else if (action == "Upgrade")
     {
-      if ( (item.upgradable()) && (! item.getBoolProp("blacklisted")) )
+      if ( (item.getBoolProp("upgradable")) &&
+           (! item.getBoolProp("blacklisted")) )
         add_item = true;
     }
     else if ( (action == "Remove") || (action == "Reinstall") )

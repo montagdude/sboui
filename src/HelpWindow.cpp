@@ -168,6 +168,7 @@ void HelpWindow::createList()
   addItem(new HelpItem("Switch active list", "Tab"));
   addItem(new HelpItem("Sync / update repository", "s"));
   addItem(new HelpItem("Toggle vertical/horizontal layout", "l"));
+  addItem(new HelpItem("View command line output", "c"));
 
   addItem(new HelpItem("space1", "", false, true));
 

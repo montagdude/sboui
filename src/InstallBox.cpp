@@ -367,7 +367,7 @@ int InstallBox::create(BuildListItem & build,
       }
       else
       {
-        if (reqlist[i]->upgradable())
+        if (reqlist[i]->getBoolProp("upgradable"))
         {
           tag = true;
           action_applied = "Upgrade";

@@ -11,6 +11,12 @@ List item that describes a SlackBuild
 *******************************************************************************/
 class BuildListItem: public ListItem {
 
+  private:
+
+    // Checks whether a SlackBuild can be upgraded
+
+    bool upgradable() const;
+
   public:
 
     // Constructor
@@ -25,8 +31,4 @@ class BuildListItem: public ListItem {
 
     void readInstalledProps(std::vector<std::string> & installedpkgs);
     int readPropsFromRepo();
-
-    // Checks whether a SlackBuild can be upgraded
-
-    bool upgradable() const;
 };

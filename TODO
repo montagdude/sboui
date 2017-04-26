@@ -2,15 +2,16 @@ Things for 1.0
 ================================================================================
 * Show a message after syncing instead of pausing, once sbopkg and sbotools are
   changed to give an error when sync fails.
+* Make a PDF manual explaining UI usage.
 
 Things for 0.3
 ================================================================================
-* Smarter checks for whether changes were actually applied, and try multiple
-  methods for upgrades and reinstalls if needed.
 * Instead of the rebuild function, recheck status for SlackBuilds in the build
   order after the action is complete. Then re-display the build actions box.
   This also would remove the need to have a "recheck" option for the InstallBox.
-* Add a "view command line output" command.
+* Add a build options parameter for BuildListItems, which can be modified in the
+  actions window. This would be a more natural way to handle build options than
+  using the global environment variables.
 
 Completed for 0.3
 ================================================================================
@@ -23,3 +24,6 @@ Completed for 0.3
 * Add "quick search" function to jump in active list while typing.
 * Add "Show package info" action.
 * Add option to search in READMEs.
+* Smarter checks for whether changes were actually applied, and try reinstall
+  if upgrade fails without giving an error.
+* Add a "view command line output" command.

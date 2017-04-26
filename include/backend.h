@@ -12,6 +12,7 @@ int read_repo(std::vector<std::vector<BuildListItem> > & slackbuilds);
 int find_slackbuild(const std::string & name,
                     std::vector<std::vector<BuildListItem> > & slackbuilds,
                     int & idx0, int & idx1);
+//FIXME: should be able to remove this from the header
 std::vector<std::string> list_installed_packages();
 int get_pkg_info(const std::string & pkg, std::string & name,
                  std::string & version, std::string & arch,
@@ -23,12 +24,13 @@ bool check_installed(const BuildListItem & build,
 int get_reqs(const BuildListItem & build, std::string & reqs);
 int get_repo_info(const BuildListItem & build, std::string & available_version,
                   std::string & reqs);
-void list_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
-                    std::vector<BuildListItem *> & installedlist,
-                    std::vector<std::string> & pkg_errors,
-                    std::vector<std::string> & missing_info);
-void list_nondeps(const std::vector<BuildListItem *> & installedlist,
-                        std::vector<BuildListItem *> & nondeplist);
+void determine_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
+                         std::vector<std::string> & pkg_errors,
+                         std::vector<std::string> & missing_info);
+std::vector<BuildListItem *> list_installed(
+                        std::vector<std::vector<BuildListItem> > & slackbuilds);
+std::vector<BuildListItem *> list_nondeps(
+                        std::vector<std::vector<BuildListItem> > & slackbuilds);
 int install_slackbuild(BuildListItem & build);
 int upgrade_slackbuild(BuildListItem & build); 
 int remove_slackbuild(BuildListItem & build);

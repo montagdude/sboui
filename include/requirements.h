@@ -8,4 +8,4 @@ int compute_reqs_order(const BuildListItem & build,
                        std::vector<std::vector<BuildListItem> > & slackbuilds);
 void compute_inv_reqs(const BuildListItem & build,
                       std::vector<BuildListItem *> & invreqlist,
-                      std::vector<BuildListItem *> & installedlist);
+                      std::vector<std::vector<BuildListItem> > & slackbuilds);
