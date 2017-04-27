@@ -679,6 +679,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
     printStatus("Computing dependencies for " + build.name() + " ...");
   check = installer.create(build, _slackbuilds, action, settings::resolve_deps,
                            batch);
+  installer.setTagList(&_taglist);
 
   if (check == 1) 
   { 

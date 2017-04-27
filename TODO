@@ -6,12 +6,10 @@ Things for 1.0
 
 Things for 0.3
 ================================================================================
-* Instead of the rebuild function, recheck status for SlackBuilds in the build
-  order after the action is complete. Then re-display the build actions box.
-  This also would remove the need to have a "recheck" option for the InstallBox.
-* Add a build options parameter for BuildListItems, which can be modified in the
-  actions window. This would be a more natural way to handle build options than
-  using the global environment variables.
+* Re-display actions dialog after install/upgrade/reinstall/reinstall.
+* Add a build options parameter applying to each SlackBuild, which can be
+  modified in the actions dialog. (Previously, build options had to be specified
+  as global environment variables.)
 
 Completed for 0.3
 ================================================================================

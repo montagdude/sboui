@@ -16,10 +16,10 @@ class InstallBox: public BuildOrderBox {
   private:
 
     /* For this class, keep separate copies of the SlackBuilds in the build
-       order, since tagging will have a different meaning and we will add
-       another property (mode: install, upgrade, etc.) */
+       order, because it is easier to work with BuildListItems than ListItems
+       for many of the operations. */
 
-    std::vector<BuildListItem> _builds;
+    std::vector<BuildListItem *> _builds;
 
     /* Drawing */
     

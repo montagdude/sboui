@@ -156,21 +156,32 @@ void InstallBox::redrawSingleItem(unsigned int idx)
   {
     if (_activated) 
     { 
-      fg = color_settings.fg_highlight_active;
-      bg = color_settings.bg_highlight_active; 
+      if (_items[idx]->getBoolProp("tagged")) { fg = color_settings.tagged; }
+      else { fg = color_settings.fg_highlight_active; }
+      bg = color_settings.bg_highlight_active;
     }
     else
     {
-      fg = color_settings.fg_highlight_inactive;
-      bg = color_settings.bg_highlight_inactive; 
+      if (_items[idx]->getBoolProp("tagged")) { fg = color_settings.tagged; }
+      else { fg = color_settings.fg_highlight_inactive; }
+      bg = color_settings.bg_highlight_inactive;
     }
     if (colors.turnOn(_win, fg, bg) != 0)
     { 
       if (_activated) { wattron(_win, A_REVERSE); }
+      if (_items[idx]->getBoolProp("tagged")) { wattron(_win, A_BOLD); }
     }
   } 
-  else { colors.turnOn(_win, color_settings.fg_popup,
-                             color_settings.bg_popup); }
+  else 
+  { 
+    if (_items[idx]->getBoolProp("tagged")) { fg = color_settings.tagged; }
+    else { fg = color_settings.fg_popup; }
+    bg = color_settings.bg_popup;
+    if (colors.turnOn(_win, fg, bg) != 0)
+    {
+      if (_items[idx]->getBoolProp("tagged")) { wattron(_win, A_BOLD); }
+    }
+  }
 
   // Save highlight idx for redrawing later.
   // Note: prevents this method from being const.
@@ -182,7 +193,7 @@ void InstallBox::redrawSingleItem(unsigned int idx)
   printlen = std::min(int(_items[idx]->name().size()), vlineloc-5);
   nspaces = vlineloc - 5 - (_items[idx]->name().size());
 
-  if (_items[idx]->getBoolProp("tagged")) { wprintw(_win, "[X] "); }
+  if (_items[idx]->getBoolProp("marked")) { wprintw(_win, "[X] "); }
   else { wprintw(_win, "[ ] "); }
 
   wprintw(_win, _items[idx]->name().substr(0,printlen).c_str());
@@ -202,6 +213,7 @@ void InstallBox::redrawSingleItem(unsigned int idx)
   if (colors.turnOff(_win) != 0)
   {
     if ( (int(idx) == _highlight) && _activated ) { wattroff(_win, A_REVERSE); }
+    if (_items[idx]->getBoolProp("tagged")) { wattroff(_win, A_BOLD); }
   }
 }
 
@@ -293,7 +305,7 @@ bool InstallBox::installingAllDeps() const
   {
     if ( ((_items[i]->getProp("action") == "Install") ||   
           (_items[i]->getProp("action") == "Upgrade")) &&
-         (! _items[i]->getBoolProp("tagged")) ) { return false; }
+         (! _items[i]->getBoolProp("marked")) ) { return false; }
   }
 
   return true;
@@ -305,7 +317,7 @@ bool InstallBox::installingRequested() const
 
   nitems = _items.size();
   if ( (_items[nitems-1]->getProp("action") != "Remove") &&
-       (_items[nitems-1]->getBoolProp("tagged")) ) { return true; }
+       (_items[nitems-1]->getBoolProp("marked")) ) { return true; }
   else { return false; }
 }
 
@@ -322,7 +334,7 @@ int InstallBox::create(BuildListItem & build,
 {
   int check; 
   unsigned int nreqs, i, nbuilds;
-  bool tag;
+  bool mark;
   std::string action_applied;
   std::vector<std::string> installedpkgs;
   std::string installed_version, available_version;
@@ -359,45 +371,45 @@ int InstallBox::create(BuildListItem & build,
   {
     if (action != "Remove")
     {
-      _builds.push_back(*reqlist[i]);
+      _builds.push_back(reqlist[i]);
       if (! reqlist[i]->getBoolProp("installed"))
       {
-        tag = true;
+        mark = true;
         action_applied = "Install";
       }
       else
       {
         if (reqlist[i]->getBoolProp("upgradable"))
         {
-          tag = true;
+          mark = true;
           action_applied = "Upgrade";
         }
         else
         {
           // By default, do not reinstall dependencies
 
-          if ( (action == "Reinstall") && (i == nreqs) ) { tag = true; }
-          else { tag = false; }
+          if ( (action == "Reinstall") && (i == nreqs) ) { mark = true; }
+          else { mark = false; }
           action_applied = "Reinstall";
         }
       }
-      _builds[nbuilds].setBoolProp("tagged", tag);
-      _builds[nbuilds].addProp("action", action_applied);
+      _builds[nbuilds]->setBoolProp("marked", mark);
+      _builds[nbuilds]->setProp("action", action_applied);
       nbuilds++;
     }
     else
     {
       if (reqlist[i]->getBoolProp("installed"))
       {
-        _builds.push_back(*reqlist[i]);
+        _builds.push_back(reqlist[i]);
         
         // By default, do not remove dependencies
 
-        if (i == nreqs) { tag = true; }
-        else { tag = false; }
+        if (i == nreqs) { mark = true; }
+        else { mark = false; }
         action_applied = "Remove";
-        _builds[nbuilds].setBoolProp("tagged", tag);
-        _builds[nbuilds].addProp("action", action_applied);
+        _builds[nbuilds]->setBoolProp("marked", mark);
+        _builds[nbuilds]->setProp("action", action_applied);
         nbuilds++;
       }
     }
@@ -406,17 +418,17 @@ int InstallBox::create(BuildListItem & build,
   // Add to list (note have to do this separately because _builds changes
   // throughout the above loop)
 
-  for ( i = 0; i < nbuilds; i++ ) { addItem(&_builds[i]); }
+  for ( i = 0; i < nbuilds; i++ ) { addItem(_builds[i]); }
 
-  // Untag any blacklisted package
+  // Unmark any blacklisted package
 
   for ( i = 0; i < nbuilds; i++ )
   {
-    if ( (_builds[i].getBoolProp("installed")) &&
-         (_builds[i].getBoolProp("blacklisted")) )
+    if ( (_builds[i]->getBoolProp("installed")) &&
+         (_builds[i]->getBoolProp("blacklisted")) )
     {
-      _builds[i].setBoolProp("tagged", false);
-      _builds[i].setProp("action", "(blacklisted)");
+      _builds[i]->setBoolProp("marked", false);
+      _builds[i]->setProp("action", "(blacklisted)");
     }
   }
 
@@ -542,13 +554,31 @@ std::string InstallBox::exec()
       retval = " ";
       if (! _items[_highlight]->getBoolProp("blacklisted"))
       {
-        _items[_highlight]->setBoolProp("tagged", 
-                                 (! _items[_highlight]->getBoolProp("tagged")));
+        _items[_highlight]->setBoolProp("marked", 
+                                 (! _items[_highlight]->getBoolProp("marked")));
         check_redraw = highlightNext();
         if (check_redraw == 1) { _redraw_type = "all"; }
         else { _redraw_type = "changed"; }
       }
       else { _redraw_type = "none"; }
+      break;
+
+    // t and T: tag item
+
+    case 't':
+      retval = "t";
+      tagSlackBuild(_highlight);
+      check_redraw = highlightNext();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+
+    case 'T':
+      retval = "T";
+      tagSlackBuild(_highlight);
+      check_redraw = highlightPrevious();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
       break;
 
     default:
@@ -578,13 +608,13 @@ std::vector<const BuildListItem *> InstallBox::checkForeign() const
   taglen = settings::repo_tag.size();
   for ( i = 0; i < nbuilds; i++ )
   {
-    if ( (_builds[i].getBoolProp("installed")) &&
-         (_builds[i].getBoolProp("tagged")) )
+    if ( (_builds[i]->getBoolProp("installed")) &&
+         (_builds[i]->getBoolProp("marked")) )
     {
-      pkgname = _builds[i].getProp("package_name"); 
+      pkgname = _builds[i]->getProp("package_name"); 
       pkgnamelen = pkgname.size(); 
       if (pkgname.substr(pkgnamelen-taglen, pkgnamelen) != settings::repo_tag)
-        foreign.push_back(&_builds[i]);
+        foreign.push_back(_builds[i]);
     }
   }
 
@@ -610,16 +640,17 @@ int InstallBox::applyChanges(int & ninstalled, int & nupgraded,
   retval = 0;
   for ( i = 0; i < nbuilds; i++ )
   {
-    if (_builds[i].getBoolProp("tagged"))
+    if (_builds[i]->getBoolProp("marked"))
     {
-      action = _builds[i].getProp("action");
-      if (action == "Install") { retval = install_slackbuild(_builds[i]); }
-      else if (action == "Upgrade") { retval = upgrade_slackbuild(_builds[i]); }
-      else if (action == "Remove") { retval = remove_slackbuild(_builds[i]); }
+      action = _builds[i]->getProp("action");
+      if (action == "Install") { retval = install_slackbuild(*_builds[i]); }
+      else if (action == "Upgrade") { retval = 
+                                      upgrade_slackbuild(*_builds[i]); }
+      else if (action == "Remove") { retval = remove_slackbuild(*_builds[i]); }
       else if (action == "Reinstall")
       { 
-        retval = remove_slackbuild(_builds[i]);
-        if (retval == 0) { retval = install_slackbuild(_builds[i]); }
+        retval = remove_slackbuild(*_builds[i]);
+        if (retval == 0) { retval = install_slackbuild(*_builds[i]); }
       }
       else
       {
@@ -646,11 +677,11 @@ int InstallBox::applyChanges(int & ninstalled, int & nupgraded,
       }
       else
       {
-        if (_builds[i].getProp("action") == "Install")
+        if (_builds[i]->getProp("action") == "Install")
           ninstalled++;
-        else if (_builds[i].getProp("action") == "Upgrade")
+        else if (_builds[i]->getProp("action") == "Upgrade")
           nupgraded++;
-        else if (_builds[i].getProp("action") == "Reinstall")
+        else if (_builds[i]->getProp("action") == "Reinstall")
           nreinstalled++; 
         else
           nremoved++; 

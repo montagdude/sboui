@@ -54,11 +54,13 @@ BuildListItem::BuildListItem()
   addProp("installed_version", "");
   addProp("available_version", "");
   addProp("requires", "");
-  addProp("package_name", "");
   addBoolProp("installed", false);
   addBoolProp("upgradable", false);
-  addBoolProp("blacklisted", false);
   addBoolProp("tagged", false);
+  addBoolProp("blacklisted", false);
+  addBoolProp("marked", false);
+  addProp("package_name", "");
+  addProp("action", "");
 }
 
 /*******************************************************************************
@@ -86,10 +88,6 @@ void BuildListItem::operator = (const ListItem & item)
     setProp("requires", item.getProp("requires"));
   else { addProp("requires", ""); }
 
-  if (item.checkProp("package_name"))
-    setProp("package_name", item.getProp("package_name"));
-  else { addProp("package_name", ""); }
-
   if (item.checkProp("installed"))
     setBoolProp("installed", item.getBoolProp("installed"));
   else { addBoolProp("installed", false); }
@@ -105,6 +103,18 @@ void BuildListItem::operator = (const ListItem & item)
   if (item.checkProp("tagged"))
     setBoolProp("tagged", item.getBoolProp("tagged"));
   else { addBoolProp("tagged", false); }
+
+  if (item.checkProp("marked"))
+    setBoolProp("marked", item.getBoolProp("marked"));
+  else { addBoolProp("marked", false); }
+
+  if (item.checkProp("package_name"))
+    setProp("package_name", item.getProp("package_name"));
+  else { addProp("package_name", ""); }
+
+  if (item.checkProp("action"))
+    setProp("action", item.getProp("action"));
+  else { addProp("action", ""); }
 }
 
 /*******************************************************************************
