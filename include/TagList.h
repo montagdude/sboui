@@ -20,7 +20,7 @@ class TagList: public SelectionBox {
        showing only what is appropriate for the requested action (install,
        upgrade, etc.). */
 
-    std::vector<ListItem> _tagged;
+    std::vector<ListItem *> _tagged;
 
     /* Drawing */
     
@@ -52,8 +52,7 @@ class TagList: public SelectionBox {
 
     std::string exec();
 
-    /* Returns BuildListItem by index in _items or _tagged list */
+    /* Returns pointer to item by index in _tagged list */
 
-    BuildListItem itemByIdx(unsigned int idx) const;
-    BuildListItem taggedByIdx(unsigned int idx) const;
+    ListItem * taggedByIdx(unsigned int idx);
 };

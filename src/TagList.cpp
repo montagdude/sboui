@@ -56,7 +56,7 @@ void TagList::redrawSingleItem(unsigned int idx)
 
   // Print item with selection
 
-  if (_items[idx]->getBoolProp("tagged")) { wprintw(_win, "[X] "); }
+  if (_items[idx]->getBoolProp("marked")) { wprintw(_win, "[X] "); }
   else { wprintw(_win, "[ ] "); }
 
   printToEol(_items[idx]->name());
@@ -91,7 +91,12 @@ TagList::TagList(WINDOW *win, const std::string & name)
 Edit list items
 
 *******************************************************************************/
-void TagList::addItem(ListItem *item) { _tagged.push_back(*item); }
+void TagList::addItem(ListItem *item)
+{
+  item->setBoolProp("marked", true);
+  _tagged.push_back(item);
+}
+
 void TagList::removeItem(ListItem *item)
 {
   unsigned int i, ntagged;
@@ -99,7 +104,7 @@ void TagList::removeItem(ListItem *item)
   ntagged = _tagged.size();
   for ( i = 0; i < ntagged; i++ )
   {
-    if (_tagged[i].name() == item->name())
+    if (_tagged[i]->name() == item->name())
     {
       _tagged.erase(_tagged.begin()+i); 
       break;
@@ -147,7 +152,7 @@ unsigned int TagList::getDisplayList(const std::string & action)
 {
   unsigned int i, ntagged;
   bool add_item;
-  BuildListItem item;
+  BuildListItem *item;
 
   _items.resize(0);
   
@@ -155,24 +160,24 @@ unsigned int TagList::getDisplayList(const std::string & action)
   for ( i = 0; i < ntagged; i++ )
   {
     add_item = false;
-    item = _tagged[i];
+    item = static_cast<BuildListItem *>(_tagged[i]);
     if (action == "Install")
     {
-      if (! item.getBoolProp("installed")) { add_item = true; }
+      if (! item->getBoolProp("installed")) { add_item = true; }
     }
     else if (action == "Upgrade")
     {
-      if ( (item.getBoolProp("upgradable")) &&
-           (! item.getBoolProp("blacklisted")) )
+      if ( (item->getBoolProp("upgradable")) &&
+           (! item->getBoolProp("blacklisted")) )
         add_item = true;
     }
     else if ( (action == "Remove") || (action == "Reinstall") )
     {
-      if ( (item.getBoolProp("installed")) &&
-           (! item.getBoolProp("blacklisted")) ) { add_item = true; }
+      if ( (item->getBoolProp("installed")) &&
+           (! item->getBoolProp("blacklisted")) ) { add_item = true; }
     }
        
-    if (add_item) { _items.push_back(&_tagged[i]); }
+    if (add_item) { _items.push_back(_tagged[i]); }
   }
 
   return numItems();
@@ -271,8 +276,8 @@ std::string TagList::exec()
 
     case ' ':
       retval = " ";
-      _items[_highlight]->setBoolProp("tagged", 
-                                 (! _items[_highlight]->getBoolProp("tagged")));
+      _items[_highlight]->setBoolProp("marked", 
+                                 (! _items[_highlight]->getBoolProp("marked")));
       check_redraw = highlightNext();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
@@ -290,24 +295,8 @@ std::string TagList::exec()
 
 /*******************************************************************************
 
-Converts item in _items or _tagged list to BuildListItem. Careful: does not 
-perform bounds checks!
+Returns item from _tagged vector by index. Careful: does not perform bounds
+checks!
 
 *******************************************************************************/
-BuildListItem TagList::itemByIdx(unsigned int idx) const
-{
-  BuildListItem item;
-
-  item = *_items[idx];
-
-  return item;
-}
-
-BuildListItem TagList::taggedByIdx(unsigned int idx) const
-{
-  BuildListItem item;
-
-  item = _tagged[idx];
-
-  return item;
-}
+ListItem * TagList::taggedByIdx(unsigned int idx) { return _tagged[idx]; }

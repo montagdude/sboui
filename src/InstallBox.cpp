@@ -357,6 +357,7 @@ int InstallBox::create(BuildListItem & build,
   nbuilds = 0;
   for ( i = 0; i <= nreqs; i++ )
   {
+    mark = false;
     if (action != "Remove")
     {
       _builds.push_back(reqlist[i]);

@@ -7,29 +7,13 @@
 
 /*******************************************************************************
 
-Constructors
+Constructor
 
 *******************************************************************************/
 BuildActionBox::BuildActionBox()
 {
   _name = "Select an action";
   _info = "Enter: Ok | Esc: Cancel";
-}
-
-BuildActionBox::BuildActionBox(WINDOW *win, const std::string & name)
-{
-  _win = win;
-  _name = name;
-  _info = "Enter: Ok | Esc: Cancel";
-}
-
-BuildActionBox::BuildActionBox(WINDOW *win, const std::string & name,
-                               const BuildListItem & build)
-{
-  _win = win;
-  _name = name;
-  _info = "Enter: Ok | Esc: Cancel";
-  create(build);
 }
 
 /*******************************************************************************
@@ -51,7 +35,7 @@ BuildActionBox::~BuildActionBox()
 Creates options using info about SlackBuild
 
 *******************************************************************************/
-void BuildActionBox::create(const BuildListItem & build)
+void BuildActionBox::create(BuildListItem & build)
 {
   unsigned int count;
 

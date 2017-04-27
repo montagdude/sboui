@@ -285,17 +285,18 @@ Rebuilds lists after applying changes
 void MainWindow::rebuild()
 {
   unsigned int k;
-  int i, j, ntagged;
+  int ntagged;
   std::vector<std::string> pkg_errors, missing_info;
   std::string errmsg;
+  BuildListItem *build;
 
   // Clear tags
 
   ntagged = _taglist.numTagged();
   for ( k = 0; int(k) < ntagged; k++ )
   {
-    find_slackbuild(_taglist.taggedByIdx(k).name(), _slackbuilds, i, j);
-    _slackbuilds[i][j].setBoolProp("tagged", false);
+    build = static_cast<BuildListItem *>(_taglist.taggedByIdx(k));
+    build->setBoolProp("tagged", false);
   }
   _taglist.clearList();
 
@@ -1080,7 +1081,7 @@ void MainWindow::applyTags(const std::string & action)
   int ninstalled, nupgraded, nreinstalled, nremoved;
   bool getting_input, cancel_all, apply_changes, any_modified, needs_rebuild;
   std::string selection;
-  BuildListItem item;
+  BuildListItem *build;
 
   ndisplay = _taglist.getDisplayList(action);
   if (ndisplay == 0)
@@ -1137,14 +1138,14 @@ void MainWindow::applyTags(const std::string & action)
     nremoved = 0;
     for ( i = 0; i < ndisplay; i++ ) 
     {
-      item = _taglist.itemByIdx(i);
-      if (item.getBoolProp("tagged"))
+      build = static_cast<BuildListItem *>(_taglist.itemByIdx(i));
+      if (build->getBoolProp("marked"))
       { 
-        any_modified = modifyPackage(item, action, ninstalled, nupgraded,
+        any_modified = modifyPackage(*build, action, ninstalled, nupgraded,
                                      nreinstalled, nremoved, cancel_all, true);
         if (! needs_rebuild) { needs_rebuild = any_modified; }
+        draw(true);
       }
-      draw(true);
       if (cancel_all) { break; }
     }
     if (needs_rebuild)
@@ -1685,7 +1686,7 @@ void MainWindow::quickSearch()
   QuickSearch qsearch;
   bool searching;
   std::string selection, entry;
-  BuildListItem build;
+  BuildListItem *build;
 
   getmaxyx(stdscr, rows, cols);
 
@@ -1727,8 +1728,9 @@ void MainWindow::quickSearch()
 
   if (_activated_listbox == 1)
   {
-    build = *_blistboxes[_category_idx].highlightedItem();
-    printPackageVersion(build);
+    build = static_cast<BuildListItem *>(
+                                  _blistboxes[_category_idx].highlightedItem());
+    printPackageVersion(*build);
   }
   else { clearStatus(); }
 }
@@ -1768,8 +1770,7 @@ std::string MainWindow::exec()
   bool getting_input, all_tagged;
   int check_quit;
   unsigned int i, ncategories;
-  BuildListItem build;
-  ListItem *item;
+  BuildListItem *build;
 
   draw();
 
@@ -1803,9 +1804,12 @@ std::string MainWindow::exec()
         _activated_listbox = 1;
 
         // Display status message for installed SlackBuild
+        // Note on static cast: allows the original BuildListItem pointer to
+        // be referenced.
 
-        build = *_blistboxes[_category_idx].highlightedItem();
-        printPackageVersion(build);
+        build = static_cast<BuildListItem *>(
+                                  _blistboxes[_category_idx].highlightedItem());
+        printPackageVersion(*build);
       }
 
       // Tag signal: tag/untag all items in category
@@ -1830,8 +1834,9 @@ std::string MainWindow::exec()
       {
         // Display status message for installed SlackBuild
 
-        build = *_blistboxes[_category_idx].highlightedItem();
-        printPackageVersion(build);
+        build = static_cast<BuildListItem *>(
+                                  _blistboxes[_category_idx].highlightedItem());
+        printPackageVersion(*build);
       }
 
       // Tab signal or left key
@@ -1873,13 +1878,9 @@ std::string MainWindow::exec()
 
       else if (selection == signals::keyEnter)
       {
-        build = *_blistboxes[_category_idx].highlightedItem();
-        showBuildActions(build);
-
-        // Update tag setting since we are working with a local copy
-
-        if ( (item = _blistboxes[_category_idx].highlightedItem()) )
-          item->setBoolProp("tagged", build.getBoolProp("tagged"));
+        build = static_cast<BuildListItem *>(
+                                  _blistboxes[_category_idx].highlightedItem());
+        showBuildActions(*build);
 
         // Determine if categories should be tagged and redraw
 
