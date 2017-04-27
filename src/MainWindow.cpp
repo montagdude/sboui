@@ -1628,12 +1628,13 @@ void MainWindow::showBuildActions(BuildListItem & build)
       nremoved = 0;
       needs_rebuild = modifyPackage(build, action, ninstalled, nupgraded,
                                     nreinstalled, nremoved, cancel_all);
-      if (needs_rebuild) { getting_selection = false; }
-      else
-      {
-        placePopup(&actionbox, actionwin);
-        draw(true);
-      }
+
+      // If any changes were made, Actions might need to change too
+
+      if (needs_rebuild) { actionbox.create(build); }
+      placePopup(&actionbox, actionwin);
+      draw(true);
+      
     }                                              
     else if ( (selected == "Compute build order") || (selection == "C") )
     { 

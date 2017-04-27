@@ -39,6 +39,7 @@ void BuildActionBox::create(BuildListItem & build)
 {
   unsigned int count;
 
+  clearList();
   count = 0;
 
   addItem(new ListItem("View README"));
