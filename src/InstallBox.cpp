@@ -156,32 +156,21 @@ void InstallBox::redrawSingleItem(unsigned int idx)
   {
     if (_activated) 
     { 
-      if (_items[idx]->getBoolProp("tagged")) { fg = color_settings.tagged; }
-      else { fg = color_settings.fg_highlight_active; }
+      fg = color_settings.fg_highlight_active;
       bg = color_settings.bg_highlight_active;
     }
     else
     {
-      if (_items[idx]->getBoolProp("tagged")) { fg = color_settings.tagged; }
-      else { fg = color_settings.fg_highlight_inactive; }
+      fg = color_settings.fg_highlight_inactive;
       bg = color_settings.bg_highlight_inactive;
     }
     if (colors.turnOn(_win, fg, bg) != 0)
     { 
       if (_activated) { wattron(_win, A_REVERSE); }
-      if (_items[idx]->getBoolProp("tagged")) { wattron(_win, A_BOLD); }
     }
   } 
-  else 
-  { 
-    if (_items[idx]->getBoolProp("tagged")) { fg = color_settings.tagged; }
-    else { fg = color_settings.fg_popup; }
-    bg = color_settings.bg_popup;
-    if (colors.turnOn(_win, fg, bg) != 0)
-    {
-      if (_items[idx]->getBoolProp("tagged")) { wattron(_win, A_BOLD); }
-    }
-  }
+  else { colors.turnOn(_win, color_settings.fg_popup, 
+                             color_settings.bg_popup); }
 
   // Save highlight idx for redrawing later.
   // Note: prevents this method from being const.
@@ -213,7 +202,6 @@ void InstallBox::redrawSingleItem(unsigned int idx)
   if (colors.turnOff(_win) != 0)
   {
     if ( (int(idx) == _highlight) && _activated ) { wattroff(_win, A_REVERSE); }
-    if (_items[idx]->getBoolProp("tagged")) { wattroff(_win, A_BOLD); }
   }
 }
 
@@ -561,24 +549,6 @@ std::string InstallBox::exec()
         else { _redraw_type = "changed"; }
       }
       else { _redraw_type = "none"; }
-      break;
-
-    // t and T: tag item
-
-    case 't':
-      retval = "t";
-      tagSlackBuild(_highlight);
-      check_redraw = highlightNext();
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
-      break;
-
-    case 'T':
-      retval = "T";
-      tagSlackBuild(_highlight);
-      check_redraw = highlightPrevious();
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
       break;
 
     default:
