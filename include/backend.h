@@ -12,8 +12,6 @@ int read_repo(std::vector<std::vector<BuildListItem> > & slackbuilds);
 int find_slackbuild(const std::string & name,
                     std::vector<std::vector<BuildListItem> > & slackbuilds,
                     int & idx0, int & idx1);
-//FIXME: should be able to remove this from the header
-std::vector<std::string> list_installed_packages();
 int get_pkg_info(const std::string & pkg, std::string & name,
                  std::string & version, std::string & arch,
                  std::string & build);

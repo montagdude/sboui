@@ -328,7 +328,6 @@ int InstallBox::create(BuildListItem & build,
   unsigned int nreqs, i, nbuilds;
   bool mark;
   std::string action_applied;
-  std::vector<std::string> installedpkgs;
   std::string installed_version, available_version;
   std::vector<BuildListItem *> reqlist;
 
@@ -343,18 +342,7 @@ int InstallBox::create(BuildListItem & build,
   nreqs = reqlist.size();
   reqlist.push_back(&build);
 
-  // Re-check install status and show different options in batch mode
-
-  if (batch)
-  {
-    _info = "Enter: Ok | Esc: Skip | c: Cancel"; 
-    installedpkgs = list_installed_packages();
-    for ( i = 0; i <= nreqs; i++ ) 
-    { 
-      reqlist[i]->readInstalledProps(installedpkgs);
-      reqlist[i]->readPropsFromRepo();
-    }
-  }
+  if (batch) { _info = "Enter: Ok | Esc: Skip | c: Cancel"; }
 
   // Copy reqlist to _builds list and determine action for each
 
