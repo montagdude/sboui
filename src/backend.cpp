@@ -354,11 +354,15 @@ int install_slackbuild(BuildListItem & build)
   check = run_command(cmd);
   if (check != 0) { return check; }
 
-  // Check to make sure it was actually installed
+  // Check to make sure it was actually installed and update properties
 
   installedpkgs = list_installed_packages();
   build.readInstalledProps(installedpkgs);
-  if (build.getBoolProp("installed")) { return 0; }
+  if (build.getBoolProp("installed"))
+  {
+    build.readPropsFromRepo();
+    return 0;
+  }
   else { return 1; }
 }
 

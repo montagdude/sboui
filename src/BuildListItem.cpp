@@ -84,7 +84,14 @@ void BuildListItem::readInstalledProps(std::vector<std::string> & installedpkgs)
     if (getProp("available_version") != "")
       setBoolProp("upgradable", upgradable());
   }
-  else { setBoolProp("installed", false); }
+  else
+  {
+    setBoolProp("installed", false);
+    setProp("installed_version", "");
+    setProp("package_name", "");
+    setBoolProp("blacklisted", false);
+    setBoolProp("upgradable", false);
+  }
 }
 
 /*******************************************************************************
