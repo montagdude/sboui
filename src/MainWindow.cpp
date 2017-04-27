@@ -941,12 +941,6 @@ void MainWindow::showPackageInfo(BuildListItem & build)
 
   // Set up message
 
-//FIXME: shouldn't need this
-std::vector<std::string> installedpkgs;
-  installedpkgs = list_installed_packages();
-  build.readInstalledProps(installedpkgs);
-  build.readPropsFromRepo();
-
   msg =  "SlackBuild name: " + build.name() + "\n";
   if (build.getBoolProp("installed"))
   {
