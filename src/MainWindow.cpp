@@ -1077,7 +1077,7 @@ Applies action to tagged SlackBuilds
 void MainWindow::applyTags(const std::string & action)
 {
   WINDOW *tagwin;
-  unsigned int ndisplay, i;
+  unsigned int ndisplay, i, j, ncategories;
   int ninstalled, nupgraded, nreinstalled, nremoved;
   bool getting_input, cancel_all, apply_changes, any_modified, needs_rebuild;
   std::string selection;
@@ -1144,6 +1144,16 @@ void MainWindow::applyTags(const std::string & action)
         any_modified = modifyPackage(*build, action, ninstalled, nupgraded,
                                      nreinstalled, nremoved, cancel_all, true);
         if (! needs_rebuild) { needs_rebuild = any_modified; }
+
+        // Because tags could have changed, determine if categories should be tagged
+
+        ncategories = _clistbox.numItems();
+        for ( j = 0; j < ncategories; j++ )
+        {
+          if (_blistboxes[j].allTagged())
+            _clistbox.itemByIdx(j)->setBoolProp("tagged", true);
+          else { _clistbox.itemByIdx(j)->setBoolProp("tagged", false); }
+        }
         draw(true);
       }
       if (cancel_all) { break; }
@@ -1889,6 +1899,7 @@ std::string MainWindow::exec()
         {
           if (_blistboxes[i].allTagged())
             _clistbox.itemByIdx(i)->setBoolProp("tagged", true);
+          else { _clistbox.itemByIdx(i)->setBoolProp("tagged", false); }
         }
         draw(true);
       }

@@ -135,22 +135,14 @@ void BuildOrderBox::redrawSingleItem(unsigned int idx)
 
   if (int(idx) == _highlight)
   {
-    if (_activated) 
-    { 
-      if (_items[idx]->getBoolProp("tagged")) { fg = color_settings.tagged; }
-      else { fg = color_settings.fg_highlight_active; }
-      bg = color_settings.bg_highlight_active; 
-    }
-    else
-    {
-      if (_items[idx]->getBoolProp("tagged")) { fg = color_settings.tagged; }
-      else { fg = color_settings.fg_highlight_inactive; }
-      bg = color_settings.bg_highlight_inactive; 
-    }
+    if (_items[idx]->getBoolProp("tagged")) { fg = color_settings.tagged; }
+    else { fg = color_settings.fg_highlight_active; }
+    bg = color_settings.bg_highlight_active; 
+
     if (colors.turnOn(_win, fg, bg) != 0)
     { 
       if (_activated) { wattron(_win, A_REVERSE); }
-      if (_items[idx]->getBoolProp("tagged")) { wattron(_win, A_BOLD); }
+      if (_items[idx]->getBoolProp("tagged")) { wattron(_win, A_BOLD); } 
     }
   } 
   else
@@ -160,7 +152,7 @@ void BuildOrderBox::redrawSingleItem(unsigned int idx)
     bg = color_settings.bg_popup;
     if (colors.turnOn(_win, fg, bg) != 0)
     {
-      if (_items[idx]->getBoolProp("tagged")) { wattron(_win, A_BOLD); }
+      if (_items[idx]->getBoolProp("tagged")) { wattron(_win, A_BOLD); } 
     }
   }
 
