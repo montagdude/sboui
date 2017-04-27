@@ -285,7 +285,7 @@ void determine_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
 {
   std::vector<std::string> installedpkgs;
   std::string name, version, arch, build, curcategory, response;
-  unsigned int ninstalled, k, lbound, rbound;
+  unsigned int ninstalled, k;
   int i, j, check, pkgcheck, infocheck;
 
   pkg_errors.resize(0);
@@ -309,14 +309,14 @@ void determine_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
       slackbuilds[i][j].setProp("installed_version", version);
       slackbuilds[i][j].setProp("package_name", installedpkgs[k]);
 
-      // Check for missing .info file
-
-      infocheck = slackbuilds[i][j].readPropsFromRepo();
-      if (infocheck != 0) { missing_info.push_back(slackbuilds[i][j].name()); }
-
       slackbuilds[i][j].setBoolProp("blacklisted",
                         package_blacklist.blacklisted(installedpkgs[k], name,
                                                       version, arch, build));
+
+      // Read props, set upgradable status, and check for missing .info file
+
+      infocheck = slackbuilds[i][j].readPropsFromRepo();
+      if (infocheck != 0) { missing_info.push_back(slackbuilds[i][j].name()); }
     }
   } 
 }
