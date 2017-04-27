@@ -1814,7 +1814,7 @@ std::string MainWindow::exec()
       {
         _blistboxes[_category_idx].tagAll();
         _category_idx = _clistbox.highlight();
-        _blistboxes[_category_idx].draw();
+        _blistboxes[_category_idx].draw(true);
       }
     }
 
@@ -1856,7 +1856,7 @@ std::string MainWindow::exec()
           if (! all_tagged) 
           { 
             _clistbox.highlightedItem()->setBoolProp("tagged", false);
-            _clistbox.draw();
+            _clistbox.draw(true);
           }
         }
         else 
@@ -1864,7 +1864,7 @@ std::string MainWindow::exec()
           if (all_tagged) 
           { 
             _clistbox.highlightedItem()->setBoolProp("tagged", true);
-            _clistbox.draw();
+            _clistbox.draw(true);
           }
         }
       }
