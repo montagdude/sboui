@@ -52,4 +52,5 @@ class ComboBox: public InputItem {
 
     int getIntProp() const;
     std::string getStringProp() const;
+    std::string choice() const;
 };

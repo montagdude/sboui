@@ -144,14 +144,10 @@ void SearchBox::clearSearch() { _entryitem.clear(); }
 Get attributes
 
 *******************************************************************************/
-std::string SearchBox::searchString() const
-{ 
-  return _entryitem.getStringProp(); 
-}
-
-bool SearchBox::caseSensitive() const { return _caseitem.getBoolProp(); }
-bool SearchBox::wholeWord() const { return _wholeitem.getBoolProp(); }
-bool SearchBox::searchREADMEs() const { return _readmeitem.getBoolProp(); }
+std::string SearchBox::searchString() const { return _entryitem.text(); }
+bool SearchBox::caseSensitive() const { return _caseitem.enabled(); }
+bool SearchBox::wholeWord() const { return _wholeitem.enabled(); }
+bool SearchBox::searchREADMEs() const { return _readmeitem.enabled(); }
 
 /*******************************************************************************
 

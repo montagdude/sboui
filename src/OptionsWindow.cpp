@@ -372,26 +372,26 @@ int OptionsWindow::applySettings() const
 {
   int check = 0;
 
-  resolve_deps = _resolve_toggle.getBoolProp();
-  confirm_changes = _confirm_toggle.getBoolProp();
-  layout = _layout_box.getStringProp();
-  editor = _editor_inp.getStringProp();
+  resolve_deps = _resolve_toggle.enabled();
+  confirm_changes = _confirm_toggle.enabled();
+  layout = _layout_box.choice();
+  editor = _editor_inp.text();
 
-  color_theme = _color_box.getStringProp();
-  color_theme_file = _color_inp.getStringProp();
-  if (_color_toggle.getBoolProp()) { check = activate_color(); }
+  color_theme = _color_box.choice();
+  color_theme_file = _color_inp.text();
+  if (_color_toggle.enabled()) { check = activate_color(); }
   else { deactivate_color(); }
 
-  package_manager = _pmgr_box.getStringProp();
-  repo_dir = _repo_inp.getStringProp();
-  repo_tag = _tag_inp.getStringProp();
-  sync_cmd = _sync_inp.getStringProp();
-  install_cmd = _inst_inp.getStringProp();
-  upgrade_cmd = _upgr_inp.getStringProp(); 
-  install_clos = _iclos_inp.getStringProp();
-  install_vars = _ivars_inp.getStringProp();
-  upgrade_clos = _uclos_inp.getStringProp();
-  upgrade_vars = _uvars_inp.getStringProp();
+  package_manager = _pmgr_box.choice();
+  repo_dir = _repo_inp.text();
+  repo_tag = _tag_inp.text();
+  sync_cmd = _sync_inp.text();
+  install_cmd = _inst_inp.text();
+  upgrade_cmd = _upgr_inp.text(); 
+  install_clos = _iclos_inp.text();
+  install_vars = _ivars_inp.text();
+  upgrade_clos = _uclos_inp.text();
+  upgrade_vars = _uvars_inp.text();
 
   return check;
 }

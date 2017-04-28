@@ -39,4 +39,5 @@ class ToggleInput: public InputItem {
     /* Accessing properties. */
 
     bool getBoolProp() const;
+    bool enabled() const;
 };

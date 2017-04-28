@@ -252,3 +252,4 @@ Accessing properties
 *******************************************************************************/
 int ComboBox::getIntProp() const { return _list.highlight(); }
 std::string ComboBox::getStringProp() const { return _list.highlightedName(); }
+std::string ComboBox::choice() const { return _list.highlightedName(); }

@@ -192,3 +192,4 @@ Accessing properties
 
 *******************************************************************************/
 bool ToggleInput::getBoolProp() const { return _enabled; }
+bool ToggleInput::enabled() const { return _enabled; }

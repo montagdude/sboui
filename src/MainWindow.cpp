@@ -982,6 +982,10 @@ void MainWindow::showPackageInfo(BuildListItem & build)
   PackageInfoBox pkginfo;
   WINDOW *pkginfowin;
 
+  // Make sure repo info is available
+
+  if (! build.getBoolProp("installed")) { build.readPropsFromRepo(); }
+
   // Set up message
 
   msg =  "SlackBuild name: " + build.name() + "\n";
@@ -1772,7 +1776,7 @@ void MainWindow::quickSearch()
       searching = false;
     else if (selection != "ignore")
     {
-      entry = qsearch.getStringProp();
+      entry = qsearch.text();
       if (_activated_listbox == 0)
       {
         check = _clistbox.highlightSearch(entry);
