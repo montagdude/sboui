@@ -4,12 +4,6 @@ Things for 1.0
   changed to give an error when sync fails.
 * Make a PDF manual explaining UI usage.
 
-Things for 0.3
-================================================================================
-* Add a build options parameter applying to each SlackBuild, which can be
-  modified in the actions dialog. (Previously, build options had to be specified
-  as global environment variables.)
-
 Completed for 0.3
 ================================================================================
 * Add a package blacklist to prevent upgrading/reinstalling/removing packages
@@ -27,3 +21,6 @@ Completed for 0.3
 * Re-display actions dialog after install/upgrade/reinstall/reinstall.
 * Fix display bug that could occur when tagging.
 * Support tagging in InstallBox.
+* Add a build options parameter applying to each SlackBuild, which can be
+  modified in the actions dialog. (Previously, build options had to be specified
+  as global environment variables.)
