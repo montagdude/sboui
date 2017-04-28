@@ -221,8 +221,14 @@ The full command executed by
 to install a package is as follows:
 .RS 3
 .IP
-# \fBinstall_vars\fR \fBinstall_cmd\fR {software name} \fBinstall_clos\fR
+# \fBinstall_vars\fR build_options \\
+.br
+# \fBinstall_cmd\fR {software name} \\
+.br
+# \fBinstall_clos\fR
 .RE
+.IP
+build_options are per-SlackBuild environment variables set within the UI.
 .IP
 Because dependencies are resolved by
 .BR sboui ,
@@ -272,10 +278,11 @@ default: [none]
 .br
 required: no
 .IP
-Environment variables to pass to the package manager during install operations.
+Global environment variables to pass to the package manager during install operations.
 These can be used, for example, to activate optional dependencies or other flags for the build process.
 .IP
 Note that these variables will be passed during every install operation, including installation of dependencies.
+Build options for individual SlackBuilds can be set within the UI.
 .TP
 .B layout
 .br
@@ -463,7 +470,11 @@ The full command executed by
 to upgrade a package is as follows:
 .RS 3
 .IP
-# \fBupgrade_vars\fR \fBupgrade_cmd\fR {software name} \fBupgrade_clos\fR
+# \fBupgrade_vars\fR build_options \\
+.br
+# \fBupgrade_cmd\fR {software name} \\
+.br
+# \fBupgrade_clos\fR
 .RE
 .IP
 The considerations described in the
