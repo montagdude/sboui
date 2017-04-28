@@ -93,7 +93,7 @@ Edit list items
 *******************************************************************************/
 void TagList::addItem(ListItem *item)
 {
-  item->setBoolProp("marked", true);
+  item->setBoolProp("tagged", true);
   _tagged.push_back(item);
 }
 
