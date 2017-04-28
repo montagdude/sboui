@@ -17,6 +17,7 @@
 #include "FilterBox.h"
 #include "SearchBox.h"
 #include "BuildActionBox.h"
+#include "BuildOptionsBox.h"
 #include "BuildOrderBox.h"
 #include "InvReqBox.h"
 #include "InstallBox.h"
@@ -823,6 +824,46 @@ bool MainWindow::modifyPackage(BuildListItem & build,
 
 /*******************************************************************************
 
+Allows user to set build options for SlackBuild
+
+*******************************************************************************/
+void MainWindow::setBuildOptions(BuildListItem & build)
+{
+  WINDOW *buildoptionswin;
+  std::string selection;
+  bool getting_input;
+  BuildOptionsBox buildoptions;
+
+  printStatus("Setting build options for " + build.name() + " ...");
+  buildoptions.setBuild(build);
+
+  buildoptionswin = newwin(1, 1, 0, 0);
+  buildoptions.setWindow(buildoptionswin);
+  placePopup(&buildoptions, buildoptionswin);
+
+  getting_input = true;
+  while (getting_input)
+  {
+    selection = buildoptions.exec(); 
+    if (selection == signals::keyEnter)
+    {
+      getting_input = false;
+      build.setProp("build_options", buildoptions.entry());
+    }
+    else if (selection == signals::quit) { getting_input = false; }
+    else if (selection == signals::resize) 
+    { 
+      placePopup(&buildoptions, buildoptionswin);
+      draw(true);
+    }
+  }
+
+  clearStatus();
+  delwin(buildoptionswin);
+}
+
+/*******************************************************************************
+
 Shows build order for a SlackBuild
 
 *******************************************************************************/
@@ -1606,6 +1647,14 @@ void MainWindow::showBuildActions(BuildListItem & build)
       reset_prog_mode();
       draw(true);
     }
+    else if ( (selected == "Browse files") || (selection == "B") )
+    {
+      hideWindow(actionwin);
+      draw(true);
+      browseFiles(build);
+      placePopup(&actionbox, actionwin);
+      draw(true);
+    }
     else if ( (selected == "Install") || (selection == "I") ||
               (selected == "Upgrade") || (selection == "U") ||
               (selected == "Reinstall") || (selection == "e") ||
@@ -1636,6 +1685,14 @@ void MainWindow::showBuildActions(BuildListItem & build)
       placePopup(&actionbox, actionwin);
       draw(true);
     }                                              
+    else if ( (selected == "Set build options") || (selection == "S") )
+    { 
+      hideWindow(actionwin);
+      draw(true);
+      setBuildOptions(build);
+      placePopup(&actionbox, actionwin);
+      draw(true);
+    }                                              
     else if ( (selected == "Compute build order") || (selection == "C") )
     { 
       hideWindow(actionwin);
@@ -1652,19 +1709,11 @@ void MainWindow::showBuildActions(BuildListItem & build)
       placePopup(&actionbox, actionwin);
       draw(true);
     }                                              
-    else if ( (selected == "Show package info") || (selection == "S") )
+    else if ( (selected == "Show package info") || (selection == "h") )
     {
       hideWindow(actionwin);
       draw(true);
       showPackageInfo(build);
-      placePopup(&actionbox, actionwin);
-      draw(true);
-    }
-    else if ( (selected == "Browse files") || (selection == "B") )
-    {
-      hideWindow(actionwin);
-      draw(true);
-      browseFiles(build);
       placePopup(&actionbox, actionwin);
       draw(true);
     }

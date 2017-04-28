@@ -40,7 +40,8 @@ class TextInput: public InputItem {
     void draw(int y_offset, bool force=false, bool highlight=false);
     virtual std::string exec(int y_offset);
 
-    /* Accessing properties. */
+    /* Accessing properties */
 
     std::string getStringProp() const;
+    std::string text() const;
 };

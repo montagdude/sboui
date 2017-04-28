@@ -249,3 +249,4 @@ Accessing properties
 
 *******************************************************************************/
 std::string TextInput::getStringProp() const { return _entry; }
+std::string TextInput::text() const { return _entry; }

@@ -79,13 +79,14 @@ class MainWindow: public CursesWidget {
 
     /* Actions for a selected SlackBuild */
 
+    void browseFiles(const BuildListItem & build);
     bool modifyPackage(BuildListItem & build, const std::string & action,
                        int & ninstalled, int & nupgraded, int & nreinstalled,
                        int & nremoved, bool & cancel_all, bool batch=false);
+    void setBuildOptions(BuildListItem & build);
     void showBuildOrder(BuildListItem & build);
     void showInverseReqs(const BuildListItem & build);
     void showPackageInfo(BuildListItem & build);
-    void browseFiles(const BuildListItem & build);
 
     /* Sync/update */
 

@@ -79,6 +79,10 @@ void BuildActionBox::create(BuildListItem & build)
     }
   }
 
+  addItem(new ListItem("Set build options"));
+  _items[count]->setHotKey(0);
+   count++;
+
   addItem(new ListItem("Compute build order"));
   _items[count]->setHotKey(0);
    count++;
@@ -88,6 +92,6 @@ void BuildActionBox::create(BuildListItem & build)
    count++;
 
   addItem(new ListItem("Show package info"));
-  _items[count]->setHotKey(0);
+  _items[count]->setHotKey(1);
    count++;
 }

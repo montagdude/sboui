@@ -329,7 +329,18 @@ Runs system command and returns exit status
 int run_command(const std::string & cmd)
 {
   int check;
+  unsigned int i, nsplit;
+  std::vector<std::string> splitcmd;
+  std::string runcmd;
 
+  // Get rid of extraneous spaces
+
+  splitcmd = split(cmd);
+  nsplit = splitcmd.size();
+  runcmd = "";
+  for ( i = 0; i < nsplit-1; i++ ) { runcmd += splitcmd[i] + " "; }
+  runcmd += splitcmd[nsplit-1];
+  
   check = system(cmd.c_str());
 
   // See `man waitpid` for more info on WEXITSTATUS and WIFEXITED
@@ -349,8 +360,8 @@ int install_slackbuild(BuildListItem & build)
   int check;
   std::vector<std::string> installedpkgs;
 
-  cmd = install_vars + " " + install_cmd + " " + build.name() + " " + 
-        install_clos;
+  cmd = install_vars + " " + build.getProp("build_options") + " " + install_cmd
+      + " " + build.name() + " " + install_clos;
   check = run_command(cmd);
   if (check != 0) { return check; }
 
@@ -377,8 +388,8 @@ int upgrade_slackbuild(BuildListItem & build)
   int check;
   std::vector<std::string> installedpkgs;
 
-  cmd = upgrade_vars + " " + upgrade_cmd + " " + build.name() + " " +
-        upgrade_clos;
+  cmd = upgrade_vars + " " + build.getProp("build_options") + " " + upgrade_cmd
+      + " " + build.name() + " " + upgrade_clos;
   check = run_command(cmd);
   if (check != 0) { return check; }
 

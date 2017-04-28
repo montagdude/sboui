@@ -2,42 +2,33 @@
 
 #include <string>
 #include "TextInput.h"
-#include "ToggleInput.h"
+#include "BuildListItem.h"
 #include "InputBox.h"
 
 /*******************************************************************************
 
-Search dialog
+Input box for build options
 
 *******************************************************************************/
-class SearchBox: public InputBox {
+class BuildOptionsBox: public InputBox {
 
   private:
 
     TextInput _entryitem;
-    ToggleInput _caseitem, _wholeitem, _readmeitem;
-
-    /* Drawing */
-
-    void redrawFrame() const;
 
   public:
 
-    /* Constructor and destructor */
+    /* Constructors */
 
-    SearchBox();
-    ~SearchBox();
+    BuildOptionsBox();
 
     /* Set attributes */
 
-    void clearSearch();
+    void setBuild(const BuildListItem & build);
 
     /* Get attributes */
 
-    std::string searchString() const;
-    bool caseSensitive() const;
-    bool wholeWord() const;
-    bool searchREADMEs() const;
+    std::string entry() const;
 
     /* Draws frame, items, etc. as needed */
 

@@ -59,6 +59,7 @@ BuildListItem::BuildListItem()
   addBoolProp("tagged", false);
   addBoolProp("blacklisted", false);
   addBoolProp("marked", false);
+  addProp("build_options", "");
   addProp("package_name", "");
   addProp("action", "");
 }

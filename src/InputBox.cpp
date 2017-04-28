@@ -270,9 +270,10 @@ void InputBox::redrawFrame() const
 
   for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, 0, ACS_VLINE); }
 
-  // Right border for header
+  // Right border for header and footer
 
   mvwaddch(_win, 1, cols-1, ACS_VLINE);
+  mvwaddch(_win, rows-2, cols-1, ACS_VLINE);
 
   // Bottom border
 
