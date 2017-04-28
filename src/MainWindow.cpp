@@ -1659,6 +1659,14 @@ void MainWindow::showBuildActions(BuildListItem & build)
       placePopup(&actionbox, actionwin);
       draw(true);
     }
+    else if ( (selected == "Set build options") || (selection == "S") )
+    { 
+      hideWindow(actionwin);
+      draw(true);
+      setBuildOptions(build);
+      placePopup(&actionbox, actionwin);
+      draw(true);
+    }                                              
     else if ( (selected == "Install") || (selection == "I") ||
               (selected == "Upgrade") || (selection == "U") ||
               (selected == "Reinstall") || (selection == "e") ||
@@ -1686,14 +1694,6 @@ void MainWindow::showBuildActions(BuildListItem & build)
       // If any changes were made, actions might need to change too
 
       if (check_rebuild) { actionbox.create(build); }
-      placePopup(&actionbox, actionwin);
-      draw(true);
-    }                                              
-    else if ( (selected == "Set build options") || (selection == "S") )
-    { 
-      hideWindow(actionwin);
-      draw(true);
-      setBuildOptions(build);
       placePopup(&actionbox, actionwin);
       draw(true);
     }                                              
