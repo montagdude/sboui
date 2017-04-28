@@ -1573,7 +1573,7 @@ void MainWindow::showBuildActions(BuildListItem & build)
   WINDOW *actionwin;
   std::string selection, selected, action;
   int ninstalled, nupgraded, nreinstalled, nremoved;
-  bool getting_selection, cancel_all, needs_rebuild;
+  bool getting_selection, cancel_all, check_rebuild, needs_rebuild;
   BuildActionBox actionbox;
 
   // Set up windows and dialog
@@ -1626,15 +1626,15 @@ void MainWindow::showBuildActions(BuildListItem & build)
       nupgraded = 0;
       nreinstalled = 0;
       nremoved = 0;
-      needs_rebuild = modifyPackage(build, action, ninstalled, nupgraded,
+      check_rebuild = modifyPackage(build, action, ninstalled, nupgraded,
                                     nreinstalled, nremoved, cancel_all);
+      if (! needs_rebuild) { needs_rebuild = check_rebuild; }
 
-      // If any changes were made, Actions might need to change too
+      // If any changes were made, actions might need to change too
 
-      if (needs_rebuild) { actionbox.create(build); }
+      if (check_rebuild) { actionbox.create(build); }
       placePopup(&actionbox, actionwin);
       draw(true);
-      
     }                                              
     else if ( (selected == "Compute build order") || (selection == "C") )
     { 
