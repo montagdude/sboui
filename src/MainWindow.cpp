@@ -301,14 +301,14 @@ void MainWindow::rebuild()
   }
   _taglist.clearList();
 
-  // Re-filter (data, tags could have changed)
+  // Re-filter (data, tags could have changed), unless filtered by search
 
-  if (_filter == "installed SlackBuilds") { filterInstalled(); }
+  if (_filter == "all SlackBuilds") { filterAll(); }
+  else if (_filter == "installed SlackBuilds") { filterInstalled(); }
   else if (_filter == "upgradable SlackBuilds") { filterUpgradable(); } 
   else if (_filter == "tagged SlackBuilds") { filterTagged(); } 
   else if (_filter == "blacklisted SlackBuilds") { filterBlacklisted(); }
   else if (_filter == "non-dependencies") { filterNonDeps(); } 
-  else { filterAll(); }
 
   draw(true);
 }
