@@ -177,7 +177,11 @@ unsigned int TagList::getDisplayList(const std::string & action)
            (! item->getBoolProp("blacklisted")) ) { add_item = true; }
     }
        
-    if (add_item) { _items.push_back(_tagged[i]); }
+    if (add_item)
+    {
+      _tagged[i]->setBoolProp("marked", true);
+      _items.push_back(_tagged[i]);
+    }
   }
 
   return numItems();
