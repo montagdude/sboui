@@ -285,7 +285,7 @@ Rebuilds lists after applying changes
 *******************************************************************************/
 void MainWindow::rebuild()
 {
-  unsigned int k;
+  unsigned int k, ncategories;
   int ntagged;
   std::vector<std::string> pkg_errors, missing_info;
   std::string errmsg;
@@ -300,6 +300,14 @@ void MainWindow::rebuild()
     build->setBoolProp("tagged", false);
   }
   _taglist.clearList();
+
+  // Un-tag all categories
+
+  ncategories = _clistbox.numItems();
+  for ( k = 0; k < ncategories; k++ )
+  {
+    _clistbox.itemByIdx(k)->setBoolProp("tagged", false);
+  }
 
   // Re-filter (data, tags could have changed), unless filtered by search
 
@@ -1190,7 +1198,8 @@ void MainWindow::applyTags(const std::string & action)
                                      nreinstalled, nremoved, cancel_all, true);
         if (! needs_rebuild) { needs_rebuild = any_modified; }
 
-        // Because tags could have changed, determine if categories should be tagged
+        // Because tags could have changed, determine if categories should be
+        // tagged
 
         ncategories = _clistbox.numItems();
         for ( j = 0; j < ncategories; j++ )
