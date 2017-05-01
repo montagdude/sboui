@@ -1,3 +1,25 @@
+2017-04-30   Daniel Prosser <dpross1100@msn.com>
+
+        version 0.3
+        * Add a package blacklist to prevent upgrading/reinstalling/removing
+          packages installed from a different repo
+        * Add a "Blacklisted" filter
+        * Remove blacklisted packages from upgradable filter
+        * Make a position notifier on the right side when scrolling in lists
+          and input boxes
+        * Add "quick search" function to jump in active list while typing
+        * Add build options parameter applying to each SlackBuild; set by
+          selecting appropriate choice in actions dialog (previously, needed to
+          use global install_vars and upgrade_vars for build options)
+        * Add option to search in READMEs
+        * Add "Show package info" action
+        * Smarter checks for whether changes were actually applied, and try
+          reinstall if upgrade fails without giving an error
+        * Add a "view command line output" command
+        * Re-display actions dialog after install/upgrade/reinstall/reinstall
+        * Support tagging in InstallBox
+        * Various bug fixes and UX improvements
+
 2017-04-17   Daniel Prosser <dpross1100@msn.com>
 
         version 0.2.1
