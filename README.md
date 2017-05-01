@@ -13,6 +13,7 @@ interface and also makes it very fast. The main features of sboui include:
 * Dependency resolution: forward and inverse mode
 * View and edit files in the repository
 * Tag multiple packages (or entire groups) to apply batch changes
+* Blacklist installed packages by name or regex pattern
 * Comes with several built-in color themes and supports custom themes
 * Designed for and tested to work flawlessly with sbopkg and sbotools, but it is
   easy to set it up to work with your own custom package manager
