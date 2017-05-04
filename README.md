@@ -8,8 +8,8 @@ This approach allows much greater flexibility in the design of the user
 interface and also makes it very fast. The main features of sboui include:
 
 * Two-pane browsable listing of software groups and names
-* Filters: all, installed, upgradable, tagged, and non-dependencies
-* Search the repository
+* Filters: all, installed, upgradable, tagged, blacklisted, and non-dependencies
+* Search the repository, including searching in READMEs
 * Dependency resolution: forward and inverse mode
 * View and edit files in the repository
 * Tag multiple packages (or entire groups) to apply batch changes
@@ -82,13 +82,15 @@ few requirements:
   repository with the official SlackBuilds.org repository.
 * The package manager must implement an install command (install_cmd) to build
   and install the software package. sboui issues the install command in the
-  following form: `install_vars install_cmd {software name} install_clos`, where
-  install_vars are environment variables passed to the package manager and
-  install_clos are additional user-specified command-line options. For example,
-  for sbopkg, install_cmd is "sbopkg -B -i" by default. If the package manager
-  normally resolves dependencies, the install command should disable this
-  behavior, because sboui resolves dependencies natively. The install command
-  should build and install *only* the software identified by {software name}.
+  following form: `install_vars build_options install_cmd {software name}
+  install_clos`, where install_vars are global environment variables passed to
+  the package manager, build_options are per-SlackBuild environment variables
+  set within the UI, and install_clos are additional user-specified
+  command-line options. For example, for sbopkg, install_cmd is "sbopkg -B -i"
+  by default. If the package manager normally resolves dependencies, the install
+  command should disable this behavior, because sboui resolves dependencies
+  natively. The install command should build and install *only* the software
+  identified by {software name}.
 * The package manager must implement an upgrade command to build and upgrade
   the software package. In general, this command has the same requirements as
   the install command, and the two commands can actually be the same (such is
