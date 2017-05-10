@@ -120,9 +120,9 @@ void CLOParser::printHelp() const
   std::cout << "  --version        Display version number of sboui and exit"
             << std::endl;
   std::cout << std::endl;
-  std::cout << "Report bugs to Daniel Prosser <dpross1100@msn.com>"
-            << std::endl;
   std::cout << "sboui home page: https://github.com/montagdude/sboui"
+            << std::endl;
+  std::cout << "Please report bugs using the GitHub issue tracker."
             << std::endl;
 }
 
