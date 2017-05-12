@@ -1,3 +1,9 @@
+2017-05-11   Daniel Prosser <dpross1100@msn.com>
+
+        version 0.3.1
+        * Fix a couple minor inconsistencies in documentation.
+        * Change error reporting information in usage output.
+
 2017-04-30   Daniel Prosser <dpross1100@msn.com>
 
         version 0.3
