@@ -285,10 +285,10 @@ Rebuilds lists after applying changes
 *******************************************************************************/
 void MainWindow::rebuild()
 {
-  unsigned int k, ncategories;
+  unsigned int k, ncategories, list_highlight, prev_activated;
   int ntagged;
   std::vector<std::string> pkg_errors, missing_info;
-  std::string errmsg;
+  std::string errmsg, category;
   BuildListItem *build;
 
   // Clear tags
@@ -309,6 +309,12 @@ void MainWindow::rebuild()
     _clistbox.itemByIdx(k)->setBoolProp("tagged", false);
   }
 
+  // Save original highlight info
+
+  category = _clistbox.highlightedName();
+  list_highlight = _blistboxes[_category_idx].highlight();
+  prev_activated = _activated_listbox;
+
   // Re-filter (data, tags could have changed), unless filtered by search
 
   if (_filter == "all SlackBuilds") { filterAll(); }
@@ -317,6 +323,26 @@ void MainWindow::rebuild()
   else if (_filter == "tagged SlackBuilds") { filterTagged(); } 
   else if (_filter == "blacklisted SlackBuilds") { filterBlacklisted(); }
   else if (_filter == "non-dependencies") { filterNonDeps(); } 
+
+  // Reset original highlight if possible
+
+  if (_clistbox.setHighlight(category) == 0)
+  {
+    _category_idx = _clistbox.highlight();
+    _blistboxes[_category_idx].setHighlight(list_highlight);
+    if (prev_activated == 0)
+    {
+      _clistbox.setActivated(true);
+      _blistboxes[_category_idx].setActivated(false);
+      _activated_listbox = 0;
+    }
+    else
+    {
+      _clistbox.setActivated(false);
+      _blistboxes[_category_idx].setActivated(true);
+      _activated_listbox = 1;
+    }
+  }
 
   draw(true);
 }

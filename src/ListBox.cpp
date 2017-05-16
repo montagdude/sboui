@@ -401,6 +401,11 @@ int ListBox::setHighlight(int highlight)
     determineFirstPrint();
     return 0;
   }
+  else if (highlight >= int(_items.size()))
+  {
+    highlightLast();
+    return 1;
+  }
   else { return 1; }
 }
 
