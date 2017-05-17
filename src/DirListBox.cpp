@@ -73,26 +73,27 @@ void DirListBox::redrawSingleItem(unsigned int idx)
 
 /*******************************************************************************
 
-Constructors and destructor
+Navigates one directory up
 
 *******************************************************************************/
-DirListBox::DirListBox()
+int DirListBox::navigateUp()
 {
-  _info = "Enter: View | Esc: Back";
-  _reserved_rows = 6;
-  _header_rows = 3;
+  int check;
+  DirListing dir;
+
+  dir.setFromPath(_currentdir);
+  check = dir.navigateUp();
+  if (check != 0) { return check; }
+
+  return setDirectory(dir.path(), -1);
 }
 
-DirListBox::DirListBox(WINDOW *win, const std::string & name)
-{
-  _win = win;
-  _name = name;
-  _info = "Enter: View | Esc: Back";
-  _reserved_rows = 6;
-  _header_rows = 3;
-}
+/*******************************************************************************
 
-DirListBox::~DirListBox()
+Clears directory listing
+
+*******************************************************************************/
+void DirListBox::clear()
 {
   unsigned int i, numitems;
 
@@ -103,30 +104,77 @@ DirListBox::~DirListBox()
 
 /*******************************************************************************
 
+Constructors and destructor
+
+*******************************************************************************/
+DirListBox::DirListBox()
+{
+  _info = "Enter: View | Esc: Back";
+  _reserved_rows = 6;
+  _header_rows = 3;
+  _level = 0;
+}
+
+DirListBox::DirListBox(WINDOW *win, const std::string & name)
+{
+  _win = win;
+  _name = name;
+  _info = "Enter: View | Esc: Back";
+  _reserved_rows = 6;
+  _header_rows = 3;
+  _level = 0;
+}
+
+DirListBox::~DirListBox() { clear(); }
+
+/*******************************************************************************
+
 Setting properties
 
 *******************************************************************************/
-int DirListBox::setDirectory(const std::string & directory)
+int DirListBox::setDirectory(const std::string & directory, int levelchange)
 {
   int check;
-  unsigned int i, nentries;
+  unsigned int i, entrycounter, nentries;
   DirListing dir;
+
+  if ( (_level == 0) && (levelchange == -1) ) { return 1; }
+  else { _level += levelchange; }
 
   check = dir.setFromPath(directory);
   if (check != 0) { return check; }
+  _currentdir = dir.path();
 
-  dir.sort();
-
+  clear();
   nentries = dir.size();
   if (nentries == 0) { return 1; }
+
+  // Item to allow navigating up
+
+  entrycounter = 0;
+  if (_level > 0)
+  {
+    addItem(new ListItem(".."));
+    _items[0]->addProp("type", "dir");
+    entrycounter++;
+  }
+
   for ( i = 0; i < nentries; i++ )
   {
     addItem(new ListItem(dir(i).name)); 
-    _items[i]->addProp("type", dir(i).type);
+    _items[entrycounter]->addProp("type", dir(i).type);
+    entrycounter++;
   }
 
   return check;
 }
+
+/*******************************************************************************
+
+Accessing properties
+
+*******************************************************************************/
+const std::string & DirListBox::directory() const { return _currentdir; }
 
 /*******************************************************************************
 
@@ -162,9 +210,17 @@ std::string DirListBox::exec()
       case '\n':
       case '\r':
       case KEY_ENTER:
-        retval = signals::keyEnter;
         _redraw_type = "all";
-        getting_input = false;
+        if (_items[_highlight]->getProp("type") == "dir")
+        {
+          if (_items[_highlight]->name() == "..") { navigateUp(); }
+          else { setDirectory(_currentdir + _items[_highlight]->name(), 1); }
+        }
+        else 
+        { 
+          retval = signals::keyEnter;
+          getting_input = false;
+        }
         break;
   
       // Arrows/Home/End/PgUp/Dn: change highlighted value

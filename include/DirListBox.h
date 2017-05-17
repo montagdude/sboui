@@ -14,7 +14,12 @@ class DirListBox: public SelectionBox {
   
   private:
 
+    unsigned int _level;
+    std::string _currentdir;
+
     void redrawSingleItem(unsigned int idx);
+    int navigateUp();
+    void clear(); 
 
   public:
 
@@ -26,7 +31,11 @@ class DirListBox: public SelectionBox {
 
     /* Setting properties */
 
-    int setDirectory(const std::string & directory);
+    int setDirectory(const std::string & directory, int levelchange=0);
+
+    /* Accessing properties */
+
+    const std::string & directory() const;
 
     /* User interaction loop */
 

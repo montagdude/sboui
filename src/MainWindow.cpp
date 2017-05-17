@@ -1106,7 +1106,7 @@ void MainWindow::browseFiles(const BuildListItem & build)
         fname = browser.highlightedItem()->name();
         def_prog_mode();
         endwin();
-        check = view_file(builddir + "/" + fname);
+        check = view_file(browser.directory() + fname);
         reset_prog_mode();
         draw(true);
       }
