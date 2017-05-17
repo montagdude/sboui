@@ -14,8 +14,8 @@ class DirListBox: public SelectionBox {
   
   private:
 
-    unsigned int _level;
-    std::string _currentdir;
+    std::string _topdir, _currentdir;
+    bool _limit_topdir;
 
     void redrawSingleItem(unsigned int idx);
     int navigateUp();
@@ -31,7 +31,8 @@ class DirListBox: public SelectionBox {
 
     /* Setting properties */
 
-    int setDirectory(const std::string & directory, int levelchange=0);
+    void limitTopDir(bool limit);
+    int setDirectory(const std::string & directory);
 
     /* Accessing properties */
 

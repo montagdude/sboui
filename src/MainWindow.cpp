@@ -1081,6 +1081,7 @@ void MainWindow::browseFiles(const BuildListItem & build)
 
   builddir = settings::repo_dir + "/" + build.getProp("category") + "/" +
              build.name();
+  browser.limitTopDir(true);
   check = browser.setDirectory(builddir);
 
   if (check != 0) 

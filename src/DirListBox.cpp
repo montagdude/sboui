@@ -85,7 +85,7 @@ int DirListBox::navigateUp()
   check = dir.navigateUp();
   if (check != 0) { return check; }
 
-  return setDirectory(dir.path(), -1);
+  return setDirectory(dir.path());
 }
 
 /*******************************************************************************
@@ -112,7 +112,9 @@ DirListBox::DirListBox()
   _info = "Enter: View | Esc: Back";
   _reserved_rows = 6;
   _header_rows = 3;
-  _level = 0;
+  _topdir = "";
+  _currentdir = "";
+  _limit_topdir = false;
 }
 
 DirListBox::DirListBox(WINDOW *win, const std::string & name)
@@ -122,7 +124,9 @@ DirListBox::DirListBox(WINDOW *win, const std::string & name)
   _info = "Enter: View | Esc: Back";
   _reserved_rows = 6;
   _header_rows = 3;
-  _level = 0;
+  _topdir = "";
+  _currentdir = "";
+  _limit_topdir = false;
 }
 
 DirListBox::~DirListBox() { clear(); }
@@ -132,18 +136,33 @@ DirListBox::~DirListBox() { clear(); }
 Setting properties
 
 *******************************************************************************/
-int DirListBox::setDirectory(const std::string & directory, int levelchange)
+void DirListBox::limitTopDir(bool limit) { _limit_topdir = limit; }
+int DirListBox::setDirectory(const std::string & directory)
 {
   int check;
-  unsigned int i, entrycounter, nentries;
+  unsigned int i, entrycounter, nentries, topdirsize, currentdirsize;
+  bool below_topdir;
   DirListing dir;
-
-  if ( (_level == 0) && (levelchange == -1) ) { return 1; }
-  else { _level += levelchange; }
 
   check = dir.setFromPath(directory);
   if (check != 0) { return check; }
   _currentdir = dir.path();
+  if (_topdir == "") { _topdir = _currentdir; }
+
+  // Check if we are below or at _topdir. If not, reset _topdir.
+
+  topdirsize = _topdir.size();
+  currentdirsize = _currentdir.size();
+  if ( (currentdirsize > topdirsize) &&
+       (_currentdir.substr(0,topdirsize) == _topdir) )
+  {
+    below_topdir = true;
+  }
+  else
+  {
+    below_topdir = false;
+    _topdir = _currentdir;
+  } 
 
   clear();
   nentries = dir.size();
@@ -152,11 +171,14 @@ int DirListBox::setDirectory(const std::string & directory, int levelchange)
   // Item to allow navigating up
 
   entrycounter = 0;
-  if (_level > 0)
+  if (_currentdir != "/")
   {
-    addItem(new ListItem(".."));
-    _items[0]->addProp("type", "dir");
-    entrycounter++;
+    if ( (! _limit_topdir) || (below_topdir) )
+    {
+      addItem(new ListItem(".."));
+      _items[0]->addProp("type", "dir");
+      entrycounter++;
+    }
   }
 
   for ( i = 0; i < nentries; i++ )
@@ -214,7 +236,7 @@ std::string DirListBox::exec()
         if (_items[_highlight]->getProp("type") == "dir")
         {
           if (_items[_highlight]->name() == "..") { navigateUp(); }
-          else { setDirectory(_currentdir + _items[_highlight]->name(), 1); }
+          else { setDirectory(_currentdir + _items[_highlight]->name()); }
         }
         else 
         { 
