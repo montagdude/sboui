@@ -32,7 +32,7 @@ class DirListBox: public SelectionBox {
     /* Setting properties */
 
     void limitTopDir(bool limit);
-    int setDirectory(const std::string & directory);
+    int setDirectory(const std::string & directory, bool reset_topdir=false);
 
     /* Accessing properties */
 

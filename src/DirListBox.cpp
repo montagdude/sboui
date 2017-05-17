@@ -85,7 +85,7 @@ int DirListBox::navigateUp()
   check = dir.navigateUp();
   if (check != 0) { return check; }
 
-  return setDirectory(dir.path());
+  return setDirectory(dir.path(), ! _limit_topdir);
 }
 
 /*******************************************************************************
@@ -137,7 +137,7 @@ Setting properties
 
 *******************************************************************************/
 void DirListBox::limitTopDir(bool limit) { _limit_topdir = limit; }
-int DirListBox::setDirectory(const std::string & directory)
+int DirListBox::setDirectory(const std::string & directory, bool reset_topdir)
 {
   int check;
   unsigned int i, entrycounter, nentries, topdirsize, currentdirsize;
@@ -147,7 +147,7 @@ int DirListBox::setDirectory(const std::string & directory)
   check = dir.setFromPath(directory);
   if (check != 0) { return check; }
   _currentdir = dir.path();
-  if (_topdir == "") { _topdir = _currentdir; }
+  if ( (_topdir == "") || reset_topdir) { _topdir = _currentdir; }
 
   // Check if we are below or at _topdir. If not, reset _topdir.
 
