@@ -166,7 +166,6 @@ int DirListBox::setDirectory(const std::string & directory)
 
   clear();
   nentries = dir.size();
-  if (nentries == 0) { return 1; }
 
   // Item to allow navigating up
 
@@ -187,6 +186,7 @@ int DirListBox::setDirectory(const std::string & directory)
     _items[entrycounter]->addProp("type", dir(i).type);
     entrycounter++;
   }
+  highlightFirst();
 
   return check;
 }
