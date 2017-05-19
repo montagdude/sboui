@@ -191,14 +191,14 @@ BuildOrderBox::BuildOrderBox()
 { 
   _reserved_rows = 6;
   _header_rows = 3;
-  _info = "Esc: Back"; 
+  _info = "Esc: Back | a: Actions";
 }
 
 BuildOrderBox::BuildOrderBox(WINDOW *win, const std::string & name)
 {
   _reserved_rows = 6;
   _header_rows = 3;
-  _info = "Esc: Back";
+  _info = "Esc: Back | a: Actions";
   _win = win;
   _name = name;
 }

@@ -24,5 +24,5 @@ class BuildActionBox: public SelectionBox {
 
     /* Sets up actions based on the SlackBuild selected */
 
-    void create(BuildListItem & build);
+    void create(BuildListItem & build, bool limited_actions=false);
 };

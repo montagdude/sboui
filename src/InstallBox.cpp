@@ -216,13 +216,13 @@ Constructors
 *******************************************************************************/
 InstallBox::InstallBox()
 { 
-  _info = "Enter: Ok | Esc: Cancel"; 
+  _info = "Enter: Ok | Esc: Cancel | a: Actions";
   _builds.resize(0);
 }
 
 InstallBox::InstallBox(WINDOW *win, const std::string & name)
 {
-  _info = "Enter: Ok | Esc: Cancel"; 
+  _info = "Enter: Ok | Esc: Cancel | a: Actions"; 
   _builds.resize(0);
   _win = win;
   _name = name;
@@ -342,7 +342,7 @@ int InstallBox::create(BuildListItem & build,
   nreqs = reqlist.size();
   reqlist.push_back(&build);
 
-  if (batch) { _info = "Enter: Ok | Esc: Skip | c: Cancel"; }
+  if (batch) { _info = "Enter: Ok | Esc: Skip | c: Cancel | a: Actions"; }
 
   // Copy reqlist to _builds list and determine action for each
 

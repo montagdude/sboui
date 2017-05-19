@@ -1,5 +1,12 @@
 Things for 1.0
 ================================================================================
 * Show a message after syncing instead of pausing, once sbopkg and sbotools are
-  changed to give an error when sync fails.
-* Make a PDF manual explaining UI usage.
+  changed to give an error when sync fails
+* Make a PDF manual explaining UI usage
+
+Completed for 0.4
+================================================================================
+* Preserve selection as closely as possible after installing, upgrading, etc.
+* Allow browsing files in subdirectories
+* Ability to view README, browse files, set build options, and show package info
+  for dependencies in InstallBox and BuildOrderBox 

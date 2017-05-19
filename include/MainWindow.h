@@ -142,7 +142,7 @@ class MainWindow: public CursesWidget {
 
     void selectFilter();
     void search();
-    void showBuildActions(BuildListItem & build);
+    void showBuildActions(BuildListItem & build, bool limited_actions=false);
 
     /* Quick search in active list */
 

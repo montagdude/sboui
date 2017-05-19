@@ -710,6 +710,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
   unsigned int i, ninstaller, nforeign;
   std::vector<const BuildListItem *> foreign;
   InstallBox installer;
+  BuildListItem *subbuild;
 
   if (settings::resolve_deps)
     printStatus("Computing dependencies for " + build.name() + " ...");
@@ -818,6 +819,15 @@ bool MainWindow::modifyPackage(BuildListItem & build,
         getting_input = false;
         cancel_all = true;
       }
+      else if (selection == "a")
+      {
+        hideWindow(installerwin);
+        draw(true);
+        subbuild = static_cast<BuildListItem *>(installer.highlightedItem());
+        showBuildActions(*subbuild, true);
+        placePopup(&installer, installerwin);
+        draw(true);
+      }
       else if (selection == signals::resize) 
       { 
         placePopup(&installer, installerwin);
@@ -909,6 +919,7 @@ void MainWindow::showBuildOrder(BuildListItem & build)
   bool getting_input;
   unsigned int nbuildorder;
   BuildOrderBox buildorder;
+  BuildListItem *subbuild;
 
   printStatus("Computing build order for " + build.name() + " ...");
   check = buildorder.create(build, _slackbuilds);
@@ -946,6 +957,15 @@ void MainWindow::showBuildOrder(BuildListItem & build)
     selection = buildorder.exec(); 
     if ( (selection == signals::keyEnter) || 
          (selection == signals::quit) ) { getting_input = false; }
+    else if (selection == "a")
+    {
+      hideWindow(buildorderwin);
+      draw(true);
+      subbuild = static_cast<BuildListItem *>(buildorder.highlightedItem());
+      showBuildActions(*subbuild, true);
+      placePopup(&buildorder, buildorderwin);
+      draw(true);
+    }
     else if (selection == signals::resize) 
     { 
       placePopup(&buildorder, buildorderwin);
@@ -1649,7 +1669,7 @@ void MainWindow::search()
 Dialog for actions pertaining to selected SlackBuild
 
 *******************************************************************************/
-void MainWindow::showBuildActions(BuildListItem & build)
+void MainWindow::showBuildActions(BuildListItem & build, bool limited_actions)
 {
   WINDOW *actionwin;
   std::string selection, selected, action;
@@ -1662,7 +1682,7 @@ void MainWindow::showBuildActions(BuildListItem & build)
   actionwin = newwin(1, 1, 0, 0);
   actionbox.setWindow(actionwin);
   actionbox.setName(build.name() + " actions");
-  actionbox.create(build);
+  actionbox.create(build, limited_actions);
   placePopup(&actionbox, actionwin);
 
   // Get selection
@@ -1703,52 +1723,6 @@ void MainWindow::showBuildActions(BuildListItem & build)
       placePopup(&actionbox, actionwin);
       draw(true);
     }                                              
-    else if ( (selected == "Install") || (selection == "I") ||
-              (selected == "Upgrade") || (selection == "U") ||
-              (selected == "Reinstall") || (selection == "e") ||
-              (selected == "Remove") || (selection == "R") )
-    { 
-      if ( (selected == "Install") || (selection == "I") ) 
-        action = "Install";
-      else if ( (selected == "Upgrade") || (selection == "U") )
-        action = "Upgrade";
-      else if ( (selected == "Reinstall") || (selection == "e") ) 
-        action = "Reinstall";
-      else
-        action = "Remove";
-
-      hideWindow(actionwin);
-      draw(true);
-      ninstalled = 0;
-      nupgraded = 0;
-      nreinstalled = 0;
-      nremoved = 0;
-      check_rebuild = modifyPackage(build, action, ninstalled, nupgraded,
-                                    nreinstalled, nremoved, cancel_all);
-      if (! needs_rebuild) { needs_rebuild = check_rebuild; }
-
-      // If any changes were made, actions might need to change too
-
-      if (check_rebuild) { actionbox.create(build); }
-      placePopup(&actionbox, actionwin);
-      draw(true);
-    }                                              
-    else if ( (selected == "Compute build order") || (selection == "C") )
-    { 
-      hideWindow(actionwin);
-      draw(true);
-      showBuildOrder(build);
-      placePopup(&actionbox, actionwin);
-      draw(true);
-    }                                              
-    else if ( (selected == "List inverse deps") || (selection == "L") )
-    { 
-      hideWindow(actionwin);
-      draw(true);
-      showInverseReqs(build);
-      placePopup(&actionbox, actionwin);
-      draw(true);
-    }                                              
     else if ( (selected == "Show package info") || (selection == "h") )
     {
       hideWindow(actionwin);
@@ -1764,6 +1738,55 @@ void MainWindow::showBuildActions(BuildListItem & build)
       actionbox.draw(true);
     }
     else if (selection == signals::quit) { getting_selection = false; }
+    if (! limited_actions)
+    {
+      if ( (selected == "Install") || (selection == "I") ||
+                (selected == "Upgrade") || (selection == "U") ||
+                (selected == "Reinstall") || (selection == "e") ||
+                (selected == "Remove") || (selection == "R") )
+      { 
+        if ( (selected == "Install") || (selection == "I") ) 
+          action = "Install";
+        else if ( (selected == "Upgrade") || (selection == "U") )
+          action = "Upgrade";
+        else if ( (selected == "Reinstall") || (selection == "e") ) 
+          action = "Reinstall";
+        else
+          action = "Remove";
+
+        hideWindow(actionwin);
+        draw(true);
+        ninstalled = 0;
+        nupgraded = 0;
+        nreinstalled = 0;
+        nremoved = 0;
+        check_rebuild = modifyPackage(build, action, ninstalled, nupgraded,
+                                      nreinstalled, nremoved, cancel_all);
+        if (! needs_rebuild) { needs_rebuild = check_rebuild; }
+
+        // If any changes were made, actions might need to change too
+
+        if (check_rebuild) { actionbox.create(build); }
+        placePopup(&actionbox, actionwin);
+        draw(true);
+      }                                              
+      else if ( (selected == "Compute build order") || (selection == "C") )
+      { 
+        hideWindow(actionwin);
+        draw(true);
+        showBuildOrder(build);
+        placePopup(&actionbox, actionwin);
+        draw(true);
+      }                                              
+      else if ( (selected == "List inverse deps") || (selection == "L") )
+      { 
+        hideWindow(actionwin);
+        draw(true);
+        showInverseReqs(build);
+        placePopup(&actionbox, actionwin);
+        draw(true);
+      }                                              
+    }
   }
 
   // Get rid of window (redraw happens in MainWindow::show())

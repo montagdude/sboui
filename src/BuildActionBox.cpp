@@ -35,7 +35,7 @@ BuildActionBox::~BuildActionBox()
 Creates options using info about SlackBuild
 
 *******************************************************************************/
-void BuildActionBox::create(BuildListItem & build)
+void BuildActionBox::create(BuildListItem & build, bool limited_actions)
 {
   unsigned int count;
 
@@ -53,6 +53,12 @@ void BuildActionBox::create(BuildListItem & build)
   addItem(new ListItem("Set build options"));
   _items[count]->setHotKey(0);
    count++;
+
+  addItem(new ListItem("Show package info"));
+  _items[count]->setHotKey(1);
+   count++;
+
+  if (limited_actions) { return; }
 
   if (! build.getBoolProp("installed"))
   { 
@@ -89,9 +95,5 @@ void BuildActionBox::create(BuildListItem & build)
 
   addItem(new ListItem("List inverse deps"));
   _items[count]->setHotKey(0);
-   count++;
-
-  addItem(new ListItem("Show package info"));
-  _items[count]->setHotKey(1);
    count++;
 }
