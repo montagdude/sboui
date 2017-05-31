@@ -1,8 +1,13 @@
 Things for 1.0
 ================================================================================
-* Show a message after syncing instead of pausing, once sbopkg and sbotools are
-  changed to give an error when sync fails
-* Make a PDF manual explaining UI usage
+* Make a PDF manual
+
+Things for 0.4
+================================================================================
+* Put information about dependency (libconfig) in README.md and INSTALL
+* Show an error message after syncing if the sync_cmd returns non-zero
+* Improve upgrade algorithm (use strict != criterion, but override this logic
+  for SlackBuilds that append a tag to the version name)
 
 Completed for 0.4
 ================================================================================
