@@ -4,6 +4,55 @@
 #include "ListItem.h"
 #include "BuildListItem.h"
 
+/* The following can't use the simple installed_version != available_version
+   check, because the SlackBuild appends something to $VERSION in the package
+   name */
+std::vector<std::string> special_upgrade_check {
+  {"acpi_call"},
+  {"broadcom-sta"},
+  {"broffice.org"},
+  {"dahdi-complete"},
+  {"klibc"},
+  {"libreoffice-helppack"},
+  {"libreoffice-langpack"},
+  {"lirc"},
+  {"netatop"},
+  {"nvidia-kernel"},
+  {"nvidia-legacy304-kernel"},
+  {"nvidia-legacy340-kernel"},
+  {"openoffice.org"},
+  {"openoffice-langpack"},
+  {"pentadactyl"},
+  {"r8168"},
+  {"rtl8188eu"},
+  {"spl-solaris"},
+  {"sysdig"},
+  {"steamos-xpad"},
+  {"vhba-module"},
+  {"virtualbox-kernel-addons"},
+  {"virtualbox-kernel"},
+  {"xtables-addons"},
+  {"zfs-on-linux"}
+};
+
+/*******************************************************************************
+
+Determines whether a special upgrade check is needed
+
+*******************************************************************************/
+bool BuildListItem::requiresSpecialUpgradeCheck() const
+{
+  unsigned int i, nspecial;
+
+  nspecial = special_upgrade_check.size();
+  for ( i = 0; i < nspecial; i++ )
+  {
+    if (_name == special_upgrade_check[i]) { return true; }
+  }
+
+  return false;
+}
+
 /*******************************************************************************
 
 Checks whether SlackBuild can be upgraded
@@ -19,23 +68,26 @@ bool BuildListItem::upgradable() const
   installed = getProp("installed_version");
   available = getProp("available_version");
 
-  // Allow installed version to match even if it has a trailing underscore
-  // after the available_version string. Happens with some packages like kernel
-  // modules. If there are other patterns that should also be considered here,
-  // hopefully someone will tell me.
+  // For SlackBuilds in the special_upgrade_check list, allow installed version
+  // to match even if it has a trailing underscore after the available_version
+  // string.
 
   if ( (getBoolProp("installed")) && (! getBoolProp("blacklisted")) )
   {
     if (installed != available)
     {
-      ilen = installed.size();
-      alen = available.size();
-      test = true;
-      if (ilen > alen)
+      if (requiresSpecialUpgradeCheck())
       {
-        if ( (installed.substr(0,alen) == available) &&
-             (installed[alen] == '_') ) { test = false; }
+        ilen = installed.size();
+        alen = available.size();
+        test = true;
+        if (ilen > alen)
+        {
+          if ( (installed.substr(0,alen) == available) &&
+               (installed[alen] == '_') ) { test = false; }
+        }
       }
+      else { test = true; }
     }
   }
 

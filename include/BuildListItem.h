@@ -15,6 +15,7 @@ class BuildListItem: public ListItem {
 
     // Checks whether a SlackBuild can be upgraded
 
+    bool requiresSpecialUpgradeCheck() const;
     bool upgradable() const;
 
   public:
