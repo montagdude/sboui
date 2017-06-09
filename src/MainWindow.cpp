@@ -1165,6 +1165,7 @@ int MainWindow::syncRepo()
     clearData();
     initialize();
   }
+  else { displayError("An error occurred while trying to sync."); }
 
   return check;
 }

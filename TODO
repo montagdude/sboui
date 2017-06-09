@@ -5,9 +5,6 @@ Things for 1.0
 Things for 0.4
 ================================================================================
 * Put information about dependency (libconfig) in README.md and INSTALL
-* Show an error message after syncing if the sync_cmd returns non-zero
-* Improve upgrade algorithm (use strict != criterion, but override this logic
-  for SlackBuilds that append a tag to the version name)
 
 Completed for 0.4
 ================================================================================
@@ -15,3 +12,6 @@ Completed for 0.4
 * Allow browsing files in subdirectories
 * Ability to view README, browse files, set build options, and show package info
   for dependencies in InstallBox and BuildOrderBox 
+* Improve upgrade algorithm (use strict != criterion, but override this logic
+  for SlackBuilds that append a tag to the version name)
+* Show an error message after syncing if the sync_cmd returns non-zero
