@@ -1,3 +1,21 @@
+2017-06-08   Daniel Prosser <dpross1100@msn.com>
+
+        version 0.4.1
+        * Update ChangeLog and TODO, which were overlooked in 0.4
+
+2017-06-08   Daniel Prosser <dpross1100@msn.com>
+
+        version 0.4
+        * Preserve selection as closely as possible after installing, upgrading,
+          etc.
+        * Allow browsing files in subdirectories
+        * Ability to view README, browse files, set build options, and show
+          package info for dependencies in InstallBox and BuildOrderBox 
+        * Improve upgrade algorithm (use strict != criterion, but override this
+          logic for SlackBuilds that append a tag to the version name)
+        * Show an error message after syncing if the sync_cmd returns non-zero
+        * Put information about dependency (libconfig) in README.md
+
 2017-05-11   Daniel Prosser <dpross1100@msn.com>
 
         version 0.3.1

@@ -1,14 +1,3 @@
 Things for 1.0
 ================================================================================
 * Make a PDF manual
-
-Completed for 0.4
-================================================================================
-* Preserve selection as closely as possible after installing, upgrading, etc.
-* Allow browsing files in subdirectories
-* Ability to view README, browse files, set build options, and show package info
-  for dependencies in InstallBox and BuildOrderBox 
-* Improve upgrade algorithm (use strict != criterion, but override this logic
-  for SlackBuilds that append a tag to the version name)
-* Show an error message after syncing if the sync_cmd returns non-zero
-* Put information about dependency (libconfig) in README.md
