@@ -2,10 +2,6 @@ Things for 1.0
 ================================================================================
 * Make a PDF manual
 
-Things for 0.4
-================================================================================
-* Put information about dependency (libconfig) in README.md and INSTALL
-
 Completed for 0.4
 ================================================================================
 * Preserve selection as closely as possible after installing, upgrading, etc.
@@ -15,3 +11,4 @@ Completed for 0.4
 * Improve upgrade algorithm (use strict != criterion, but override this logic
   for SlackBuilds that append a tag to the version name)
 * Show an error message after syncing if the sync_cmd returns non-zero
+* Put information about dependency (libconfig) in README.md

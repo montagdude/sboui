@@ -21,8 +21,9 @@ interface and also makes it very fast. The main features of sboui include:
 Installation
 ================================================================================
 sboui is available from SlackBuilds.org, so you can install it from there using
-the SlackBuild script or your favorite package manager. If you want to do a
-custom build, see the instructions in the included file called INSTALL.
+the SlackBuild script or your favorite package manager. libconfig is one (the
+only) dependency outside of a standard Slackware install. If you want to do a
+custom build, see the instructions in the included file called INSTALL. 
 
 Use
 ================================================================================
