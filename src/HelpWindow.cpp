@@ -64,7 +64,7 @@ void HelpWindow::redrawFrame() const
   // Draw header
 
   wmove(_win, 1, 1);
-  colors.turnOn(_win, color_settings.header, color_settings.bg_normal);
+  colors.turnOn(_win, "header", "bg_normal");
   wprintw(_win, "Action");
   colors.turnOff(_win);
 
@@ -72,7 +72,7 @@ void HelpWindow::redrawFrame() const
   nspaces = vlineloc - std::string("Action").size();
   for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
 
-  colors.turnOn(_win, color_settings.header, color_settings.bg_normal);
+  colors.turnOn(_win, "header", "bg_normal");
   printToEol(" Shortcut");
   wmove(_win, 2, 1);
   colors.turnOff(_win);

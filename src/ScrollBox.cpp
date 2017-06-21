@@ -304,8 +304,7 @@ void ScrollBox::draw(bool force)
   if (_redraw_type == "all")
   { 
     wclear(_win); 
-    colors.setBackground(_win, color_settings.fg_normal,
-                               color_settings.bg_normal);
+    colors.setBackground(_win, "fg_normal", "bg_normal");
   }
   if (_redraw_type != "none")
   {

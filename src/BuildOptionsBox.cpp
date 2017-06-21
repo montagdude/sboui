@@ -55,8 +55,7 @@ void BuildOptionsBox::draw(bool force)
   if (_redraw_type == "all") 
   { 
     wclear(_win);
-    colors.setBackground(_win, color_settings.fg_popup,
-                               color_settings.bg_popup);
+    colors.setBackground(_win, "fg_popup", "bg_popup");
     redrawFrame();
     redrawScrollIndicator();
     redrawAllItems(force);

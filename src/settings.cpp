@@ -6,7 +6,13 @@
 #include <sstream>
 #include <libconfig.h++>
 #include "Color.h"
+#include "ColorTheme.h"
+#include "DirListing.h"
 #include "settings.h"
+
+#ifndef DATADIR
+  #define DATADIR "/usr/share/sboui"
+#endif
 
 namespace settings
 {
@@ -20,13 +26,13 @@ namespace settings
   std::string upgrade_clos;
   std::string upgrade_vars;
   std::string editor;
-  std::string color_theme, color_theme_file;
+  std::string color_theme;
   std::string layout;
   bool resolve_deps, confirm_changes, enable_color;
 }
 
 Color colors;
-color_struct color_settings, dark, light, commander, user;
+std::vector<ColorTheme> color_themes;
 
 using namespace settings;
 using namespace libconfig;
@@ -35,290 +41,53 @@ const std::string default_conf_file = "/etc/sboui/sboui.conf";
 
 /*******************************************************************************
 
-Constructor for color_struct
+Reads color themes from system and local directories
 
 *******************************************************************************/
-color_struct::color_struct ()
+void get_color_themes()
 {
-  fg_normal = "";     
-  bg_normal = "";     
-  fg_title = "";
-  bg_title = "";
-  fg_info = "";
-  bg_info = "";
-  fg_highlight_active = "";
-  bg_highlight_active = "";
-  fg_highlight_inactive = "";
-  bg_highlight_inactive = "";
-  header = "";
-  header_popup = "";
-  tagged = "";
-  fg_popup = "";
-  bg_popup = "";
-  fg_warning = "";
-  bg_warning = "";
-  hotkey = "";
-  fg_combobox = "";
-  bg_combobox = "";
-}
+  std::string env_home, system_themes_dir, user_themes_dir, theme_full_path;
+  unsigned int i, ndirs, stat, j, nfiles, k, nthemes;
+  DirListing themes_dir;
+  direntry theme_file;
 
-/*******************************************************************************
-
-Defines built-in color themes
-
-*******************************************************************************/
-void define_color_themes()
-{
-  dark.fg_normal = "white";     
-  dark.bg_normal = "black";     
-  dark.fg_title = "brightwhite";
-  dark.bg_title = "blue";
-  dark.fg_info = "brightwhite";
-  dark.bg_info = "blue";
-  dark.fg_highlight_active = "brightwhite";
-  dark.bg_highlight_active = "cyan";
-  dark.fg_highlight_inactive = "black";
-  dark.bg_highlight_inactive = "white";
-  dark.header = "brightyellow";
-  dark.header_popup = "brightblack";
-  dark.tagged = "brightred";
-  dark.fg_popup = "blue";
-  dark.bg_popup = "white";
-  dark.fg_warning = "white";
-  dark.bg_warning = "red";
-  dark.hotkey = "brightblack";
-  dark.fg_combobox = "blue";
-  dark.bg_combobox = "white";
-  
-  light.fg_normal = "black";
-  light.bg_normal = "white";
-  light.fg_title = "brightwhite";
-  light.bg_title = "cyan";
-  light.fg_info = "brightwhite";
-  light.bg_info = "cyan";
-  light.fg_highlight_active = "brightwhite";
-  light.bg_highlight_active = "blue";
-  light.fg_highlight_inactive = "white";
-  light.bg_highlight_inactive = "black";
-  light.header = "brightred";
-  light.header_popup = "brightwhite";
-  light.tagged = "brightred";
-  light.fg_popup = "white";
-  light.bg_popup = "black";
-  light.fg_warning = "white";
-  light.bg_warning = "red";
-  light.hotkey = "brightcyan";
-  light.fg_combobox = "white";
-  light.bg_combobox = "black";
-  
-  commander.fg_normal = "white";
-  commander.bg_normal = "blue";
-  commander.fg_title = "brightwhite";
-  commander.bg_title = "cyan";
-  commander.fg_info = "brightwhite";
-  commander.bg_info = "cyan";
-  commander.fg_highlight_active = "black";
-  commander.bg_highlight_active = "cyan";
-  commander.fg_highlight_inactive = "white";
-  commander.bg_highlight_inactive = "black";
-  commander.header = "brightyellow";
-  commander.header_popup = "blue";
-  commander.tagged = "brightyellow";
-  commander.fg_popup = "black";
-  commander.bg_popup = "white";
-  commander.fg_warning = "white";
-  commander.bg_warning = "red";
-  commander.hotkey = "blue";
-  commander.fg_combobox = "black";
-  commander.bg_combobox = "white";
-}
-
-/*******************************************************************************
-
-Sets default colors
-
-*******************************************************************************/
-void set_default_colors() { color_settings = dark; }
-
-/*******************************************************************************
-
-Copies user colors into color_settings variables. Returns 1 if any user color
-has not been set, 0 otherwise.
-
-*******************************************************************************/
-int set_from_user_colors()
-{
-  if (user.fg_normal != "") { color_settings.fg_normal = user.fg_normal; }
-  else { return 1; }
-  if (user.bg_normal != "") { color_settings.bg_normal = user.bg_normal; }
-  else { return 1; }
-  if (user.fg_title != "") { color_settings.fg_title = user.fg_title; }
-  else { return 1; }
-  if (user.bg_title != "") { color_settings.bg_title = user.bg_title; }
-  else { return 1; }
-  if (user.fg_info != "") { color_settings.fg_info = user.fg_info; }
-  else { return 1; }
-  if (user.bg_info != "") { color_settings.bg_info = user.bg_info; }
-  else { return 1; }
-  if (user.fg_highlight_active != "")
-    color_settings.fg_highlight_active = user.fg_highlight_active;
-  else { return 1; }
-  if (user.bg_highlight_active != "")
-    color_settings.bg_highlight_active = user.bg_highlight_active;
-  else { return 1; }
-  if (user.fg_highlight_inactive != "")
-    color_settings.fg_highlight_inactive = user.fg_highlight_inactive;
-  else { return 1; }
-  if (user.bg_highlight_inactive != "")
-    color_settings.bg_highlight_inactive = user.bg_highlight_inactive;
-  else { return 1; }
-  if (user.header != "") { color_settings.header = user.header; }
-  else { return 1; }
-  if (user.header_popup != "") 
-    color_settings.header_popup = user.header_popup;
-  else { return 1; }
-  if (user.tagged != "") { color_settings.tagged = user.tagged; }
-  else { return 1; }
-  if (user.fg_popup != "") { color_settings.fg_popup = user.fg_popup; }
-  else { return 1; }
-  if (user.bg_popup != "") { color_settings.bg_popup = user.bg_popup; }
-  else { return 1; }
-  if (user.fg_warning != "") { color_settings.fg_warning = user.fg_warning; }
-  else { return 1; }
-  if (user.bg_warning != "") { color_settings.bg_warning = user.bg_warning; }
-  else { return 1; }
-  if (user.hotkey != "") { color_settings.hotkey = user.hotkey; }
-  else { return 1; }
-  if (user.fg_combobox != "") { color_settings.fg_combobox = user.fg_combobox; }
-  else { return 1; }
-  if (user.bg_combobox != "") { color_settings.bg_combobox = user.bg_combobox; }
-  else { return 1; }
-
-  return 0;
-}
-
-/*******************************************************************************
-
-Applies color settings in curses
-
-*******************************************************************************/
-void apply_color_settings()
-{
-  start_color();
-  colors.clear();
-  colors.addPair(color_settings.fg_normal, color_settings.bg_normal);
-  colors.addPair(color_settings.fg_title, color_settings.bg_title);
-  colors.addPair(color_settings.fg_info, color_settings.bg_info);
-  colors.addPair(color_settings.fg_highlight_active,
-                 color_settings.bg_highlight_active);
-  colors.addPair(color_settings.fg_highlight_inactive,
-                 color_settings.bg_highlight_inactive);
-  colors.addPair(color_settings.header, color_settings.bg_normal); 
-  colors.addPair(color_settings.header_popup, color_settings.bg_popup); 
-  colors.addPair(color_settings.fg_popup, color_settings.bg_popup); 
-  colors.addPair(color_settings.tagged, color_settings.bg_normal); 
-  colors.addPair(color_settings.tagged, color_settings.bg_highlight_active); 
-  colors.addPair(color_settings.tagged, color_settings.bg_highlight_inactive); 
-  colors.addPair(color_settings.tagged, color_settings.bg_popup); 
-  colors.addPair(color_settings.fg_warning, color_settings.bg_warning); 
-  colors.addPair(color_settings.hotkey, color_settings.bg_normal); 
-  colors.addPair(color_settings.hotkey, color_settings.bg_popup); 
-  colors.addPair(color_settings.hotkey, color_settings.bg_highlight_active); 
-  colors.addPair(color_settings.hotkey, color_settings.bg_highlight_inactive); 
-  colors.addPair(color_settings.fg_combobox, color_settings.bg_combobox); 
-  colors.setBackground(stdscr, color_settings.fg_normal,
-                               color_settings.bg_normal);
-} 
-
-/*******************************************************************************
-
-Reads color theme configuration file. Returns 1 if cannot read color theme
-file, 2 if there is a parse error, 3 if an item is missing, or 0 for success.
-
-*******************************************************************************/
-int read_color_theme(const std::string & color_theme_file)
-{
-  Config color_cfg;
-  unsigned int i, nsettings;
-  int retval;
-  std::vector<std::string> color_names;
-  std::vector<std::string *> color_vars;
-  const std::string missing_msg = " color not found.";
-
-  // Read config file
-
-  try { color_cfg.readFile(color_theme_file.c_str()); }
-  catch(const FileIOException &fioex)
+  env_home = std::getenv("HOME");
+  system_themes_dir = DATADIR "/themes";
+  user_themes_dir = env_home + "/.local/share/sboui/themes";
+  ndirs = 2;
+  for ( i = 0; i < ndirs; i++ )
   {
-    std::cerr << "Error: cannot read color theme file." << std::endl;
-    return 1;
-  }
-  catch(const ParseException &pex)
-  {
-    std::cerr << "Parse error at " << pex.getFile() << ":" << pex.getLine()
-              << " - " << pex.getError() << std::endl;
-    return 2;
-  }
+    if (i == 0) { stat = themes_dir.setFromPath(system_themes_dir); }
+    else { stat = themes_dir.setFromPath(user_themes_dir); }
+    if (stat == 1) { continue; }
 
-  // Store settings in vectors so we can read them in a loop
-
-  color_vars.push_back(&user.fg_normal);
-  color_vars.push_back(&user.bg_normal);
-  color_vars.push_back(&user.fg_title);
-  color_vars.push_back(&user.bg_title);
-  color_vars.push_back(&user.fg_info);
-  color_vars.push_back(&user.bg_info);
-  color_vars.push_back(&user.fg_highlight_active);
-  color_vars.push_back(&user.bg_highlight_active);
-  color_vars.push_back(&user.fg_highlight_inactive);
-  color_vars.push_back(&user.bg_highlight_inactive);
-  color_vars.push_back(&user.header);
-  color_vars.push_back(&user.header_popup);
-  color_vars.push_back(&user.tagged);
-  color_vars.push_back(&user.fg_popup);
-  color_vars.push_back(&user.bg_popup);
-  color_vars.push_back(&user.fg_warning);
-  color_vars.push_back(&user.bg_warning);
-  color_vars.push_back(&user.hotkey);
-  color_vars.push_back(&user.fg_combobox);
-  color_vars.push_back(&user.bg_combobox);
-
-  color_names.push_back("fg_normal");
-  color_names.push_back("bg_normal");
-  color_names.push_back("fg_title");
-  color_names.push_back("bg_title");
-  color_names.push_back("fg_info");
-  color_names.push_back("bg_info");
-  color_names.push_back("fg_highlight_active");
-  color_names.push_back("bg_highlight_active");
-  color_names.push_back("fg_highlight_inactive");
-  color_names.push_back("bg_highlight_inactive");
-  color_names.push_back("header");
-  color_names.push_back("header_popup");
-  color_names.push_back("tagged");
-  color_names.push_back("fg_popup");
-  color_names.push_back("bg_popup");
-  color_names.push_back("fg_warning");
-  color_names.push_back("bg_warning");
-  color_names.push_back("hotkey");
-  color_names.push_back("fg_combobox");
-  color_names.push_back("bg_combobox");
-
-  // Try to read inputs, but stop if there is a problem
-
-  nsettings = color_vars.size();
-  retval = 0;
-  for ( i = 0; i < nsettings; i++ )
-  {
-    if (! color_cfg.lookupValue(color_names[i], *color_vars[i]))
+    nfiles = themes_dir.size();
+    for ( j = 0; j < nfiles; j++ )
     {
-      std::cerr << "Error: '" + color_names[i] + "'" + missing_msg << std::endl;
-      retval = 3;
-      break;
+      theme_file = themes_dir(j);
+      if (theme_file.type == "reg") 
+      {
+        ColorTheme theme;
+        theme_full_path = theme_file.path + "/" + theme_file.name;
+        stat = theme.read(theme_full_path);
+        if (stat == 0)
+        {
+          nthemes = color_themes.size();
+          for ( k = 0; k < nthemes; k++ )
+          {
+            if (theme.name() == color_themes[k].name())
+            {
+              std::cout << "Warning: theme " << theme_full_path << " masks "
+                        << "previously defined '" << theme.name() << "' theme."
+                        << std::endl;
+              color_themes.erase(color_themes.begin()+k);
+            }
+          }
+          color_themes.push_back(theme);
+        }
+      }
     }
   }
-
-  return retval;
 }
 
 /*******************************************************************************
@@ -332,6 +101,7 @@ int read_config(const std::string & conf_file)
   Config cfg;
   std::string my_conf_file, home, response;
   char *env_home, *env_editor;
+  ColorTheme default_theme;
 
   // Determine config file to read
 
@@ -477,12 +247,16 @@ int read_config(const std::string & conf_file)
   // Color settings. Try to read user settings or revert to defaults.
 
   if (! cfg.lookupValue("enable_color", enable_color)) { enable_color = true; }
-  if (! cfg.lookupValue("color_theme", color_theme)) { color_theme = "dark"; }
-  if (! cfg.lookupValue("color_theme_file", color_theme_file))
-    color_theme_file = "";
+  if (! cfg.lookupValue("color_theme", color_theme))
+    color_theme = "default (dark)";
   if (enable_color)
   {
-    check = activate_color();
+    color_themes.clear();
+    default_theme.setDefaultColors();
+    color_themes.push_back(default_theme);
+    apply_color_theme("default (dark)");
+    get_color_themes(); 
+    check = activate_color(color_theme);
     if (check != 0) 
     {
       std::cout << "Press Enter to continue ...";
@@ -496,39 +270,44 @@ int read_config(const std::string & conf_file)
 
 /*******************************************************************************
 
-Enables color. Returns 1 if color theme file requested but could not be read,
-2 for parse error in color theme file, 3 for missing item in color theme file,
-4 if terminal does not support color, 5 for invalid color_theme, or 0 otherwise.
+Applies color theme. Returns 0 on success; 1 if not found.
 
 *******************************************************************************/
-int activate_color()
+int apply_color_theme(const std::string & theme)
+{
+  unsigned int i, nthemes;
+
+  nthemes = color_themes.size();
+  for ( i = 0; i < nthemes; i++ )
+  {
+    if (color_themes[i].name() == theme)
+    {
+      color_themes[i].applyTheme(colors);
+      return 0;
+    }
+  }
+  return 1;
+} 
+
+/*******************************************************************************
+
+Enables color. Returns 1 if color theme file requested but could not be read,
+2 if terminal does not support color.
+
+*******************************************************************************/
+int activate_color(const std::string & theme)
 {
   int check;
 
-  // Define built-in themes if not done yet
-
-  if (dark.fg_normal == "") { define_color_themes(); }
-
-  check = 0;
   if (has_colors())
   {
-    if (color_theme == "dark") { color_settings = dark; }
-    else if (color_theme == "light") { color_settings = light; }
-    else if (color_theme == "commander") { color_settings = commander; }
-    else if (color_theme == "from_file")
-    {
-      check = read_color_theme(color_theme_file);
-      if (check == 0) { set_from_user_colors(); }
-      else { set_default_colors(); }
-    }
-    else
+    check = apply_color_theme(theme);
+    if (check != 0)
     {
       std::cerr << "Unrecognized color theme '" + color_theme + "'."
                 << std::endl;
-      set_default_colors();
-      check = 5;
+      apply_color_theme("default (dark)");
     }
-    apply_color_settings();
     enable_color = true;
     return check;
   }
@@ -536,7 +315,7 @@ int activate_color()
   {
     enable_color = false;
     std::cerr << "Color is not supported in this terminal." << std::endl;
-    return 4;
+    return 2;
   }
 }
 
@@ -547,15 +326,7 @@ Disables color
 *******************************************************************************/
 void deactivate_color()
 {
-  // Define built-in themes if not done yet
-
-  if (dark.fg_normal == "") { define_color_themes(); }
-
-  if (has_colors()) 
-  { 
-    set_default_colors();
-    apply_color_settings(); 
-  }
+  if (has_colors()) { apply_color_theme("default (dark)"); }
   colors.clear();
   enable_color = false;
 }   

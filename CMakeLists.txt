@@ -33,6 +33,7 @@ set(PACKAGEDIR /var/log/packages
 # Preprocessor definitions
 add_definitions(-DPACKAGE_VERSION=\"${SBOUI_VERSION}\")
 add_definitions(-DPACKAGE_DIR=\"${PACKAGEDIR}\")
+add_definitions(-DDATADIR=\"${DATADIR}\")
 
 # Check for curses library
 find_package(Curses REQUIRED)
@@ -54,6 +55,6 @@ install(TARGETS sboui DESTINATION sbin)
 install(FILES etc/sboui.conf DESTINATION ${CONFDIR})
 install(FILES etc/package_blacklist DESTINATION ${CONFDIR})
 file(GLOB COLOR_THEMES etc/colors.*)
-install(FILES ${COLOR_THEMES} DESTINATION ${DATADIR})
+install(FILES ${COLOR_THEMES} DESTINATION ${DATADIR}/themes)
 install(FILES man/sboui.8 DESTINATION ${MANDIR}/man8)
 install(FILES man/sboui.conf.5 DESTINATION ${MANDIR}/man5)

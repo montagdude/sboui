@@ -28,8 +28,7 @@ void MessageBox::redrawFrame() const
   left = std::floor(mid - double(namelen)/2.0) + 1;
   wmove(_win, 1, 1);
   wclrtoeol(_win);
-  if (_header_colorize) { colors.turnOn(_win, color_settings.fg_title,
-                                              color_settings.bg_title); }
+  if (_header_colorize) { colors.turnOn(_win, "fg_title", "bg_title"); }
   else { wattron(_win, A_BOLD); }
   printSpaces(left-1);
   printToEol(_name);
@@ -42,8 +41,7 @@ void MessageBox::redrawFrame() const
   left = std::floor(mid - double(namelen)/2.0) + 1;
   wmove(_win, rows-2, 1);
   wclrtoeol(_win);
-  if (_header_colorize) { colors.turnOn(_win, color_settings.fg_title,
-                                              color_settings.bg_title); }
+  if (_header_colorize) { colors.turnOn(_win, "fg_title", "bg_title"); }
   else { wattron(_win, A_BOLD); }
   printSpaces(left-1);
   printToEol(_info);
@@ -230,8 +228,7 @@ void MessageBox::draw(bool force)
 {
   wclear(_win);
   if (_color_idx == -1)
-    colors.setBackground(_win, color_settings.fg_warning,
-                               color_settings.bg_warning);
+    colors.setBackground(_win, "fg_warning", "bg_warning");
   else { colors.setBackground(_win, _color_idx); }
   redrawFrame();
   redrawMessage();

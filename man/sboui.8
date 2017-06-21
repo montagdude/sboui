@@ -148,10 +148,11 @@ The package_blacklist is used to prevent software from being upgraded, reinstall
 These three actions will not be available for blacklisted packages.
 They will also be excluded from the ``upgradable`` filter and included in the ``blacklisted`` filter.
 .TP
-Color theme file
+Color theme files
 .br
-File defining colors for different UI elements.
-This file can optionally be set as a variable in the configuration file.
+Files defining colors for different UI elements.
+System color theme are stored in /usr/share/sboui/themes.
+Users can also add their own color themes in $HOME/.local/share/sboui/themes.
 If not present, default color settings will be used.
 See
 .BR sboui.conf (5)

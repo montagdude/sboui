@@ -70,6 +70,7 @@ Constructor and destructor
 OptionsWindow::OptionsWindow()
 {
   int count, line;
+  unsigned int i, nthemes;
 
   _reserved_rows = 2;
   _header_rows = 1;
@@ -81,8 +82,7 @@ OptionsWindow::OptionsWindow()
 
   // UI settings
 
-  _ui_settings.setColor(colors.getPair(color_settings.header,
-                                       color_settings.bg_normal));
+  _ui_settings.setColor(colors.getPair("header", "bg_normal"));
   addItem(&_ui_settings);
   _items[count]->setName("User interface settings");
   _items[count]->setPosition(line,1);
@@ -134,8 +134,7 @@ OptionsWindow::OptionsWindow()
 
   // Color settings
 
-  _color_settings.setColor(colors.getPair(color_settings.header,
-                                          color_settings.bg_normal));
+  _color_settings.setColor(colors.getPair("header", "bg_normal"));
   addItem(&_color_settings);  
   _items[count]->setName("Color settings");
   _items[count]->setPosition(line,1);
@@ -158,32 +157,19 @@ OptionsWindow::OptionsWindow()
   line += 0;
 
   _color_box.setParent(this);
-  _color_box.addChoice("dark");
-  _color_box.addChoice("light");
-  _color_box.addChoice("commander");
-  _color_box.addChoice("from_file");
+  nthemes = color_themes.size();
+  for ( i = 0; i < nthemes; i++ )
+  {
+    _color_box.addChoice(color_themes[i].name());
+  }
   addItem(& _color_box);
   _items[count]->setPosition(line,26);
-  count++;
-  line += 1;
-
-  addItem(new Label());
-  _items[count]->setName("Color theme file");
-  _items[count]->setPosition(line,1);
-  _items[count]->setWidth(24);
-  count++;
-  line += 0;
-
-  addItem(&_color_inp);
-  _items[count]->setPosition(line,26);
-  _items[count]->setWidth(20);
   count++;
   line += 2;
 
   // Package manager settings
 
-  _pm_settings.setColor(colors.getPair(color_settings.header,
-                                       color_settings.bg_normal));
+  _pm_settings.setColor(colors.getPair("header", "bg_normal"));
   addItem(&_pm_settings);  
   _items[count]->setName("Package manager settings");
   _items[count]->setPosition(line,1);
@@ -354,7 +340,6 @@ void OptionsWindow::readSettings()
 
   _color_toggle.setEnabled(enable_color);
   _color_box.setChoice(color_theme);
-  _color_inp.setText(color_theme_file);
 
   _pmgr_box.setChoice(package_manager);
   _repo_inp.setText(repo_dir);
@@ -378,8 +363,7 @@ int OptionsWindow::applySettings() const
   editor = _editor_inp.text();
 
   color_theme = _color_box.choice();
-  color_theme_file = _color_inp.text();
-  if (_color_toggle.enabled()) { check = activate_color(); }
+  if (_color_toggle.enabled()) { check = activate_color(color_theme); }
   else { deactivate_color(); }
 
   package_manager = _pmgr_box.choice();

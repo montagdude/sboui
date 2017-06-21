@@ -15,7 +15,7 @@ class Color {
   private:
 
     struct color_entry {
-      std::string name, basename, type;
+      std::string label, name, basename, type;
       bool bright;
     };
 
@@ -42,16 +42,19 @@ class Color {
 
     /* Create or access color pair by foreground & background colors */
 
-    void addPair(const std::string & fg, const std::string & bg);
-    int getPair(const std::string & fg, const std::string & bg) const;
+    void addPair(const std::string & fg_label, const std::string & fg_name,
+                 const std::string & bg_label, const std::string & bg_name);
+    int getPair(const std::string & fg_label,
+                const std::string & bg_label) const;
 
     /* Turn color setting on or off in window */
 
-    int turnOn(WINDOW *win, const std::string & fg, const std::string & bg);
+    int turnOn(WINDOW *win, const std::string & fg_label,
+               const std::string & bg_label);
     int turnOn(WINDOW *win, int vec_idx);
     int turnOff(WINDOW *win);
-    int setBackground(WINDOW *win, const std::string & fg,
-                      const std::string & bg) const;
+    int setBackground(WINDOW *win, const std::string & fg_label,
+                      const std::string & bg_label) const;
     int setBackground(WINDOW *win, int vec_idx) const;
 
     /* Clears all colors */

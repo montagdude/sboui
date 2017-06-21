@@ -1,3 +1,4 @@
+theme_name = "dark"
 fg_normal = "white"
 bg_normal = "black"
 fg_title = "brightwhite"

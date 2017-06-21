@@ -44,36 +44,19 @@ default:
 required: no
 .IP
 Defines colors to use for different elements of the user interface.
-The value may be
+.B sboui
+packages three color themes (in /usr/share/sboui/themes):
 .BR dark ,
 .BR light ,
-.BR commander ,
-or
-.BR from_file .
-The first three themes are built into
-.BR sboui .
-In the last case, the color theme is defined by the
-.BR color_theme_file .
-.TP
-.B color_theme_file
-.br
-[string]
-.br
-default: [none]
-.br
-required: no
+and
+.BR commander .
+.B sboui
+will also look for user themes in $HOME/.local/share/sboui/themes.
 .IP
-File specifying colors for different UI elements, used only if
-.B color_theme
-is
-.BR from_file .
-If any errors are encountered when trying to read this file, the default color theme will be used instead.
-The
-.B color_theme_file
-uses the same {variable} = {value} syntax as
+Color theme files use the same {variable} = {value} syntax as
 .IR /etc/sboui/sboui.conf .
-.IP
-Variable names, which identify UI elements, are as follows:
+Required variable names in color theme files are as follows:
+.BR theme_name ,
 .BR fg_normal ,
 .BR bg_normal ,
 .BR fg_title ,
@@ -114,9 +97,6 @@ This attribute generally only works for foreground elements.
 For background elements, it may have no effect or an unexpected effect (such as blinking), depending on the terminal.
 Therefore, it is only recommended for foreground elements.
 The actual appearance of these colors is dependent on the terminal configuration.
-.IP
-Example color theme files are included with
-.BR sboui .
 .TP
 .B confirm_changes
 .br
@@ -174,12 +154,9 @@ Whether or not to display the user interface in color.
 .IP
 If
 .B true
-and the terminal supports color, either the default colors will be used, or custom color settings will be read from the file specified by the
-.B color_theme_file
-variable.
-See the
-.B color_theme_file
-entry in this manual and the provided sample color theme files for more information about changing colors.
+and the terminal supports color, the color theme specified by the
+.B color_theme
+variable will be used.
 .IP
 If
 .B false
@@ -532,10 +509,11 @@ System-wide configuration file for
 Per-user override of
 .IR /etc/sboui/sboui.conf .
 .TP
-Color theme file
+Color theme files
 .br
-File defining colors for different UI elements.
-This file can optionally be set as a variable in the configuration file.
+Files defining colors for different UI elements.
+System color theme are stored in /usr/share/sboui/themes.
+Users can also add their own color themes in $HOME/.local/share/sboui/themes.
 If not present, default color settings will be used.
 .SH NOTES
 .B sboui

@@ -240,16 +240,16 @@ void ListBox::redrawSingleItem(unsigned int idx)
   {
     if (_activated) 
     { 
-      fg = color_settings.fg_highlight_active; 
-      bg = color_settings.bg_highlight_active; 
+      fg = "fg_highlight_active"; 
+      bg = "bg_highlight_active"; 
     }
     else
     {
-      fg = color_settings.fg_highlight_inactive; 
-      bg = color_settings.bg_highlight_inactive; 
+      fg = "fg_highlight_inactive"; 
+      bg = "bg_highlight_inactive"; 
     }
     color_pair1 = colors.getPair(fg, bg);
-    color_pair2 = colors.getPair(color_settings.hotkey, bg);
+    color_pair2 = colors.getPair("hotkey", bg);
     if (colors.turnOn(_win, color_pair1) != 0)
     { 
       if (_activated) { wattron(_win, A_REVERSE); }
@@ -257,10 +257,8 @@ void ListBox::redrawSingleItem(unsigned int idx)
   } 
   else
   {
-    color_pair1 = colors.getPair(color_settings.fg_normal,
-                                 color_settings.bg_normal);
-    color_pair2 = colors.getPair(color_settings.hotkey,
-                                 color_settings.bg_normal);
+    color_pair1 = colors.getPair("fg_normal", "bg_normal");
+    color_pair2 = colors.getPair("hotkey", "bg_normal");
   }
 
   // Save highlight idx for redrawing later.
@@ -527,8 +525,7 @@ void ListBox::draw(bool force)
   if (_redraw_type == "all")
   { 
     wclear(_win); 
-    colors.setBackground(_win, color_settings.fg_normal,
-                               color_settings.bg_normal);
+    colors.setBackground(_win, "fg_normal", "bg_normal");
   }
   if (_redraw_type != "none") 
   {

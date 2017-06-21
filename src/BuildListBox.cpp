@@ -66,7 +66,7 @@ void BuildListBox::redrawFrame() const
   // Draw header
 
   wmove(_win, 1, 1);
-  colors.turnOn(_win, color_settings.header, color_settings.bg_normal);
+  colors.turnOn(_win, "header", "bg_normal");
   wprintw(_win, "Name");
   colors.turnOff(_win);
 
@@ -74,7 +74,7 @@ void BuildListBox::redrawFrame() const
   nspaces = vlineloc - std::string("Name").size();
   for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
 
-  colors.turnOn(_win, color_settings.header, color_settings.bg_normal);
+  colors.turnOn(_win, "header", "bg_normal");
   printToEol("Installed");
   wmove(_win, 2, 1);
   colors.turnOff(_win);
@@ -121,15 +121,15 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
   {
     if (_activated) 
     { 
-      if (_items[idx]->getBoolProp("tagged")) { fg = color_settings.tagged; }
-      else { fg = color_settings.fg_highlight_active; }
-      bg = color_settings.bg_highlight_active; 
+      if (_items[idx]->getBoolProp("tagged")) { fg = "tagged"; }
+      else { fg = "fg_highlight_active"; }
+      bg = "bg_highlight_active"; 
     }
     else
     {
-      if (_items[idx]->getBoolProp("tagged")) { fg = color_settings.tagged; }
-      else { fg = color_settings.fg_highlight_inactive; }
-      bg = color_settings.bg_highlight_inactive; 
+      if (_items[idx]->getBoolProp("tagged")) { fg = "tagged"; }
+      else { fg = "fg_highlight_inactive"; }
+      bg = "bg_highlight_inactive"; 
     }
     if (colors.turnOn(_win, fg, bg) != 0)
     { 
@@ -139,9 +139,9 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
   } 
   else
   {
-    if (_items[idx]->getBoolProp("tagged")) { fg = color_settings.tagged; }
-    else { fg = color_settings.fg_normal; }
-    bg = color_settings.bg_normal;
+    if (_items[idx]->getBoolProp("tagged")) { fg = "tagged"; }
+    else { fg = "fg_normal"; }
+    bg = "bg_normal";
     if (colors.turnOn(_win, fg, bg) != 0)
     {
       if (_items[idx]->getBoolProp("tagged")) { wattron(_win, A_BOLD); } 

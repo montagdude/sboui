@@ -28,7 +28,7 @@ void SearchBox::redrawFrame() const
   left = std::floor(mid - double(msglen)/2.0) + 1;
   wmove(_win, 1, 1);
   wclrtoeol(_win);
-  colors.turnOn(_win, color_settings.fg_title, color_settings.bg_title);
+  colors.turnOn(_win, "fg_title", "bg_title");
   printSpaces(left-1);
   printToEol(_msg);
   colors.turnOff(_win);
@@ -39,7 +39,7 @@ void SearchBox::redrawFrame() const
   left = std::floor(mid - double(msglen)/2.0) + 1;
   wmove(_win, rows-2, 1);
   wclrtoeol(_win);
-  colors.turnOn(_win, color_settings.fg_info, color_settings.bg_info);
+  colors.turnOn(_win, "fg_info", "bg_info");
   printSpaces(left-1);
   printToEol(_info);
   colors.turnOff(_win);
@@ -161,8 +161,7 @@ void SearchBox::draw(bool force)
   if (_redraw_type == "all") 
   { 
     wclear(_win);
-    colors.setBackground(_win, color_settings.fg_popup,
-                               color_settings.bg_popup);
+    colors.setBackground(_win, "fg_popup", "bg_popup");
     redrawFrame();
     redrawAllItems(force);
   }

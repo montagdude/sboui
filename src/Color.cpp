@@ -66,11 +66,12 @@ Color::Color()
 Create color pair by foreground & background colors
 
 *******************************************************************************/
-void Color::addPair(const std::string & fg, const std::string & bg)
+void Color::addPair(const std::string & fg_label, const std::string & fg_name,
+                    const std::string & bg_label, const std::string & bg_name)
 {
   color_entry fg_entry, bg_entry;
   color_pair pair;
-  unsigned int i, npairs;
+  unsigned int npairs;
   bool bright;
   std::string basename;
   int fg_color, bg_color;
@@ -79,26 +80,20 @@ void Color::addPair(const std::string & fg, const std::string & bg)
 
   if (! has_colors()) { return; }
 
-  // First check if color already exists; don't add it if it does
-
-  npairs = _colors.size();
-  for ( i = 0; i < npairs; i++ )
-  {
-    if ( (_colors[i].fg.name == fg) && (_colors[i].bg.name == bg) ) { return; }
-  }
-       
   // Create a color entry and next COLOR_PAIR
 
-  npairs++;
+  npairs = _colors.size()+1;
 
-  baseColorName(fg, basename, bright); 
-  pair.fg.name = fg;
+  baseColorName(fg_name, basename, bright); 
+  pair.fg.label = fg_label;
+  pair.fg.name = fg_name;
   pair.fg.basename = basename;
   pair.fg.type = "fg";
   pair.fg.bright = bright;
 
-  baseColorName(bg, basename, bright); 
-  pair.bg.name = bg;
+  baseColorName(bg_name, basename, bright); 
+  pair.bg.label = bg_label;
+  pair.bg.name = bg_name;
   pair.bg.basename = basename;
   pair.bg.type = "bg";
   pair.bg.bright = bright;
@@ -126,11 +121,12 @@ void Color::addPair(const std::string & fg, const std::string & bg)
 
 /*******************************************************************************
 
-Get color pair from foreground and background names. Returns index in the
+Get color pair from foreground and background labels. Returns index in the
 _colors vector or -1 if not found.
 
 *******************************************************************************/
-int Color::getPair(const std::string & fg, const std::string & bg) const
+int Color::getPair(const std::string & fg_label,
+                   const std::string & bg_label) const
 {
   int i, npairs, vec_idx;
 
@@ -138,7 +134,8 @@ int Color::getPair(const std::string & fg, const std::string & bg) const
   vec_idx = -1;
   for ( i = 0; i < npairs; i++ )
   {
-    if ( (_colors[i].fg.name == fg) && (_colors[i].bg.name == bg) ) 
+    if ( (_colors[i].fg.label == fg_label) &&
+         (_colors[i].bg.label == bg_label) ) 
     { 
       vec_idx = i;
       break;
@@ -153,13 +150,14 @@ int Color::getPair(const std::string & fg, const std::string & bg) const
 Turn color on or off
 
 *******************************************************************************/
-int Color::turnOn(WINDOW *win, const std::string & fg, const std::string & bg)
+int Color::turnOn(WINDOW *win, const std::string & fg_label,
+                  const std::string & bg_label)
 {
   color_pair mypair;
 
   // Get color pair
 
-  _active_pair = getPair(fg, bg);
+  _active_pair = getPair(fg_label, bg_label);
   if (_active_pair == -1) { return 1; }
   mypair = _colors[_active_pair];
 
@@ -207,15 +205,15 @@ int Color::turnOff(WINDOW *win)
   return 0;
 }
 
-int Color::setBackground(WINDOW *win, const std::string & fg,
-                         const std::string & bg) const
+int Color::setBackground(WINDOW *win, const std::string & fg_label,
+                         const std::string & bg_label) const
 {
   color_pair mypair;
   int vec_idx;
 
   // Get color pair
 
-  vec_idx = getPair(fg, bg);
+  vec_idx = getPair(fg_label, bg_label);
   if (vec_idx == -1) { return 1; }
   mypair = _colors[vec_idx];
 
