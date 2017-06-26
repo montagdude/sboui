@@ -18,4 +18,5 @@ namespace signals
   extern std::string scroll;
   extern std::string keyRight;
   extern std::string keyLeft;
+  extern std::string keySpace;
 }

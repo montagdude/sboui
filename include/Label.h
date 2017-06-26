@@ -14,18 +14,24 @@ class Label: public InputItem {
   private:
 
     int _color_idx;
+    bool _hline;
 
   public:
 
-    /* Constructor */
+    /* Constructors and destructor */
 
     Label();
+    Label(bool selectable);
+    Label(bool selectable, bool hline);
 
     /* Set attributes */
 
     void setColor(int color_idx);
+    void setSelectable(bool selectable);
+    void setHLine(bool hline);
 
-    /* Drawing */
+    /* User interaction */
 
     void draw(int y_offset, bool force=false, bool highlight=false);
+    std::string exec(int y_offset);
 };

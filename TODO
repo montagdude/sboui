@@ -11,5 +11,6 @@ Done for 0.4.2
 ================================================================================
 * Look for themes in /usr/share/sboui/themes and ~/.local/share/sboui/themes;
   remove color_theme_file input
+* Build options entry one at a time
 * Set version to 0.4.2 in CMakeLists.txt
 * Update documentation

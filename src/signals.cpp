@@ -17,4 +17,5 @@ namespace signals
   std::string scroll = "__SCROLL__";
   std::string keyRight = "__KEYRIGHT__";
   std::string keyLeft = "__KEYLEFT__";
+  std::string keySpace = "__KEYSPACE__";
 }

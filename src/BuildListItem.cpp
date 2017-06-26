@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include "backend.h"
+#include "string_util.h"
 #include "ListItem.h"
 #include "BuildListItem.h"
 
@@ -166,4 +167,27 @@ int BuildListItem::readPropsFromRepo()
   }
 
   return check;
+}
+
+/*******************************************************************************
+
+Returns build options as string of environment variables
+
+*******************************************************************************/
+std::string BuildListItem::buildOptionsEnv() const
+{
+  int i, noptions;
+  std::vector<std::string> build_options;
+  std::string build_options_string;
+
+  build_options = split(getProp("build_options"), ';');
+  build_options_string = "";
+  noptions = build_options.size();
+  for ( i = 0; i < noptions-1; i++ )
+  {
+    build_options_string += build_options[i] + " ";
+  }
+  if (noptions > 0) { build_options_string += build_options[noptions-1]; }
+
+  return build_options_string;
 }

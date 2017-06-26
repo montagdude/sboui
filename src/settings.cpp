@@ -249,13 +249,16 @@ int read_config(const std::string & conf_file)
   if (! cfg.lookupValue("enable_color", enable_color)) { enable_color = true; }
   if (! cfg.lookupValue("color_theme", color_theme))
     color_theme = "default (dark)";
+
+  // Set up color themes
+
+  color_themes.clear();
+  default_theme.setDefaultColors();
+  color_themes.push_back(default_theme);
+  apply_color_theme("default (dark)");
+  get_color_themes(); 
   if (enable_color)
   {
-    color_themes.clear();
-    default_theme.setDefaultColors();
-    color_themes.push_back(default_theme);
-    apply_color_theme("default (dark)");
-    get_color_themes(); 
     check = activate_color(color_theme);
     if (check != 0) 
     {

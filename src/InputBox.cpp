@@ -41,7 +41,7 @@ int InputBox::highlightFirst()
 
 int InputBox::highlightLast() 
 { 
-  int i, nitems, rows, cols, rowsavail, y, firstprintstore;
+  int i, nitems, rows, cols, rowsavail, firstprintstore, ymax;
   unsigned int retval;
 
   getmaxyx(_win, rows, cols);
@@ -61,9 +61,13 @@ int InputBox::highlightLast()
     }
   }
 
-  y = _items[nitems-1]->posy();
+  ymax = 0;
+  for ( i = 0; i < nitems; i++ )
+  {
+    if (_items[i]->posy() > ymax) { ymax = _items[i]->posy(); }
+  }
   firstprintstore = _firstprint;
-  if (y >= _firstprint + rowsavail) { _firstprint = y - rowsavail + 1; }
+  if (ymax >= _firstprint + rowsavail) { _firstprint = ymax - rowsavail + 1; }
   if (_firstprint == firstprintstore) { return 0; }
   else { return 1; }
 
@@ -302,9 +306,10 @@ Redraws right border between header and footer and scroll indicators
 *******************************************************************************/
 void InputBox::redrawScrollIndicator() const
 {
-  int rows, cols, i, rowsavail, maxscroll, pos;
+  int rows, cols, i, rowsavail, firstprint_max, pos, ymax;
   bool need_up, need_dn;
   unsigned int nitems;
+  double pos_ratio;
 
   // Check if a scroll indicator is needed
 
@@ -334,9 +339,15 @@ void InputBox::redrawScrollIndicator() const
 
   if ( (need_up) || (need_dn) )
   {
-    maxscroll = _items[nitems-1]->posy() - rowsavail;
-    pos = std::floor(double(_firstprint-_header_rows) /
-                     double(maxscroll)*(rowsavail-1));
+    ymax = 0;
+    for ( i = 0; i < nitems; i++ )
+    {
+      if (_items[i]->posy() > ymax) { ymax = _items[i]->posy(); }
+    }
+    firstprint_max = ymax - (rowsavail-1);
+    pos_ratio = double(_firstprint-_header_rows) /
+                double(firstprint_max-_header_rows);
+    pos = std::floor(pos_ratio*(rowsavail-1));
     mvwaddch(_win, _header_rows+pos, cols-1, ACS_DIAMOND);
   }
 }
@@ -348,7 +359,7 @@ Redraws the previously and currently highlighted items
 *******************************************************************************/
 void InputBox::redrawChangedItems(bool force)
 {
-  int rows, cols, rowsavail, y_offset;
+  int rows, cols, rowsavail, y_offset, y;
 
   getmaxyx(_win, rows, cols);
   rowsavail = rows-_reserved_rows;
@@ -356,12 +367,16 @@ void InputBox::redrawChangedItems(bool force)
 
   if (_prevhighlight < int(_items.size()))
   {
-    if ( (_items[_prevhighlight]->posy() >= _firstprint) &&
-         (_items[_prevhighlight]->posy() < _firstprint+rowsavail) )
+    y = _items[_prevhighlight]->posy();
+    if ( (y >= _firstprint) && (y < _firstprint+rowsavail) )
       _items[_prevhighlight]->draw(y_offset, force, false);
   }
   if (_highlight < int(_items.size()))
-    _items[_highlight]->draw(y_offset, force, true);
+  {
+    y = _items[_highlight]->posy();
+    if ( (y >= _firstprint) && (y < _firstprint+rowsavail) )
+      _items[_highlight]->draw(y_offset, force, true);
+  }
 }
 
 /*******************************************************************************
@@ -381,9 +396,8 @@ void InputBox::redrawAllItems(bool force)
   for ( i = 0; i < nitems; i++ ) 
   { 
     y = _items[i]->posy();
-    if (y >= _firstprint + rowsavail) { break; } 
-    else if (y >= _firstprint) { _items[i]->draw(y_offset,
-                                                 force, i==_highlight); }
+    if ( (y >= _firstprint) && (y < _firstprint+rowsavail) )
+       _items[i]->draw(y_offset, force, i==_highlight);
   }
 }
 
@@ -447,6 +461,21 @@ void InputBox::addItem(InputItem *item)
 
 /*******************************************************************************
 
+Clears all items from input box and resets position variables
+
+*******************************************************************************/
+void InputBox::clear()
+{
+  _items.clear();
+  _highlight = 0;
+  _prevhighlight = 0;
+  _firstprint = _header_rows;
+  _first_selectable = -1;
+  _last_selectable = -1;
+}
+
+/*******************************************************************************
+
 Set attributes
 
 *******************************************************************************/
@@ -461,6 +490,16 @@ void InputBox::setWindow(WINDOW *win)
   for ( i = 0; i < nitems; i++ ) { _items[i]->setWindow(win); }
 }
 
+void InputBox::setHighlight(unsigned int highlight)
+{
+  if (_items[highlight]->selectable())
+  {
+    _prevhighlight = _highlight;
+    _highlight = highlight;
+  }
+  determineFirstPrint();
+}
+
 /*******************************************************************************
 
 Get attributes
@@ -468,24 +507,16 @@ Get attributes
 *******************************************************************************/
 void InputBox::minimumSize(int & height, int & width) const
 {
-  int reserved_cols, ymax, ymin, right;
+  int reserved_cols, right;
   unsigned int nitems, i;
 
-  // Get height needed (scrolling is not implemented for this - just give the
-  // number of rows needed)
+  // Minimum usable height
 
-  ymin = 1000;
-  ymax = 0;
-  nitems = _items.size();
-  for ( i = 0; i < nitems; i++ )
-  {
-    if (_items[i]->posy() < ymin) { ymin = _items[i]->posy(); }
-    if (_items[i]->posy() > ymax) { ymax = _items[i]->posy(); }
-  }
-  height = ymax - ymin + 1 + _reserved_rows;
+  height = _reserved_rows + 2;
 
   // Minimum usable width
 
+  nitems = _items.size();
   width = std::max(_msg.size(), _info.size());
   for ( i = 0; i < nitems; i++ )
   {
@@ -498,8 +529,27 @@ void InputBox::minimumSize(int & height, int & width) const
 
 void InputBox::preferredSize(int & height, int & width) const
 {
+  int ymin, ymax;
+  unsigned int nitems, i;
+
+  // Minimum usable width
+
   minimumSize(height, width);
+
+  // Get height needed assuming no scrolling
+
+  ymin = 1000;
+  ymax = 0;
+  nitems = _items.size();
+  for ( i = 0; i < nitems; i++ )
+  {
+    if (_items[i]->posy() < ymin) { ymin = _items[i]->posy(); }
+    if (_items[i]->posy() > ymax) { ymax = _items[i]->posy(); }
+  }
+  height = ymax - ymin + 1 + _reserved_rows;
 }
+
+unsigned int InputBox::numItems() const { return _items.size(); }
 
 /*******************************************************************************
 
@@ -555,7 +605,9 @@ std::string InputBox::exec()
       _redraw_type = "all";
       getting_input = false;
     }
-    else if ( (selection == signals::quit) || (selection == signals::keyEnter) )
+    else if ( (selection == signals::quit) ||
+              (selection == signals::keyEnter) ||
+              (selection == signals::keySpace) )
     {
       retval = selection;
       _redraw_type = "all";

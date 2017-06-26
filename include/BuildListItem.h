@@ -32,4 +32,8 @@ class BuildListItem: public ListItem {
 
     void readInstalledProps(std::vector<std::string> & installedpkgs);
     int readPropsFromRepo();
+
+    // Build options as string of environment variables
+
+    std::string buildOptionsEnv() const;
 };

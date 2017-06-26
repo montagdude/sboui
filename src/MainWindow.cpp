@@ -892,7 +892,7 @@ void MainWindow::setBuildOptions(BuildListItem & build)
     if (selection == signals::keyEnter)
     {
       getting_input = false;
-      build.setProp("build_options", buildoptions.entry());
+      build.setProp("build_options", buildoptions.entries());
     }
     else if (selection == signals::quit) { getting_input = false; }
     else if (selection == signals::resize) 

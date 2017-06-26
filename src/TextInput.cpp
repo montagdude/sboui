@@ -17,14 +17,18 @@ unsigned int TextInput::determineFirstText()
   unsigned int firsttextstore;
 
   firsttextstore = _firsttext;
-  if (int(_entry.size()) < _width) { _firsttext = 0; }
+  if (int(_entry.size()+_labellen) < _width) { _firsttext = 0; }
   else 
   { 
-    if (int(_cursidx) - int(_firsttext) > _width-1)
+    if (int(_cursidx) - int(_firsttext) > _width-1-int(_labellen))
     {
-      _firsttext = _cursidx - _width + 1;
+      _firsttext = _cursidx - _width + _labellen + 1;
     }
   }
+
+  // Just in case _firsttext goes too far (i.e., if _width hasn't been set yet)
+
+  if (_firsttext >= _entry.size()) { _firsttext = 0; }
 
   if (firsttextstore == _firsttext) { return 0; }
   else { return 1; }
@@ -39,10 +43,11 @@ void TextInput::redrawEntry(int y_offset) const
 {
   int numprint;
 
-  numprint = std::min(_width-1, int(_entry.size() - _firsttext));
+  numprint = std::min(_width - 1 - int(_labellen), 
+                      int( _entry.size()) - int(_firsttext) + int(_labellen));
   
   wmove(_win, _posy-y_offset, _posx);
-  printToEol(_entry.substr(_firsttext, numprint));
+  printToEol(_label + _entry.substr(_firsttext, numprint));
 }
 
 /*******************************************************************************
@@ -56,6 +61,8 @@ TextInput::TextInput()
   _item_type = "TextInput";
   _selectable = true;
   _entry = "";
+  _label = "";
+  _labellen = 0;
   _firsttext = 0;
   _cursidx = 0;
 }
@@ -79,6 +86,18 @@ void TextInput::clear()
   _cursidx = 0;
 }
 
+void TextInput::setLabel(const std::string & label)
+{
+  _label = label;
+  _labellen = _label.size();
+}
+
+void TextInput::removeLabel()
+{
+  _label = "";
+  _labellen = 0;
+}
+
 /*******************************************************************************
 
 Draws text input
@@ -90,13 +109,12 @@ void TextInput::draw(int y_offset, bool force, bool highlight)
 
   if (highlight)
   {
-    if (colors.turnOn(_win, "fg_highlight_active",
-                            "bg_highlight_active") != 0)
+    if (colors.turnOn(_win, "fg_highlight_active", "bg_highlight_active") != 0)
       wattron(_win, A_REVERSE);
   }
 
   if (_redraw_type == "entry") { redrawEntry(y_offset); }
-  wmove(_win, _posy-y_offset, _posx + _cursidx - _firsttext);
+  wmove(_win, _posy-y_offset, _posx + _cursidx + _labellen - _firsttext);
 
   if (highlight)
     if (colors.turnOff(_win) != 0) { wattroff(_win, A_REVERSE); }
@@ -156,7 +174,8 @@ std::string TextInput::exec(int y_offset)
           _cursidx--;
           if (_cursidx < _firsttext)
           {
-            if (int(_cursidx) > _width-1) { _firsttext = _cursidx-_width+1; }
+            if (int(_cursidx) > _width-int(_labellen)-1)
+              _firsttext = _cursidx-_width+1;
             else { _firsttext = 0; }
           }
         }

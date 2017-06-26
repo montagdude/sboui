@@ -13,8 +13,8 @@ class TextInput: public InputItem {
 
   protected:
 
-    std::string _entry;
-    unsigned int _firsttext, _cursidx;
+    std::string _entry, _label;
+    unsigned int _firsttext, _cursidx, _labellen;
 
     /* Determines first character to print in input box */
 
@@ -34,6 +34,8 @@ class TextInput: public InputItem {
 
     void setText(const std::string & text);
     void clear();
+    void setLabel(const std::string & label);
+    void removeLabel();
 
     /* User interaction */
 

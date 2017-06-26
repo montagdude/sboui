@@ -1,7 +1,9 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include "TextInput.h"
+#include "Label.h"
 #include "BuildListItem.h"
 #include "InputBox.h"
 
@@ -14,13 +16,24 @@ class BuildOptionsBox: public InputBox {
 
   private:
 
-    TextInput _entryitem;
+    Label _addlbl, _removelbl;
+    std::vector<TextInput> _entries;
+
+    // Place items
+
+    void setUp();
+
+    // Add/remove entries
+
+    void addEntry();
+    void removeLast();    
 
   public:
 
-    /* Constructors */
+    /* Constructor and destructor */
 
     BuildOptionsBox();
+    ~BuildOptionsBox();
 
     /* Set attributes */
 
@@ -28,9 +41,15 @@ class BuildOptionsBox: public InputBox {
 
     /* Get attributes */
 
-    std::string entry() const;
+    unsigned int numEntries() const;
+    std::string entry(unsigned int idx) const;
+    std::string entries() const;
 
     /* Draws frame, items, etc. as needed */
 
     void draw(bool force=false);
+
+    /* User interaction loop */
+
+    std::string exec();
 };

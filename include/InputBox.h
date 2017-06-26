@@ -48,20 +48,23 @@ class InputBox: public CursesWidget {
     InputBox();
     InputBox(WINDOW *win, const std::string & msg);
 
-    /* Add items */
+    /* Add/remove items */
 
     void addItem(InputItem *item);
+    void clear();
 
     /* Set attributes */
 
     void setWindow(WINDOW *win);
     void setMessage(const std::string & msg);
     void setInfo(const std::string & info);
+    void setHighlight(unsigned int highlight);
 
     /* Get attributes */
 
     virtual void minimumSize(int & height, int & width) const;
     virtual void preferredSize(int & height, int & width) const;
+    unsigned int numItems() const;
 
     /* Draws frame, entry, etc. as needed */
 

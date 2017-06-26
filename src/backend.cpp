@@ -360,7 +360,7 @@ int install_slackbuild(BuildListItem & build)
   int check;
   std::vector<std::string> installedpkgs;
 
-  cmd = install_vars + " " + build.getProp("build_options") + " " + install_cmd
+  cmd = install_vars + " " + build.buildOptionsEnv() + " " + install_cmd
       + " " + build.name() + " " + install_clos;
   check = run_command(cmd);
   if (check != 0) { return check; }
@@ -388,7 +388,7 @@ int upgrade_slackbuild(BuildListItem & build)
   int check;
   std::vector<std::string> installedpkgs;
 
-  cmd = upgrade_vars + " " + build.getProp("build_options") + " " + upgrade_cmd
+  cmd = upgrade_vars + " " + build.buildOptionsEnv() + " " + upgrade_cmd
       + " " + build.name() + " " + upgrade_clos;
   check = run_command(cmd);
   if (check != 0) { return check; }
