@@ -41,9 +41,12 @@ Redraws user input
 *******************************************************************************/
 void TextInput::redrawEntry(int y_offset) const
 {
-  int numprint;
+  int numprint, scroll_offset;
 
-  numprint = std::min(_width - 1 - int(_labellen), 
+  if (_cursidx == _entry.size()) { scroll_offset = 1; }
+  else { scroll_offset = 0; }
+
+  numprint = std::min(_width - scroll_offset - int(_labellen), 
                       int( _entry.size()) - int(_firsttext) + int(_labellen));
   
   wmove(_win, _posy-y_offset, _posx);
