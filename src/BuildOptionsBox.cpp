@@ -66,7 +66,7 @@ void BuildOptionsBox::removeLast()
 
 /*******************************************************************************
 
-Constructor and destructor
+Constructor
 
 *******************************************************************************/
 BuildOptionsBox::BuildOptionsBox()
@@ -84,22 +84,6 @@ BuildOptionsBox::BuildOptionsBox()
   _entries.push_back(first_entry);
   setUp();
   setHighlight(1);
-}
-
-BuildOptionsBox::~BuildOptionsBox()
-{
-  unsigned int i, nitems;
-
-  nitems = numItems();
-  for ( i = 0; i < nitems; i++ )
-  {
-    if (_items[i]->itemType() == "Label")
-    {
-      if ( (_items[i]->name()[0] != '+') &&
-           (_items[i]->name()[0] != '-') )
-        delete _items[i];
-    }
-  }
 }
 
 /*******************************************************************************
@@ -165,22 +149,20 @@ Redraws box and entry
 void BuildOptionsBox::draw(bool force)
 {
   int rows, cols;
-  unsigned int i, nentries;
+  unsigned int i, nitems;
 
   getmaxyx(_win, rows, cols);
   if (force) { _redraw_type = "all"; }
 
-  // Set width of text boxes and horizontal lines
+  // Set width of everything
 
   if (_redraw_type == "all")
   {
-    nentries = _entries.size();
-    for ( i = 0; i < nentries; i++ )
+    nitems = numItems();
+    for ( i = 0; i < nitems; i++ )
     {
-      _entries[i].setWidth(cols-2);
-      _items[nentries+1+i]->setWidth(cols-2);
+      _items[i]->setWidth(cols-2);
     }
-    if (nentries > 0) { _items[numItems()-1]->setWidth(cols-2); }
   }
 
   if (_redraw_type == "all") 

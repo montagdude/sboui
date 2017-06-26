@@ -70,7 +70,7 @@ void Label::draw(int y_offset, bool force, bool highlight)
   if (_hline)
     for ( i = 0; i < _width; i++ ) { waddch(_win, ACS_HLINE); }
   else
-    wprintw(_win, _name.c_str());
+    printToEol(_name);
 
   if (colors.turnOff(_win) != 0)
   {

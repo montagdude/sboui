@@ -30,10 +30,9 @@ class BuildOptionsBox: public InputBox {
 
   public:
 
-    /* Constructor and destructor */
+    /* Constructor */
 
     BuildOptionsBox();
-    ~BuildOptionsBox();
 
     /* Set attributes */
 
