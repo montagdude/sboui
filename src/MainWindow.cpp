@@ -1974,7 +1974,7 @@ std::string MainWindow::exec()
         clearStatus();
       }
 
-      // Tag signal: see if we need to change tag for category
+      // Tag signal
 
       else if ( (selection == "t") || (selection == "T") )
       {
@@ -1995,6 +1995,11 @@ std::string MainWindow::exec()
             _clistbox.draw(true);
           }
         }
+        // Display status message for installed SlackBuild
+
+        build = static_cast<BuildListItem *>(
+                                  _blistboxes[_category_idx].highlightedItem());
+        printPackageVersion(*build);
       }
      
       // Enter signal: show action dialog

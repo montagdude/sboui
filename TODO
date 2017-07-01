@@ -6,11 +6,14 @@ Things for 0.4.2
 ================================================================================
 * Update ChangeLog and TODO
 * Check for upgrade algorithm exceptions
+* Update screenshots
 
 Done for 0.4.2
 ================================================================================
 * Look for themes in /usr/share/sboui/themes and ~/.local/share/sboui/themes;
   remove color_theme_file input
 * Build options entry one at a time
+* Don't display white space at end of TextInput box when unneeded
 * Set version to 0.4.2 in CMakeLists.txt
 * Update documentation
+* Show information for correct SlackBuild in status bar after tagging
