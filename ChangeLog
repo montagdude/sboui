@@ -1,3 +1,17 @@
+2017-07-14   Daniel Prosser <dpross1100@msn.com>
+
+        version 0.4.2
+        * Color themes are now read automatically from /usr/share/sboui/themes.
+          and ~/.local/share/sboui/themes. The color_theme_file input has been
+          removed.
+        * Color themes now require one additional variable: theme_name
+        * Build options are now entered one per line in the build options dialog
+          box.
+        * UX improvement: don't display whitespace at the end of a text input
+          box unless it is needed for the cursor.
+        * Bug fix: show information for correct SlackBuild in the status bar
+          after tagging.
+
 2017-06-08   Daniel Prosser <dpross1100@msn.com>
 
         version 0.4.1
