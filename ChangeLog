@@ -1,7 +1,7 @@
 2017-07-14   Daniel Prosser <dpross1100@msn.com>
 
         version 0.4.2
-        * Color themes are now read automatically from /usr/share/sboui/themes.
+        * Color themes are now read automatically from /usr/share/sboui/themes
           and ~/.local/share/sboui/themes. The color_theme_file input has been
           removed.
         * Color themes now require one additional variable: theme_name
