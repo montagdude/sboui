@@ -9,6 +9,7 @@
    check, because the SlackBuild appends something to $VERSION in the package
    name */
 std::vector<std::string> special_upgrade_check {
+  {"WireGuard"},
   {"acpi_call"},
   {"broadcom-sta"},
   {"broffice.org"},
