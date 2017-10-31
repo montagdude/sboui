@@ -1,3 +1,10 @@
+2017-10-30   Daniel Prosser <dpross1100@msn.com>
+
+        version 0.5
+        * Add option to rebuild inverse deps when upgrading a package
+        * Fix upgrade check logic for WireGuard
+        * Change color_theme='default' setting to 'default (dark)' in sboui.conf
+
 2017-07-14   Daniel Prosser <dpross1100@msn.com>
 
         version 0.4.2
