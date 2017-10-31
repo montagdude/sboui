@@ -97,6 +97,13 @@ OptionsWindow::OptionsWindow()
   count++;
   line += 1;
 
+  addItem(&_rebuild_toggle);
+  _items[count]->setName("Rebuild inverse dependencies");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(_items[count]->name().size());
+  count++;
+  line += 1;
+
   addItem(&_confirm_toggle);
   _items[count]->setName("Ask for confirmation before applying changes");
   _items[count]->setPosition(line,1);
@@ -334,6 +341,7 @@ Read and apply settings
 void OptionsWindow::readSettings()
 {
   _resolve_toggle.setEnabled(resolve_deps);
+  _rebuild_toggle.setEnabled(rebuild_inv_deps);
   _confirm_toggle.setEnabled(confirm_changes);
   _layout_box.setChoice(layout);
   _editor_inp.setText(editor);
@@ -358,6 +366,7 @@ int OptionsWindow::applySettings() const
   int check = 0;
 
   resolve_deps = _resolve_toggle.enabled();
+  rebuild_inv_deps = _rebuild_toggle.enabled();
   confirm_changes = _confirm_toggle.enabled();
   layout = _layout_box.choice();
   editor = _editor_inp.text();

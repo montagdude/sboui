@@ -15,7 +15,7 @@ namespace settings
   extern std::string editor; 
   extern std::string color_theme;
   extern std::string layout;
-  extern bool resolve_deps, confirm_changes, enable_color;
+  extern bool resolve_deps, confirm_changes, enable_color, rebuild_inv_deps;
 }
 
 extern Color colors;

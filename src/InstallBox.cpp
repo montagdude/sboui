@@ -218,12 +218,14 @@ InstallBox::InstallBox()
 { 
   _info = "Enter: Ok | Esc: Cancel | a: Actions";
   _builds.resize(0);
+  _ndeps = 0;
 }
 
 InstallBox::InstallBox(WINDOW *win, const std::string & name)
 {
   _info = "Enter: Ok | Esc: Cancel | a: Actions"; 
   _builds.resize(0);
+  _ndeps = 0;
   _win = win;
   _name = name;
 }
@@ -286,14 +288,13 @@ void InstallBox::preferredSize(int & height, int & width) const
   width += reserved_cols + widthpadding;
 }
 
+int InstallBox::numDeps() const { return _ndeps; }
+
 bool InstallBox::installingAllDeps() const
 {
-  int nreqs, i;
+  int i;
 
-  nreqs = _items.size() - 1;   // Only consider dependencies, not the requested
-                               // SlackBuild
-
-  for ( i = 0; i < nreqs; i++ )
+  for ( i = 0; i < _ndeps; i++ )
   {
     if ( ((_items[i]->getProp("action") == "Install") ||   
           (_items[i]->getProp("action") == "Upgrade")) &&
@@ -305,11 +306,8 @@ bool InstallBox::installingAllDeps() const
 
 bool InstallBox::installingRequested() const
 {
-  int nitems;
-
-  nitems = _items.size();
-  if ( (_items[nitems-1]->getProp("action") != "Remove") &&
-       (_items[nitems-1]->getBoolProp("marked")) ) { return true; }
+  if ( (_items[_ndeps]->getProp("action") != "Remove") &&
+       (_items[_ndeps]->getBoolProp("marked")) ) { return true; }
   else { return false; }
 }
 
@@ -322,10 +320,10 @@ succeeded or 1 if some could not be found in the repository.
 int InstallBox::create(BuildListItem & build,
                        std::vector<std::vector<BuildListItem> > & slackbuilds,
                        const std::string & action, bool resolve_deps,
-                       bool batch) 
+                       bool batch, bool rebuild_inv_deps) 
 {
   int check; 
-  unsigned int nreqs, i, nbuilds;
+  unsigned int i, nbuilds, ninvdeps;
   bool mark;
   std::string action_applied;
   std::string installed_version, available_version;
@@ -333,13 +331,14 @@ int InstallBox::create(BuildListItem & build,
 
   // Get list of reqs and/or add requested SlackBuild to list
 
+  _ndeps = 0;
   reqlist.resize(0);
   if (resolve_deps)
   {
     check = compute_reqs_order(build, reqlist, slackbuilds);
     if (check != 0) { return check; }
   }
-  nreqs = reqlist.size();
+  _ndeps = reqlist.size();
   reqlist.push_back(&build);
 
   if (batch) { _info = "Enter: Ok | Esc: Skip | c: Cancel | a: Actions"; }
@@ -347,7 +346,7 @@ int InstallBox::create(BuildListItem & build,
   // Copy reqlist to _builds list and determine action for each
 
   nbuilds = 0;
-  for ( i = 0; i <= nreqs; i++ )
+  for ( i = 0; i <= _ndeps; i++ )
   {
     mark = false;
     if (action != "Remove")
@@ -369,7 +368,7 @@ int InstallBox::create(BuildListItem & build,
         {
           // By default, do not reinstall dependencies
 
-          if ( (action == "Reinstall") && (i == nreqs) ) { mark = true; }
+          if ( (action == "Reinstall") && (i == _ndeps) ) { mark = true; }
           else { mark = false; }
           action_applied = "Reinstall";
         }
@@ -386,13 +385,30 @@ int InstallBox::create(BuildListItem & build,
         
         // By default, do not remove dependencies
 
-        if (i == nreqs) { mark = true; }
+        if (i == _ndeps) { mark = true; }
         else { mark = false; }
         action_applied = "Remove";
         _builds[nbuilds]->setBoolProp("marked", mark);
         _builds[nbuilds]->setProp("action", action_applied);
         nbuilds++;
       }
+    }
+  }
+
+  // Rebuild inverse deps if requested and in upgrade mode
+
+  if ((action == "Upgrade") && rebuild_inv_deps)
+  {
+    reqlist.resize(0);
+    compute_inv_reqs(build, reqlist, slackbuilds);
+    ninvdeps = reqlist.size();
+    
+    for ( i = 0; i < ninvdeps; i++ )
+    {
+      _builds.push_back(reqlist[i]);
+      _builds[nbuilds]->setBoolProp("marked", true);
+      _builds[nbuilds]->setProp("action", "Reinstall");
+      nbuilds++;
     }
   }
 
@@ -419,7 +435,7 @@ int InstallBox::create(BuildListItem & build,
     setName(build.name() + " (deps ignored)");
   else
   {
-    if (nbuilds == 2)
+    if (_ndeps == 1)
     {
       if (action == "Remove")
         setName(build.name() + " (1 installed dep)");
@@ -431,10 +447,10 @@ int InstallBox::create(BuildListItem & build,
       if (action == "Remove")
       {
         setName(build.name() + 
-                " (" + int_to_string(nbuilds-1) + " installed deps)");
+                " (" + int_to_string(_ndeps) + " installed deps)");
       }
       else
-        setName(build.name() + " (" + int_to_string(nbuilds-1) + " deps)");
+        setName(build.name() + " (" + int_to_string(_ndeps) + " deps)");
     }
   }
 

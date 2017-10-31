@@ -707,7 +707,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
   int check, nchanged_orig, nchanged_new, response;
   std::string selection, msg, choice;
   bool getting_input, needs_rebuild;
-  unsigned int i, ninstaller, nforeign;
+  unsigned int i, ndeps, nforeign;
   std::vector<const BuildListItem *> foreign;
   InstallBox installer;
   BuildListItem *subbuild;
@@ -715,7 +715,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
   if (settings::resolve_deps)
     printStatus("Computing dependencies for " + build.name() + " ...");
   check = installer.create(build, _slackbuilds, action, settings::resolve_deps,
-                           batch);
+                           batch, settings::rebuild_inv_deps);
   installer.setTagList(&_taglist);
 
   if (check == 1) 
@@ -735,23 +735,23 @@ bool MainWindow::modifyPackage(BuildListItem & build,
     return false;
   }
 
-  ninstaller = installer.numItems();
+  ndeps = installer.numDeps();
   if (settings::resolve_deps)
   {
-    if (ninstaller == 2)
+    if (ndeps == 1)
     { 
       if (action == "Remove")
         printStatus("1 installed dependency for " + build.name() + ".");
       else
         printStatus("1 dependency for " + build.name() + ".");
     }
-    else if (ninstaller >= 1)
+    else if (ndeps >= 0)
     { 
       if (action == "Remove")
-        printStatus(int_to_string(ninstaller-1) + 
+        printStatus(int_to_string(ndeps) + 
                     " installed dependencies for " + build.name() + ".");
       else
-        printStatus(int_to_string(ninstaller-1) + 
+        printStatus(int_to_string(ndeps) + 
                     " dependencies for " + build.name() + ".");
     }
     else

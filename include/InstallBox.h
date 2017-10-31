@@ -20,6 +20,7 @@ class InstallBox: public BuildOrderBox {
        for many of the operations. */
 
     std::vector<BuildListItem *> _builds;
+    int _ndeps;
 
     /* Drawing */
     
@@ -37,6 +38,7 @@ class InstallBox: public BuildOrderBox {
 
     void minimumSize(int & height, int & width) const;
     void preferredSize(int & height, int & width) const;
+    int numDeps() const;
     bool installingAllDeps() const;
     bool installingRequested() const;
 
@@ -45,7 +47,7 @@ class InstallBox: public BuildOrderBox {
     int create(BuildListItem & build,
                std::vector<std::vector<BuildListItem> > & slackbuilds,
                const std::string & action, bool resolve_deps=true,
-               bool batch=false);
+               bool batch=false, bool rebuild_inv_deps=false);
 
     /* User interaction loop. Differs from standard BuildListBox exec() in
        that the space bar is used to tag (select/unselect) items */

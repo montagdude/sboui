@@ -28,7 +28,7 @@ namespace settings
   std::string editor;
   std::string color_theme;
   std::string layout;
-  bool resolve_deps, confirm_changes, enable_color;
+  bool resolve_deps, confirm_changes, enable_color, rebuild_inv_deps;
 }
 
 Color colors;
@@ -149,6 +149,11 @@ int read_config(const std::string & conf_file)
   // Read inputs and/or set defaults
 
   if (! cfg.lookupValue("resolve_deps", resolve_deps)) { resolve_deps = true; }
+
+  if (! cfg.lookupValue("rebuild_inv_deps", rebuild_inv_deps))
+  {
+    rebuild_inv_deps = false;
+  }
 
   if (! cfg.lookupValue("confirm_changes", confirm_changes)) 
     confirm_changes = true;

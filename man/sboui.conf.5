@@ -310,6 +310,33 @@ is used as the
 .B sboui
 sets default values for each of these commands.
 .TP
+.B rebuild_inv_deps
+.br
+\fBtrue\fR|\fBfalse\fR
+.br
+default:
+.B false
+.br
+required: no
+.IP
+Whether to rebuild installed packages that depend on another package when the latter package is upgraded.
+.IP
+If
+.BR true ,
+.B sboui
+will recursively find all installed packages that depend on the one to be upgraded and mark them for reinstallation.
+The user is free to change these marks interactively in the dialog provided the
+.B confirm_changes
+setting is enabled.
+.IP
+If
+.BR false ,
+inverse dependencies will not be searched for or marked.
+.IP
+Note that this option only applies to upgrade operations.
+It is disabled by default, because it is not always necessary to rebuild inverse dependencies when upgrading a package.
+It is, however, the safe thing to do to avoid errors arising from API/ABI changes.
+.TP
 .B repo_dir
 .br
 [string]
