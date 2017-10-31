@@ -346,7 +346,7 @@ int InstallBox::create(BuildListItem & build,
   // Copy reqlist to _builds list and determine action for each
 
   nbuilds = 0;
-  for ( i = 0; i <= _ndeps; i++ )
+  for ( i = 0; int(i) <= _ndeps; i++ )
   {
     mark = false;
     if (action != "Remove")
@@ -368,7 +368,7 @@ int InstallBox::create(BuildListItem & build,
         {
           // By default, do not reinstall dependencies
 
-          if ( (action == "Reinstall") && (i == _ndeps) ) { mark = true; }
+          if ( (action == "Reinstall") && (int(i) == _ndeps) ) { mark = true; }
           else { mark = false; }
           action_applied = "Reinstall";
         }
@@ -385,7 +385,7 @@ int InstallBox::create(BuildListItem & build,
         
         // By default, do not remove dependencies
 
-        if (i == _ndeps) { mark = true; }
+        if (int(i) == _ndeps) { mark = true; }
         else { mark = false; }
         action_applied = "Remove";
         _builds[nbuilds]->setBoolProp("marked", mark);

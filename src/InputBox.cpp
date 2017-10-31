@@ -340,7 +340,7 @@ void InputBox::redrawScrollIndicator() const
   if ( (need_up) || (need_dn) )
   {
     ymax = 0;
-    for ( i = 0; i < nitems; i++ )
+    for ( i = 0; i < int(nitems); i++ )
     {
       if (_items[i]->posy() > ymax) { ymax = _items[i]->posy(); }
     }
