@@ -1,3 +1,9 @@
+2017-11-13   Daniel Prosser <dpross1100@msn.com>
+
+        version 0.5.1
+        * Mark inverse deps for upgrade instead of reinstall as appropriate when
+          rebuild_inv_deps = true
+
 2017-10-30   Daniel Prosser <dpross1100@msn.com>
 
         version 0.5
