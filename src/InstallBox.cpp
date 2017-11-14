@@ -407,7 +407,10 @@ int InstallBox::create(BuildListItem & build,
     {
       _builds.push_back(reqlist[i]);
       _builds[nbuilds]->setBoolProp("marked", true);
-      _builds[nbuilds]->setProp("action", "Reinstall");
+      if (_builds[nbuilds]->getBoolProp("upgradable"))
+        _builds[nbuilds]->setProp("action", "Upgrade");
+      else
+        _builds[nbuilds]->setProp("action", "Reinstall");
       nbuilds++;
     }
   }
