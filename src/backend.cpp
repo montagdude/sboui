@@ -229,20 +229,33 @@ Gets SlackBuild version and reqs from repository
 
 *******************************************************************************/
 int get_repo_info(const BuildListItem & build, std::string & available_version,
-                  std::string & reqs)
+                  std::string & reqs, std::string & available_buildnum) 
 {
   ShellReader reader;
-  std::string info_file;
+  std::string info_file, slackbuild_file;
   int check;
+
+  // Read available version and requirements from .info file
 
   info_file = repo_dir + "/" + build.getProp("category") + "/" +
               build.name() + "/" + build.name() + ".info";
-
   check = reader.open(info_file);
   if (check == 0)
   { 
     reader.read("VERSION", available_version);
     reader.read("REQUIRES", reqs);
+    reader.close();
+  }
+  else { return check; }
+
+  // Read build number from .SlackBuild file
+
+  slackbuild_file = repo_dir + "/" + build.getProp("category") + "/" +
+                    build.name() + "/" + build.name() + ".SlackBuild";
+  check = reader.open(slackbuild_file);
+  if (check == 0)
+  { 
+    reader.read("BUILD", available_buildnum, true);
     reader.close();
   }
 
@@ -307,6 +320,7 @@ void determine_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
     {
       slackbuilds[i][j].setBoolProp("installed", true);
       slackbuilds[i][j].setProp("installed_version", version);
+      slackbuilds[i][j].parseBuildNum(build);
       slackbuilds[i][j].setProp("package_name", installedpkgs[k]);
 
       slackbuilds[i][j].setBoolProp("blacklisted",

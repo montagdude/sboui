@@ -15,7 +15,8 @@ class BuildListItem: public ListItem {
 
     // Checks whether a SlackBuild can be upgraded
 
-    bool requiresSpecialUpgradeCheck() const;
+    bool differsByKernel(const std::string & installed_version,
+                         const std::string & available_version) const;
     bool upgradable() const;
 
   public:
@@ -32,6 +33,10 @@ class BuildListItem: public ListItem {
 
     void readInstalledProps(std::vector<std::string> & installedpkgs);
     int readPropsFromRepo();
+
+    // Determines BUILD number from last portion of package name
+
+    void parseBuildNum(std::string & build);
 
     // Build options as string of environment variables
 

@@ -4,6 +4,7 @@
 #include <vector>
 
 extern std::string int_to_string(int inval);
+extern bool is_integer(const std::string & instr);
 extern std::string chararray_to_string(char chararray[]);
 extern std::string string_to_lower(const std::string & instr);
 extern std::string trim(const std::string & instr);

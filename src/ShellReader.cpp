@@ -112,6 +112,59 @@ int ShellReader::readVariable(std::string & line, std::string & value)
 
 /*******************************************************************************
 
+Reads the value of a default variable given the line. Default variables may not
+span multiple lines.
+
+*******************************************************************************/
+int ShellReader::readDefaultVariable(std::string & line, std::string & value)
+{
+  std::size_t dollarpos, brace0pos, colonpos, dashpos, brace1pos;
+
+  line = trim(line);
+
+  // Check to make sure there is a ${VAR:-DEFAULT_VAL} construct
+  
+  dollarpos = line.find_first_of('$');
+  if (dollarpos == std::string::npos)
+    return 1;
+
+  brace0pos = line.find_first_of('{');
+  if (brace0pos == std::string::npos)
+    return 1;
+
+  colonpos = line.find_first_of(':');
+  if (colonpos == std::string::npos)
+    return 1;
+
+  dashpos = line.find_first_of('-');
+  if (dashpos == std::string::npos)
+    return 1;
+
+  brace1pos = line.find_first_of('}');
+  if (brace1pos == std::string::npos)
+    return 1;
+
+  if (brace0pos < dollarpos)
+    return 1;
+
+  if (colonpos < brace0pos)
+    return 1;
+
+  if (dashpos != colonpos+1)
+    return 1;
+
+  if (brace1pos < dashpos)
+    return 1;
+
+  // Pick out the value
+
+  value = line.substr(dashpos+1,brace1pos-dashpos-1); 
+
+  return 0;
+}
+
+/*******************************************************************************
+
 Constructor and destructor
 
 *******************************************************************************/
@@ -146,11 +199,13 @@ int ShellReader::close()
 
 /*******************************************************************************
 
-Reads a variable from the file and stores as string. Returns 1 on error or 0
-on success.
+Reads a variable from the file and stores as string. If the variable is set as
+a default value, set the optional default_var argument = true.
+Returns 1 on error or 0 on success.
 
 *******************************************************************************/
-int ShellReader::read(const std::string & varname, std::string & value)
+int ShellReader::read(const std::string & varname, std::string & value,
+                      bool default_var)
 {
   int check;
   bool reading;
@@ -172,7 +227,10 @@ int ShellReader::read(const std::string & varname, std::string & value)
     std::getline(_file, line);
     if (checkVarname(line, varname))
     { 
-      check = readVariable(line, value); 
+      if (default_var)
+        check = readDefaultVariable(line, value);
+      else
+        check = readVariable(line, value); 
       reading = false;
     }
   }

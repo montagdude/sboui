@@ -1,58 +1,55 @@
 #include <string>
 #include <vector>
+#include <algorithm> 	// count
+#include <cctype>	// isdigit
 #include "backend.h"
 #include "string_util.h"
 #include "ListItem.h"
 #include "BuildListItem.h"
 
-/* The following can't use the simple installed_version != available_version
-   check, because the SlackBuild appends something to $VERSION in the package
-   name */
-std::vector<std::string> special_upgrade_check {
-  {"WireGuard"},
-  {"acpi_call"},
-  {"broadcom-sta"},
-  {"broffice.org"},
-  {"dahdi-complete"},
-  {"klibc"},
-  {"libreoffice-helppack"},
-  {"libreoffice-langpack"},
-  {"lirc"},
-  {"netatop"},
-  {"nvidia-kernel"},
-  {"nvidia-legacy304-kernel"},
-  {"nvidia-legacy340-kernel"},
-  {"openoffice.org"},
-  {"openoffice-langpack"},
-  {"pentadactyl"},
-  {"r8168"},
-  {"rtl8188eu"},
-  {"spl-solaris"},
-  {"sysdig"},
-  {"steamos-xpad"},
-  {"vhba-module"},
-  {"virtualbox-kernel-addons"},
-  {"virtualbox-kernel"},
-  {"xtables-addons"},
-  {"zfs-on-linux"}
-};
-
 /*******************************************************************************
 
-Determines whether a special upgrade check is needed
+Checks if installed version is the same as available version, but with a kernel
+tag appended. Returns true if the two match except for a kernel tag appended to
+the installed version string. Otherwise returns false.
 
 *******************************************************************************/
-bool BuildListItem::requiresSpecialUpgradeCheck() const
+bool BuildListItem::differsByKernel(const std::string & installed_version,
+                                    const std::string & available_version) const
 {
-  unsigned int i, nspecial;
+  std::size_t underpos;
+  unsigned int lenavail, ndot, i;
+  std::vector<std::string> splitstr;
+  std::string tag;
 
-  nspecial = special_upgrade_check.size();
-  for ( i = 0; i < nspecial; i++ )
+  // Check if the version matches
+
+  lenavail = available_version.length();
+  if (installed_version.length() < lenavail)
+    return false;
+  else if (installed_version.substr(0, lenavail) != available_version)
+    return false;
+  
+  // Check if there is a kernel tag appended
+
+  underpos = installed_version.find_first_of('_');
+  if (underpos == std::string::npos)
+    return false;
+
+  splitstr = split(installed_version, '_');
+  tag = splitstr[1];
+
+  ndot = std::count(tag.begin(), tag.end(), '.');
+  if (ndot != 2)
+    return false;
+
+  splitstr = split(tag, '.');
+  for ( i = 0; i < splitstr.size(); i++ )
   {
-    if (_name == special_upgrade_check[i]) { return true; }
+    if ( ! is_integer(splitstr[i]) )
+      return false;
   }
-
-  return false;
+  return true;
 }
 
 /*******************************************************************************
@@ -62,38 +59,32 @@ Checks whether SlackBuild can be upgraded
 *******************************************************************************/
 bool BuildListItem::upgradable() const
 {
-  std::size_t ilen, alen;
-  bool test;
-  std::string installed, available;
+  bool test_version, test_buildnum;
+  std::string installed_version, available_version;
+  std::string installed_buildnum, available_buildnum;
 
-  test = false;
-  installed = getProp("installed_version");
-  available = getProp("available_version");
+  test_version = false;
+  installed_version = getProp("installed_version");
+  available_version = getProp("available_version");
 
-  // For SlackBuilds in the special_upgrade_check list, allow installed version
-  // to match even if it has a trailing underscore after the available_version
-  // string.
+  test_buildnum = false;
+  installed_buildnum = getProp("installed_buildnum");
+  available_buildnum = getProp("available_buildnum");
+
+  // Check if new VERSION or BUILD is available
 
   if ( (getBoolProp("installed")) && (! getBoolProp("blacklisted")) )
   {
-    if (installed != available)
+    if (installed_version != available_version)
     {
-      if (requiresSpecialUpgradeCheck())
-      {
-        ilen = installed.size();
-        alen = available.size();
-        test = true;
-        if (ilen > alen)
-        {
-          if ( (installed.substr(0,alen) == available) &&
-               (installed[alen] == '_') ) { test = false; }
-        }
-      }
-      else { test = true; }
+      if (! differsByKernel(installed_version, available_version))
+        test_version = true;
     }
+    if (installed_buildnum != available_buildnum)
+      test_buildnum = true;
   }
 
-  return test;
+  return (test_version || test_buildnum);
 }
 
 /*******************************************************************************
@@ -107,6 +98,8 @@ BuildListItem::BuildListItem()
   addProp("category", "");
   addProp("installed_version", "");
   addProp("available_version", "");
+  addProp("installed_buildnum", "");
+  addProp("available_buildnum", "");
   addProp("requires", "");
   addBoolProp("installed", false);
   addBoolProp("upgradable", false);
@@ -136,6 +129,7 @@ void BuildListItem::readInstalledProps(std::vector<std::string> & installedpkgs)
     setProp("package_name", pkg);
     setBoolProp("blacklisted", package_blacklist.blacklisted(pkg, _name, 
                                version, arch, build));
+    parseBuildNum(build);
     if (getProp("available_version") != "")
       setBoolProp("upgradable", upgradable());
   }
@@ -156,18 +150,44 @@ Reads properties from repo. If installed, checks whether it is upgradable.
 *******************************************************************************/
 int BuildListItem::readPropsFromRepo()
 {
-  std::string available_version, reqs;
+  std::string available_version, reqs, available_buildnum;
   int check;
 
-  check = get_repo_info(*this, available_version, reqs);
+  check = get_repo_info(*this, available_version, reqs, available_buildnum);
   if (check == 0)
   {
     setProp("available_version", available_version);
     setProp("requires", reqs);
+    setProp("available_buildnum", available_buildnum);
     if (getBoolProp("installed")) { setBoolProp("upgradable", upgradable()); }
   }
 
   return check;
+}
+
+/*******************************************************************************
+
+Determines BUILD number from last portion of package name and sets it in
+installed_buildnum prop
+
+*******************************************************************************/
+void BuildListItem::parseBuildNum(std::string & build)
+{
+  int i, buildlen;
+  std::string buildnum;
+
+  buildnum = "";
+  buildlen = build.length();
+  for ( i = 0; i < buildlen; i++ )
+  {
+    if (std::isdigit(build[i]))
+      buildnum += build[i];
+    else
+      break;
+  }
+  if (buildnum.length() == 0) { buildnum = '0'; }
+      
+  setProp("installed_buildnum", buildnum);
 }
 
 /*******************************************************************************

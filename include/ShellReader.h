@@ -22,6 +22,7 @@ class ShellReader {
     // Reads value of variable from file
 
     int readVariable(std::string & line, std::string & value);
+    int readDefaultVariable(std::string & line, std::string & value);
 
   public:
 
@@ -37,7 +38,8 @@ class ShellReader {
 
     /* Reads a variable from the file and stores as string */
 
-    int read(const std::string & varname, std::string & value);
+    int read(const std::string & varname, std::string & value,
+             bool default_var=false);
 
     /* Rewinds to beginning of the file */
 

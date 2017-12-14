@@ -1046,10 +1046,12 @@ void MainWindow::showPackageInfo(BuildListItem & build)
   if (build.getBoolProp("installed"))
   {
     msg += "Installed: yes\n";
-    msg += "Installed version: " + build.getProp("installed_version") + "\n";
+    msg += "Installed version: " + build.getProp("installed_version")
+        +  " (build " + build.getProp("installed_buildnum") + ")\n";
   }
   else { msg += "Installed: no\n"; }
-  msg += "Available version: " + build.getProp("available_version") + "\n";
+  msg += "Available version: " + build.getProp("available_version")
+       + " (build " + build.getProp("available_buildnum") + ")\n";
   if (build.getBoolProp("installed"))
   {
     msg += "Package name: " + build.getProp("package_name") + "\n";
@@ -1454,11 +1456,15 @@ void MainWindow::printPackageVersion(const BuildListItem & build)
   {
     if (build.getBoolProp("blacklisted"))
       statusmsg = "Installed: " + build.getProp("installed_version") +
-        " -> Available: " + build.getProp("available_version") +
-        " (blacklisted)";
+        " (build " + build.getProp("installed_buildnum") + ") " +
+        "-> Available: " + build.getProp("available_version") +
+        " (build " + build.getProp("available_buildnum") + ") " +
+        "(blacklisted)";
     else
       statusmsg = "Installed: " + build.getProp("installed_version") +
-        " -> Available: " + build.getProp("available_version");
+        " (build " + build.getProp("installed_buildnum") + ") " +
+        "-> Available: " + build.getProp("available_version") +
+        " (build " + build.getProp("available_buildnum") + ") ";
     printStatus(statusmsg);
   }
   else { clearStatus(); }

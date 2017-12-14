@@ -1,3 +1,10 @@
-Things for 1.0
+Things for 0.6
 ================================================================================
-* Make a PDF manual
+* Fix segfault with tag-removing perl modules and selecting dependencies
+* Save settings to ~/.sboui.conf when changed in Options window
+* Remember build options for SlackBuilds
+
+Completed for 0.6
+================================================================================
+* Mark as upgradable when there is a new BUILD number
+* Smarter checks for kernel number in version string

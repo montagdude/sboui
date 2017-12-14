@@ -21,7 +21,7 @@ bool check_installed(const BuildListItem & build,
                      std::string & arch, std::string & pkgbuild);
 int get_reqs(const BuildListItem & build, std::string & reqs);
 int get_repo_info(const BuildListItem & build, std::string & available_version,
-                  std::string & reqs);
+                  std::string & reqs, std::string & available_buildnum);
 void determine_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
                          std::vector<std::string> & pkg_errors,
                          std::vector<std::string> & missing_info);

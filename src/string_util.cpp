@@ -2,6 +2,7 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
+#include <cctype>  // isdigit
 #include "string_util.h"
 
 /*******************************************************************************
@@ -17,6 +18,23 @@ std::string int_to_string(int inval)
   ss << inval;
   ss >> outstr;
   return outstr;
+}
+
+/*******************************************************************************
+
+Checks whether a string can be converted to an integer
+
+*******************************************************************************/
+bool is_integer(const std::string & instr)
+{
+  unsigned int len, i;
+
+  len = instr.length();
+  for ( i = 0; i < len; i++ )
+  {
+    if ( ! std::isdigit(instr[i]) ) { return false; }
+  }
+  return true;
 }
 
 /*******************************************************************************
