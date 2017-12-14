@@ -395,6 +395,12 @@ int InstallBox::create(BuildListItem & build,
     }
   }
 
+  // When removing, we only consider installed dependencies, so reset _ndeps
+  // appropriately
+
+  if (action == "Remove")
+    _ndeps = nbuilds - 1;
+
   // Rebuild inverse deps if requested and in upgrade mode
 
   if ((action == "Upgrade") && rebuild_inv_deps)
