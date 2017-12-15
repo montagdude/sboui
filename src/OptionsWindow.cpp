@@ -361,9 +361,10 @@ void OptionsWindow::readSettings()
   _uvars_inp.setText(upgrade_vars);
 }
 
-int OptionsWindow::applySettings() const
+void OptionsWindow::applySettings(int & check_color, int & check_write) const
 {
-  int check = 0;
+  check_color = 0;
+  check_write = 0;
 
   resolve_deps = _resolve_toggle.enabled();
   rebuild_inv_deps = _rebuild_toggle.enabled();
@@ -372,7 +373,7 @@ int OptionsWindow::applySettings() const
   editor = _editor_inp.text();
 
   color_theme = _color_box.choice();
-  if (_color_toggle.enabled()) { check = activate_color(color_theme); }
+  if (_color_toggle.enabled()) { check_color = activate_color(color_theme); }
   else { deactivate_color(); }
 
   package_manager = _pmgr_box.choice();
@@ -386,7 +387,9 @@ int OptionsWindow::applySettings() const
   upgrade_clos = _uclos_inp.text();
   upgrade_vars = _uvars_inp.text();
 
-  return check;
+  // Write configuration to ~/.sboui.conf 
+
+  check_write = write_config();
 }
 
 /*******************************************************************************

@@ -278,6 +278,60 @@ int read_config(const std::string & conf_file)
 
 /*******************************************************************************
 
+Writes configuration file to $HOME/.sboui.conf
+
+*******************************************************************************/
+int write_config(const std::string & conf_file)
+{
+  Config cfg;
+  std::string home, my_conf_file;
+  char *env_home;
+
+  if (conf_file != "") { my_conf_file = conf_file; }
+  else
+  {
+    env_home = std::getenv("HOME");
+    if (env_home != NULL)
+    { 
+      std::stringstream sshm;
+      sshm << env_home;
+      sshm >> home;
+      my_conf_file = home + "/.sboui.conf";
+    }
+    else { return 1; }
+  }
+
+  // Add settings to cfg
+
+  Setting &root = cfg.getRoot();
+  root.add("resolve_deps", Setting::TypeBoolean) = resolve_deps;
+  root.add("rebuild_inv_deps", Setting::TypeBoolean) = rebuild_inv_deps;
+  root.add("confirm_changes", Setting::TypeBoolean) = confirm_changes;
+  root.add("layout", Setting::TypeString) = layout;
+  root.add("editor", Setting::TypeString) = editor;
+  root.add("install_clos", Setting::TypeString) = install_clos;
+  root.add("install_vars", Setting::TypeString) = install_vars;
+  root.add("upgrade_clos", Setting::TypeString) = upgrade_clos;
+  root.add("upgrade_vars", Setting::TypeString) = upgrade_vars;
+  root.add("package_manager", Setting::TypeString) = package_manager;
+  root.add("repo_dir", Setting::TypeString) = repo_dir;
+  root.add("repo_tag", Setting::TypeString) = repo_tag;
+  root.add("sync_cmd", Setting::TypeString) = sync_cmd;
+  root.add("install_cmd", Setting::TypeString) = install_cmd;
+  root.add("upgrade_cmd", Setting::TypeString) = upgrade_cmd;
+  root.add("enable_color", Setting::TypeBoolean) = enable_color;
+  root.add("color_theme", Setting::TypeString) = color_theme;
+
+  // Overwrite config file
+
+  try { cfg.writeFile(my_conf_file.c_str()); }
+  catch(const FileIOException & fioex) { return 2; }
+
+  return 0;
+}
+
+/*******************************************************************************
+
 Applies color theme. Returns 0 on success; 1 if not found.
 
 *******************************************************************************/

@@ -38,7 +38,7 @@ class OptionsWindow: public InputBox {
     /* Read/apply settings */
 
     void readSettings();
-    int applySettings() const; 
+    void applySettings(int & check_color, int & check_write) const; 
 
     /* Window sizing and placement */
 

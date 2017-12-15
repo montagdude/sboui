@@ -576,7 +576,7 @@ int MainWindow::showOptions()
   WINDOW *optionswin;
   std::string selection, errmsg;
   bool getting_input;
-  int check;
+  int check_color, check_write;
 
   clear();
   setInfo("Enter: Apply settings | Esc: Back to main");
@@ -588,7 +588,6 @@ int MainWindow::showOptions()
   _options.readSettings();
 
   getting_input = true;
-  check = 0;
   while (getting_input)
   {
     selection = _options.exec(); 
@@ -603,15 +602,13 @@ int MainWindow::showOptions()
     else if (selection == signals::keyEnter) 
     {
       getting_input = false;
-      check = _options.applySettings();
+      _options.applySettings(check_color, check_write);
     }
   }
 
-  // Error messages for problems with color theme file
-
-  if (check != 0)
+  if (check_color != 0)
   {
-    switch (check) {
+    switch (check_color) {
       case 1:
         errmsg = "Unable to read color theme file. Using default color theme.";
         break;
@@ -628,9 +625,23 @@ int MainWindow::showOptions()
     }
     displayError(errmsg);
   }
-  else
+  if (check_write != 0)
+  {
+    switch (check_write) {
+      case 1:
+        errmsg = "Error reading $HOME environment variable.";
+        break;
+      case 2:
+        errmsg = "Error writing ~/.sboui.conf.";
+        break;
+    }
+    displayError(errmsg);
+  }
+  if ( (check_color == 0) && (check_write == 0) )
+  {
     if (selection == signals::keyEnter)
       displayMessage("Settings were successfully applied.");
+  }
 
   clearStatus();
   setInfo("s: Sync | f: Filter | /: Search | o: Options | ?: Keys");

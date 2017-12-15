@@ -1,6 +1,5 @@
 Things for 0.6
 ================================================================================
-* Save settings to ~/.sboui.conf when changed in Options window
 * Remember build options for SlackBuilds
 
 Completed for 0.6
@@ -8,3 +7,4 @@ Completed for 0.6
 * Mark as upgradable when there is a new BUILD number
 * Smarter checks for kernel number in version string
 * Fix segfault when removing a package's dependencies but not all were installed
+* Save settings to ~/.sboui.conf when changed in Options window
