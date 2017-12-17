@@ -1,5 +1,7 @@
 #include <string>
 #include <curses.h>
+#include <fstream>
+#include <cstdio>	// remove
 #include "Color.h"
 #include "settings.h"
 #include "signals.h"
@@ -7,6 +9,7 @@
 #include "BuildListItem.h"
 #include "TextInput.h"
 #include "Label.h"
+#include "DirListing.h"
 #include "BuildOptionsBox.h"
 
 /*******************************************************************************
@@ -139,6 +142,40 @@ std::string BuildOptionsBox::entries() const
   }
 
   return entries_list;
+}
+
+/*******************************************************************************
+
+Writes build options to file. Deletes file if it exists and no build options
+are set.
+
+*******************************************************************************/
+int BuildOptionsBox::write(const BuildListItem & build) const
+{
+  DirListing listing;
+  std::ofstream file;
+  std::string fname;
+  unsigned int nentries, i;
+
+  listing.createFromPath("/var/lib/sboui/buildopts");
+  fname = listing.path() + build.name() + ".buildopts";
+  nentries = numEntries();
+  file.open(fname.c_str());
+  if (not file.is_open()) { return 1; }
+
+  // Delete existing file if there are no entries or write to file
+
+  if (nentries == 0) { remove(fname.c_str()); }
+  else
+  {
+    for ( i = 0; i < nentries; i++ )
+    {
+      file << _entries[i].text() << std::endl;
+    }
+  }
+  file.close();
+
+  return 0;
 }
 
 /*******************************************************************************

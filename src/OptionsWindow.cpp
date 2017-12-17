@@ -111,6 +111,13 @@ OptionsWindow::OptionsWindow()
   count++;
   line += 1;
 
+  addItem(&_buildopts_toggle);
+  _items[count]->setName("Save build options");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(_items[count]->name().size());
+  count++;
+  line += 1;
+
   addItem(new Label());
   _items[count]->setName("List layout");
   _items[count]->setPosition(line,1);
@@ -343,6 +350,7 @@ void OptionsWindow::readSettings()
   _resolve_toggle.setEnabled(resolve_deps);
   _rebuild_toggle.setEnabled(rebuild_inv_deps);
   _confirm_toggle.setEnabled(confirm_changes);
+  _buildopts_toggle.setEnabled(save_buildopts);
   _layout_box.setChoice(layout);
   _editor_inp.setText(editor);
 
@@ -369,6 +377,7 @@ void OptionsWindow::applySettings(int & check_color, int & check_write) const
   resolve_deps = _resolve_toggle.enabled();
   rebuild_inv_deps = _rebuild_toggle.enabled();
   confirm_changes = _confirm_toggle.enabled();
+  save_buildopts = _buildopts_toggle.enabled();
   layout = _layout_box.choice();
   editor = _editor_inp.text();
 

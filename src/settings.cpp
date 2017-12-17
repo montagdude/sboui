@@ -29,6 +29,7 @@ namespace settings
   std::string color_theme;
   std::string layout;
   bool resolve_deps, confirm_changes, enable_color, rebuild_inv_deps;
+  bool save_buildopts;
 }
 
 Color colors;
@@ -148,15 +149,17 @@ int read_config(const std::string & conf_file)
 
   // Read inputs and/or set defaults
 
-  if (! cfg.lookupValue("resolve_deps", resolve_deps)) { resolve_deps = true; }
+  if (! cfg.lookupValue("resolve_deps", resolve_deps))
+    resolve_deps = true;
 
   if (! cfg.lookupValue("rebuild_inv_deps", rebuild_inv_deps))
-  {
     rebuild_inv_deps = false;
-  }
 
   if (! cfg.lookupValue("confirm_changes", confirm_changes)) 
     confirm_changes = true;
+
+  if (! cfg.lookupValue("save_buildopts", save_buildopts)) 
+    save_buildopts = true;
 
   if (! cfg.lookupValue("layout", layout)) { layout = "horizontal"; }
   else if ( (layout != "horizontal") && (layout != "vertical") )
@@ -307,6 +310,7 @@ int write_config(const std::string & conf_file)
   root.add("resolve_deps", Setting::TypeBoolean) = resolve_deps;
   root.add("rebuild_inv_deps", Setting::TypeBoolean) = rebuild_inv_deps;
   root.add("confirm_changes", Setting::TypeBoolean) = confirm_changes;
+  root.add("save_buildopts", Setting::TypeBoolean) = save_buildopts;
   root.add("layout", Setting::TypeString) = layout;
   root.add("editor", Setting::TypeString) = editor;
   root.add("install_clos", Setting::TypeString) = install_clos;

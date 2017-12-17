@@ -4,6 +4,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <sys/stat.h>
+#include "string_util.h"
 #include "DirListing.h"
 
 #ifdef MINGW
@@ -336,6 +338,37 @@ int DirListing::navigateUp(bool sort_listing, bool show_hidden)
   if (setFromPath(newpath, sort_listing, show_hidden) == 0) { return 0; }
   else { return setFromPath(_path, sort_listing, show_hidden); }
 }
+
+/*******************************************************************************
+
+Same as setFromPath, but first creates directory if it doesn't exist
+
+*******************************************************************************/
+int DirListing::createFromPath(const std::string & path, bool sort_listing,
+                               bool show_hidden)
+{
+  DIR *pdir = NULL;
+  std::vector<std::string> dirs;
+  std::string temppath;
+  unsigned int i, ndirs;
+
+  // Create directories in specified path
+
+  dirs = split(path, separator[0]);
+  temppath = "";
+  ndirs = dirs.size();
+  for ( i = 0; i < ndirs; i++ )
+  {
+    temppath += separator + dirs[i];
+    pdir = opendir(temppath.c_str());
+    if (pdir == NULL)
+      mkdir(temppath.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+    else
+      closedir(pdir);
+  }
+
+  return setFromPath(path, sort_listing, show_hidden);
+} 
 
 /*******************************************************************************
 

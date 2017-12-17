@@ -253,6 +253,11 @@ int MainWindow::readLists()
 
   determine_installed(_slackbuilds, pkg_errors, missing_info);
 
+  // Read build options
+
+  if (settings::save_buildopts)
+    read_buildopts(_slackbuilds);
+
   // Warning for bad package names
 
   npkgerr = pkg_errors.size();
@@ -588,6 +593,8 @@ int MainWindow::showOptions()
   _options.readSettings();
 
   getting_input = true;
+  check_color = 0;
+  check_write = 0;
   while (getting_input)
   {
     selection = _options.exec(); 
@@ -904,6 +911,8 @@ void MainWindow::setBuildOptions(BuildListItem & build)
     {
       getting_input = false;
       build.setProp("build_options", buildoptions.entries());
+      if (settings::save_buildopts)
+        buildoptions.write(build);
     }
     else if (selection == signals::quit) { getting_input = false; }
     else if (selection == signals::resize) 

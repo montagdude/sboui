@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <algorithm>  // sort
+#include <fstream>
 #include "DirListing.h"
 #include "ListItem.h"
 #include "BuildListItem.h"
@@ -71,6 +72,52 @@ int read_repo(std::vector<std::vector<BuildListItem> > & slackbuilds)
 
   return 0;
 } 
+
+/*******************************************************************************
+
+Reads build options in /var/lib/sboui/buildopts
+
+*******************************************************************************/
+int read_buildopts(std::vector<std::vector<BuildListItem> > & slackbuilds)
+{
+  DirListing listing;
+  std::string buildopts_dir, fpath, buildopts, opt, buildname;
+  unsigned int k, nbuilds_opts, stat;
+  int i, j;
+  std::ifstream file;
+  std::size_t ext_idx;
+
+  // Open directory
+
+  buildopts_dir = "/var/lib/sboui/buildopts";
+  stat = listing.setFromPath(buildopts_dir);
+  if (stat == 1) { return stat; }
+
+  // Read build options for each SlackBuild
+
+  nbuilds_opts = listing.size();
+  for ( k = 0; k < nbuilds_opts; k++ )
+  {
+    fpath = buildopts_dir + "/" + listing(k).name;
+    ext_idx = listing(k).name.find(".buildopts");
+    if (ext_idx == std::string::npos) { continue; }
+    file.open(fpath.c_str());
+    buildopts = "";
+    while (1)
+    { 
+      std::getline(file, opt);
+      buildopts += opt;
+      if (file.eof()) { break; }
+      else { buildopts += ";"; }
+    }
+    buildname = listing(k).name.substr(0,ext_idx);
+    find_slackbuild(buildname, slackbuilds, i, j);
+    slackbuilds[i][j].setProp("build_options", buildopts);
+    file.close();
+  }
+
+  return 0;
+}
 
 /*******************************************************************************
 

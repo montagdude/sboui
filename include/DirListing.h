@@ -47,6 +47,11 @@ class DirListing {
     int setFromCwd(bool sort_listing=true, bool show_hidden=false);
     int navigateUp(bool sort_listing=true, bool show_hidden=false);
 
+    /* Same as setFromPath, but also creates directory if it doesn't exist */
+
+    int createFromPath(const std::string & path, bool sort_listing=true,
+                       bool show_hidden=false);
+
     /* Sorts entries */
    
     void sort();

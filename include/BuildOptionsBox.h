@@ -44,6 +44,10 @@ class BuildOptionsBox: public InputBox {
     std::string entry(unsigned int idx) const;
     std::string entries() const;
 
+    /* Write build options to file */
+
+    int write(const BuildListItem & build) const;
+
     /* Draws frame, items, etc. as needed */
 
     void draw(bool force=false);

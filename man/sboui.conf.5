@@ -403,6 +403,34 @@ dependencies will not be resolved, and only the requested package will be marked
 Note that this option only applies to install, upgrade, reinstall, and remove operations.
 The ``Compute build order'' operation will resolve dependencies regardless of this setting.
 .TP
+.B save_buildopts
+.br
+\fBtrue\fR|\fBfalse\fR
+.br
+default:
+.B true
+.br
+required: no
+.IP
+Whether or not to save build options to files in 
+.I /var/lib/sboui/buildopts
+when they are set for a SlackBuild in the user interface.
+.IP
+If
+.BR true ,
+.B sboui
+will save these files and also read them when starting up, allowing custom build options to be preserved across runs.
+If all build options are removed for a SlackBuild through the interface, its corresponding build options file will also be deleted.
+.IP
+If
+.BR false ,
+build options files will neither be written nor read by
+.B sboui
+while it is running.
+Existing build options files in
+.I /var/lib/sboui/buildopts
+will be preserved.
+.TP
 .B sync_cmd
 .br
 [string]
@@ -540,9 +568,24 @@ Note: this file is overwritten when settings are changed in the Options window o
 Color theme files
 .br
 Files defining colors for different UI elements.
-System color themes are stored in /usr/share/sboui/themes.
-Users can also add their own color themes in $HOME/.local/share/sboui/themes.
+System color themes are stored in
+.IR /usr/share/sboui/themes .
+Users can also add their own color themes in
+.IR $HOME/.local/share/sboui/themes.
 If not present, default color settings will be used.
+.TP
+Build options files
+.br
+Files containing build options for SlackBuilds.
+There is one file per SlackBuild, with the naming convention {SlackBuild name}.buildopts.
+They are stored in
+.IR /var/lib/sboui/buildopts .
+.IP
+These files are automatically created by
+.B sboui
+when build options are set through the user interface and
+.B save_buildopts
+is enabled, but they can also be created manually if desired.
 .SH NOTES
 .B sboui
 uses the

@@ -9,6 +9,7 @@
 extern Blacklist package_blacklist;
 
 int read_repo(std::vector<std::vector<BuildListItem> > & slackbuilds);
+int read_buildopts(std::vector<std::vector<BuildListItem> > & slackbuilds);
 int find_slackbuild(const std::string & name,
                     std::vector<std::vector<BuildListItem> > & slackbuilds,
                     int & idx0, int & idx1);
