@@ -985,6 +985,7 @@ void MainWindow::showBuildOrder(BuildListItem & build)
       showBuildActions(*subbuild, true);
       placePopup(&buildorder, buildorderwin);
       draw(true);
+      buildorder.draw(true);
     }
     else if (selection == signals::resize) 
     { 
@@ -1465,7 +1466,7 @@ std::string MainWindow::displayMessage(const std::string & msg, bool centered,
 
 /*******************************************************************************
 
-Prints package version information as status for installed SlackBuild
+Prints package version information as status for installed SlackBuild.
 
 *******************************************************************************/
 void MainWindow::printPackageVersion(const BuildListItem & build)

@@ -117,7 +117,7 @@ screen or not.
 void BuildOrderBox::redrawSingleItem(unsigned int idx)
 {
   std::string fg, bg;
-  int nspaces, vlineloc, printlen, rows, cols, i;
+  int nspaces, vlineloc, printlen, rows, cols, i, nast;
 
   getmaxyx(_win, rows, cols);
 
@@ -161,11 +161,19 @@ void BuildOrderBox::redrawSingleItem(unsigned int idx)
   
   if (int(idx) == _highlight) { _prevhighlight = _highlight; }
 
+  // Print an asterisk next to any SlackBuild with build options set
+
+  nast = 0;
+  if (_items[idx]->getProp("build_options") != "")
+    nast = 1;
+
   // Print item, spaces, install status
 
   printlen = std::min(int(_items[idx]->name().size()), vlineloc);
-  nspaces = vlineloc - _items[idx]->name().size();
+  nspaces = vlineloc - _items[idx]->name().size() - nast;
   wprintw(_win, _items[idx]->name().substr(0,printlen).c_str());
+  if (nast == 1)
+    waddch(_win, '*');
 
   for ( i = 0; int(i) < nspaces; i++ ) { waddch(_win, ' '); }
 
