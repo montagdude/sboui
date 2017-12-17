@@ -1,7 +1,3 @@
-Things for 0.6
-================================================================================
-* Filter by SlackBuilds with build options set
-
 Completed for 0.6
 ================================================================================
 * Mark as upgradable when there is a new BUILD number
@@ -10,3 +6,5 @@ Completed for 0.6
 * Save settings to ~/.sboui.conf when changed in Options window
 * Remember build options for SlackBuilds
 * Mark SlackBuilds that have build options set with an asterisk
+* Filter by SlackBuilds with build options set
+* Simplify filtering algorithms

@@ -22,8 +22,10 @@ FilterBox::FilterBox()
   addItem(new ListItem("Tagged"));
   addItem(new ListItem("Blacklisted"));
   addItem(new ListItem("Non-dependencies"));
+  addItem(new ListItem("Build options set"));
 
   for ( i = 0; i < 6; i++ ) { _items[i]->setHotKey(0); }
+  _items[6]->setHotKey(3);
 }
 
 FilterBox::FilterBox(WINDOW *win, const std::string & name)
@@ -40,8 +42,10 @@ FilterBox::FilterBox(WINDOW *win, const std::string & name)
   addItem(new ListItem("Tagged"));
   addItem(new ListItem("Blacklisted"));
   addItem(new ListItem("Non-dependencies"));
+  addItem(new ListItem("Build options set"));
 
   for ( i = 0; i < 6; i++ ) { _items[i]->setHotKey(0); }
+  _items[6]->setHotKey(3);
 }
 
 FilterBox::~FilterBox()

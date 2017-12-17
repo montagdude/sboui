@@ -11,6 +11,34 @@
 
 /*******************************************************************************
 
+Filtering functions that may be passed to filter_by_func
+
+*******************************************************************************/
+bool any_build(const BuildListItem & build) { return true; }
+bool build_is_installed(const BuildListItem & build)
+{
+  return build.getBoolProp("installed");
+}
+bool build_is_upgradable(const BuildListItem & build)
+{
+  return build.getBoolProp("upgradable");
+}
+bool build_is_tagged(const BuildListItem & build)
+{
+  return build.getBoolProp("tagged");
+}
+bool build_is_blacklisted(const BuildListItem & build)
+{
+  return build.getBoolProp("blacklisted");
+}
+bool build_has_buildoptions(const BuildListItem & build)
+{
+  if (build.getProp("build_options") != "") { return true; }
+  else { return false; }
+}
+
+/*******************************************************************************
+
 Creates a list of installed packages sorted by name within each category
 
 *******************************************************************************/
@@ -79,63 +107,11 @@ std::vector<BuildListItem *> list_nondeps(
 
 /*******************************************************************************
 
-Filters lists by all SlackBuilds
+Filters lists by bool function taking BuildListItem as parameter
 
 *******************************************************************************/
-void filter_all(std::vector<std::vector<BuildListItem> > & slackbuilds,
-                std::vector<CategoryListItem> & categories,
-                WINDOW *blistboxwin, CategoryListBox & clistbox,
-                std::vector<BuildListBox> & blistboxes)
-{
-  unsigned int i, j, nbuilds, ncategories, totalbuilds;
-  BuildListBox initlistbox;
-
-  totalbuilds = 0;
-  ncategories = categories.size();
-  blistboxes.resize(0);
-  clistbox.clearList();
-  clistbox.setActivated(true);
-  for ( i = 0; i < ncategories; i++ )
-  {
-    clistbox.addItem(&categories[i]);
-    BuildListBox blistbox;
-    blistbox.setWindow(blistboxwin);
-    blistbox.setName(categories[i].name());
-    blistbox.setActivated(false); 
-    nbuilds = slackbuilds[i].size();
-    totalbuilds += nbuilds;
-    for ( j = 0; j < nbuilds; j++ ) { blistbox.addItem(&slackbuilds[i][j]); }
-    blistboxes.push_back(blistbox);
-  }
-
-  // Check whether categories should be tagged
-
-  for ( i = 0; i < ncategories; i++ )
-  {
-    if (blistboxes[i].allTagged())
-      clistbox.itemByIdx(i)->setBoolProp("tagged", true);
-    else
-      clistbox.itemByIdx(i)->setBoolProp("tagged", false);
-  }
-
-  // Initialize with empty lists if repo is empty
-
-  if (totalbuilds == 0)
-  {
-    initlistbox.setWindow(blistboxwin);
-    initlistbox.setActivated(false);
-    initlistbox.setName("SlackBuilds");
-    blistboxes.push_back(initlistbox);
-  }
-} 
-
-/*******************************************************************************
-
-Filters lists by BoolProp
-
-*******************************************************************************/
-void filter_by_prop(std::vector<std::vector<BuildListItem> > & slackbuilds,
-                    const std::string & propname,
+void filter_by_func(std::vector<std::vector<BuildListItem> > & slackbuilds,
+                    bool (*func)(const BuildListItem &),
                     std::vector<CategoryListItem> & categories,
                     WINDOW *blistboxwin, CategoryListBox & clistbox,
                     std::vector<BuildListBox> & blistboxes,
@@ -158,7 +134,7 @@ void filter_by_prop(std::vector<std::vector<BuildListItem> > & slackbuilds,
     nbuilds = slackbuilds[i].size();
     for ( j = 0; j < nbuilds; j++ )
     {
-      if (slackbuilds[i][j].getBoolProp(propname))
+      if (func(slackbuilds[i][j]))
       {
         if (! category_found)
         {

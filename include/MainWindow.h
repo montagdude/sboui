@@ -62,6 +62,7 @@ class MainWindow: public CursesWidget {
     void filterTagged();
     void filterBlacklisted();
     void filterNonDeps();
+    void filterBuildOptions();
     void filterSearch(const std::string & searchterm, bool case_sensitive=false,
                       bool whole_whord=false, bool search_readmes=false);
 

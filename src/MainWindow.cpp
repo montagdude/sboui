@@ -328,6 +328,8 @@ void MainWindow::rebuild()
   else if (_filter == "tagged SlackBuilds") { filterTagged(); } 
   else if (_filter == "blacklisted SlackBuilds") { filterBlacklisted(); }
   else if (_filter == "non-dependencies") { filterNonDeps(); } 
+  else if (_filter == "SlackBuilds with build options set")
+    filterBuildOptions();
 
   // Reset original highlight if possible
 
@@ -359,19 +361,19 @@ Displays all SlackBuilds
 *******************************************************************************/
 void MainWindow::filterAll()
 {
-  unsigned int i, nbuilds, ncategories;
+  unsigned int nbuilds;
   std::string choice;
+  bool (*func)(const BuildListItem &);
 
   _filter = "all SlackBuilds";
   printStatus("Filtering by all SlackBuilds ...");
 
   _activated_listbox = 0;
   _category_idx = 0;
-  ncategories = _slackbuilds.size();
-  nbuilds = 0;
-  for ( i = 0; i < ncategories; i++ ) { nbuilds += _slackbuilds[i].size(); }
 
-  filter_all(_slackbuilds, _categories, _win2, _clistbox, _blistboxes);
+  func = &any_build;
+  filter_by_func(_slackbuilds, func, _categories, _win2, _clistbox,
+                 _blistboxes, nbuilds);
 
   if (nbuilds == 0)
   {
@@ -397,6 +399,7 @@ void MainWindow::filterInstalled()
 {
   unsigned int ninstalled;
   std::vector<std::string> pkg_errors, missing_info;
+  bool (*func)(const BuildListItem &);
 
   _filter = "installed SlackBuilds";
   printStatus("Filtering by installed SlackBuilds ...");
@@ -404,7 +407,8 @@ void MainWindow::filterInstalled()
   _activated_listbox = 0;
   _category_idx = 0;
 
-  filter_by_prop(_slackbuilds, "installed", _categories, _win2, _clistbox,
+  func = &build_is_installed;
+  filter_by_func(_slackbuilds, func, _categories, _win2, _clistbox,
                  _blistboxes, ninstalled);
 
   if (ninstalled == 0) 
@@ -426,6 +430,7 @@ void MainWindow::filterUpgradable()
 {
   unsigned int nupgradable;
   std::vector<std::string> pkg_errors, missing_info;
+  bool (*func)(const BuildListItem &);
 
   _filter = "upgradable SlackBuilds";
   printStatus("Filtering by upgradable SlackBuilds ...");
@@ -434,7 +439,8 @@ void MainWindow::filterUpgradable()
   _activated_listbox = 0;
   nupgradable = 0;
 
-  filter_by_prop(_slackbuilds, "upgradable", _categories, _win2, _clistbox,
+  func = &build_is_upgradable;
+  filter_by_func(_slackbuilds, func, _categories, _win2, _clistbox,
                  _blistboxes, nupgradable);
 
   if (nupgradable == 0) 
@@ -455,6 +461,7 @@ Displays tagged SlackBuilds
 void MainWindow::filterTagged()
 {
   unsigned int ntagged;
+  bool (*func)(const BuildListItem &);
 
   _filter = "tagged SlackBuilds";
   printStatus("Filtering by tagged SlackBuilds ...");
@@ -463,7 +470,8 @@ void MainWindow::filterTagged()
   _activated_listbox = 0;
   ntagged = 0;
 
-  filter_by_prop(_slackbuilds, "tagged", _categories, _win2, _clistbox,
+  func = &build_is_tagged;
+  filter_by_func(_slackbuilds, func, _categories, _win2, _clistbox,
                  _blistboxes, ntagged);
 
   if (ntagged == 0) 
@@ -484,6 +492,7 @@ Displays blacklisted SlackBuilds
 void MainWindow::filterBlacklisted()
 {
   unsigned int nblacklisted;
+  bool (*func)(const BuildListItem &);
 
   _filter = "blacklisted SlackBuilds";
   printStatus("Filtering by blacklisted SlackBuilds ...");
@@ -492,7 +501,8 @@ void MainWindow::filterBlacklisted()
   _activated_listbox = 0;
   nblacklisted = 0;
 
-  filter_by_prop(_slackbuilds, "blacklisted", _categories, _win2, _clistbox,
+  func = &build_is_blacklisted;
+  filter_by_func(_slackbuilds, func, _categories, _win2, _clistbox,
                  _blistboxes, nblacklisted);
 
   if (nblacklisted == 0) 
@@ -532,6 +542,38 @@ void MainWindow::filterNonDeps()
     printStatus("1 non-dependency.");
   else 
     printStatus(int_to_string(nnondeps) + " non-dependencies.");
+
+  setTagList();
+}
+
+/*******************************************************************************
+
+Displays SlackBuilds with build options set
+
+*******************************************************************************/
+void MainWindow::filterBuildOptions()
+{
+  unsigned int nbuildsopts;
+  bool (*func)(const BuildListItem &);
+
+  _filter = "SlackBuilds with build options set";
+  printStatus("Filtering by SlackBuilds with build options set ...");
+
+  _category_idx = 0;
+  _activated_listbox = 0;
+  nbuildsopts = 0;
+
+  func = &build_has_buildoptions;
+  filter_by_func(_slackbuilds, func, _categories, _win2, _clistbox,
+                 _blistboxes, nbuildsopts);
+
+  if (nbuildsopts == 0) 
+    printStatus("No SlackBuilds with build options set."); 
+  else if (nbuildsopts == 1) 
+    printStatus("1 SlackBuild with build options set.");
+  else 
+    printStatus(int_to_string(nbuildsopts) +
+                " SlackBuilds with build options set.");
 
   setTagList();
 }
@@ -1560,6 +1602,8 @@ int MainWindow::initialize()
     else if (_filter == "tagged SlackBuilds") { filterTagged(); }
     else if (_filter == "blacklisted SlackBuilds") { filterBlacklisted(); }
     else if (_filter == "non-dependencies") { filterNonDeps(); }
+    else if (_filter == "SlackBuilds with build options set")
+      filterBuildOptions();
     else { filterAll(); }
   }
   draw(true);
@@ -1628,6 +1672,10 @@ void MainWindow::selectFilter()
     {
       if (_filter != "non-dependencies") { filterNonDeps(); } 
     }
+    // Build options could have changed, so allow this one to be re-selected
+    else if ( (selected == "Build options set")
+           || (selection == "l") )
+      filterBuildOptions();
     else if (selection == signals::resize)
     {
       getting_selection = true;
