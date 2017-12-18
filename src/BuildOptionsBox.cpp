@@ -155,13 +155,14 @@ int BuildOptionsBox::write(const BuildListItem & build) const
   DirListing listing;
   std::ofstream file;
   std::string fname;
-  unsigned int nentries, i;
+  unsigned int check, nentries, i;
 
-  listing.createFromPath("/var/lib/sboui/buildopts");
+  check = listing.createFromPath("/var/lib/sboui/buildopts");
+  if (check != 0) { return 1; }
   fname = listing.path() + build.name() + ".buildopts";
   nentries = numEntries();
   file.open(fname.c_str());
-  if (not file.is_open()) { return 1; }
+  if (not file.is_open()) { return 2; }
 
   // Delete existing file if there are no entries or write to file
 

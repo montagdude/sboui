@@ -934,9 +934,10 @@ Allows user to set build options for SlackBuild
 void MainWindow::setBuildOptions(BuildListItem & build)
 {
   WINDOW *buildoptionswin;
-  std::string selection;
+  std::string selection, msg;
   bool getting_input;
   BuildOptionsBox buildoptions;
+  int check;
 
   printStatus("Setting build options for " + build.name() + " ...");
   buildoptions.setBuild(build);
@@ -954,7 +955,16 @@ void MainWindow::setBuildOptions(BuildListItem & build)
       getting_input = false;
       build.setProp("build_options", buildoptions.entries());
       if (settings::save_buildopts)
-        buildoptions.write(build);
+      {
+        check = buildoptions.write(build);
+        if (check != 0)
+        {
+          msg = "Unable to save build options: "
+              + std::string("cannot write to /var/lib/sboui/buildopts. ")
+              + std::string("Please check permissions.");
+          displayError(msg, true, "Warning", "Enter: Dismiss");
+        }
+      }
     }
     else if (selection == signals::quit) { getting_input = false; }
     else if (selection == signals::resize) 
