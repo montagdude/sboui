@@ -8,3 +8,4 @@ Completed for 0.6
 * Mark SlackBuilds that have build options set with an asterisk
 * Filter by SlackBuilds with build options set
 * Simplify filtering algorithms
+* Add "cyan" color theme
