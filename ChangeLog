@@ -1,3 +1,21 @@
+2017-12-18   Daniel Prosser <dpross1100@msn.com>
+
+        version 0.6
+        * Check for changes in BUILD number as well as version number when
+          determining whether a package is upgradable.
+        * Improve check for whether version number has _$KERNEL version tag
+          (needed when checking for upgradable packages).
+        * Remember settings changes made by the user through the Options window
+          across sessions. This is done by overwriting ~/.sboui.conf.
+        * Optionally save build options for SlackBuilds and read them at startup
+          so that they persist across sessions. This is the new default
+          behavior. Set save_buildopts = false to disable this feature.
+        * Mark SlackBuilds that have build options set with an asterisk.
+        * Add a filter for SlackBuilds with build options set.
+        * Add "cyan" color theme.
+        * Fix segfault that could occur when removing dependencies of a package
+          but some were already removed.
+
 2017-11-13   Daniel Prosser <dpross1100@msn.com>
 
         version 0.5.1

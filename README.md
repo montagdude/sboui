@@ -8,12 +8,15 @@ This approach allows much greater flexibility in the design of the user
 interface and also makes it very fast. The main features of sboui include:
 
 * Two-pane browsable listing of software groups and names
-* Filters: all, installed, upgradable, tagged, blacklisted, and non-dependencies
+* Filters: all, installed, upgradable, tagged, blacklisted, non-dependencies,
+  and build options set
 * Search the repository, including searching in READMEs
 * Dependency resolution: forward and inverse mode
 * View and edit files in the repository
 * Tag multiple packages (or entire groups) to apply batch changes
 * Blacklist installed packages by name or regex pattern
+* Manage build options for SlackBuilds and remember them across sessions
+* Automatically rebuild inverse dependencies (optional)
 * Comes with several built-in color themes and supports custom themes
 * Designed for and tested to work flawlessly with sbopkg and sbotools, but it is
   easy to set it up to work with your own custom package manager
