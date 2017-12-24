@@ -29,7 +29,7 @@ namespace settings
   std::string color_theme;
   std::string layout;
   bool resolve_deps, confirm_changes, enable_color, rebuild_inv_deps;
-  bool save_buildopts;
+  bool save_buildopts, warn_invalid_pkgnames;
 }
 
 Color colors;
@@ -160,6 +160,9 @@ int read_config(const std::string & conf_file)
 
   if (! cfg.lookupValue("save_buildopts", save_buildopts)) 
     save_buildopts = true;
+
+  if (! cfg.lookupValue("warn_invalid_pkgnames", warn_invalid_pkgnames))
+    warn_invalid_pkgnames = true;
 
   if (! cfg.lookupValue("layout", layout)) { layout = "horizontal"; }
   else if ( (layout != "horizontal") && (layout != "vertical") )
@@ -311,6 +314,8 @@ int write_config(const std::string & conf_file)
   root.add("rebuild_inv_deps", Setting::TypeBoolean) = rebuild_inv_deps;
   root.add("confirm_changes", Setting::TypeBoolean) = confirm_changes;
   root.add("save_buildopts", Setting::TypeBoolean) = save_buildopts;
+  root.add("warn_invalid_pkgnames", Setting::TypeBoolean) =
+                                                          warn_invalid_pkgnames;
   root.add("layout", Setting::TypeString) = layout;
   root.add("editor", Setting::TypeString) = editor;
   root.add("install_clos", Setting::TypeString) = install_clos;

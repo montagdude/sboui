@@ -321,6 +321,23 @@ OptionsWindow::OptionsWindow()
   addItem(&_uvars_inp);
   _items[count]->setPosition(line,26);
   _items[count]->setWidth(20);
+  count++;
+  line += 2;
+
+  // Miscellaneous settings
+
+  _misc_settings.setColor(colors.getPair("header", "bg_normal"));
+  addItem(&_misc_settings);  
+  _items[count]->setName("Miscellaneous settings");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(_items[count]->name().size());
+  count++;
+  line += 2;
+
+  addItem(&_warninval_toggle);
+  _items[count]->setName("Display a warning for invalid package names");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(_items[count]->name().size());
 }
 
 OptionsWindow::~OptionsWindow()
@@ -334,7 +351,8 @@ OptionsWindow::~OptionsWindow()
     {
       if ( (_items[i]->name() != "User interface settings") && 
            (_items[i]->name() != "Color settings") &&
-           (_items[i]->name() != "Package manager settings") )
+           (_items[i]->name() != "Package manager settings") &&
+           (_items[i]->name() != "Miscellaneous settings") )
         delete _items[i];
     }
   }
@@ -367,6 +385,8 @@ void OptionsWindow::readSettings()
   _ivars_inp.setText(install_vars);
   _uclos_inp.setText(upgrade_clos);
   _uvars_inp.setText(upgrade_vars);
+
+  _warninval_toggle.setEnabled(warn_invalid_pkgnames);
 }
 
 void OptionsWindow::applySettings(int & check_color, int & check_write) const
@@ -395,6 +415,8 @@ void OptionsWindow::applySettings(int & check_color, int & check_write) const
   install_vars = _ivars_inp.text();
   upgrade_clos = _uclos_inp.text();
   upgrade_vars = _uvars_inp.text();
+
+  warn_invalid_pkgnames = _warninval_toggle.enabled();
 
   // Write configuration to ~/.sboui.conf 
 

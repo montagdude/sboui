@@ -1,11 +1,9 @@
-Completed for 0.6
+For 1.0
 ================================================================================
-* Mark as upgradable when there is a new BUILD number
-* Smarter checks for kernel number in version string
-* Fix segfault when removing a package's dependencies but not all were installed
-* Save settings to ~/.sboui.conf when changed in Options window
-* Remember build options for SlackBuilds
-* Mark SlackBuilds that have build options set with an asterisk
-* Filter by SlackBuilds with build options set
-* Simplify filtering algorithms
-* Add "cyan" color theme
+* Fix scrolling bug on gis group when using PgDn to bottom (highlight is above
+  the screen)
+* New color theme?
+
+Completed for 1.0
+================================================================================
+* Add option to not warn about invalid package names

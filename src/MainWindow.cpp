@@ -258,14 +258,16 @@ int MainWindow::readLists()
   if (settings::save_buildopts)
     read_buildopts(_slackbuilds);
 
-  // Warning for bad package names
+  // Warning for invalid package names
 
   npkgerr = pkg_errors.size();
-  if (npkgerr > 0)
+  if ( (npkgerr > 0) && (settings::warn_invalid_pkgnames) )
   {
     errmsg = "The following installed packages have invalid names "
            + std::string("and were ignored:\n");
     for ( i = 0; i < npkgerr; i++ ) { errmsg += "\n" + pkg_errors[i]; }
+    errmsg += "\n\nThis warning may be disabled by setting "
+           +  std::string("warn_invalid_pkgnames = false.");
     displayError(errmsg, true, "Warning");
   }
 

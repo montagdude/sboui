@@ -552,6 +552,35 @@ required: no
 Same as
 .BR install_vars ,
 but applying to upgrade operations.
+.TP
+.B warn_invalid_pkgnames
+.br
+\fBtrue\fR|\fBfalse\fR
+.br
+default:
+.B true
+.br
+required: no
+.IP
+When
+.B sboui
+starts up, it first must read information from the SlackBuilds repository and the list of installed packages.
+If it encounters an installed package with an invalid package name and this setting is
+.BR true ,
+a warning will be displayed.
+If
+.BR false ,
+no warning will be displayed.
+Any such packages will be ignored during the rest of the program's execution.
+.IP
+It is recommended not to disable these warnings, but instead to fix the invalid package names, since these may cause problems for Slackware's pkgtools.
+.IP
+Invalid package names can sometimes occur when using tools that repackage software from other distributions whose name does not conform to the Slackware naming convention.
+A valid Slackware package name has four components, separated by hyphens, as follows:
+.IP
+{name}-{version}-{arch}-{build}
+.IP
+The version, arch, and build components of the package name may not contain hyphens, but the name of the software may, because the components of the package name are parsed from right to left.
 .SH FILES
 .TP
 .I /etc/sboui/sboui.conf

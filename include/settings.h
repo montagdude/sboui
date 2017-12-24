@@ -16,7 +16,7 @@ namespace settings
   extern std::string color_theme;
   extern std::string layout;
   extern bool resolve_deps, confirm_changes, enable_color, rebuild_inv_deps;
-  extern bool save_buildopts;
+  extern bool save_buildopts, warn_invalid_pkgnames;
 }
 
 extern Color colors;

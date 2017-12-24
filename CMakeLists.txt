@@ -1,6 +1,6 @@
 # Set up project
 cmake_minimum_required(VERSION 2.8.8)
-set(SBOUI_VERSION 0.6)
+set(SBOUI_VERSION 1.0)
 project(sboui)
 
 # Sources and include directories
