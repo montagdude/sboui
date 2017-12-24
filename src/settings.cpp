@@ -292,6 +292,7 @@ int write_config(const std::string & conf_file)
   Config cfg;
   std::string home, my_conf_file;
   char *env_home;
+  FILE *fp;
 
   if (conf_file != "") { my_conf_file = conf_file; }
   else
@@ -314,8 +315,6 @@ int write_config(const std::string & conf_file)
   root.add("rebuild_inv_deps", Setting::TypeBoolean) = rebuild_inv_deps;
   root.add("confirm_changes", Setting::TypeBoolean) = confirm_changes;
   root.add("save_buildopts", Setting::TypeBoolean) = save_buildopts;
-  root.add("warn_invalid_pkgnames", Setting::TypeBoolean) =
-                                                          warn_invalid_pkgnames;
   root.add("layout", Setting::TypeString) = layout;
   root.add("editor", Setting::TypeString) = editor;
   root.add("install_clos", Setting::TypeString) = install_clos;
@@ -330,11 +329,21 @@ int write_config(const std::string & conf_file)
   root.add("upgrade_cmd", Setting::TypeString) = upgrade_cmd;
   root.add("enable_color", Setting::TypeBoolean) = enable_color;
   root.add("color_theme", Setting::TypeString) = color_theme;
+  root.add("warn_invalid_pkgnames", Setting::TypeBoolean) =
+                                                          warn_invalid_pkgnames;
 
   // Overwrite config file
 
-  try { cfg.writeFile(my_conf_file.c_str()); }
+  fp = fopen(my_conf_file.c_str(), "w");
+  if (fp == NULL) { return 2; }
+  fprintf(fp, "# sboui configuration file\n");
+  fprintf(fp, "#\n");
+  fprintf(fp, "# Any manual edits to this file will be overwritten when\n");
+  fprintf(fp, "# changes are made in the Options window of sboui.\n");
+  fprintf(fp, "#\n");
+  try { cfg.write(fp); }
   catch(const FileIOException & fioex) { return 2; }
+  fclose(fp);
 
   return 0;
 }
