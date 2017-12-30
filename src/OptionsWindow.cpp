@@ -201,6 +201,7 @@ OptionsWindow::OptionsWindow()
   _pmgr_box.setParent(this);
   _pmgr_box.addChoice("sbopkg");
   _pmgr_box.addChoice("sbotools");
+  _pmgr_box.addChoice("built-in");
   _pmgr_box.addChoice("custom");
   addItem(& _pmgr_box);
   _items[count]->setPosition(line,26);

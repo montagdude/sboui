@@ -18,7 +18,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
 # Some default directories
 set(CONFDIR /etc/sboui
-    CACHE PATH "Directory to install sboui.conf."
+    CACHE PATH "Directory to install sboui.conf and sboui-backend.conf."
 )
 set(DATADIR ${CMAKE_INSTALL_PREFIX}/share/sboui
     CACHE PATH "Directory to install shared data."
@@ -52,8 +52,12 @@ endif (LIBCONFIG++_FOUND)
 
 # Install rules
 install(TARGETS sboui DESTINATION sbin)
-install(FILES etc/sboui.conf DESTINATION ${CONFDIR})
-install(FILES etc/package_blacklist DESTINATION ${CONFDIR})
+install(FILES src/sboui-backend
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                    GROUP_READ             GROUP_EXECUTE
+                    WORLD_READ             WORLD_EXECUTE
+        DESTINATION sbin)
+install(FILES etc/sboui.conf etc/sboui-backend.conf etc/package_blacklist DESTINATION ${CONFDIR})
 file(GLOB COLOR_THEMES etc/colors.*)
 install(FILES ${COLOR_THEMES} DESTINATION ${DATADIR}/themes)
 install(FILES man/sboui.8 DESTINATION ${MANDIR}/man8)

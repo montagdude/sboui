@@ -1,0 +1,788 @@
+#!/bin/bash
+#
+# Load configuration
+#
+CONF=${CONF:-/etc/sboui/sboui-backend.conf}
+. $CONF
+
+################################################################################
+# Removes quotes around string
+function remove_quotes ()
+{
+  local STRING=$1
+  STRING=${STRING#\"}
+  STRING=${STRING%\"}
+  echo $STRING
+}
+
+################################################################################
+# Gets SlackBuild name from installed package name in /var/log/packages
+function get_installed_name ()
+{
+  local PKG=$1
+
+  # Get rid of trailing stuff
+  local BUILD=${PKG%*-*} # Build number / tag
+  BUILD=${BUILD%*-*}     # Architecture-number
+  BUILD=${BUILD%*-*}     # Version
+  echo $BUILD
+}
+
+################################################################################
+# Gets SlackBuild version from VERSION string in *.info file
+function get_current_version ()
+{
+  local BUILD=$1
+
+  # Make sure we are at the top of the git tree
+  cd $CDIR
+
+  # Get path of SlackBuild.info
+  local INFILE=$(find . -maxdepth 3 -mindepth 3 -name "$BUILD".info)
+
+  # Get version number from SlackBuild.info
+  . $INFILE
+
+  echo $VERSION
+}
+
+################################################################################
+# Checks if Ponce's git repo is being used
+function check_ponce_repo ()
+{
+  if [ "$REPO" == "git://github.com/Ponce/slackbuilds.git" ]; then
+    echo true
+  else
+    echo false
+  fi
+}
+
+################################################################################
+# Returns the git branch name that is currently being used
+function get_git_branch ()
+{
+  # Go to top-level git tree
+  cd $CDIR
+ 
+  # Parse git status string
+  local STAT=$(git status | head -1)
+  local BRANCH=$(echo "$STAT" | cut -d' ' -f3)
+  echo $BRANCH
+}
+
+################################################################################
+# Switches to specified git branch
+function checkout_git_branch ()
+{
+  local GITBRANCH="$1"
+  local CHECK=0
+
+  # Go to top-level git tree
+  cd $CDIR
+
+  # Get branch currently being used
+  local CURRBRANCH=$(get_git_branch)
+
+  # Checkout new branch if needed
+  if [ "$CURRBRANCH" != "$GITBRANCH" ]; then
+    git checkout $GITBRANCH > /dev/null
+    CHECK=$?
+  fi
+
+  echo $CHECK
+}
+
+################################################################################
+# Syncs git repo with local copy
+function update ()
+{
+  # Check if Ponce's git repo is being used
+  local PONCEREPO=$(check_ponce_repo)
+  local BASEDIR=$(basename $CDIR)
+  local CHECK=0
+  
+  # Create local git directory if needed
+  if [ ! -d "$CDIR" ]; then
+    mkdir -p $CDIR
+    cd $CDIR/../
+    rm -rf $BASEDIR
+    git clone $REPO $BASEDIR
+    CHECK=$?
+    if [ $CHECK -ne 0 ]; then
+      exit $CHECK
+    fi
+    if ! $PONCEREPO; then
+      cd $BASEDIR
+      CHECK=$(checkout_git_branch $BRANCH)
+      if [ $CHECK -ne 0 ]; then
+        exit $CHECK
+      fi
+    fi
+
+  # Master branch can just use git pull, but Ponce's must be re-downloaded
+  # http://www.linuxquestions.org/questions/slackware-14/what-is-the-correct-url-and-command-to-git-clone-slackbuilds-current-4175578557/#post5537842
+  else
+    if ! $PONCEREPO; then
+      cd $CDIR
+      CHECK=$(checkout_git_branch $BRANCH)
+      if [ $CHECK -ne 0 ]; then
+        exit $CHECK
+      fi
+      git clean -df
+      git checkout -- .
+      git pull
+      CHECK=$?
+      if [ $CHECK -ne 0 ]; then
+        exit $CHECK
+      fi
+    else
+      cd $CDIR/../
+      rm -rf $BASEDIR
+      git clone $REPO $BASEDIR 
+      CHECK=$?
+      if [ $CHECK -ne 0 ]; then
+        exit $CHECK
+      fi
+    fi
+  fi
+}
+
+################################################################################
+# Checks if a SlackBuild is actually installed. Returns package name if so.
+function check_installed ()
+{
+  local BUILD=$1
+  local PKGLIST=$(find /var/log/packages -maxdepth 1 -name "$BUILD*")
+  local INSTALLED=false
+  local PKG BUILDNAME
+
+  # There can be multiple packages fitting the pattern, so loop through them
+  # and check against requested
+  if [ -n "$PKGLIST" ]; then
+    for PKG in $PKGLIST
+    do
+      PKG=$(basename "$PKG")
+      BUILDNAME=$(get_installed_name "$PKG")
+      if [ "$BUILDNAME" == "$BUILD" ]; then
+        INSTALLED=true
+        break
+      fi
+    done
+  fi
+
+  if $INSTALLED; then
+    echo $PKG
+  else
+    echo "Not installed"
+  fi
+}
+
+################################################################################
+# Gets y/n choice
+function user_choice ()
+{
+  local __MSG=$1
+  local __CHOICE=$2
+  local TEMPCHOICE
+
+  local VALIDCHOICE=false
+  while ! $VALIDCHOICE
+  do
+    echo -ne "$__MSG (y/n): "
+    read TEMPCHOICE
+    if [[ "$TEMPCHOICE" == "y" || "$TEMPCHOICE" == "Y" ]]; then
+      TEMPCHOICE="y"
+      VALIDCHOICE=true
+    elif [[ "$TEMPCHOICE" == "n" || "$TEMPCHOICE" == "N" ]]; then
+      TEMPCHOICE="n"
+      VALIDCHOICE=true
+    else
+     echo "Please enter y or n."
+    fi
+  done
+
+  # This trick is needed to echo to stdout. See usage in install_slackbuild.
+  eval $__CHOICE="'$TEMPCHOICE'"
+}
+
+################################################################################
+# Gets list of SlackBuilds specified on the command line
+function get_buildlist
+{
+  local ARG BUILDLIST
+  BUILDLIST=""
+
+  for ARG in $@
+  do
+    if [ "${ARG:0:1}" == "-" ]; then
+      continue
+    elif [ "${ARG%=*}" == "sources" ]; then
+      continue
+    else
+      BUILDLIST="$BUILDLIST $ARG"
+    fi
+  done
+
+  echo $BUILDLIST
+}
+
+################################################################################
+# Parses command-line options for install
+function parse_install_opts ()
+{
+  local ARG
+  for ARG in $@
+  do
+    if [ "${ARG:0:1}" == "-" ]; then
+      case $ARG in
+      "--force" | "-f")
+          FORCE=1
+          ;;
+      *)
+          echo "Unrecognized install option $ARG."
+          exit 1
+          ;;
+      esac
+    elif [ "${ARG%=*}" == "sources" ]; then
+      SOURCEOPT=1
+      SOURCEDIR=${ARG#*=}
+    fi
+  done
+}
+
+################################################################################
+# Extracts URLs of source files to download
+function sources_from_info ()
+{
+  local INFILE=$1
+  if [ $# -eq 2 ]; then
+    local FORCE32=$2
+  else
+    local FORCE32="noforce-32-bit"
+  fi
+  local FORCE32=$2
+  local ARCH=$(uname -m)
+  local SOURCES
+
+  # Read variables from .info file
+  . $INFILE
+
+  # First try to use DOWNLOAD_x86_64 link for 64-bit
+  if [ "$ARCH" == "x86_64" ]; then
+    SOURCES=$DOWNLOAD_x86_64
+  fi
+
+  # Use regular DOWNLOAD= line for x86 architecture, if there's no 64-bit source
+  # download, or if forcing 32-bit
+  if [[ "$ARCH" != "x86_64" || -z "$SOURCES" || "$FORCE32" == "force-32-bit" ]]; then
+    SOURCES=$DOWNLOAD
+  fi
+
+  echo $SOURCES
+}
+
+################################################################################
+# Extracts MD5sums of source files to download
+function md5sums_from_info ()
+{
+  local INFILE=$1
+  if [ $# -eq 2 ]; then
+    local FORCE32=$2
+  else
+    local FORCE32="noforce-32-bit"
+  fi
+  local ARCH=$(uname -m)
+  local SOURCES MD5SUMS
+
+  # Read variables from .info file
+  . $INFILE
+
+  # First try to use MD5SUM_x86_64 link for 64-bit
+  if [ "$ARCH" == "x86_64" ]; then
+    SOURCES=$DOWNLOAD_x86_64
+    MD5SUMS=$MD5SUM_x86_64
+  fi
+
+  # Use regular MD5SUM= line for x86 architecture, if there's no 64-bit source
+  # download, or if forcing 32-bit
+  if [[ "$ARCH" != "x86_64" || -z "$SOURCES" || "$FORCE32" == "force-32-bit" ]]; then
+    MD5SUMS=$MD5SUM
+  fi
+
+  echo $MD5SUMS
+}
+
+################################################################################
+# Removes source files
+function remove_sources ()
+{
+  local SOURCES="$@"
+  local SOURCE
+  for SOURCE in $SOURCES
+  do
+    SOURCE=$(basename "$SOURCE")
+    if [ -f "$SOURCE" ]; then
+      rm $SOURCE
+    fi
+  done
+}
+
+################################################################################
+# Installs or reinstalls SlackBuild
+function install_slackbuild ()
+{
+  local BUILD=$1
+  local MSG CHOICE MD5ARRAY ITEM CHKDNLD MD5CHK
+
+  # Get SlackBuild path
+  cd $CDIR
+  local BUILDPATH=$(find . -maxdepth 2 -mindepth 2 -name "$BUILD")
+  if [ -z "$BUILDPATH" ]; then
+    echo "Error: there is no SlackBuild named $BUILD."
+    exit 1
+  fi
+
+  # Check if SlackBuild is installed on system and get package name
+  local INSTALLEDPKG=$(check_installed "$BUILD")
+
+  # Offer reinstallation if it is already installed
+  if [ "$INSTALLEDPKG" != "Not installed" ]; then
+    local CURRENTVERSION=$(get_current_version "$BUILD")
+
+    # Ask about reinstallation
+    echo "$BUILD is already installed."
+    echo "Installed package: $INSTALLEDPKG"
+    echo "Available version: $CURRENTVERSION"
+    MSG="Do you want to remove the existing package and reinstall?"
+
+    # Return if user chooses to
+    if [ $FORCE -eq 0 ]; then
+      user_choice "$MSG" CHOICE
+      if [ "$CHOICE" != "y" ]; then
+        return
+      fi
+    fi
+  fi
+
+  # Go to SlackBuild directory
+  cd $BUILDPATH
+
+  # Remove any package in /tmp with $BUILD in the name (could mess up
+  # installation later)
+  local PKG=$(find /tmp -maxdepth 1 -name "$BUILD*.t?z")
+  if [ -n "$PKG" ]; then
+    rm $PKG
+  fi
+
+  # Determine source download strings
+  local SOURCES=$(sources_from_info "$BUILD".info)
+
+  # Some SlackBuilds have an UNSUPPORTED string if it's not supported on
+  # 64-bit
+  local FORCE32="no-force-32-bit"
+  local ARCH=$(uname -m)
+  if [[ "$ARCH" == "x86_64" && "$SOURCES" == "UNSUPPORTED" ]]; then
+    MSG="$BUILD is unsupported on x86_64, but it may work with mutlilib.\nTry installing 32-bit version?"
+    user_choice "$MSG" CHOICE
+    if [ "$CHOICE" == "y" ]; then
+      FORCE32="force-32-bit"
+      SOURCES=$(sources_from_info "$BUILD".info $FORCE32)
+    else
+      exit 1
+    fi
+  fi
+
+  # Get MD5sums for source downloads and put them into an array
+  local MD5SUMS=$(md5sums_from_info "$BUILD".info $FORCE32)
+  local COUNT=0
+  for ITEM in $MD5SUMS
+  do
+    MD5ARRAY["$COUNT"]=$ITEM
+    let "COUNT+=1"
+  done
+
+  # Remove any existing source files
+  remove_sources "$SOURCES"
+
+  # Create file to mark time
+  if [ "$CLEAN_TMP" == "yes" ]; then
+    touch $TMPDIR/sboui.timemarker
+  fi
+
+  # Download and check MD5SUMs
+  local SOURCERR=0
+  local MD5ERR=0
+  COUNT=0
+  for SOURCE in $SOURCES
+  do
+    # Copy sources from specified directory
+    if [ $SOURCEOPT -eq 1 ]; then
+      SOURCE=$(basename "$SOURCE")
+      if [ -z "$(find "$SOURCEDIR" -maxdepth 1 -name "$SOURCE")" ]; then
+        echo "Error: source file $SOURCE not present in $SOURCEDIR."
+        exit 1
+      else
+        if [ "$(readlink -f $SOURCEDIR)" != "$CDIR" ]; then
+          cp $SOURCEDIR/$SOURCE .
+        fi
+      fi
+
+    # Download and check for error ($? is the return value)
+    else
+      CHKDNLD=$(curl -O -J -L "$SOURCE")
+      if [ $? != 0 ]; then         
+        echo "There was an error downloading the source file."
+        SOURCERR=1
+      fi
+    fi
+
+    # Check MD5sum
+    SOURCE=$(basename "$SOURCE")
+    MD5CHK=$(md5sum "$SOURCE")
+    MD5CHK=$(echo $MD5CHK | cut -d' ' -f1)
+    if [ "$MD5CHK" != "${MD5ARRAY[$COUNT]}" ]; then
+      echo "Error: md5sum check failed on $SOURCE."
+      MD5ERR=1
+    fi
+ 
+    let "COUNT+=1"
+  done
+
+  # Exit if something went wrong
+  if [[ $SOURCERR -eq 1 || $MD5ERR -eq 1 ]]; then
+    if [ $SOURCERR -eq 1 ]; then
+      echo "One or more sources failed to download."
+    fi
+    if [ $MD5ERR -eq 1 ]; then
+      echo "One or more sources failed the md5sum check."
+    fi
+
+    # Remove source code
+    if [[ $SOURCEOPT -eq 0 || "$(readlink -f $SOURCEDIR)" != "$CDIR" ]]; then
+      remove_sources $SOURCES
+      exit 1
+    fi
+  fi
+
+  # Execute install script
+  local PERM=$(stat -c '%a %n' $BUILD.SlackBuild)
+  chmod +x $BUILD.SlackBuild
+  ./$BUILD.SlackBuild
+
+  # Exit if not successful
+  PKG=$(find /tmp -maxdepth 1 -name "$BUILD*.t?z")
+  if [ -z "$PKG" ]; then
+    echo "Error: build failed."
+
+    # Remove source code
+    if [[ $SOURCEOPT -eq 0 || "$(readlink -f $SOURCEDIR)" != "$CDIR" ]]; then
+      remove_sources $SOURCES
+  
+      # Restore permissions of SlackBuild script and exit
+      chmod $PERM $BUILD.SlackBuild
+      exit 1
+    fi
+  fi
+
+  # Install compiled package
+  upgradepkg --reinstall --install-new $PKG
+
+  # Remove temporary files and source code
+  if [ "$CLEAN_PACKAGE" == "yes" ]; then
+    rm $PKG
+  fi
+  if [ "$CLEAN_TMP" == "yes" ]; then
+    find $TMPDIR -mindepth 1 -maxdepth 1 -type d -cnewer $TMPDIR/sboui.timemarker -exec rm -rf {} \;
+    rm $TMPDIR/sboui.timemarker
+  fi
+  if [[ $SOURCEOPT -eq 0 || "$(readlink -f $SOURCEDIR)" != "$CDIR" ]]; then
+    remove_sources $SOURCES
+  fi
+
+  # Restore original permissions of SlackBuild script
+  chmod $PERM $BUILD.SlackBuild
+
+  # Notify of any special Slackware instructions
+  if [[ -f 'README.SLACKWARE' || -f 'README.Slackware' ]]; then
+    echo "Note: Slackware notes found. You should read them with 'sboui-backend info $BUILD'"
+    echo "or with the Browse Files function of sboui."
+  fi
+}
+
+################################################################################
+# Installs, reinstalls, or upgrades one or more SlackBuilds
+function install_multiple ()
+{
+  local BUILD
+
+  for BUILD in $@
+  do
+    install_slackbuild $BUILD
+  done
+}
+
+################################################################################
+# Shows info from README and README.SLACKWARE
+function show_info ()
+{
+  local BUILD=$1
+
+  # Go to the top of the git tree
+  cd $CDIR
+
+  # Get the directory for the requested SlackBuild
+  echo "Searching for $BUILD ..."
+  local BUILDPATH=$(find . -maxdepth 2 -mindepth 2 -name "$BUILD")
+  if [ -z "$BUILDPATH" ]; then
+    echo "There is no SlackBuild named $BUILD."
+    return
+  fi
+
+  # Go the the SlackBuild directory
+  cd $BUILDPATH
+  BUILDPATH=${BUILDPATH#./*}
+  local NAME=${BUILDPATH#*/*}
+
+  # Get current version
+  local VERSION=$(get_current_version "$NAME")
+  echo "In local git repository:"
+  echo "$NAME-$VERSION"
+  echo ""
+  echo "-----------------------------Description-----------------------------"
+  cat 'README'
+  if [ -f 'README.Slackware' ]; then
+    echo ""
+    echo "---------------------------Slackware notes---------------------------"
+    cat 'README.Slackware'
+  elif [ -f 'README.SLACKWARE' ]; then
+    echo ""
+    echo "---------------------------Slackware notes---------------------------"
+    cat 'README.SLACKWARE'
+  fi
+}
+
+################################################################################
+# Searches for SlackBuilds with given pattern
+function search ()
+{
+  local PATTERN=$1
+  local BUILD STATUS
+
+  # Go to the top of the git tree
+  cd $CDIR
+
+  echo "Searching for $PATTERN ..."
+  local BUILDS=$(find . -maxdepth 2 -mindepth 2 -type d | grep -i "$PATTERN")
+
+  if [ -z "$BUILDS" ]; then
+    echo "There is no SlackBuild matching the pattern $PATTERN."
+  else
+    # Get GROUP/NAME/STATUS
+    for BUILD in $BUILDS
+    do
+      BUILD=${BUILD#./*}
+      local GROUP=${BUILD%/*}
+      local NAME=${BUILD#*/*}
+      if [ "$(check_installed $NAME)" != "Not installed" ]; then
+        STATUS="installed"
+      else
+        STATUS="not installed"
+      fi
+      echo "$GROUP/$NAME  [$STATUS]"
+    done
+  fi
+}
+
+################################################################################
+# Searches README files for given pattern
+function search_descriptions ()
+{
+  local BUILD
+
+  # Make sure spaces in the search string are resolved
+  local PATTERN="$*"
+
+  # Go to the top of the git tree
+  cd $CDIR
+
+  echo "Searching README files for $PATTERN ..."
+  local PTRNFILES=$(find . -maxdepth 3 -mindepth 3 -name README | xargs grep -il "$PATTERN" | sort -t "/" -k 3)
+
+  # Display list of SlackBuilds
+  if [ -n "$PTRNFILES" ]; then
+    echo "The following SlackBuilds have $PATTERN in the README file:"
+    for BUILD in $PTRNFILES
+    do
+      BUILD=${BUILD#./*/*}  # Remove leading ./ and group
+      BUILD=${BUILD%*/*}    # Remove trailing /README
+      echo $BUILD
+    done
+  else
+    echo "No SlackBuilds have $PATTERN in the README file."
+  fi
+}      
+
+################################################################################
+# Lists groups in git tree
+function list_groups ()
+{
+  local GROUP
+
+  # Go to top-level git tree
+  cd $CDIR
+
+  # Print list of groups
+  local GROUPLIST=$(find . -maxdepth 1 -type d | sort)
+  for GROUP in $GROUPLIST
+  do
+    if [[ "$GROUP" != "." && "$GROUP" != "./.git" ]]; then
+      echo ${GROUP#./*}
+    fi
+  done
+}
+
+################################################################################
+# Browses SlackBuilds in requested group
+function browse_group ()
+{
+  local GROUP=$1
+  local PKG
+
+  # Go to top-level git tree
+  cd $CDIR
+
+  # Check if group exists
+  if [ ! -d $GROUP ]; then
+    echo "No group called $GROUP."
+    return
+  fi
+
+  # List packages in GROUP
+  cd $GROUP
+  local PKGLIST=$(find . -maxdepth 1 -type d | sort)
+  for PKG in $PKGLIST
+  do
+    if [ "$PKG" != "." ]; then
+      echo ${PKG#./*}
+    fi
+  done
+}  
+
+################################################################################
+# Provides info on program usage
+function print_usage ()
+{
+  echo ""
+  if [ $# -eq 1 ]; then
+    echo "Error: $1"
+  fi
+  echo "Usage: sboui-backend COMMAND [OPTIONS] [SLACKBUILDS]"
+  echo
+  echo "COMMANDS:"
+  echo
+  echo "update"
+  echo "  Syncs git repo with local repo. This command should be run on first"
+  echo "  use and periodically afterwards. Be sure to set the correct git"
+  echo "  branch for your Slackware version in /etc/sboui/sboui-backend.conf."
+  echo
+  echo "install"
+  echo "  Installs, reinstalls, or upgrades SlackBuilds listed on the command"
+  echo "  line after the install command. Options:"
+  echo "  --force, -f: if package is already installed, reinstalls without"
+  echo "               asking for confirmation first."
+  echo "  sources=DIRECTORY: looks for source files in the specified directory"
+  echo "                     instead of downloading them from the internet."
+  echo
+  echo "search"
+  echo "  Searches for SlackBuilds in the repository whose name includes the"
+  echo "  pattern listed on the command line after the search command."
+  echo
+  echo "search-descriptions"
+  echo "  Searches README files in the repository for the pattern listed on the"
+  echo "  command line after the search-descriptions command."
+  echo
+  echo "info"
+  echo "  Displays the contents of the README* files for the SlackBuild listed"
+  echo "  on the command line after the info command."
+  echo
+  echo "list-groups"
+  echo "  Displays groups in the repository."
+  echo
+  echo "browse-group"
+  echo "  Displays SlackBuilds in the group specified on the command line after"
+  echo "  the browse-group command."
+  echo
+  echo "--help, -h"
+  echo "  Shows this usage information."
+  echo 
+}
+
+################################################################################
+# Main program
+
+# Defaults for CLOs
+FORCE=0
+SOURCEOPT=0
+SOURCEDIR=""
+
+# Not enough command line arguments
+if [ $# -lt 1 ]; then
+  print_usage "must specify a command."
+
+# update
+elif [ "$1" == "update" ]; then
+  update 
+
+# install
+elif [ "$1" == "install" ]; then
+  if [ $# -eq 1 ]; then
+    print_usage "must specify SlackBuild with install option."
+  else
+    parse_install_opts ${@:2:$#}
+    install_multiple $(get_buildlist ${@:2:$#})
+  fi
+
+# search
+elif [ "$1" == "search" ]; then
+  if [ $# -lt 2 ]; then
+    print_usage "must specify PATTERN with search option."
+  else
+    search $2
+  fi
+
+# search-descriptions
+elif [ "$1" == "search-descriptions" ]; then
+  if [ $# -lt 2 ]; then
+    print_usage "must specify PATTERN with search-descriptions option."
+  else
+    search_descriptions $2
+  fi
+
+# info
+elif [ "$1" == "info" ]; then
+  if [ $# -lt 2 ]; then
+    print_usage "must specify a SlackBuild with info option."
+  else
+    show_info $2
+  fi
+
+# list-groups
+elif [ "$1" == "list-groups" ]; then
+  list_groups
+
+# browse-group
+elif [ "$1" == "browse-group" ]; then
+  if [ $# -lt 2 ]; then
+    print_usage "must specify a SlackBuild with browse-group option."
+  else
+    browse_group $2
+  fi
+
+# --help
+elif [[ "$1" == "--help" || "$1" == "-h" ]]; then
+  print_usage
+
+# Unrecognized option
+else
+  print_usage "unrecognized option."
+fi

@@ -212,17 +212,21 @@ int read_config(const std::string & conf_file)
   if (! cfg.lookupValue("repo_tag", repo_tag)) { repo_tag = "_SBo"; }
 
   if ( (package_manager != "sbopkg") && (package_manager != "sbotools") &&
-       (package_manager != "custom") )
+       (package_manager != "built-in") && (package_manager != "custom") )
   {
-    std::cerr << "Error: package_manager must be sbopkg, sbotools, or custom." 
-              << std::endl;
+    std::cerr << "Error: package_manager must be sbopkg, sbotools, built-in "
+              << "or custom." << std::endl;
     return 1;
   }
 
   if (! cfg.lookupValue("sync_cmd", sync_cmd))
   { 
-    if (package_manager == "sbopkg") { sync_cmd = "sbopkg -r"; }
-    else if (package_manager == "sbotools") { sync_cmd = "sbosnap update"; }
+    if (package_manager == "sbopkg")
+      sync_cmd = "sbopkg -r";
+    else if (package_manager == "sbotools")
+      sync_cmd = "sbosnap update";
+    else if (package_manager == "built-in")
+      sync_cmd = "sboui-backend update";
     else
     {
       std::cerr << "Error: must specify sync_cmd for custom package_manager."
@@ -233,8 +237,12 @@ int read_config(const std::string & conf_file)
 
   if (! cfg.lookupValue("install_cmd", install_cmd))
   {
-    if (package_manager == "sbopkg") { install_cmd = "sbopkg -B -i"; }
-    else if (package_manager == "sbotools") { install_cmd = "sboinstall -r"; } 
+    if (package_manager == "sbopkg")
+      install_cmd = "sbopkg -B -i";
+    else if (package_manager == "sbotools")
+      install_cmd = "sboinstall -r";
+    else if (package_manager == "built-in")
+      install_cmd = "sboui-backend install -f";
     else
     {
       std::cerr << "Error: must specify install_cmd for custom package_manager."
@@ -245,8 +253,12 @@ int read_config(const std::string & conf_file)
 
   if (! cfg.lookupValue("upgrade_cmd", upgrade_cmd))
   {
-    if (package_manager == "sbopkg") { upgrade_cmd = "sbopkg -B -i"; }
-    else if (package_manager == "sbotools") { upgrade_cmd = "sboupgrade -r"; } 
+    if (package_manager == "sbopkg")
+      upgrade_cmd = "sbopkg -B -i";
+    else if (package_manager == "sbotools")
+      upgrade_cmd = "sboupgrade -r";
+    else if (package_manager == "built-in")
+      upgrade_cmd = "sboui-backend install -f";
     else
     {
       std::cerr << "Error: must specify upgrade_cmd for custom package_manager."
