@@ -332,7 +332,7 @@ function remove_sources ()
 function install_slackbuild ()
 {
   local BUILD=$1
-  local MSG CHOICE MD5ARRAY ITEM CHKDNLD MD5CHK
+  local MSG CHOICE MD5ARRAY ITEM MD5CHK
 
   # Get SlackBuild path
   cd $CDIR
@@ -427,9 +427,9 @@ function install_slackbuild ()
         fi
       fi
 
-    # Download and check for error ($? is the return value)
+    # Download and check for error
     else
-      CHKDNLD=$(curl -O -J -L "$SOURCE")
+      curl -O -J -L "$SOURCE"
       if [ $? != 0 ]; then         
         echo "There was an error downloading the source file."
         SOURCERR=1
