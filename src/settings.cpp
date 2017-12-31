@@ -204,9 +204,22 @@ int read_config(const std::string & conf_file)
 
   if (! cfg.lookupValue("repo_dir", repo_dir))
   {
-    std::cerr << "Error: no repo_dir setting in "
-              << my_conf_file << "." << std::endl;
-    return 1;
+    if (package_manager == "sbopkg")
+      repo_dir = "/var/lib/sbopkg/14.2";
+    else if (package_manager == "sbotools")
+      repo_dir = "/usr/sbo/repo";
+    else if (package_manager == "built-in")
+      repo_dir = "/var/lib/sboui/repo";
+    else
+    {
+      std::cerr << "Error: must specify repo_dir for custom package_manager."
+                << std::endl;
+      return 1;
+    }
+    std::cout << "No repo_dir setting in " << my_conf_file << ". Using default "
+              << "for " << package_manager << "." << std::endl;
+    std::cout << "Press Enter to continue ...";
+    std::getline(std::cin, response);
   }
 
   if (! cfg.lookupValue("repo_tag", repo_tag)) { repo_tag = "_SBo"; }
@@ -214,7 +227,7 @@ int read_config(const std::string & conf_file)
   if ( (package_manager != "sbopkg") && (package_manager != "sbotools") &&
        (package_manager != "built-in") && (package_manager != "custom") )
   {
-    std::cerr << "Error: package_manager must be sbopkg, sbotools, built-in "
+    std::cerr << "Error: package_manager must be sbopkg, sbotools, built-in, "
               << "or custom." << std::endl;
     return 1;
   }

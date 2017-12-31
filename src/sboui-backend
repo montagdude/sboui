@@ -402,7 +402,7 @@ function install_slackbuild ()
   done
 
   # Remove any existing source files
-  remove_sources "$SOURCES"
+  remove_sources $SOURCES
 
   # Create file to mark time
   if [ "$CLEAN_TMP" == "yes" ]; then
@@ -429,7 +429,7 @@ function install_slackbuild ()
 
     # Download and check for error
     else
-      curl -O -J -L "$SOURCE"
+      curl -OL "$SOURCE"
       if [ $? != 0 ]; then         
         echo "There was an error downloading the source file."
         SOURCERR=1
