@@ -418,6 +418,8 @@ InputBox::InputBox()
   _firstprint = _header_rows;
   _first_selectable = -1;
   _last_selectable = -1;
+  _color_idx = -1;
+  _has_scroll_indicator = true;
 }
 
 InputBox::InputBox(WINDOW *win, const std::string & msg)
@@ -563,15 +565,17 @@ void InputBox::draw(bool force)
   if (_redraw_type == "all") 
   { 
     wclear(_win);
-    colors.setBackground(_win, "fg_normal", "bg_normal");
+    if (_color_idx == -1)
+      colors.setBackground(_win, "fg_popup", "bg_popup");
+    else { colors.setBackground(_win, _color_idx); }
     redrawFrame();
-    redrawScrollIndicator();
+    if (_has_scroll_indicator) { redrawScrollIndicator(); }
     redrawAllItems(force);
   }
   else
   {
     redrawChangedItems(force);
-    redrawScrollIndicator();
+    if (_has_scroll_indicator) { redrawScrollIndicator(); }
   }
   wrefresh(_win);
 }

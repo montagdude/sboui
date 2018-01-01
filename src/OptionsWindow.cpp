@@ -76,6 +76,7 @@ OptionsWindow::OptionsWindow()
   _header_rows = 1;
   _firstprint = _header_rows;
   _msg = "Options";
+  _color_idx = colors.getPair("fg_normal", "bg_normal");
 
   count = 0;
   line = 1; 

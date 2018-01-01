@@ -1,7 +1,6 @@
 #include <string>
 #include <curses.h>
 #include <cmath>      // floor
-#include <algorithm>  // min, max
 #include "Color.h"
 #include "settings.h"
 #include "TextInput.h"
@@ -101,6 +100,7 @@ SearchBox::SearchBox()
 {
   _firstprint = _header_rows;
   _msg = "Search repository";
+  _has_scroll_indicator = false;
 
   addItem(new Label());
   _items[0]->setWidth(30);
@@ -148,23 +148,3 @@ std::string SearchBox::searchString() const { return _entryitem.text(); }
 bool SearchBox::caseSensitive() const { return _caseitem.enabled(); }
 bool SearchBox::wholeWord() const { return _wholeitem.enabled(); }
 bool SearchBox::searchREADMEs() const { return _readmeitem.enabled(); }
-
-/*******************************************************************************
-
-Redraws box and all input items
-
-*******************************************************************************/
-void SearchBox::draw(bool force)
-{
-  if (force) { _redraw_type = "all"; }
-
-  if (_redraw_type == "all") 
-  { 
-    wclear(_win);
-    colors.setBackground(_win, "fg_popup", "bg_popup");
-    redrawFrame();
-    redrawAllItems(force);
-  }
-  else { redrawChangedItems(force); }
-  wrefresh(_win);
-}

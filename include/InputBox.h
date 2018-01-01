@@ -20,6 +20,8 @@ class InputBox: public CursesWidget {
     std::vector<InputItem *> _items;    
     int _highlight, _prevhighlight, _firstprint, _reserved_rows;
     int _header_rows, _first_selectable, _last_selectable;
+    int _color_idx;
+    bool _has_scroll_indicator;
 
     /* Setting item to be highlighted */
 
@@ -59,6 +61,7 @@ class InputBox: public CursesWidget {
     void setMessage(const std::string & msg);
     void setInfo(const std::string & info);
     void setHighlight(unsigned int highlight);
+    void setColor(int color_idx);
 
     /* Get attributes */
 

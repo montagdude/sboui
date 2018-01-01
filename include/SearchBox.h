@@ -38,8 +38,4 @@ class SearchBox: public InputBox {
     bool caseSensitive() const;
     bool wholeWord() const;
     bool searchREADMEs() const;
-
-    /* Draws frame, items, etc. as needed */
-
-    void draw(bool force=false);
 };

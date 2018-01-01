@@ -114,15 +114,6 @@ class MainWindow: public CursesWidget {
 
     void printPackageVersion(const BuildListItem & build);
 
-    /* Sets size of popup boxes */
-
-    void popupSize(int & height, int & width, CursesWidget *popup) const;
-    void placePopup(CursesWidget *popup, WINDOW *win) const;
-
-    /* Temporarily hides a window */
-
-    void hideWindow(WINDOW *win) const;
-
   public:
 
     /* Constructor and destructor */

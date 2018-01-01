@@ -28,6 +28,15 @@ class CursesWidget {
 
     virtual void setWindow(WINDOW *win);
 
+    /* Sets size and position of popup boxes */
+
+    virtual void popupSize(int & height, int & width, CursesWidget *popup) const;
+    virtual void placePopup(CursesWidget *popup, WINDOW *win) const;
+
+    /* Hides a popup window by putting it at the center with 0 size */
+
+    virtual void hideWindow(WINDOW *win) const;
+
     /* Get attributes */
 
     virtual void minimumSize(int & height, int & width) const = 0;
