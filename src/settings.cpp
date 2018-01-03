@@ -205,7 +205,7 @@ int read_config(const std::string & conf_file)
   if (! cfg.lookupValue("repo_dir", repo_dir))
   {
     if (package_manager == "sbopkg")
-      repo_dir = "/var/lib/sbopkg/14.2";
+      repo_dir = "/var/lib/sbopkg/SBo/14.2";
     else if (package_manager == "sbotools")
       repo_dir = "/usr/sbo/repo";
     else if (package_manager == "built-in")

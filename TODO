@@ -12,3 +12,4 @@ Completed for 1.0
 * Dialog to automatically set default repo_dir, sync_cmd, install_cmd, and
   upgrade_cmd when switching package managers
 * Prompt user to run sync after repo_dir is changed
+* Fix default repo_dir for sbopkg when none is specified
