@@ -189,6 +189,8 @@ std::string ComboBox::exec(int y_offset)
 
       case ' ':
         execList(y_offset);
+        retval = signals::keySpace;
+        getting_input = false;
         break;
 
       // Navigation keys

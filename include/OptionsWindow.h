@@ -43,4 +43,12 @@ class OptionsWindow: public InputBox {
     /* Window sizing and placement */
 
     void placeWindow();
+
+    /* User interaction loop */
+
+    std::string exec();
+
+    /* Automatic defaults dialog when package manager is changed */
+
+    void askSetDefaults(const std::string & new_pkg_mgr); 
 };

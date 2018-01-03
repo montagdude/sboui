@@ -623,7 +623,7 @@ Shows options window
 int MainWindow::showOptions()
 {
   WINDOW *optionswin;
-  std::string selection, errmsg;
+  std::string selection, errmsg, old_repo_dir, msg;
   bool getting_input;
   int check_color, check_write;
 
@@ -639,6 +639,7 @@ int MainWindow::showOptions()
   getting_input = true;
   check_color = 0;
   check_write = 0;
+  old_repo_dir = settings::repo_dir;
   while (getting_input)
   {
     selection = _options.exec(); 
@@ -691,7 +692,15 @@ int MainWindow::showOptions()
   if ( (check_color == 0) && (check_write == 0) )
   {
     if (selection == signals::keyEnter)
-      displayMessage("Settings were successfully applied.");
+    {
+      if (settings::repo_dir != old_repo_dir)
+        msg = "Settings were successfully applied.\n\nSince repo_dir was "
+            + std::string("changed, please sync the repo using the s key ")
+            + std::string("before continuing.");
+      else
+        msg = "Settings were successfully applied.";
+      displayMessage(msg);
+    }
   }
 
   clearStatus();

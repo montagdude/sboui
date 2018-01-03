@@ -3,10 +3,13 @@
 #include <cmath>      // floor
 #include <algorithm>  // min, max
 #include "Color.h"
+#include "signals.h"
 #include "settings.h"
 #include "TextInput.h"
 #include "ToggleInput.h"
 #include "Label.h"
+#include "DefaultOptionsBox.h"
+#include "MessageBox.h"
 #include "OptionsWindow.h"
 
 using namespace settings;
@@ -445,4 +448,182 @@ void OptionsWindow::placeWindow()
     if (_items[i]->itemType() == "TextInput")
       _items[i]->setWidth(cols-1-_items[i]->posx());
   }
+}
+
+/*******************************************************************************
+
+User interaction
+
+*******************************************************************************/
+std::string OptionsWindow::exec()
+{
+  bool getting_input;
+  int y_offset, check_redraw;
+  std::string selection, retval, prev_pkg_mgr;
+  
+  prev_pkg_mgr = _pmgr_box.choice();
+
+  getting_input = true;
+  while (getting_input)
+  {
+    // Draw input box elements
+  
+    draw();
+    _redraw_type = "changed";
+    y_offset = _firstprint - _header_rows;
+
+    // Get user input from highlighted item
+
+    prev_pkg_mgr = _pmgr_box.choice();
+    selection = _items[_highlight]->exec(y_offset);
+    if (selection == signals::resize)
+    {
+      retval = selection;
+      _redraw_type = "all";
+      getting_input = false;
+    }
+    else if ( (selection == signals::quit) ||
+              (selection == signals::keyEnter) ||
+              (selection == signals::keySpace) )
+    {
+      retval = selection;
+      _redraw_type = "all";
+      getting_input = false;
+    }
+    else if (selection == signals::highlightFirst)
+    { 
+      if (highlightFirst() == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+    }
+    else if (selection == signals::highlightLast) 
+    { 
+      if (highlightLast() == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+    }
+    else if (selection == signals::highlightPrevPage)
+    {
+      if (highlightPreviousPage() == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+    }
+    else if (selection == signals::highlightNextPage)
+    {
+      if (highlightNextPage() == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+    }
+    else if (selection == signals::highlightPrev)
+    { 
+      if (_highlight == _first_selectable)
+        check_redraw = highlightFirst();
+      else { check_redraw = highlightPrevious(); }
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+    }
+    else if (selection == signals::highlightNext)
+    {
+      if (_highlight == _last_selectable)
+        check_redraw = highlightLast();
+      else { check_redraw = highlightNext(); }
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+    }
+    else
+    {
+      retval = selection;
+      _redraw_type = "all";
+      getting_input = false;
+    }
+
+    // If package manager has changed, ask to set other defaults automatically
+
+    if (_pmgr_box.choice() != prev_pkg_mgr)
+      askSetDefaults(_pmgr_box.choice());
+  }
+
+  return retval;
+}
+
+/*******************************************************************************
+
+Displays a dialog asking whether to set default repo_dir, sync_cmd, install_cmd,
+and upgrade_cmd when package manager is changed. In case it was changed to
+custom, just display an info message.
+
+*******************************************************************************/
+void OptionsWindow::askSetDefaults(const std::string & new_pkg_mgr)
+{
+  WINDOW *defwin;
+  std::string selection, msg;
+  DefaultOptionsBox defbox; 
+  MessageBox msgbox;
+  bool getting_input;
+
+  defwin = newwin(1, 1, 0, 0);
+
+  // Prompt to enter other inputs when setting custom package manager
+
+  if (new_pkg_mgr == "custom")
+  {
+    msgbox.setWindow(defwin);
+    msgbox.setName("Custom package manager");
+    msg = "You have selected a custom package manager. Be sure to set "
+        + std::string("repo_dir, sync_cmd, install_cmd, and upgrade_cmd ")
+        + std::string("appropriately.");
+    msgbox.setMessage(msg); 
+    msgbox.setInfo("Enter: Dismiss");
+    msgbox.setColor(colors.getPair("fg_popup", "bg_popup"));
+    placePopup(&msgbox, defwin);
+    draw(true);
+
+    // Get user input
+
+    getting_input = true;
+    while (getting_input)
+    {
+      selection = msgbox.exec();
+      getting_input = false;
+      if (selection == signals::resize)
+      {
+        getting_input = true;
+        placePopup(&msgbox, defwin);
+        draw(true);
+      }
+    }
+  }
+
+  // Otherwise, prompt to automatically set defaults
+  
+  else
+  {
+    defbox.setWindow(defwin);
+    defbox.setPackageManager(new_pkg_mgr);
+    placePopup(&defbox, defwin); 
+    draw(true);
+
+    getting_input = true;
+    while (getting_input)
+    {
+      selection = defbox.exec();
+      if (selection == signals::keyEnter)
+      {
+        getting_input = false;
+        if (defbox.setRepoDir())
+          _repo_inp.setText(defbox.repoDir());
+        if (defbox.setSyncCmd())
+          _sync_inp.setText(defbox.syncCmd());
+        if (defbox.setInstallCmd())
+          _inst_inp.setText(defbox.installCmd());
+        if (defbox.setUpgradeCmd())
+          _upgr_inp.setText(defbox.upgradeCmd());
+      }
+      else if (selection == signals::quit) { getting_input = false; }
+      else if (selection == signals::resize)
+      {
+        placePopup(&defbox, defwin);
+        draw(true);
+      }
+    }
+  }
+
+  delwin(defwin);
+  draw(true);
 }

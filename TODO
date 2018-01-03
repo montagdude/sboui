@@ -3,9 +3,12 @@ For 1.0
 * Fix scrolling bug on gis group when using PgDn to bottom (highlight is above
   the screen)
 * New color theme?
-* Add built-in package manager
 
 Completed for 1.0
 ================================================================================
 * Add option to not warn about invalid package names
 * Add comments to ~/.sboui.conf written by sboui at runtime
+* Add built-in package manager
+* Dialog to automatically set default repo_dir, sync_cmd, install_cmd, and
+  upgrade_cmd when switching package managers
+* Prompt user to run sync after repo_dir is changed
