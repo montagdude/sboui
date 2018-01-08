@@ -5,6 +5,9 @@
 CONF=${CONF:-/etc/sboui/sboui-backend.conf}
 . $CONF
 
+#FIXME: sources=DIRECTORY -> -s DIRECTORY or sourcedir=DIRECTORY
+#FIXME: search-descriptions -> search-readmes
+
 ################################################################################
 # Removes quotes around string
 function remove_quotes ()
@@ -388,7 +391,7 @@ function install_slackbuild ()
       FORCE32="force-32-bit"
       SOURCES=$(sources_from_info "$BUILD".info $FORCE32)
     else
-      exit 1
+      exit 0
     fi
   fi
 
