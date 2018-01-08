@@ -35,7 +35,7 @@ function get_current_version ()
   local BUILD=$1
 
   # Make sure we are at the top of the git tree
-  cd $CDIR
+  cd $REPO_DIR
 
   # Get path of SlackBuild.info
   local INFILE=$(find . -maxdepth 3 -mindepth 3 -name "$BUILD".info)
@@ -62,7 +62,7 @@ function check_ponce_repo ()
 function get_git_branch ()
 {
   # Go to top-level git tree
-  cd $CDIR
+  cd $REPO_DIR
  
   # Parse git status string
   local STAT=$(git status | head -1)
@@ -78,7 +78,7 @@ function checkout_git_branch ()
   local CHECK=0
 
   # Go to top-level git tree
-  cd $CDIR
+  cd $REPO_DIR
 
   # Get branch currently being used
   local CURRBRANCH=$(get_git_branch)
@@ -98,13 +98,13 @@ function update ()
 {
   # Check if Ponce's git repo is being used
   local PONCEREPO=$(check_ponce_repo)
-  local BASEDIR=$(basename $CDIR)
+  local BASEDIR=$(basename $REPO_DIR)
   local CHECK=0
   
   # Create local git directory if needed
-  if [ ! -d "$CDIR" ]; then
-    mkdir -p $CDIR
-    cd $CDIR/../
+  if [ ! -d "$REPO_DIR" ]; then
+    mkdir -p $REPO_DIR
+    cd $REPO_DIR/../
     rm -rf $BASEDIR
     git clone $REPO $BASEDIR
     CHECK=$?
@@ -123,7 +123,7 @@ function update ()
   # http://www.linuxquestions.org/questions/slackware-14/what-is-the-correct-url-and-command-to-git-clone-slackbuilds-current-4175578557/#post5537842
   else
     if ! $PONCEREPO; then
-      cd $CDIR
+      cd $REPO_DIR
       CHECK=$(checkout_git_branch $BRANCH)
       if [ $CHECK -ne 0 ]; then
         exit $CHECK
@@ -136,7 +136,7 @@ function update ()
         exit $CHECK
       fi
     else
-      cd $CDIR/../
+      cd $REPO_DIR/../
       rm -rf $BASEDIR
       git clone $REPO $BASEDIR 
       CHECK=$?
@@ -335,7 +335,7 @@ function install_slackbuild ()
   local MSG CHOICE MD5ARRAY ITEM MD5CHK
 
   # Get SlackBuild path
-  cd $CDIR
+  cd $REPO_DIR
   local BUILDPATH=$(find . -maxdepth 2 -mindepth 2 -name "$BUILD")
   if [ -z "$BUILDPATH" ]; then
     echo "Error: there is no SlackBuild named $BUILD."
@@ -422,7 +422,7 @@ function install_slackbuild ()
         echo "Error: source file $SOURCE not present in $SOURCEDIR."
         exit 1
       else
-        if [ "$(readlink -f $SOURCEDIR)" != "$CDIR" ]; then
+        if [ "$(readlink -f $SOURCEDIR)" != "$REPO_DIR" ]; then
           cp $SOURCEDIR/$SOURCE .
         fi
       fi
@@ -458,7 +458,7 @@ function install_slackbuild ()
     fi
 
     # Remove source code
-    if [[ $SOURCEOPT -eq 0 || "$(readlink -f $SOURCEDIR)" != "$CDIR" ]]; then
+    if [[ $SOURCEOPT -eq 0 || "$(readlink -f $SOURCEDIR)" != "$REPO_DIR" ]]; then
       remove_sources $SOURCES
       exit 1
     fi
@@ -475,7 +475,7 @@ function install_slackbuild ()
     echo "Error: build failed."
 
     # Remove source code
-    if [[ $SOURCEOPT -eq 0 || "$(readlink -f $SOURCEDIR)" != "$CDIR" ]]; then
+    if [[ $SOURCEOPT -eq 0 || "$(readlink -f $SOURCEDIR)" != "$REPO_DIR" ]]; then
       remove_sources $SOURCES
   
       # Restore permissions of SlackBuild script and exit
@@ -495,7 +495,7 @@ function install_slackbuild ()
     find $TMPDIR -mindepth 1 -maxdepth 1 -type d -cnewer $TMPDIR/sboui.timemarker -exec rm -rf {} \;
     rm $TMPDIR/sboui.timemarker
   fi
-  if [[ $SOURCEOPT -eq 0 || "$(readlink -f $SOURCEDIR)" != "$CDIR" ]]; then
+  if [[ $SOURCEOPT -eq 0 || "$(readlink -f $SOURCEDIR)" != "$REPO_DIR" ]]; then
     remove_sources $SOURCES
   fi
 
@@ -528,7 +528,7 @@ function show_info ()
   local BUILD=$1
 
   # Go to the top of the git tree
-  cd $CDIR
+  cd $REPO_DIR
 
   # Get the directory for the requested SlackBuild
   echo "Searching for $BUILD ..."
@@ -569,7 +569,7 @@ function search ()
   local BUILD STATUS
 
   # Go to the top of the git tree
-  cd $CDIR
+  cd $REPO_DIR
 
   echo "Searching for $PATTERN ..."
   local BUILDS=$(find . -maxdepth 2 -mindepth 2 -type d | grep -i "$PATTERN")
@@ -603,7 +603,7 @@ function search_descriptions ()
   local PATTERN="$*"
 
   # Go to the top of the git tree
-  cd $CDIR
+  cd $REPO_DIR
 
   echo "Searching README files for $PATTERN ..."
   local PTRNFILES=$(find . -maxdepth 3 -mindepth 3 -name README | xargs grep -il "$PATTERN" | sort -t "/" -k 3)
@@ -629,7 +629,7 @@ function list_groups ()
   local GROUP
 
   # Go to top-level git tree
-  cd $CDIR
+  cd $REPO_DIR
 
   # Print list of groups
   local GROUPLIST=$(find . -maxdepth 1 -type d | sort)
@@ -649,7 +649,7 @@ function browse_group ()
   local PKG
 
   # Go to top-level git tree
-  cd $CDIR
+  cd $REPO_DIR
 
   # Check if group exists
   if [ ! -d $GROUP ]; then
