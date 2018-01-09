@@ -5,9 +5,6 @@
 CONF=${CONF:-/etc/sboui/sboui-backend.conf}
 . $CONF
 
-#FIXME: sources=DIRECTORY -> -s DIRECTORY or sourcedir=DIRECTORY
-#FIXME: search-descriptions -> search-readmes
-
 ################################################################################
 # Removes quotes around string
 function remove_quotes ()
@@ -219,7 +216,7 @@ function get_buildlist
   do
     if [ "${ARG:0:1}" == "-" ]; then
       continue
-    elif [ "${ARG%=*}" == "sources" ]; then
+    elif [ "${ARG%=*}" == "sourcedir" ]; then
       continue
     else
       BUILDLIST="$BUILDLIST $ARG"
@@ -246,7 +243,7 @@ function parse_install_opts ()
           exit 1
           ;;
       esac
-    elif [ "${ARG%=*}" == "sources" ]; then
+    elif [ "${ARG%=*}" == "sourcedir" ]; then
       SOURCEOPT=1
       SOURCEDIR=${ARG#*=}
     fi
@@ -598,7 +595,7 @@ function search ()
 
 ################################################################################
 # Searches README files for given pattern
-function search_descriptions ()
+function search_readmes ()
 {
   local BUILD
 
@@ -693,16 +690,16 @@ function print_usage ()
   echo "  line after the install command. Options:"
   echo "  --force, -f: if package is already installed, reinstalls without"
   echo "               asking for confirmation first."
-  echo "  sources=DIRECTORY: looks for source files in the specified directory"
-  echo "                     instead of downloading them from the internet."
+  echo "  sourcedir=DIRECTORY: looks for source files in the specified"
+  echo "               directory instead of downloading them from the internet."
   echo
   echo "search"
   echo "  Searches for SlackBuilds in the repository whose name includes the"
   echo "  pattern listed on the command line after the search command."
   echo
-  echo "search-descriptions"
+  echo "search-readmes"
   echo "  Searches README files in the repository for the pattern listed on the"
-  echo "  command line after the search-descriptions command."
+  echo "  command line after the search-readmes command."
   echo
   echo "info"
   echo "  Displays the contents of the README* files for the SlackBuild listed"
@@ -756,13 +753,13 @@ elif [ "$1" == "search" ]; then
     search $2
   fi
 
-# search-descriptions
-elif [ "$1" == "search-descriptions" ]; then
+# search-readmes
+elif [ "$1" == "search-readmes" ]; then
   if [ $# -lt 2 ]; then
-    print_usage "must specify PATTERN with search-descriptions option."
+    print_usage "must specify PATTERN with search-readmes option."
     exit 1
   else
-    search_descriptions $2
+    search_readmes $2
   fi
 
 # info
@@ -794,4 +791,5 @@ elif [[ "$1" == "--help" || "$1" == "-h" ]]; then
 # Unrecognized option
 else
   print_usage "unrecognized option."
+  exit 1
 fi
