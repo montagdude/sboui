@@ -1,7 +1,5 @@
 For 1.0
 ================================================================================
-* Fix scrolling bug on gis group when using PgDn to bottom (highlight is above
-  the screen)
 * New color theme?
 * Break out CursesWidgets into separate library
 
@@ -14,3 +12,5 @@ Completed for 1.0
   upgrade_cmd when switching package managers
 * Prompt user to run sync after repo_dir is changed
 * Fix default repo_dir for sbopkg when none is specified
+* Fix PgDn scrolling bug where highlight could be above the visible list in rare
+  circumstances
