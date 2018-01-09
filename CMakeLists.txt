@@ -60,5 +60,5 @@ install(FILES src/sboui-backend
 install(FILES etc/sboui.conf etc/sboui-backend.conf etc/package_blacklist DESTINATION ${CONFDIR})
 file(GLOB COLOR_THEMES etc/colors.*)
 install(FILES ${COLOR_THEMES} DESTINATION ${DATADIR}/themes)
-install(FILES man/sboui.8 DESTINATION ${MANDIR}/man8)
-install(FILES man/sboui.conf.5 DESTINATION ${MANDIR}/man5)
+install(FILES man/sboui.8 man/sboui-backend.8 DESTINATION ${MANDIR}/man8)
+install(FILES man/sboui.conf.5 man/sboui-backend.conf.5 DESTINATION ${MANDIR}/man5)

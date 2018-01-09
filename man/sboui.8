@@ -36,22 +36,30 @@ Blacklist installed packages by name or regex pattern
 .IP \(bu
 Comes with several built-in color themes and supports custom themes
 .IP \(bu
-Designed for and tested to work flawlessly with sbopkg and sbotools, but it is easy to set it up to work with your own custom package manager
+Designed for and tested to work flawlessly with
+.B sbopkg
+and 
+.BR sbotools ,
+but it is easy to set it up to work with your own custom package manager
+.IP \(bu
+Includes a built-in package manager,
+.BR sboui-backend ,
+that can be used instead of
+.B sbopkg
+or
+.BR sbotools .
 .PP
 .B Instructions
 .PP
-Before running
-.BR sboui ,
-an SBo packager must first be installed.
-It can be
+If the built-in package manager is not going to be used, a package manager such as
 .BR sbopkg ,
 .BR sbotools ,
-or a custom tool.
+or a custom tool must be installed.
 .B sboui
 also requires a configuration file,
 .I /etc/sboui/sboui.conf
 (the system-wide default) or
-.IR ~/.sboui.conf
+.I ~/.sboui.conf
 (per-user override of the system-wide default).
 The initial install will provide the former, while upgrades will add
 .I /etc/sboui/sboui.conf.new
@@ -59,7 +67,8 @@ that the user can choose to merge with or replace the original.
 See
 .BR sboui.conf (5)
 for more information about the configuration file.
-Note also that most options can be changed at runtime in the options dialog window.
+Note also that all options can be changed at runtime in the options dialog window, and doing so will overwrite
+.IR ~/.sboui.conf .
 .PP
 .B sboui
 is a keyboard-driven program.
@@ -149,6 +158,16 @@ The package_blacklist is used to prevent software from being upgraded, reinstall
 These three actions will not be available for blacklisted packages.
 They will also be excluded from the ``upgradable`` filter and included in the ``blacklisted`` filter.
 .TP
+.I /etc/sboui/sboui-backend.conf
+.br
+Configuration file for the built-in package manager,
+.BR sboui-backend .
+See
+.BR sboui-backend (8)
+and
+.BR sboui-backend.conf (5)
+for more information.
+.TP
 Color theme files
 .br
 Files defining colors for different UI elements.
@@ -177,11 +196,13 @@ is enabled, but they can also be created manually if desired.
 Depending on the terminal, bright background colors may not actually appear bright or may cause blinking text.
 It is recommended to only use bright colors for the foreground.
 .SH SEE ALSO
-.BR ncurses (3X),
 .BR sboui.conf (5),
+.BR sboui-backend (8),
+.BR sboui-backend.conf (5),
+.BR ncurses (3X),
+.BR dialog (1),
 .BR sbopkg (8),
 .BR sboinstall (1),
-.BR dialog (1),
 .BR su (1)
 .SH AUTHORS
 Daniel Prosser <dpross1100@msn.com>

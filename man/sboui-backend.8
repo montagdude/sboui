@@ -1,0 +1,167 @@
+.TH SBOUI-BACKEND 8
+.SH NAME
+sboui-backend \- command-line utility for installing software from SlackBuilds.org
+.SH SYNOPSIS
+.B sboui-backend
+\fBupdate\fR
+
+.B sboui-backend
+\fI[OPTIONS]\fR \fBinstall\fR \fINAME(s)\fR
+
+.B sboui-backend
+\fBinfo\fR \fINAME\fR
+
+.B sboui-backend
+\fB{search|search-readmes} \fIPATTERN\fR
+
+.B sboui-backend
+\fBlist-groups\fR
+
+.B sboui-backend
+\fBbrowse-group\fR \fINAME\fR
+
+.B sboui-backend
+\fB\-\-help\fR, \fB\-h\fR
+.SH DESCRIPTION
+.B sboui-backend
+is a tool to easily install software from SlackBuilds.org.
+It is the "built-in" package manager for
+.BR sboui ,
+but it can also be used standalone from the command line.
+It is similar to
+.B sbopkg
+and
+.BR sbotools ,
+but simpler; it is intended to be a minimal SBo package manager for 
+.BR sboui ,
+which adds in more advanced features such as automatic forward and inverse dependency resolution. 
+.B sboui
+can function equally well with any of these three package managers (\fBsbopkg\fR, \fBsbotools\fR, or \fBsboui-backend\fR), but
+.B sboui-backend
+allows
+.B sboui
+to run without any separate SBo package manager installed.
+
+.PP
+.B Instructions
+.PP
+Before running
+.BR sboui-backend ,
+select the desired repository and branch in
+.IR /etc/sboui/sboui-backend.conf .
+.B sboui-backend
+uses
+.B git
+to manage the local SBo repository.
+You should select the proper repository to match your Slackware installation.
+See
+.BR sboui-backend.conf (5)
+for more information about the configuration file.
+
+To create the local repository, run
+\fBsboui-backend update\fR
+or use the sync command within
+.B sboui
+with the \fBpackage_manager\fR set to \fBbuilt-in\fR.
+This will create the local repository if it does not yet exist or update it if it does.
+After that, packages can be built and installed or upgraded using the \fBinstall\fR action.
+There are also several commands for searching and browsing the repository, as will be discussed in the next session.
+.SH ACTIONS
+.TP
+.B update
+.br
+Create or sync the local SBo repository.
+.TP
+\fBinstall\fR \fI[OPTIONS]\fR \fINAME(s)\fR
+.br
+Install or upgrade an SBo package, or packages, by name.
+If multiple SlackBuild names are listed, the action will be applied to each one.
+
+.I OPTIONS
+
+\fB\-f\fR or \fB\-\-force\fR: if a requested package is already installed and up-to-date, reinstall without asking for confirmation first.
+
+\fB\-s\fR \fIDIRECTORY\fR or \fB\-\-sourcedir\fR=\fIDIRECTORY\fR: instead of downloading source code, copy it from the specified directory.
+
+.TP
+\fBinfo\fR \fINAME\fR
+.br
+Display the contents of README and README.SLACKWARE / README.Slackware files corresponding to the named SlackBuild.
+.TP
+\fBsearch\fR \fIPATTERN\fR
+.br
+Searches for SlackBuilds whose name matches all or part of the given pattern.
+For any matches, lists the group it belongs to and whether it is installed.
+.TP
+\fBsearch-readmes\fR \fIPATTERN\fR
+.br
+Searches in README files for the given pattern.
+For any matches, lists the name of the SlackBuild whose README contains the pattern.
+Note that the search READMEs function in
+.B sboui
+is much faster than this method and finds matches both in the README files and the SlackBuild name.
+.TP
+\fBlist-groups\fR
+.br
+Displays a list of all groups (e.g., academic, desktop, libraries, etc.) in the repository.
+.TP
+\fBbrowse-group\fR \fINAME\fR
+.br
+Displays a list of all SlackBuilds in a given group.
+.TP
+\fB-h\fR or \fB--help\fR
+.br
+Displays a short description of each action in
+.BR sboui-backend .
+.SH EXIT STATUS
+The exit status is 0 if all commands executed as expected. Returns non-zero if:
+.IP \(bu
+The git clone or git pull commands initiated by the
+.B update
+action fail.
+This can happen if permissions in repo directory are incorrect or if the REPO or BRANCH variables in
+.I sboui-backend.conf
+are invalid.
+.IP \(bu
+An invalid option or nonexistent SlackBuild is specified for the 
+.B install
+action.
+.IP \(bu
+The
+\fB-s\fR or \fB--sourcedir\fR option is specified for the
+.B install
+command, but the sources are not found in the specified directory.
+.IP \(bu
+Source code failed to download or failed the MD5sum check.
+.IP \(bu
+Building the package failed.
+.IP \(bu
+Invalid command line options were specified.
+.SH ENVIRONMENT
+.TP
+.B CONF
+.br
+Configuration file to read.
+By default, it is
+.IR /etc/sboui/sboui-backend.conf ,
+but this environment variable can be set to read a different file instead.
+.SH FILES
+.TP
+.I /etc/sboui/sboui-backend.conf
+.br
+Default configuration file for
+.BR sboui-backend .
+See
+.BR sboui-backend.conf (5)
+for more information about the entries in this file.
+.SH BUGS
+None known, but please report any to the address below.
+.SH SEE ALSO
+.BR sboui-backend.conf (5),
+.BR sboui (8),
+.BR sboui.conf (5),
+.BR sbopkg (8),
+.BR sboinstall (1),
+.BR su (1)
+.SH AUTHORS
+Daniel Prosser <dpross1100@msn.com>

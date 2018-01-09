@@ -1,0 +1,84 @@
+.TH SBOUI-BACKEND.CONF 5
+.SH NAME
+sboui-backend.conf \- configuration file for sboui-backend
+.SH DESCRIPTION
+.I sboui-backend.conf
+contains settings for
+.BR sboui-backend (8),
+a command-line utility for installing software from SlackBuilds.org.
+This file resides in
+.IR /etc/sboui/sboui-backend.conf ,
+but a different file can be read instead by setting the CONF environment variable.
+This manual describes the configuration settings specified in the configuration file.
+Variable names, default values, and descriptions are listed below.
+.PP
+.TP
+.B REPO
+.br
+default:
+.B git://git.slackbuilds.org/slackbuilds.git
+.IP
+Specifies the
+.B git
+repository to clone and sync locally.
+Most users should stick with the default, but if tracking -current, you may want to use
+.I git://github.com/Ponce/slackbuilds.git
+instead.
+.TP
+.B BRANCH
+.br
+default:
+.B 14.2
+.IP
+The branch to clone and sync.
+The SBo project creates a new branch for each Slackware release, so use the branch corresponding to the version of Slackware installed.
+This input is not relevant for the Ponce -current repo.
+.TP
+.B REPO_DIR
+.br
+default:
+.I /var/lib/sboui/repo
+.IP
+Location to store the SBo repository locally.
+If you are using
+.B sboui
+with the built-in
+.B package_manager
+setting, make sure that this location matches
+.B repo_dir
+in your
+.B sboui
+settings.
+.TP
+.B CLEAN_PACKAGE
+.br
+default:
+.B no
+.IP
+Whether to delete the package created by the SlackBuild script after installing.
+.TP
+.B TMPDIR
+.br
+default:
+.I /tmp/SBo
+.IP
+Location of temporary build and source directories.
+.TP
+.B CLEAN_TMP
+.br
+default:
+.B no
+.IP
+Whether to remove temporary build and source directories after installing the package.
+.SH FILES
+.TP
+.I /etc/sboui/sboui-backend.conf
+.br
+Default configuration file for
+.BR sboui-backend .
+.SH SEE ALSO
+.BR sboui-backend (8),
+.BR sboui (8),
+.BR sboui.conf (5)
+.SH AUTHORS
+Daniel Prosser <dpross1100@msn.com>
