@@ -731,6 +731,7 @@ SOURCEDIR=""
 # Not enough command line arguments
 if [ $# -lt 1 ]; then
   print_usage "must specify a command."
+  exit 1
 
 # update
 elif [ "$1" == "update" ]; then
@@ -740,6 +741,7 @@ elif [ "$1" == "update" ]; then
 elif [ "$1" == "install" ]; then
   if [ $# -eq 1 ]; then
     print_usage "must specify SlackBuild with install option."
+    exit 1
   else
     parse_install_opts ${@:2:$#}
     install_multiple $(get_buildlist ${@:2:$#})
@@ -749,6 +751,7 @@ elif [ "$1" == "install" ]; then
 elif [ "$1" == "search" ]; then
   if [ $# -lt 2 ]; then
     print_usage "must specify PATTERN with search option."
+    exit 1
   else
     search $2
   fi
@@ -757,6 +760,7 @@ elif [ "$1" == "search" ]; then
 elif [ "$1" == "search-descriptions" ]; then
   if [ $# -lt 2 ]; then
     print_usage "must specify PATTERN with search-descriptions option."
+    exit 1
   else
     search_descriptions $2
   fi
@@ -765,6 +769,7 @@ elif [ "$1" == "search-descriptions" ]; then
 elif [ "$1" == "info" ]; then
   if [ $# -lt 2 ]; then
     print_usage "must specify a SlackBuild with info option."
+    exit 1
   else
     show_info $2
   fi
@@ -777,6 +782,7 @@ elif [ "$1" == "list-groups" ]; then
 elif [ "$1" == "browse-group" ]; then
   if [ $# -lt 2 ]; then
     print_usage "must specify a SlackBuild with browse-group option."
+    exit 1
   else
     browse_group $2
   fi
