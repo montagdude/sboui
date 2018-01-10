@@ -66,10 +66,10 @@ void get_color_themes()
     for ( j = 0; j < nfiles; j++ )
     {
       theme_file = themes_dir(j);
-      if (theme_file.type == "reg") 
+      if ( (theme_file.type == "reg") || (theme_file.type == "lnk") )
       {
         ColorTheme theme;
-        theme_full_path = theme_file.path + "/" + theme_file.name;
+        theme_full_path = theme_file.path + theme_file.name;
         stat = theme.read(theme_full_path);
         if (stat == 0)
         {

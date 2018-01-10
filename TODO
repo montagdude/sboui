@@ -1,6 +1,6 @@
 For 1.0
 ================================================================================
-* New color theme?
+* New color themes?
 * Break out CursesWidgets into separate library
 
 Completed for 1.0
@@ -14,3 +14,4 @@ Completed for 1.0
 * Fix default repo_dir for sbopkg when none is specified
 * Fix PgDn scrolling bug where highlight could be above the visible list in rare
   circumstances
+* Allow theme files to be symlinks
