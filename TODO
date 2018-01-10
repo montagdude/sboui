@@ -1,6 +1,5 @@
 For 1.0
 ================================================================================
-* New color themes?
 * Break out CursesWidgets into separate library
 
 Completed for 1.0
@@ -15,3 +14,4 @@ Completed for 1.0
 * Fix PgDn scrolling bug where highlight could be above the visible list in rare
   circumstances
 * Allow theme files to be symlinks
+* New color themes: green, red
