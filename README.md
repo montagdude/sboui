@@ -20,6 +20,8 @@ interface and also makes it very fast. The main features of sboui include:
 * Comes with several built-in color themes and supports custom themes
 * Designed for and tested to work flawlessly with sbopkg and sbotools, but it is
   easy to set it up to work with your own custom package manager
+* Includes a built-in package manager, sboui-backend, that can be used instead
+  of sbopkg or sbotools
 
 Installation
 ================================================================================
@@ -70,6 +72,13 @@ upgrade something that you have tagged which is not upgradable, for example.
 This is just a brief overview of how to use sboui, but there is much more that
 it can do. Take a look at the available keyboard shortcuts (by pressing the ?
 key) and have fun!
+
+Built-in package manager
+================================================================================
+sboui comes with a built-in package manager, sboui-backend, that can be used
+instead of sbopkg or sbotools. It can also be run standalone from the command
+line. Please see the man pages for sboui-backend and sboui-backend.conf for more
+information.
 
 Using sboui with custom package managers
 ================================================================================
