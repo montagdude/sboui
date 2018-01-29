@@ -776,9 +776,9 @@ bool MainWindow::modifyPackage(BuildListItem & build,
 {
   WINDOW *installerwin;
   int check, nchanged_orig, nchanged_new, response;
-  std::string selection, msg, choice;
+  std::string selection, msg, choice, deptxt, invdeptxt;
   bool getting_input, needs_rebuild;
-  unsigned int i, ndeps, nforeign;
+  unsigned int i, ndeps, ninvdeps, nforeign;
   std::vector<const BuildListItem *> foreign;
   InstallBox installer;
   BuildListItem *subbuild;
@@ -807,32 +807,39 @@ bool MainWindow::modifyPackage(BuildListItem & build,
   }
 
   ndeps = installer.numDeps();
+  ninvdeps = installer.numInvDeps();
+  deptxt = "";
+  invdeptxt = "";
   if (settings::resolve_deps)
   {
+    /* The list can possibly be empty when removing tagged SlackBuilds.
+       In this case, there's nothing left to do. */
+    if (ndeps < 0)
+    {
+      clearStatus();
+      return false;
+    }
+
     if (ndeps == 1)
     { 
       if (action == "Remove")
-        printStatus("1 installed dependency for " + build.name() + ".");
+        deptxt = "1 installed dependency";
       else
-        printStatus("1 dependency for " + build.name() + ".");
+        deptxt = "1 dependency";
     }
     else if (ndeps >= 0)
     { 
       if (action == "Remove")
-        printStatus(int_to_string(ndeps) + 
-                    " installed dependencies for " + build.name() + ".");
+        deptxt = int_to_string(ndeps) + " installed dependencies";
       else
-        printStatus(int_to_string(ndeps) + 
-                    " dependencies for " + build.name() + ".");
+        deptxt = int_to_string(ndeps) + " dependencies";
     }
-    else
-    {
-      /* The list can possibly be empty when removing tagged SlackBuilds.
-         In this case, there's nothing left to do. */
+    if (ninvdeps == 1)
+      invdeptxt = " and 1 inverse dependency";
+    else if (ninvdeps > 1)
+      invdeptxt = " and " + int_to_string(ninvdeps) + " inverse dependencies";
 
-      clearStatus();
-      return false;
-    }
+    printStatus(deptxt + invdeptxt + " for " + build.name() + ".");
   }
 
   // Show list of changes to apply and/or apply changes

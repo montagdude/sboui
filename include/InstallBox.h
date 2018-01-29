@@ -20,7 +20,7 @@ class InstallBox: public BuildOrderBox {
        for many of the operations. */
 
     std::vector<BuildListItem *> _builds;
-    int _ndeps;
+    int _ndeps, _ninvdeps;
 
     /* Drawing */
     
@@ -38,7 +38,10 @@ class InstallBox: public BuildOrderBox {
 
     void minimumSize(int & height, int & width) const;
     void preferredSize(int & height, int & width) const;
-    int numDeps() const;
+
+    int numDeps() const;    // See notes in InstallBox.cpp on these two methods
+    int numInvDeps() const; // ------------------------------------------------
+
     bool installingAllDeps() const;
     bool installingRequested() const;
 

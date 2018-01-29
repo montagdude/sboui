@@ -219,6 +219,7 @@ InstallBox::InstallBox()
   _info = "Enter: Ok | Esc: Cancel | a: Actions";
   _builds.resize(0);
   _ndeps = 0;
+  _ninvdeps = 0;
 }
 
 InstallBox::InstallBox(WINDOW *win, const std::string & name)
@@ -226,6 +227,7 @@ InstallBox::InstallBox(WINDOW *win, const std::string & name)
   _info = "Enter: Ok | Esc: Cancel | a: Actions"; 
   _builds.resize(0);
   _ndeps = 0;
+  _ninvdeps = 0;
   _win = win;
   _name = name;
 }
@@ -288,7 +290,12 @@ void InstallBox::preferredSize(int & height, int & width) const
   width += reserved_cols + widthpadding;
 }
 
+/* Note that this will be 0 unless create() is called with resolve_deps */
 int InstallBox::numDeps() const { return _ndeps; }
+
+/* Note that this will be 0 unless create() is called with rebuild_inv_deps
+   and the SlackBuild is being upgraded */
+int InstallBox::numInvDeps() const { return _ninvdeps; }
 
 bool InstallBox::installingAllDeps() const
 {
@@ -323,7 +330,7 @@ int InstallBox::create(BuildListItem & build,
                        bool batch, bool rebuild_inv_deps) 
 {
   int check; 
-  unsigned int i, nbuilds, ninvdeps;
+  unsigned int i, nbuilds;
   bool mark;
   std::string action_applied;
   std::string installed_version, available_version;
@@ -407,9 +414,9 @@ int InstallBox::create(BuildListItem & build,
   {
     reqlist.resize(0);
     compute_inv_reqs(build, reqlist, slackbuilds);
-    ninvdeps = reqlist.size();
+    _ninvdeps = reqlist.size();
     
-    for ( i = 0; i < ninvdeps; i++ )
+    for ( i = 0; int(i) < _ninvdeps; i++ )
     {
       _builds.push_back(reqlist[i]);
       _builds[nbuilds]->setBoolProp("marked", true);
