@@ -1,17 +1,1 @@
-For 1.0
-================================================================================
-* Break out CursesWidgets into separate library
-
-Completed for 1.0
-================================================================================
-* Add option to not warn about invalid package names
-* Add comments to ~/.sboui.conf written by sboui at runtime
-* Add built-in package manager
-* Dialog to automatically set default repo_dir, sync_cmd, install_cmd, and
-  upgrade_cmd when switching package managers
-* Prompt user to run sync after repo_dir is changed
-* Fix default repo_dir for sbopkg when none is specified
-* Fix PgDn scrolling bug where highlight could be above the visible list in rare
-  circumstances
-* Allow theme files to be symlinks
-* New color themes: green, red
+Nothing at this time. :)

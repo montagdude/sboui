@@ -1,3 +1,22 @@
+2018-01-28   Daniel Prosser <dpross1100@msn.com>
+
+        version 1.0
+        * Add built-in package manager, sboui-backend
+        * In OptionsWindow, display a dialog asking whether to automatically
+          set default repo_dir, sync_cmd, install_cmd, and upgrade_cmd when
+          switching package managers
+        * Prompt user to sync the repo after repo_dir is changed
+        * Add option to not warn about installed packages with invalid names
+        * Fix default repo_dir for sbopkg when none is specified in the conf
+          file
+        * Fix PgDn scrolling bug where highlight could be above the visible
+          list in rare circumstances
+        * Allow color theme files to be symbolic links
+        * Add new color themes: green and red
+        * Add comments to ~/.sboui.conf written by sboui at runtime
+        * When upgrading a package and rebuild_inv_deps, print number of
+          inverse dependencies as well as dependencies in status message
+
 2017-12-18   Daniel Prosser <dpross1100@msn.com>
 
         version 0.6
