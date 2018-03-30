@@ -25,7 +25,7 @@ namespace settings
   std::string install_vars;
   std::string upgrade_clos;
   std::string upgrade_vars;
-  std::string editor;
+  std::string editor, viewer;
   std::string color_theme;
   std::string layout;
   bool resolve_deps, confirm_changes, enable_color, rebuild_inv_deps;
@@ -101,7 +101,7 @@ int read_config(const std::string & conf_file)
   int check;
   Config cfg;
   std::string my_conf_file, home, response;
-  char *env_home, *env_editor;
+  char *env_home, *env_editor, *env_viewer;
   ColorTheme default_theme;
 
   // Determine config file to read
@@ -173,17 +173,31 @@ int read_config(const std::string & conf_file)
     std::getline(std::cin, response);
   }
 
-  if (! cfg.lookupValue("editor", editor))
+  // Get editor and viewer from environment variables if available
+
+  env_editor = std::getenv("VISUAL");
+  if (env_editor == NULL)
   {
     env_editor = std::getenv("EDITOR");
-    if (env_editor != NULL)
-    { 
-      std::stringstream ssed;
-      ssed << env_editor;
-      ssed >> editor;
-    }
-    else { editor = "vi"; }
   }
+  if (env_editor != NULL)
+  { 
+    std::stringstream ssed;
+    ssed << env_editor;
+    ssed >> editor;
+  }
+  else
+    editor = "vi";
+
+  env_viewer = std::getenv("PAGER");
+  if (env_viewer != NULL)
+  { 
+    std::stringstream ssed;
+    ssed << env_viewer;
+    ssed >> viewer;
+  }
+  else
+    viewer = "less";
 
   if (! cfg.lookupValue("install_clos", install_clos)) { install_clos = ""; }
 

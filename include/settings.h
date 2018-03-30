@@ -12,7 +12,7 @@ namespace settings
   extern std::string sync_cmd, install_cmd, upgrade_cmd;
   extern std::string install_clos, install_vars;
   extern std::string upgrade_clos, upgrade_vars;
-  extern std::string editor; 
+  extern std::string editor, viewer;
   extern std::string color_theme;
   extern std::string layout;
   extern bool resolve_deps, confirm_changes, enable_color, rebuild_inv_deps;

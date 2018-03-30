@@ -496,7 +496,7 @@ int remove_slackbuild(BuildListItem & build)
 
 /*******************************************************************************
 
-Displays README for a SlackBuild
+Displays README for a SlackBuild using viewer
 
 *******************************************************************************/
 int view_readme(const BuildListItem & build)
@@ -504,7 +504,7 @@ int view_readme(const BuildListItem & build)
   std::string cmd, response;
   int retval;
 
-  cmd = editor + " " + repo_dir + "/" + build.getProp("category") + "/"
+  cmd = viewer + " " + repo_dir + "/" + build.getProp("category") + "/"
                                       + build.name() + "/" + "README";
   retval = run_command(cmd);
   if (retval != 0)
@@ -531,7 +531,7 @@ int view_file(const std::string & path)
   retval = run_command(cmd);
   if (retval != 0)
   {
-    std::cout << "Unable to view file. "
+    std::cout << "Unable to open file. "
               << "Press Enter to return to main window ...";
     std::getline(std::cin, response);
   }

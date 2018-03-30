@@ -17,7 +17,7 @@ class OptionsWindow: public InputBox {
 
   private:
 
-    TextInput _iclos_inp, _ivars_inp, _uclos_inp, _uvars_inp, _editor_inp;
+    TextInput _iclos_inp, _ivars_inp, _uclos_inp, _uvars_inp; 
     TextInput _repo_inp, _tag_inp, _sync_inp, _inst_inp, _upgr_inp;
     ToggleInput _resolve_toggle, _rebuild_toggle, _confirm_toggle,
                 _buildopts_toggle, _color_toggle, _warninval_toggle;

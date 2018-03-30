@@ -1,1 +1,9 @@
-Nothing at this time. :)
+-- Limit redraws to reduce flickering in tmux and console
+-- Make it work when repo_dir is mounted via sshfs
+-- Add reinstall_cmd so that package does not first need to be removed before
+   reinstalling (sbotools requires a separate command for reinstalls)
+
+Done
+-- Remove editor setting. Use the PAGER environment variable for viewing
+   READMEs, and VISUAL or EDITOR for the Browse files function. less and vi are
+   the defaults if these variables are unset.

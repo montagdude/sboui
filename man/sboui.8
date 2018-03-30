@@ -126,12 +126,19 @@ If invalid command line options are specified, the configuration file could not 
 Other errors that can occur during execution (e.g., a build failure for a package) are indicated to the user but do not affect the exit status.
 .SH ENVIRONMENT
 .TP
-.B EDITOR
+.B PAGER
 .br
-Default editor used to view READMEs and other files, if none is specified in the configuration file.
-If this environment variable is not set,
+Application used to view READMEs.
+.B less
+is used as the default if this environment variable is not set.
+.TP
+\fBVISUAL\fR or \fBEDITOR\fR
+.br
+Application to edit files using the Browse files function.
+VISUAL is checked first.
+If it is unset, EDITOR is used instead.
 .B vi
-is used as the default instead.
+is used as the default if neither variable is set.
 .SH FILES
 .TP
 .I /etc/sboui/sboui.conf

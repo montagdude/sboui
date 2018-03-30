@@ -121,25 +121,6 @@ Instead, the default marked packages (the selected package and any dependencies 
 This option is useful for processing many tagged operations without requiring user intervention.
 If an error occurs during an operation, the user will still be notified before returning to the main window.
 .TP
-.B editor
-.br
-[string]
-.br
-default: $EDITOR environment variable or
-.B vi
-.br
-required: no
-.IP
-Text editor used to view READMEs and other files.
-It can be the name of any executable in the $PATH, but since
-.B sboui
-is normally run as root, it is better to choose one that does not require X.
-.IP
-If the $EDITOR environment variable is set, it is used as the default in case this variable is not set in the configuration file.
-Otherwise,
-.B vi
-is used as the default.
-.TP
 .B enable_color
 .br
 \fBtrue\fR|\fBfalse\fR

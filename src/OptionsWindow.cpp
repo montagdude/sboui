@@ -135,19 +135,6 @@ OptionsWindow::OptionsWindow()
   addItem(& _layout_box);
   _items[count]->setPosition(line,26);
   count++;
-  line += 1;
-
-  addItem(new Label());
-  _items[count]->setName("Editor");
-  _items[count]->setPosition(line,1);
-  _items[count]->setWidth(24);
-  count++;
-  line += 0;
-
-  addItem(&_editor_inp);
-  _items[count]->setPosition(line,26);
-  _items[count]->setWidth(20);
-  count++;
   line += 2;
 
   // Color settings
@@ -375,7 +362,6 @@ void OptionsWindow::readSettings()
   _confirm_toggle.setEnabled(confirm_changes);
   _buildopts_toggle.setEnabled(save_buildopts);
   _layout_box.setChoice(layout);
-  _editor_inp.setText(editor);
 
   _color_toggle.setEnabled(enable_color);
   _color_box.setChoice(color_theme);
@@ -404,7 +390,6 @@ void OptionsWindow::applySettings(int & check_color, int & check_write) const
   confirm_changes = _confirm_toggle.enabled();
   save_buildopts = _buildopts_toggle.enabled();
   layout = _layout_box.choice();
-  editor = _editor_inp.text();
 
   color_theme = _color_box.choice();
   if (_color_toggle.enabled()) { check_color = activate_color(color_theme); }
