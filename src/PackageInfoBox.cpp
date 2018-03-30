@@ -110,7 +110,7 @@ called, there is no _redraw_type for it.
 *******************************************************************************/
 void PackageInfoBox::draw(bool force)
 {
-  wclear(_win);
+  clearWindow();
   colors.setBackground(_win, "fg_popup", "bg_popup");
   redrawFrame();
   redrawMessage();

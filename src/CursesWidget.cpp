@@ -51,6 +51,24 @@ void CursesWidget::printSpaces(int nspaces) const
 
 /*******************************************************************************
 
+Clears window line-by-line, as wclear can cause flickering
+
+*******************************************************************************/
+void CursesWidget::clearWindow() const
+{
+  int rows, cols, i;
+
+  getmaxyx(_win, rows, cols);
+
+  for ( i = 0; i < rows; i++ )
+  {
+    wmove(_win, i, 0);
+    wclrtoeol(_win);
+  }
+}
+
+/*******************************************************************************
+
 Constructor
 
 *******************************************************************************/

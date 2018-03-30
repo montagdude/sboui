@@ -564,7 +564,7 @@ void InputBox::draw(bool force)
 
   if (_redraw_type == "all") 
   { 
-    wclear(_win);
+    clearWindow();
     if (_color_idx == -1)
       colors.setBackground(_win, "fg_popup", "bg_popup");
     else { colors.setBackground(_win, _color_idx); }

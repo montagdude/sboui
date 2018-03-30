@@ -15,6 +15,7 @@ class CursesWidget {
 
     void printToEol(const std::string & msg, int printable_cols=-1) const;
     void printSpaces(int nspaces) const;
+    void clearWindow () const;
 
     WINDOW *_win;
 
