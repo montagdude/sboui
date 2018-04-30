@@ -660,11 +660,8 @@ int InstallBox::applyChanges(int & ninstalled, int & nupgraded,
       else if (action == "Upgrade") { retval = 
                                       upgrade_slackbuild(*_builds[i]); }
       else if (action == "Remove") { retval = remove_slackbuild(*_builds[i]); }
-      else if (action == "Reinstall")
-      { 
-        retval = remove_slackbuild(*_builds[i]);
-        if (retval == 0) { retval = install_slackbuild(*_builds[i]); }
-      }
+      else if (action == "Reinstall") { retval =
+                                        reinstall_slackbuild(*_builds[i]); }
       else
       {
         std::cout << "Error: unrecognized action " + action + "." << std::endl;

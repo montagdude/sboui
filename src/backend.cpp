@@ -462,13 +462,39 @@ int upgrade_slackbuild(BuildListItem & build)
   build.readPropsFromRepo();
   if (build.getBoolProp("upgradable"))
   {
-    check = remove_slackbuild(build);
-    if (check != 0) { return check; }
-    check = install_slackbuild(build); 
+    check = reinstall_slackbuild(build); 
     if (check != 0) { return check; }
   }
 
   return 0;
+}
+
+/*******************************************************************************
+
+Reinstalls a SlackBuild
+
+*******************************************************************************/
+int reinstall_slackbuild(BuildListItem & build)
+{
+  std::string cmd;
+  int check;
+  std::vector<std::string> installedpkgs;
+
+  cmd = install_vars + " " + build.buildOptionsEnv() + " " + reinstall_cmd
+      + " " + build.name() + " " + install_clos;
+  check = run_command(cmd);
+  if (check != 0) { return check; }
+
+  // Check to make sure it was actually installed and update properties
+
+  installedpkgs = list_installed_packages();
+  build.readInstalledProps(installedpkgs);
+  if (build.getBoolProp("installed"))
+  {
+    build.readPropsFromRepo();
+    return 0;
+  }
+  else { return 1; }
 }
 
 /*******************************************************************************

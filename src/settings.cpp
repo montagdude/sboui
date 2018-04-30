@@ -21,6 +21,7 @@ namespace settings
   std::string sync_cmd;
   std::string install_cmd;
   std::string upgrade_cmd;
+  std::string reinstall_cmd;
   std::string install_clos;
   std::string install_vars;
   std::string upgrade_clos;
@@ -294,6 +295,23 @@ int read_config(const std::string & conf_file)
     }
   }
 
+  if (! cfg.lookupValue("reinstall_cmd", reinstall_cmd))
+  {
+//FIXME: Add -r to sbotools reinstall command if he fixes issue #72 on GitHub
+    if (package_manager == "sbopkg")
+      reinstall_cmd = "sbopkg -B -i";
+    else if (package_manager == "sbotools")
+      reinstall_cmd = "sboinstall --reinstall";
+    else if (package_manager == "built-in")
+      reinstall_cmd = "sboui-backend install -f";
+    else
+    {
+      std::cerr << "Error: must specify reinstall_cmd for custom "
+                << "package_manager." << std::endl;
+      return 1;
+    }
+  }
+
   // Color settings. Try to read user settings or revert to defaults.
 
   if (! cfg.lookupValue("enable_color", enable_color)) { enable_color = true; }
@@ -366,6 +384,7 @@ int write_config(const std::string & conf_file)
   root.add("sync_cmd", Setting::TypeString) = sync_cmd;
   root.add("install_cmd", Setting::TypeString) = install_cmd;
   root.add("upgrade_cmd", Setting::TypeString) = upgrade_cmd;
+  root.add("reinstall_cmd", Setting::TypeString) = reinstall_cmd;
   root.add("enable_color", Setting::TypeBoolean) = enable_color;
   root.add("color_theme", Setting::TypeString) = color_theme;
   root.add("warn_invalid_pkgnames", Setting::TypeBoolean) =

@@ -317,6 +317,65 @@ Note that this option only applies to upgrade operations.
 It is disabled by default, because it is not always necessary to rebuild inverse dependencies when upgrading a package.
 It is, however, the safe thing to do to avoid errors arising from API/ABI changes.
 .TP
+.B reinstall_cmd
+.br
+[string]
+.br
+default: [depends on
+.BR package_manager ]
+.br
+required: [for 
+\fBcustom package_manager\fR
+only]
+.IP
+Command used by the package manager to reinstall a package.
+The full command executed by
+.B sboui
+to reinstall a package is as follows:
+.RS 3
+.IP
+# \fBinstall_vars\fR build_options \\
+.br
+# \fBreinstall_cmd\fR {software name} \\
+.br
+# \fBinstall_clos\fR
+.RE
+.IP
+The considerations described in the
+.B install_cmd
+entry regarding the package manager's dependency resolution and notification settings also apply here.
+This setting is only required for a
+\fBcustom package_manager\fB.
+.IP
+If
+.B sbopkg
+is used as the
+.BR package_manager ,
+the default value of this setting is \fBsbopkg -B -i\fR.
+.IP
+If
+.B sbotools
+is used as the
+.BR package_manager ,
+the default value of this setting is \fBsboinstall --reinstall\fR.
+Note that
+.B sbotools
+currently does not allow "silent" reinstalls; you must choose yes at the prompts in order to reinstall, even if you have disabled prompting in
+.BR sboui .
+.IP
+For a
+.B custom
+.BR package_manager ,
+no default value is set, and
+.B sboui
+will exit with an error if this setting is not present.
+.IP
+.BR WARNING :
+The warnings for
+.B install_cmd
+apply here also.
+Please do not change this variable to something that will cause harm to your system when executed.
+.TP
 .B repo_dir
 .br
 [string]

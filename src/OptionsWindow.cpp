@@ -265,6 +265,19 @@ OptionsWindow::OptionsWindow()
   line += 1;
 
   addItem(new Label());
+  _items[count]->setName("Reinstall command");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(20);
+  count++;
+  line += 0;
+
+  addItem(&_reinst_inp);
+  _items[count]->setPosition(line,26);
+  _items[count]->setWidth(20);
+  count++;
+  line += 1;
+
+  addItem(new Label());
   _items[count]->setName("Additional install CLOs");
   _items[count]->setPosition(line,1);
   _items[count]->setWidth(24);
@@ -372,6 +385,7 @@ void OptionsWindow::readSettings()
   _sync_inp.setText(sync_cmd);
   _inst_inp.setText(install_cmd);
   _upgr_inp.setText(upgrade_cmd);
+  _reinst_inp.setText(reinstall_cmd);
   _iclos_inp.setText(install_clos);
   _ivars_inp.setText(install_vars);
   _uclos_inp.setText(upgrade_clos);
@@ -401,6 +415,7 @@ void OptionsWindow::applySettings(int & check_color, int & check_write) const
   sync_cmd = _sync_inp.text();
   install_cmd = _inst_inp.text();
   upgrade_cmd = _upgr_inp.text(); 
+  reinstall_cmd = _reinst_inp.text();
   install_clos = _iclos_inp.text();
   install_vars = _ivars_inp.text();
   upgrade_clos = _uclos_inp.text();
@@ -599,6 +614,8 @@ void OptionsWindow::askSetDefaults(const std::string & new_pkg_mgr)
           _inst_inp.setText(defbox.installCmd());
         if (defbox.setUpgradeCmd())
           _upgr_inp.setText(defbox.upgradeCmd());
+        if (defbox.setReinstallCmd())
+          _reinst_inp.setText(defbox.reinstallCmd());
       }
       else if (selection == signals::quit) { getting_input = false; }
       else if (selection == signals::resize)

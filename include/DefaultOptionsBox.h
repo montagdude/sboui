@@ -15,8 +15,10 @@ class DefaultOptionsBox: public InputBox {
   private:
 
     std::string _pkg_mgr;
-    std::string _repo_dir, _sync_cmd, _install_cmd, _upgrade_cmd;
-    ToggleInput _repoitem, _syncitem, _installitem, _upgradeitem;
+    std::string _repo_dir, _sync_cmd, _install_cmd, _upgrade_cmd,
+                _reinstall_cmd;
+    ToggleInput _repoitem, _syncitem, _installitem, _upgradeitem,
+                _reinstallitem;
 
   public:
 
@@ -34,9 +36,11 @@ class DefaultOptionsBox: public InputBox {
     bool setSyncCmd() const;
     bool setInstallCmd() const;
     bool setUpgradeCmd() const;
+    bool setReinstallCmd() const;
 
     const std::string & repoDir() const;
     const std::string & syncCmd() const;
     const std::string & installCmd() const;
     const std::string & upgradeCmd() const;
+    const std::string & reinstallCmd() const;
 };

@@ -38,6 +38,12 @@ DefaultOptionsBox::DefaultOptionsBox()
   _upgradeitem.setEnabled(true);
   _upgradeitem.setWidth(30);
   _upgradeitem.setPosition(6,1);
+
+  addItem(&_reinstallitem);
+  _reinstallitem.setName("reinstall_cmd");
+  _reinstallitem.setEnabled(true);
+  _reinstallitem.setWidth(30);
+  _reinstallitem.setPosition(7,1);
 }
 
 /*******************************************************************************
@@ -53,13 +59,16 @@ int DefaultOptionsBox::setPackageManager(const std::string & pkg_mgr)
     _sync_cmd = "sbopkg -r";
     _install_cmd = "sbopkg -B -i";
     _upgrade_cmd = "sbopkg -B -i";
+    _reinstall_cmd = "sbopkg -B -i";
   }
   else if (pkg_mgr == "sbotools")
   {
+//FIXME: Add -r to sbotools reinstall command if he fixes issue #72 on GitHub
     _repo_dir = "/usr/sbo/repo";
     _sync_cmd = "sbosnap update";
     _install_cmd = "sboinstall -r";
     _upgrade_cmd = "sboupgrade -r";
+    _reinstall_cmd = "sboinstall --reinstall";
   }
   else if (pkg_mgr == "built-in")
   {
@@ -67,6 +76,7 @@ int DefaultOptionsBox::setPackageManager(const std::string & pkg_mgr)
     _sync_cmd = "sboui-backend update";
     _install_cmd = "sboui-backend install -f";
     _upgrade_cmd = "sboui-backend install -f";
+    _reinstall_cmd = "sboui-backend install -f";
   }
   else if (pkg_mgr == "custom")
   {
@@ -74,6 +84,7 @@ int DefaultOptionsBox::setPackageManager(const std::string & pkg_mgr)
     _sync_cmd = "";
     _install_cmd = "";
     _upgrade_cmd = "";
+    _reinstall_cmd = "";
   }
   else { return 1; }
 
@@ -92,6 +103,10 @@ bool DefaultOptionsBox::setRepoDir() const { return _repoitem.enabled(); }
 bool DefaultOptionsBox::setSyncCmd() const { return _syncitem.enabled(); }
 bool DefaultOptionsBox::setInstallCmd() const { return _installitem.enabled(); }
 bool DefaultOptionsBox::setUpgradeCmd() const { return _upgradeitem.enabled(); }
+bool DefaultOptionsBox::setReinstallCmd() const
+{
+  return _reinstallitem.enabled();
+}
 const std::string & DefaultOptionsBox::repoDir() const { return _repo_dir; }
 const std::string & DefaultOptionsBox::syncCmd() const { return _sync_cmd; }
 const std::string & DefaultOptionsBox::installCmd() const
@@ -101,4 +116,8 @@ const std::string & DefaultOptionsBox::installCmd() const
 const std::string & DefaultOptionsBox::upgradeCmd() const
 {
   return _upgrade_cmd;
+}
+const std::string & DefaultOptionsBox::reinstallCmd() const
+{
+  return _reinstall_cmd;
 }

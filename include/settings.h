@@ -9,7 +9,7 @@ namespace settings
 {
   extern std::string repo_dir, repo_tag;
   extern std::string package_manager;
-  extern std::string sync_cmd, install_cmd, upgrade_cmd;
+  extern std::string sync_cmd, install_cmd, upgrade_cmd, reinstall_cmd;
   extern std::string install_clos, install_vars;
   extern std::string upgrade_clos, upgrade_vars;
   extern std::string editor, viewer;
