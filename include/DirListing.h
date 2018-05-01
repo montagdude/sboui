@@ -26,6 +26,7 @@ class DirListing {
    
     std::string nameFromDirent(dirent *pent) const;
     std::string typeFromDirent(dirent *pent) const;
+    std::string typeFromStat(const std::string & path) const;
 
   public:
 

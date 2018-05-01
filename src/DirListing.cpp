@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <sys/types.h>
 #include <sys/stat.h>
 #include "string_util.h"
 #include "DirListing.h"
@@ -136,6 +137,47 @@ std::string DirListing::typeFromDirent(dirent *pent) const
 
 /*******************************************************************************
 
+Gets type from stat command and returns as string. If stat fails, returns
+unknown.
+
+*******************************************************************************/
+std::string DirListing::typeFromStat(const std::string & path) const
+{
+  struct stat sb;
+
+  if (stat(path.c_str(), &sb) == -1)
+    return "unknown";
+
+  switch (sb.st_mode & S_IFMT) {
+    case S_IFBLK:
+      return "blk";
+      break;
+    case S_IFCHR:
+      return "chr";
+      break;
+    case S_IFDIR:
+      return "dir";
+      break;
+    case S_IFIFO:
+      return "fifo";
+      break;
+    case S_IFLNK:
+      return "lnk";
+      break;
+    case S_IFREG:
+      return "reg";
+      break;
+    case S_IFSOCK:
+      return "sock";
+      break;
+    default:
+      return "unknown";
+      break;
+    }
+}
+
+/*******************************************************************************
+
 Constructors
 
 *******************************************************************************/
@@ -217,7 +259,15 @@ int DirListing::setFromPath(const std::string & path, bool sort_listing,
     entry.name = nameFromDirent(pent);
     entry.type = typeFromDirent(pent);
     entry.path = temppath;
-    if (entry.type == "unknown") { continue; }
+
+    // Some unknown file types can be queried by stat() instead
+
+    if (entry.type == "unknown")
+    {
+      entry.type = typeFromStat(entry.path + entry.name);
+      if (entry.type == "unknown") { continue; }
+    }
+
     if ( (entry.name == ".") || (entry.name == "..") ) { continue; }
     if (! show_hidden) 
     {
@@ -274,7 +324,15 @@ int DirListing::setFromCwd(bool sort_listing, bool show_hidden)
     entry.name = nameFromDirent(pent);
     entry.type = typeFromDirent(pent);
     entry.path = temppath;
-    if (entry.type == "unknown") { continue; }
+
+    // Some unknown file types can be queried by stat() instead
+
+    if (entry.type == "unknown")
+    {
+      entry.type = typeFromStat(entry.path + entry.name);
+      if (entry.type == "unknown") { continue; }
+    }
+
     if ( (entry.name == ".") || (entry.name == "..") ) { continue; }
     if (! show_hidden)
     {

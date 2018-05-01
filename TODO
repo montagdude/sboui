@@ -1,9 +1,8 @@
--- Make it work when repo_dir is mounted via sshfs
-
-Done
+Done for 1.1
 -- Remove editor setting. Use the PAGER environment variable for viewing
    READMEs, and VISUAL or EDITOR for the Browse files function. less and vi are
    the defaults if these variables are unset.
 -- Limit redraws to reduce flickering in tmux and console
 -- Add reinstall_cmd so that package does not first need to be removed before
    reinstalling (sbotools requires a separate command for reinstalls)
+-- Make it work when repo_dir is mounted via sshfs
