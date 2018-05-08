@@ -429,7 +429,7 @@ function install_slackbuild ()
 
     # Download and check for error
     else
-      curl -OL "$SOURCE"
+      wget "$SOURCE"
       if [ $? != 0 ]; then         
         echo "There was an error downloading the source file."
         SOURCERR=1

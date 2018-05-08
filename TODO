@@ -6,3 +6,4 @@ Done for 1.1
 -- Add reinstall_cmd so that package does not first need to be removed before
    reinstalling (sbotools requires a separate command for reinstalls)
 -- Make it work when repo_dir is mounted via sshfs
+-- Switch back to wget in sboui-backend
