@@ -82,9 +82,9 @@ information.
 
 Using sboui with custom package managers
 ================================================================================
-sboui is designed for and tested to work with sbopkg and sbotools, but it is
-also easy to use it with custom package managers or scripts. There are just a
-few requirements:
+sboui is designed for and tested to work with sbopkg, sbotools, and
+sboui-backend, but it is also easy to use it with custom package managers or
+scripts. These requirements need to be met:
 
 * The package manager must store a local copy of the SlackBuilds.org repository
   with a directory structure as follows: top level (includes subdirectories for
@@ -109,6 +109,9 @@ few requirements:
   the install command, and the two commands can actually be the same (such is
   the case with sbopkg), unless the package manager doesn't permit the install
   command to also be used for upgrades.
+* The package manager must implement a reinstall command to build and reinstall
+  the software package. This can be the same as the upgrade and install
+  commands depending on how they are implemented.
 
 In addition to what is listed above, each of the above commands should ideally
 do the following for the best user experience:
@@ -119,8 +122,8 @@ do the following for the best user experience:
   succeeded when it actually did not.
 * These commands should not present the user with any prompts or questions. (If
   they do by default, this behavior should be disabled in the specification of
-  sync_cmd, install_cmd, and upgrade_cmd when used with sboui.) Otherwise,
-  there may be duplicate prompts from sboui and the package manager.
+  sync_cmd, install_cmd, upgrade_cmd, and reinstall_cmd when used with sboui.) =
+  Otherwise, there will be duplicate prompts from sboui and the package manager.
 
 Screenshots
 ================================================================================
@@ -129,3 +132,4 @@ Screenshots
 ![alt tag](https://raw.githubusercontent.com/montagdude/sboui/master/screenshots/search.png)
 ![alt tag](https://raw.githubusercontent.com/montagdude/sboui/master/screenshots/install.png)
 ![alt tag](https://raw.githubusercontent.com/montagdude/sboui/master/screenshots/options.png)
+![alt tag](https://raw.githubusercontent.com/montagdude/sboui/master/screenshots/package_info.png)

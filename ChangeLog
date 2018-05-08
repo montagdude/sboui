@@ -1,3 +1,22 @@
+2018-05-08   Daniel Prosser <dpross1100@msn.com>
+
+        version 1.1
+        * Remove editor setting. Use the PAGER environment variable for viewing
+          READMEs and VISUAL or EDITOR for the Browse files function. less and
+          vi are the defaults if these environment variables are not set.
+        * Solve a flickering issue that was especially apparent in tmux and the
+          console
+        * Add reinstall_cmd so that an installed package does not need to be
+          removed first before reinstalling. For most package managers, this is
+          the same as install_cmd and upgrade_cmd, but sbotools uses unique
+          commands for both. sbotools will also currently ask for confirmation
+          when running the reinstall command, but there's nothing that can be
+          done about that from sboui's end.
+        * Improve checking for unknown file types; allows sboui to work when
+          repo_dir is mounted via sshfs, and may fix problems with other
+          filesystems as well
+        * Switch to wget in sboui-backend (instead of curl)
+
 2018-01-28   Daniel Prosser <dpross1100@msn.com>
 
         version 1.0
