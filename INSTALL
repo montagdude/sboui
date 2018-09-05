@@ -15,6 +15,15 @@ Installation Instructions
      make
      make install
    cd ..
+   
+    x86_64 build   
+   cd /path/to/sboui/top/dir
+   mkdir build
+   cd build
+     cmake -DCMAKE_CXX_FLAGS:STRING= -2 -fPIC .. 
+     make
+     make install
+   cd ..
 
    This process compile the software in the /path/to/sboui/top/dir/build
    directory and install it to the default install path (root privileges may be
