@@ -20,7 +20,7 @@ Installation Instructions
    cd /path/to/sboui/top/dir
    mkdir build
    cd build
-     cmake -DCMAKE_CXX_FLAGS:STRING= -2 -fPIC .. 
+     cmake -DCMAKE_CXX_FLAGS:STRING= -02 -fPIC .. 
      make
      make install
    cd ..
