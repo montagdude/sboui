@@ -31,6 +31,7 @@ int main(int argc, char *argv[])
   noecho();
   set_escdelay(25);
   keypad(stdscr, TRUE);
+  mousemask(BUTTON1_CLICKED | BUTTON2_CLICKED | BUTTON1_DOUBLE_CLICKED, NULL);
 
   // Read config file. Temporarily leave ncurses mode so that stdin/out work
   // properly for this step.

@@ -513,6 +513,53 @@ ListItem * ListBox::highlightedItem()
 
 /*******************************************************************************
 
+Handles mouse events
+
+*******************************************************************************/
+std::string ListBox::handleMouseEvent(const MEVENT *event)
+{
+  int rows, cols, begy, begx, ycurs, xcurs, rowsavail;
+
+  if (_items.size() == 0)
+    return signals::nullEvent;
+
+  getmaxyx(_win, rows, cols);
+  getbegyx(_win, begy, begx);
+  ycurs = event->y - begy;
+  xcurs = event->x - begx;
+  rowsavail = rows-_reserved_rows;
+
+  if ( (ycurs < int(_header_rows)) || (ycurs >= int(_header_rows)+rowsavail) )
+    return signals::nullEvent;
+  else if ( (xcurs < 1) || (xcurs >= cols-1) )
+    return signals::nullEvent;
+  else
+  {
+    if ( (event->bstate & BUTTON1_CLICKED) ||
+         (event->bstate & BUTTON2_CLICKED) ||
+         (event->bstate & BUTTON1_DOUBLE_CLICKED) )
+    {
+      _prevhighlight = _highlight;
+      _highlight = _firstprint + (ycurs - _header_rows);
+      if (determineFirstPrint() == 1)
+        _redraw_type = "all";
+      else
+        _redraw_type = "changed";
+      draw();
+    }
+
+    if ( (event->bstate & BUTTON1_CLICKED) ||
+         (event->bstate & BUTTON2_CLICKED) )
+      return signals::highlight;
+    else if (event->bstate & BUTTON1_DOUBLE_CLICKED)
+      return signals::keyEnter;
+    else
+      return signals::nullEvent;
+  }
+}
+
+/*******************************************************************************
+
 Draws list box (frame, items, etc.) as needed
 
 *******************************************************************************/
@@ -641,6 +688,16 @@ std::string ListBox::exec()
     case MY_ESC:
       retval = signals::quit;
       _redraw_type = "all";
+      break;
+
+    // Mouse
+
+    case KEY_MOUSE:
+      if (getmouse(&_mevent) == OK)
+      {
+        _redraw_type = "changed";
+        retval = signals::mouseEvent;
+      }
       break;
 
     default:

@@ -71,6 +71,10 @@ class ListBox: public AbstractListBox {
 
     ListItem * highlightedItem();
 
+    /* Handles mouse event */
+
+    std::string handleMouseEvent(const MEVENT *event);
+
     /* Draws frame, items, etc. as needed */
  
     virtual void draw(bool force=false);

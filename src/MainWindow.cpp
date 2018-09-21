@@ -1912,6 +1912,101 @@ void MainWindow::preferredSize(int & height, int & width) const {}
 
 /*******************************************************************************
 
+Handles mouse events
+
+*******************************************************************************/
+std::string MainWindow::handleMouseEvent(const MEVENT *event)
+{
+  int ymin1, xmin1, ymax1, xmax1;
+  int ymin2, xmin2, ymax2, xmax2;
+  unsigned int i, ncategories;
+  std::string action;
+  BuildListItem *build;
+
+  // Determine what was clicked
+
+  getbegyx(_win1, ymin1, xmin1);
+  getmaxyx(_win1, ymax1, xmax1);
+  getbegyx(_win2, ymin2, xmin2);
+  getmaxyx(_win2, ymax2, xmax2);
+  xmax1 += xmin1;   // maxyx macros are actually window dimensions, not
+  ymax1 += ymin1;   // absolute coordinates
+  xmax2 += xmin2;
+  ymax2 += ymin2;
+
+  // Category list box
+
+  if ( (event->y >= ymin1) && (event->y <= ymax1) &&
+       (event->x >= xmin1) && (event->x <= xmax1) )
+  {
+    // Activate CategoryListBox if needed
+
+    if (_activated_listbox == 1)
+    {
+      _blistboxes[_category_idx].setActivated(false);
+      _blistboxes[_category_idx].draw();
+      _clistbox.setActivated(true);
+      _activated_listbox = 0;
+      clearStatus();
+    }
+
+    action = _clistbox.handleMouseEvent(event);
+    if ( (action == signals::highlight) || (action == signals::keyEnter) )
+    {
+      _category_idx = _clistbox.highlight(); 
+      _blistboxes[_category_idx].draw(true);
+    }
+  }
+
+  // Builds list box
+
+  else if ( (event->y >= ymin2) && (event->y <= ymax2+1) &&
+            (event->x >= xmin2) && (event->x <= xmax2) )
+  {
+    // Activate BuildListBox if needed
+
+    if (_activated_listbox == 0)
+    {
+      _clistbox.setActivated(false);
+      _clistbox.draw();
+      _blistboxes[_category_idx].setActivated(true);
+      _activated_listbox = 1;
+    }
+
+    action = _blistboxes[_category_idx].handleMouseEvent(event);
+    if (action == signals::highlight)
+    {
+      // Display status message for installed SlackBuild
+
+      build = static_cast<BuildListItem *>(
+                                _blistboxes[_category_idx].highlightedItem());
+      printPackageVersion(*build);
+    }
+
+    else if (action == signals::keyEnter)
+    {
+      build = static_cast<BuildListItem *>(
+                                _blistboxes[_category_idx].highlightedItem());
+      showBuildActions(*build);
+
+      // Determine if categories should be tagged and redraw
+
+      ncategories = _clistbox.numItems();
+      for ( i = 0; i < ncategories; i++ )
+      {
+        if (_blistboxes[i].allTagged())
+          _clistbox.itemByIdx(i)->setBoolProp("tagged", true);
+        else { _clistbox.itemByIdx(i)->setBoolProp("tagged", false); }
+      }
+      draw(true);
+    }
+  }
+
+  return action;
+}
+
+/*******************************************************************************
+
 Redraws window
 
 *******************************************************************************/
@@ -1938,6 +2033,7 @@ std::string MainWindow::exec()
   int check_quit;
   unsigned int i, ncategories;
   BuildListItem *build;
+  const MEVENT *event;
 
   draw();
 
@@ -1986,6 +2082,14 @@ std::string MainWindow::exec()
         _blistboxes[_category_idx].tagAll();
         _category_idx = _clistbox.highlight();
         _blistboxes[_category_idx].draw(true);
+      }
+
+      // Mouse input
+
+      else if (selection == signals::mouseEvent)
+      {
+        event = _clistbox.getMouseEvent();
+        handleMouseEvent(event);
       }
     }
 
@@ -2064,6 +2168,14 @@ std::string MainWindow::exec()
           else { _clistbox.itemByIdx(i)->setBoolProp("tagged", false); }
         }
         draw(true);
+      }
+
+      // Mouse input
+
+      else if (selection == signals::mouseEvent)
+      {
+        event = _blistboxes[_category_idx].getMouseEvent();
+        handleMouseEvent(event);
       }
     }
 

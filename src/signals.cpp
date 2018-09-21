@@ -18,4 +18,6 @@ namespace signals
   std::string keyRight = "__KEYRIGHT__";
   std::string keyLeft = "__KEYLEFT__";
   std::string keySpace = "__KEYSPACE__";
+  std::string mouseEvent = "__MOUSEEVENT__";
+  std::string nullEvent = "__NULLEVENT__";
 }

@@ -69,6 +69,10 @@ class InputBox: public CursesWidget {
     virtual void preferredSize(int & height, int & width) const;
     unsigned int numItems() const;
 
+    /* Mouse interaction */
+
+    std::string handleMouseEvent(const MEVENT *event);
+
     /* Draws frame, entry, etc. as needed */
 
     virtual void draw(bool force=false);

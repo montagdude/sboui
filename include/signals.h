@@ -19,4 +19,6 @@ namespace signals
   extern std::string keyRight;
   extern std::string keyLeft;
   extern std::string keySpace;
+  extern std::string mouseEvent;
+  extern std::string nullEvent;
 }

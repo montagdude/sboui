@@ -41,8 +41,12 @@ class MessageBox: public CursesWidget {
     virtual void minimumSize(int & height, int & width) const;
     virtual void preferredSize(int & height, int & width) const;
 
+    /* Mouse interaction */
+
+    std::string handleMouseEvent(const MEVENT *event);
+
     /* Draws frame and message */
- 
+
     virtual void draw(bool force=false);
 
     /* User interaction loop */

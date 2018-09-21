@@ -555,6 +555,17 @@ unsigned int InputBox::numItems() const { return _items.size(); }
 
 /*******************************************************************************
 
+Handles mouse events
+
+*******************************************************************************/
+std::string InputBox::handleMouseEvent(const MEVENT *event)
+{
+//FIXME: implement
+  return signals::nullEvent;
+}
+
+/*******************************************************************************
+
 Redraws box and all input items
 
 *******************************************************************************/

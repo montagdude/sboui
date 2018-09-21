@@ -18,6 +18,7 @@ class CursesWidget {
     void clearWindow () const;
 
     WINDOW *_win;
+    MEVENT _mevent;
 
   public:
 
@@ -43,8 +44,13 @@ class CursesWidget {
     virtual void minimumSize(int & height, int & width) const = 0;
     virtual void preferredSize(int & height, int & width) const = 0;
 
+    /* Mouse interaction */
+
+    const MEVENT * getMouseEvent() const;
+    virtual std::string handleMouseEvent(const MEVENT *event) = 0;
+
     /* Draws frame and message */
- 
+
     virtual void draw(bool force=false) = 0;
 
     /* User interaction loop */

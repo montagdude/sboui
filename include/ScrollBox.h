@@ -40,6 +40,10 @@ class ScrollBox: public AbstractListBox {
     virtual void minimumSize(int & height, int & width) const;
     virtual void preferredSize(int & height, int & width) const;
 
+    /* Mouse interaction */
+
+    std::string handleMouseEvent(const MEVENT *event);
+
     /* Draws frame, items, etc. as needed */
  
     virtual void draw(bool force=false);

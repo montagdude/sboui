@@ -292,6 +292,17 @@ void ScrollBox::preferredSize(int & height, int & width) const
 
 /*******************************************************************************
 
+Handles mouse events
+
+*******************************************************************************/
+std::string ScrollBox::handleMouseEvent(const MEVENT *event)
+{
+  //FIXME: implement
+  return signals::nullEvent;
+}
+
+/*******************************************************************************
+
 Draws scroll box (frame, items, etc.) as needed
 
 *******************************************************************************/

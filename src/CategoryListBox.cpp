@@ -289,6 +289,16 @@ std::string CategoryListBox::exec()
       else { _redraw_type = "changed"; }
       break;
 
+    // Mouse
+
+    case KEY_MOUSE:
+      if (getmouse(&_mevent) == OK)
+      {
+        _redraw_type = "changed";
+        retval = signals::mouseEvent;
+      }
+      break;
+
     default:
       retval = char(ch);
       _redraw_type = "none";

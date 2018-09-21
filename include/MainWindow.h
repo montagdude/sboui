@@ -145,6 +145,10 @@ class MainWindow: public CursesWidget {
     void minimumSize(int & height, int & width) const;
     void preferredSize(int & height, int & width) const;
 
+    /* Mouse interaction */
+
+    std::string handleMouseEvent(const MEVENT *event);
+
     /* Redraws the main window */
 
     void draw(bool force=false);

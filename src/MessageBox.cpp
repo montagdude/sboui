@@ -220,6 +220,17 @@ void MessageBox::preferredSize(int & height, int & width) const
 
 /*******************************************************************************
 
+Handles mouse events
+
+*******************************************************************************/
+std::string MessageBox::handleMouseEvent(const MEVENT *event)
+{
+//FIXME: implement
+  return signals::nullEvent;
+}
+
+/*******************************************************************************
+
 Draws box (frame, message). Since everything must be redrawn whenever this is
 called, there is no _redraw_type for it.
 
