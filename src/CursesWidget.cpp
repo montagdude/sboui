@@ -1,6 +1,7 @@
 #include <curses.h>
 #include <cmath>     // floor
 #include "CursesWidget.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -140,10 +141,3 @@ void CursesWidget::hideWindow(WINDOW *win) const
   mvwin(win, top, left);
   wresize(win, 0, 0);
 }
-
-/*******************************************************************************
-
-Returns mouse event
-
-*******************************************************************************/
-const MEVENT * CursesWidget::getMouseEvent() const { return &_mevent; }

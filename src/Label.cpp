@@ -5,6 +5,7 @@
 #include "signals.h"
 #include "InputItem.h"
 #include "Label.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -84,7 +85,7 @@ void Label::draw(int y_offset, bool force, bool highlight)
 User interaction: returns key stroke
 
 *******************************************************************************/
-std::string Label::exec(int y_offset)
+std::string Label::exec(int y_offset, MouseEvent * mevent)
 {
   int ch;
   std::string retval;

@@ -5,6 +5,7 @@
 #include "signals.h"
 #include "InputItem.h"
 #include "TextInput.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -129,7 +130,7 @@ void TextInput::draw(int y_offset, bool force, bool highlight)
 User interaction: returns key stroke
 
 *******************************************************************************/
-std::string TextInput::exec(int y_offset)
+std::string TextInput::exec(int y_offset, MouseEvent * mevent)
 {
   int ch;
   bool getting_input;

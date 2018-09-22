@@ -11,6 +11,7 @@
 #include "Label.h"
 #include "DirListing.h"
 #include "BuildOptionsBox.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -224,7 +225,7 @@ void BuildOptionsBox::draw(bool force)
 User interaction with input items in the box
 
 *******************************************************************************/
-std::string BuildOptionsBox::exec()
+std::string BuildOptionsBox::exec(MouseEvent * mevent)
 {
   bool getting_input;
   int y_offset, check_redraw;

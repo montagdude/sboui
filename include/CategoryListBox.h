@@ -3,6 +3,7 @@
 #include <string>
 #include <curses.h>
 #include "ListBox.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -25,5 +26,5 @@ class CategoryListBox: public ListBox {
 
     /* User interaction loop */
 
-    std::string exec();
+    std::string exec(MouseEvent * mevent=NULL);
 };

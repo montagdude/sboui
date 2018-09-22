@@ -2,6 +2,7 @@
 
 #include <string>
 #include <curses.h>
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -18,7 +19,6 @@ class CursesWidget {
     void clearWindow () const;
 
     WINDOW *_win;
-    MEVENT _mevent;
 
   public:
 
@@ -46,8 +46,7 @@ class CursesWidget {
 
     /* Mouse interaction */
 
-    const MEVENT * getMouseEvent() const;
-    virtual std::string handleMouseEvent(const MEVENT *event) = 0;
+    virtual std::string handleMouseEvent(const MouseEvent * mevent) = 0;
 
     /* Draws frame and message */
 
@@ -55,5 +54,5 @@ class CursesWidget {
 
     /* User interaction loop */
 
-    virtual std::string exec() = 0;
+    virtual std::string exec(MouseEvent * mevent=NULL) = 0;
 };

@@ -6,6 +6,7 @@
 #include "Label.h"
 #include "BuildListItem.h"
 #include "InputBox.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -54,5 +55,5 @@ class BuildOptionsBox: public InputBox {
 
     /* User interaction loop */
 
-    std::string exec();
+    std::string exec(MouseEvent * mevent=NULL);
 };

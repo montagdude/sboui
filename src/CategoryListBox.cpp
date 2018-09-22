@@ -169,10 +169,11 @@ as the one for BuildListBox, except that tagging doesn't highlight the next
 entry.
 
 *******************************************************************************/
-std::string CategoryListBox::exec()
+std::string CategoryListBox::exec(MouseEvent * mevent)
 {
   int ch, check_redraw;
   std::string retval;
+  MEVENT event;
 
   const int MY_ESC = 27;
   const int MY_TAB = 9;
@@ -292,11 +293,14 @@ std::string CategoryListBox::exec()
     // Mouse
 
     case KEY_MOUSE:
-      if (getmouse(&_mevent) == OK)
+      if ( (getmouse(&event) == OK) && mevent )
       {
+        mevent->recordClick(event);
         _redraw_type = "changed";
         retval = signals::mouseEvent;
       }
+      else
+        return signals::nullEvent;
       break;
 
     default:

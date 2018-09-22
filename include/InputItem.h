@@ -2,6 +2,7 @@
 
 #include <string>
 #include <curses.h>
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -55,7 +56,7 @@ class InputItem {
     // User interaction
 
     virtual void draw(int y_offset, bool force=false, bool highlight=false) = 0;
-    virtual std::string exec(int y_offset);
+    virtual std::string exec(int y_offset, MouseEvent * mevent=NULL);
 
     // Accessing properties of different types. Derived classes should
     // reimplement these as needed.

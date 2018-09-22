@@ -7,6 +7,7 @@
 #include "Label.h"
 #include "ComboBox.h"
 #include "InputBox.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -46,7 +47,7 @@ class OptionsWindow: public InputBox {
 
     /* User interaction loop */
 
-    std::string exec();
+    std::string exec(MouseEvent * mevent=NULL);
 
     /* Automatic defaults dialog when package manager is changed */
 

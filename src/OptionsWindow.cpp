@@ -11,6 +11,7 @@
 #include "DefaultOptionsBox.h"
 #include "MessageBox.h"
 #include "OptionsWindow.h"
+#include "MouseEvent.h"
 
 using namespace settings;
 
@@ -455,7 +456,7 @@ void OptionsWindow::placeWindow()
 User interaction
 
 *******************************************************************************/
-std::string OptionsWindow::exec()
+std::string OptionsWindow::exec(MouseEvent * mevent)
 {
   bool getting_input;
   int y_offset, check_redraw;

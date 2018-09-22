@@ -7,6 +7,7 @@
 #include "settings.h"
 #include "backend.h"
 #include "MainWindow.h"
+#include "MouseEvent.h"
 
 #ifndef PACKAGE_VERSION
   #define PACKAGE_VERSION ""
@@ -16,6 +17,7 @@ int main(int argc, char *argv[])
 {
   int check;
   CLOParser clos;
+  MouseEvent mevent;
 
   // Parse command line arguments
 
@@ -31,7 +33,8 @@ int main(int argc, char *argv[])
   noecho();
   set_escdelay(25);
   keypad(stdscr, TRUE);
-  mousemask(BUTTON1_CLICKED | BUTTON2_CLICKED | BUTTON1_DOUBLE_CLICKED, NULL);
+  mousemask(BUTTON1_PRESSED | BUTTON2_PRESSED, NULL);
+  mouseinterval(0);
 
   // Read config file. Temporarily leave ncurses mode so that stdin/out work
   // properly for this step.
@@ -51,7 +54,7 @@ int main(int argc, char *argv[])
 
   MainWindow mainwindow(PACKAGE_VERSION);
   mainwindow.initialize();
-  mainwindow.exec();
+  mainwindow.exec(&mevent);
 
   endwin();
   return 0;

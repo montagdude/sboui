@@ -5,6 +5,7 @@
 #include <curses.h>
 #include "BuildListItem.h"
 #include "BuildOrderBox.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -55,7 +56,7 @@ class InstallBox: public BuildOrderBox {
     /* User interaction loop. Differs from standard BuildListBox exec() in
        that the space bar is used to tag (select/unselect) items */
 
-    std::string exec();
+    std::string exec(MouseEvent * mevent=NULL);
 
     /* Make a list of packages from a different repo that will be changed */
 

@@ -29,6 +29,7 @@
 #include "QuickSearch.h"
 #include "PackageInfoBox.h"
 #include "MainWindow.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -1915,7 +1916,7 @@ void MainWindow::preferredSize(int & height, int & width) const {}
 Handles mouse events
 
 *******************************************************************************/
-std::string MainWindow::handleMouseEvent(const MEVENT *event)
+std::string MainWindow::handleMouseEvent(const MouseEvent * mevent)
 {
   int ymin1, xmin1, ymax1, xmax1;
   int ymin2, xmin2, ymax2, xmax2;
@@ -1936,8 +1937,8 @@ std::string MainWindow::handleMouseEvent(const MEVENT *event)
 
   // Category list box
 
-  if ( (event->y >= ymin1) && (event->y <= ymax1) &&
-       (event->x >= xmin1) && (event->x <= xmax1) )
+  if ( (mevent->y() >= ymin1) && (mevent->y() <= ymax1) &&
+       (mevent->x() >= xmin1) && (mevent->x() <= xmax1) )
   {
     // Activate CategoryListBox if needed
 
@@ -1950,7 +1951,7 @@ std::string MainWindow::handleMouseEvent(const MEVENT *event)
       clearStatus();
     }
 
-    action = _clistbox.handleMouseEvent(event);
+    action = _clistbox.handleMouseEvent(mevent);
     if ( (action == signals::highlight) || (action == signals::keyEnter) )
     {
       _category_idx = _clistbox.highlight(); 
@@ -1960,8 +1961,8 @@ std::string MainWindow::handleMouseEvent(const MEVENT *event)
 
   // Builds list box
 
-  else if ( (event->y >= ymin2) && (event->y <= ymax2+1) &&
-            (event->x >= xmin2) && (event->x <= xmax2) )
+  else if ( (mevent->y() >= ymin2) && (mevent->y() <= ymax2+1) &&
+            (mevent->x() >= xmin2) && (mevent->x() <= xmax2) )
   {
     // Activate BuildListBox if needed
 
@@ -1973,7 +1974,7 @@ std::string MainWindow::handleMouseEvent(const MEVENT *event)
       _activated_listbox = 1;
     }
 
-    action = _blistboxes[_category_idx].handleMouseEvent(event);
+    action = _blistboxes[_category_idx].handleMouseEvent(mevent);
     if (action == signals::highlight)
     {
       // Display status message for installed SlackBuild
@@ -2026,14 +2027,13 @@ void MainWindow::draw(bool force)
 Displays the main window
 
 *******************************************************************************/
-std::string MainWindow::exec()
+std::string MainWindow::exec(MouseEvent * mevent)
 {
   std::string selection;
   bool getting_input, all_tagged;
   int check_quit;
   unsigned int i, ncategories;
   BuildListItem *build;
-  const MEVENT *event;
 
   draw();
 
@@ -2046,7 +2046,7 @@ std::string MainWindow::exec()
 
     if (_activated_listbox == 0)
     {
-      selection = _clistbox.exec();
+      selection = _clistbox.exec(mevent);
 
       // Highlighted item changed
 
@@ -2087,17 +2087,14 @@ std::string MainWindow::exec()
       // Mouse input
 
       else if (selection == signals::mouseEvent)
-      {
-        event = _clistbox.getMouseEvent();
-        handleMouseEvent(event);
-      }
+        handleMouseEvent(mevent);
     }
 
     // Get input from SlackBuilds list box
 
     else if (_activated_listbox == 1)
     {
-      selection = _blistboxes[_category_idx].exec();
+      selection = _blistboxes[_category_idx].exec(mevent);
 
       // Highlighted item changed
 
@@ -2173,10 +2170,7 @@ std::string MainWindow::exec()
       // Mouse input
 
       else if (selection == signals::mouseEvent)
-      {
-        event = _blistboxes[_category_idx].getMouseEvent();
-        handleMouseEvent(event);
-      }
+        handleMouseEvent(mevent);
     }
 
     // Key signals with the same action w/ either type of list box

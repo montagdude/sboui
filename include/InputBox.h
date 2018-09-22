@@ -4,6 +4,7 @@
 #include <vector>
 #include <curses.h>
 #include "CursesWidget.h"
+#include "MouseEvent.h"
 
 class InputItem;
 
@@ -71,7 +72,7 @@ class InputBox: public CursesWidget {
 
     /* Mouse interaction */
 
-    std::string handleMouseEvent(const MEVENT *event);
+    std::string handleMouseEvent(const MouseEvent * mevent);
 
     /* Draws frame, entry, etc. as needed */
 
@@ -79,5 +80,5 @@ class InputBox: public CursesWidget {
 
     /* User interaction loop */
 
-    virtual std::string exec();
+    virtual std::string exec(MouseEvent * mevent=NULL);
 };

@@ -6,6 +6,7 @@
 #include "signals.h"
 #include "ListItem.h"
 #include "SelectionBox.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -272,7 +273,7 @@ void SelectionBox::draw(bool force)
 User interaction: show display until user hits Enter or Esc
 
 *******************************************************************************/
-std::string SelectionBox::exec()
+std::string SelectionBox::exec(MouseEvent * mevent)
 {
   int ch, check_redraw, hotkey;
   char ch_char, hotcharN, hotcharL;

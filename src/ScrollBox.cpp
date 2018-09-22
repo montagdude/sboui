@@ -8,6 +8,7 @@
 #include "ListItem.h"
 #include "AbstractListBox.h"
 #include "ScrollBox.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -295,7 +296,7 @@ void ScrollBox::preferredSize(int & height, int & width) const
 Handles mouse events
 
 *******************************************************************************/
-std::string ScrollBox::handleMouseEvent(const MEVENT *event)
+std::string ScrollBox::handleMouseEvent(const MouseEvent * event)
 {
   //FIXME: implement
   return signals::nullEvent;
@@ -332,7 +333,7 @@ void ScrollBox::draw(bool force)
 User interaction: returns key stroke or other signal
 
 *******************************************************************************/
-std::string ScrollBox::exec()
+std::string ScrollBox::exec(MouseEvent * mevent)
 {
   int ch, check_redraw;
   std::string retval;

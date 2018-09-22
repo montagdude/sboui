@@ -3,6 +3,7 @@
 #include <string>
 #include <curses.h>
 #include "TextInput.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -15,5 +16,5 @@ class QuickSearch: public TextInput {
 
     /* User interaction */
 
-    virtual std::string exec(int y_offset);
+    virtual std::string exec(int y_offset, MouseEvent * mevent=NULL);
 };

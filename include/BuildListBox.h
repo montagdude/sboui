@@ -3,6 +3,7 @@
 #include <string>
 #include <curses.h>
 #include "ListBox.h"
+#include "MouseEvent.h"
 
 class TagList;
 
@@ -39,5 +40,5 @@ class BuildListBox: public ListBox {
 
     /* User interaction loop */
 
-    virtual std::string exec();
+    virtual std::string exec(MouseEvent * mevent=NULL);
 };

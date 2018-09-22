@@ -4,6 +4,7 @@
 #include <curses.h>
 #include "DirListing.h"
 #include "SelectionBox.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -40,5 +41,5 @@ class DirListBox: public SelectionBox {
 
     /* User interaction loop */
 
-    std::string exec();
+    std::string exec(MouseEvent * mevent=NULL);
 };

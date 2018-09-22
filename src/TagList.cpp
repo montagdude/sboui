@@ -9,6 +9,7 @@
 #include "BuildListItem.h"
 #include "SelectionBox.h"
 #include "TagList.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
  
@@ -192,7 +193,7 @@ User interaction: returns key stroke or other signal. getDisplayList must be
 called first or nothing will be displayed!
 
 *******************************************************************************/
-std::string TagList::exec()
+std::string TagList::exec(MouseEvent * mevent)
 {
   int ch, check_redraw;
   std::string retval;

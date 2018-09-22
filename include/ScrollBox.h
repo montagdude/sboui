@@ -3,6 +3,7 @@
 #include <string>
 #include <curses.h>
 #include "AbstractListBox.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -42,7 +43,7 @@ class ScrollBox: public AbstractListBox {
 
     /* Mouse interaction */
 
-    std::string handleMouseEvent(const MEVENT *event);
+    std::string handleMouseEvent(const MouseEvent * mevent);
 
     /* Draws frame, items, etc. as needed */
  
@@ -50,5 +51,5 @@ class ScrollBox: public AbstractListBox {
 
     /* User interaction loop */
 
-    virtual std::string exec();
+    virtual std::string exec(MouseEvent * mevent=NULL);
 };

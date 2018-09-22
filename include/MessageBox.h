@@ -3,6 +3,7 @@
 #include <string>
 #include <curses.h>
 #include "CursesWidget.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -43,7 +44,7 @@ class MessageBox: public CursesWidget {
 
     /* Mouse interaction */
 
-    std::string handleMouseEvent(const MEVENT *event);
+    std::string handleMouseEvent(const MouseEvent * mevent);
 
     /* Draws frame and message */
 
@@ -51,5 +52,5 @@ class MessageBox: public CursesWidget {
 
     /* User interaction loop */
 
-    std::string exec();
+    std::string exec(MouseEvent * mevent=NULL);
 };

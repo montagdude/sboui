@@ -4,6 +4,7 @@
 #include "signals.h"
 #include "TextInput.h"
 #include "QuickSearch.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -12,7 +13,7 @@ the entry is changed, because the calling function needs to search as the user
 types.
 
 *******************************************************************************/
-std::string QuickSearch::exec(int y_offset)
+std::string QuickSearch::exec(int y_offset, MouseEvent * mevent)
 {
   int ch;
   bool getting_input;

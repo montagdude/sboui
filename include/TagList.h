@@ -6,6 +6,7 @@
 #include "SelectionBox.h"
 #include "ListItem.h"
 #include "BuildListItem.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -50,7 +51,7 @@ class TagList: public SelectionBox {
 
     /* User interaction loop */
 
-    std::string exec();
+    std::string exec(MouseEvent * mevent=NULL);
 
     /* Returns pointer to item by index in _tagged list */
 

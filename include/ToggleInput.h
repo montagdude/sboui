@@ -3,6 +3,7 @@
 #include <string>
 #include <curses.h>
 #include "InputItem.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -34,7 +35,7 @@ class ToggleInput: public InputItem {
     /* User interaction */
 
     void draw(int y_offset, bool force=false, bool highlight=false);
-    std::string exec(int y_offset);
+    std::string exec(int y_offset, MouseEvent * mevent=NULL);
 
     /* Accessing properties. */
 

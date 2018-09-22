@@ -3,6 +3,7 @@
 #include <string>
 #include <curses.h>
 #include "InputItem.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -40,7 +41,7 @@ class TextInput: public InputItem {
     /* User interaction */
 
     void draw(int y_offset, bool force=false, bool highlight=false);
-    virtual std::string exec(int y_offset);
+    virtual std::string exec(int y_offset, MouseEvent * mevent=NULL);
 
     /* Accessing properties */
 

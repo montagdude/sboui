@@ -12,6 +12,7 @@
 #include "backend.h"
 #include "BuildListItem.h"
 #include "InstallBox.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -478,7 +479,7 @@ int InstallBox::create(BuildListItem & build,
 User interaction: returns key stroke or other signal
 
 *******************************************************************************/
-std::string InstallBox::exec()
+std::string InstallBox::exec(MouseEvent * mevent)
 {
   int ch, check_redraw;
   std::string retval;

@@ -296,10 +296,11 @@ unsigned int BuildListBox::tagAll()
 User interaction: returns key stroke or other signal
 
 *******************************************************************************/
-std::string BuildListBox::exec()
+std::string BuildListBox::exec(MouseEvent * mevent)
 {
   int ch, check_redraw;
   std::string retval;
+  MEVENT event;
 
   const int MY_ESC = 27;
   const int MY_TAB = 9;
@@ -417,11 +418,14 @@ std::string BuildListBox::exec()
     // Mouse
 
     case KEY_MOUSE:
-      if (getmouse(&_mevent) == OK)
+      if ( (getmouse(&event) == OK) && mevent )
       {
+        mevent->recordClick(event);
         _redraw_type = "changed";
         retval = signals::mouseEvent;
       }
+      else
+        return signals::nullEvent;
       break;
 
     default:

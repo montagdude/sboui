@@ -8,6 +8,7 @@
 #include "signals.h"
 #include "string_util.h"
 #include "MessageBox.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -223,7 +224,7 @@ void MessageBox::preferredSize(int & height, int & width) const
 Handles mouse events
 
 *******************************************************************************/
-std::string MessageBox::handleMouseEvent(const MEVENT *event)
+std::string MessageBox::handleMouseEvent(const MouseEvent * event)
 {
 //FIXME: implement
   return signals::nullEvent;
@@ -251,7 +252,7 @@ void MessageBox::draw(bool force)
 User interaction: returns key stroke or other signal
 
 *******************************************************************************/
-std::string MessageBox::exec()
+std::string MessageBox::exec(MouseEvent * mevent)
 {
   int ch;
   std::string retval;

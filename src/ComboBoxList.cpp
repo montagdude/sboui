@@ -5,6 +5,7 @@
 #include "signals.h"
 #include "ListItem.h"
 #include "ComboBoxList.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -164,7 +165,7 @@ void ComboBoxList::draw(bool force)
 User interaction: show display until user hits Enter or Esc
 
 *******************************************************************************/
-std::string ComboBoxList::exec()
+std::string ComboBoxList::exec(MouseEvent * mevent)
 {
   int ch, check_redraw, highlightstore;
   std::string retval;

@@ -15,6 +15,7 @@
 #include "TagList.h"
 #include "OptionsWindow.h"
 #include "HelpWindow.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -147,7 +148,7 @@ class MainWindow: public CursesWidget {
 
     /* Mouse interaction */
 
-    std::string handleMouseEvent(const MEVENT *event);
+    std::string handleMouseEvent(const MouseEvent * mevent);
 
     /* Redraws the main window */
 
@@ -155,5 +156,5 @@ class MainWindow: public CursesWidget {
 
     /* Shows the main window */
 
-    std::string exec();
+    std::string exec(MouseEvent * mevent=NULL);
 };

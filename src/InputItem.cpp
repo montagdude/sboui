@@ -1,6 +1,7 @@
 #include <string>
 #include <curses.h>
 #include "InputItem.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -100,7 +101,7 @@ non-selectable InputItems (e.g., labels) don't have to implement it. Selectable
 classes should reimplement this.
 
 *******************************************************************************/
-std::string InputItem::exec(int y_offset) { return ""; }
+std::string InputItem::exec(int y_offset, MouseEvent * mevent) { return ""; }
 
 /*******************************************************************************
 

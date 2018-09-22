@@ -7,6 +7,7 @@
 #include "ListItem.h"
 #include "SelectionBox.h"
 #include "DirListBox.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
  
@@ -203,7 +204,7 @@ const std::string & DirListBox::directory() const { return _currentdir; }
 User interaction: display list of files that user can view
 
 *******************************************************************************/
-std::string DirListBox::exec()
+std::string DirListBox::exec(MouseEvent * mevent)
 {
   int ch, check_redraw;
   std::string retval;

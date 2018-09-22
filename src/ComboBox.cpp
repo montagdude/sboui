@@ -8,6 +8,7 @@
 #include "InputItem.h"
 #include "InputBox.h"
 #include "ComboBox.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -155,7 +156,7 @@ void ComboBox::draw(int y_offset, bool force, bool highlight)
 User interaction: returns key stroke
 
 *******************************************************************************/
-std::string ComboBox::exec(int y_offset)
+std::string ComboBox::exec(int y_offset, MouseEvent * mevent)
 {
   int ch;
   bool getting_input;

@@ -9,6 +9,7 @@
 #include "ListItem.h"
 #include "AbstractListBox.h"
 #include "ListBox.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -516,7 +517,7 @@ ListItem * ListBox::highlightedItem()
 Handles mouse events
 
 *******************************************************************************/
-std::string ListBox::handleMouseEvent(const MEVENT *event)
+std::string ListBox::handleMouseEvent(const MouseEvent * mevent)
 {
   int rows, cols, begy, begx, ycurs, xcurs, rowsavail;
 
@@ -525,19 +526,19 @@ std::string ListBox::handleMouseEvent(const MEVENT *event)
 
   getmaxyx(_win, rows, cols);
   getbegyx(_win, begy, begx);
-  ycurs = event->y - begy;
-  xcurs = event->x - begx;
+  ycurs = mevent->y() - begy;
+  xcurs = mevent->x() - begx;
   rowsavail = rows-_reserved_rows;
 
   if ( (ycurs < int(_header_rows)) || (ycurs >= int(_header_rows)+rowsavail) )
     return signals::nullEvent;
   else if ( (xcurs < 1) || (xcurs >= cols-1) )
     return signals::nullEvent;
+  else if (_firstprint + (ycurs - _header_rows) >= _items.size())
+    return signals::nullEvent;
   else
   {
-    if ( (event->bstate & BUTTON1_CLICKED) ||
-         (event->bstate & BUTTON2_CLICKED) ||
-         (event->bstate & BUTTON1_DOUBLE_CLICKED) )
+    if ( (mevent->button() == 1) || (mevent->button() == 2) )
     {
       _prevhighlight = _highlight;
       _highlight = _firstprint + (ycurs - _header_rows);
@@ -548,11 +549,13 @@ std::string ListBox::handleMouseEvent(const MEVENT *event)
       draw();
     }
 
-    if ( (event->bstate & BUTTON1_CLICKED) ||
-         (event->bstate & BUTTON2_CLICKED) )
-      return signals::highlight;
-    else if (event->bstate & BUTTON1_DOUBLE_CLICKED)
-      return signals::keyEnter;
+    if ( (mevent->button() == 1) || (mevent->button() == 2) )
+    {
+      if (mevent->doubleClick())
+        return signals::keyEnter;
+      else
+        return signals::highlight;
+    }
     else
       return signals::nullEvent;
   }
@@ -590,10 +593,11 @@ void ListBox::draw(bool force)
 User interaction: returns key stroke or other signal
 
 *******************************************************************************/
-std::string ListBox::exec()
+std::string ListBox::exec(MouseEvent * mevent)
 {
   int ch, check_redraw;
   std::string retval;
+  MEVENT event;
 
   const int MY_ESC = 27;
   const int MY_TAB = 9;
@@ -693,11 +697,14 @@ std::string ListBox::exec()
     // Mouse
 
     case KEY_MOUSE:
-      if (getmouse(&_mevent) == OK)
+      if ( (getmouse(&event) == OK) && mevent )
       {
+        mevent->recordClick(event);
         _redraw_type = "changed";
         retval = signals::mouseEvent;
       }
+      else
+        return signals::nullEvent;
       break;
 
     default:

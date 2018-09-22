@@ -7,6 +7,7 @@
 #include "signals.h"
 #include "InputItem.h"
 #include "InputBox.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -558,7 +559,7 @@ unsigned int InputBox::numItems() const { return _items.size(); }
 Handles mouse events
 
 *******************************************************************************/
-std::string InputBox::handleMouseEvent(const MEVENT *event)
+std::string InputBox::handleMouseEvent(const MouseEvent * mevent)
 {
 //FIXME: implement
   return signals::nullEvent;
@@ -596,7 +597,7 @@ void InputBox::draw(bool force)
 User interaction with input items in the box
 
 *******************************************************************************/
-std::string InputBox::exec()
+std::string InputBox::exec(MouseEvent * mevent)
 {
   bool getting_input;
   int y_offset, check_redraw;
