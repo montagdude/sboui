@@ -530,59 +530,59 @@ std::string ListBox::handleMouseEvent(const MouseEvent * mevent)
   xcurs = mevent->x() - begx;
   rowsavail = rows-_reserved_rows;
 
-  if ( (ycurs < int(_header_rows)) || (ycurs >= int(_header_rows)+rowsavail) )
-    return signals::nullEvent;
-  else if ( (xcurs < 1) || (xcurs >= cols) )
-    return signals::nullEvent;
-
-  // Check for clicking scroll arrows
-
-  else if (xcurs == cols-1)
+  if ( (mevent->button() == 1) || (mevent->button() == 2) )
   {
-    if (ycurs == int(_header_rows))
-    {
-      if (_firstprint != 0)
-      {
-        check_redraw = highlightPreviousPage();
-        if (check_redraw == 1)
-          _redraw_type = "all";
-        else
-          _redraw_type = "changed";
-        draw();
-        return signals::highlight;
-      }
-      else
-        return signals::nullEvent;
-    }
-    else if (ycurs == int(_header_rows)+rowsavail-1)
-    {
-      if (_items.size() > _firstprint + rows-_reserved_rows)
-      {
-        check_redraw = highlightNextPage();
-        if (check_redraw == 1)
-          _redraw_type = "all";
-        else
-          _redraw_type = "changed";
-        draw();
-        return signals::highlight;
-      }
-      else
-        return signals::nullEvent;
-    }
-    else
+    if ( (ycurs < int(_header_rows)) || (ycurs >= int(_header_rows)+rowsavail) )
       return signals::nullEvent;
-  }
+    else if ( (xcurs < 1) || (xcurs >= cols) )
+      return signals::nullEvent;
 
-  // Clicked on empty space in the list box
+    // Check for clicking scroll arrows
 
-  else if (_firstprint + (ycurs - _header_rows) >= _items.size())
-    return signals::nullEvent;
+    else if (xcurs == cols-1)
+    {
+      if (ycurs == int(_header_rows))
+      {
+        if (_firstprint != 0)
+        {
+          check_redraw = highlightPreviousPage();
+          if (check_redraw == 1)
+            _redraw_type = "all";
+          else
+            _redraw_type = "changed";
+          draw();
+          return signals::highlight;
+        }
+        else
+          return signals::nullEvent;
+      }
+      else if (ycurs == int(_header_rows)+rowsavail-1)
+      {
+        if (_items.size() > _firstprint + rows-_reserved_rows)
+        {
+          check_redraw = highlightNextPage();
+          if (check_redraw == 1)
+            _redraw_type = "all";
+          else
+            _redraw_type = "changed";
+          draw();
+          return signals::highlight;
+        }
+        else
+          return signals::nullEvent;
+      }
+      else
+        return signals::nullEvent;
+    }
 
-  // Clicked in the box -> change highlighted item
+    // Clicked on empty space in the list box
 
-  else
-  {
-    if ( (mevent->button() == 1) || (mevent->button() == 2) )
+    else if (_firstprint + (ycurs - _header_rows) >= _items.size())
+      return signals::nullEvent;
+
+    // Clicked in the box -> change highlighted item
+
+    else
     {
       _prevhighlight = _highlight;
       _highlight = _firstprint + (ycurs - _header_rows);
@@ -591,18 +591,22 @@ std::string ListBox::handleMouseEvent(const MouseEvent * mevent)
       else
         _redraw_type = "changed";
       draw();
-    }
 
-    if ( (mevent->button() == 1) || (mevent->button() == 2) )
-    {
       if (mevent->doubleClick())
         return signals::keyEnter;
       else
         return signals::highlight;
     }
-    else
-      return signals::nullEvent;
   }
+
+  // Scroll wheel (FIXME: cannot implement button 5 until ncurses 6)
+
+  else if (mevent->button() == 4)
+    return signals::nullEvent;
+  else if (mevent->button() == 5)
+    return signals::nullEvent;
+  else
+    return signals::nullEvent;
 }
 
 /*******************************************************************************

@@ -37,11 +37,14 @@ void MouseEvent::recordClick(const MEVENT & event)
     newbutton = 2; 
   else
     return;
+  //FIXME: Button 4 supposedly reports scroll down events, but scroll up
+  //(button 5) is only available in ncurses 6. Add scroll wheel support once
+  //Slackware 15 is released.
 
   // Determine if a double click occurred
 
   _doubleclick = false;
-  if (newbutton == _button)
+  if ( (newbutton == 1) && (_button == 1) )
   {
     duration = std::chrono::duration_cast<std::chrono::milliseconds>
                (tnew-_tclick).count();
