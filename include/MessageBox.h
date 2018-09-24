@@ -44,7 +44,7 @@ class MessageBox: public CursesWidget {
 
     /* Mouse interaction */
 
-    std::string handleMouseEvent(const MouseEvent * mevent);
+    std::string handleMouseEvent(MouseEvent * mevent);
 
     /* Draws frame and message */
 

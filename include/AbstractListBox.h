@@ -16,6 +16,7 @@ class AbstractListBox: public CursesWidget {
 
   protected:
 
+    int _highlight, _prevhighlight;
     std::string _name, _redraw_type;
     std::vector<ListItem *> _items;
     unsigned int _reserved_rows, _header_rows;

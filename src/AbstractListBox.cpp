@@ -1,6 +1,6 @@
 #include <string>
 #include <curses.h>
-#include <cmath>     // floor
+#include <cmath>     // floor, ceil
 #include "ListItem.h"
 #include "AbstractListBox.h"
 
@@ -11,7 +11,8 @@ Redraws right border between header and footer and scroll indicators
 *******************************************************************************/
 void AbstractListBox::redrawScrollIndicator() const
 {
-  int rows, cols, i, rowsavail, maxscroll, pos;
+  int rows, cols, i, rowsavail, pos;
+  double frac;
   bool need_up, need_dn;
 
   // Check if a scroll indicator is needed
@@ -38,10 +39,17 @@ void AbstractListBox::redrawScrollIndicator() const
 
   // Draw position indicator
 
-  if ( (need_up) || (need_dn) )
+  if ( (_items.size() > 0) && ((need_up) || (need_dn)) )
   {
-    maxscroll = _items.size() - rowsavail; 
-    pos = std::floor(double(_firstprint)/double(maxscroll)*(rowsavail-1));
+    frac = double(_highlight)/double(_items.size()-1);
+
+    // Make sure we don't indicate the top or bottom before we're really there
+
+    if (frac < 0.5)
+      pos = std::ceil(frac*(rowsavail-1));
+    else
+      pos = std::floor(frac*(rowsavail-1));
+
     mvwaddch(_win, _header_rows+pos, cols-1, ACS_DIAMOND);
   }
 }
@@ -54,6 +62,8 @@ Constructors
 AbstractListBox::AbstractListBox()
 {
   _name = "";
+  _highlight = 0;
+  _prevhighlight = 0;
   _redraw_type = "all";
   _items.resize(0);
   _firstprint = 0;
@@ -65,6 +75,8 @@ AbstractListBox::AbstractListBox(WINDOW *win, const std::string & name)
 {
   _win = win;
   _name = name;
+  _highlight = 0;
+  _prevhighlight = 0;
   _redraw_type = "all";
   _items.resize(0);
   _firstprint = 0;

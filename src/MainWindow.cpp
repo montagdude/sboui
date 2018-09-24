@@ -773,7 +773,8 @@ if anything was changed, false otherwise.
 bool MainWindow::modifyPackage(BuildListItem & build,
                                const std::string & action, int & ninstalled,
                                int & nupgraded, int & nreinstalled,
-                               int & nremoved, bool & cancel_all, bool batch)
+                               int & nremoved, bool & cancel_all, bool batch,
+                               MouseEvent * mevent)
 {
   WINDOW *installerwin;
   int check, nchanged_orig, nchanged_new, response;
@@ -903,7 +904,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
         hideWindow(installerwin);
         draw(true);
         subbuild = static_cast<BuildListItem *>(installer.highlightedItem());
-        showBuildActions(*subbuild, true);
+        showBuildActions(*subbuild, true, mevent);
         placePopup(&installer, installerwin);
         draw(true);
       }
@@ -1002,7 +1003,7 @@ void MainWindow::setBuildOptions(BuildListItem & build)
 Shows build order for a SlackBuild
 
 *******************************************************************************/
-void MainWindow::showBuildOrder(BuildListItem & build)
+void MainWindow::showBuildOrder(BuildListItem & build, MouseEvent * mevent)
 {
   WINDOW *buildorderwin;
   int check;
@@ -1053,7 +1054,7 @@ void MainWindow::showBuildOrder(BuildListItem & build)
       hideWindow(buildorderwin);
       draw(true);
       subbuild = static_cast<BuildListItem *>(buildorder.highlightedItem());
-      showBuildActions(*subbuild, true);
+      showBuildActions(*subbuild, true, mevent);
       placePopup(&buildorder, buildorderwin);
       draw(true);
       buildorder.draw(true);
@@ -1714,7 +1715,8 @@ void MainWindow::search()
 Dialog for actions pertaining to selected SlackBuild
 
 *******************************************************************************/
-void MainWindow::showBuildActions(BuildListItem & build, bool limited_actions)
+void MainWindow::showBuildActions(BuildListItem & build, bool limited_actions,
+                                  MouseEvent * mevent)
 {
   WINDOW *actionwin;
   std::string selection, selected, action;
@@ -1737,7 +1739,7 @@ void MainWindow::showBuildActions(BuildListItem & build, bool limited_actions)
   while (getting_selection)
   {
     selected = "None";
-    selection = actionbox.exec();
+    selection = actionbox.exec(mevent);
     if (selection == signals::keyEnter) { 
                                selected = actionbox.highlightedItem()->name(); }
 
@@ -1916,7 +1918,7 @@ void MainWindow::preferredSize(int & height, int & width) const {}
 Handles mouse events
 
 *******************************************************************************/
-std::string MainWindow::handleMouseEvent(const MouseEvent * mevent)
+std::string MainWindow::handleMouseEvent(MouseEvent * mevent)
 {
   int ymin1, xmin1, ymax1, xmax1;
   int ymin2, xmin2, ymax2, xmax2;
@@ -1988,7 +1990,7 @@ std::string MainWindow::handleMouseEvent(const MouseEvent * mevent)
     {
       build = static_cast<BuildListItem *>(
                                 _blistboxes[_category_idx].highlightedItem());
-      showBuildActions(*build);
+      showBuildActions(*build, false, mevent);
 
       // Determine if categories should be tagged and redraw
 
@@ -2108,7 +2110,7 @@ std::string MainWindow::exec(MouseEvent * mevent)
       }
 
       // Tab signal or left key
-      
+
       else if ( (selection == signals::keyTab) ||
                 (selection == signals::keyLeft) )
       {
@@ -2146,14 +2148,14 @@ std::string MainWindow::exec(MouseEvent * mevent)
                                   _blistboxes[_category_idx].highlightedItem());
         printPackageVersion(*build);
       }
-     
+
       // Enter signal: show action dialog
 
       else if (selection == signals::keyEnter)
       {
         build = static_cast<BuildListItem *>(
                                   _blistboxes[_category_idx].highlightedItem());
-        showBuildActions(*build);
+        showBuildActions(*build, false, mevent);
 
         // Determine if categories should be tagged and redraw
 

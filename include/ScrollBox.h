@@ -43,7 +43,7 @@ class ScrollBox: public AbstractListBox {
 
     /* Mouse interaction */
 
-    std::string handleMouseEvent(const MouseEvent * mevent);
+    std::string handleMouseEvent(MouseEvent * mevent);
 
     /* Draws frame, items, etc. as needed */
  

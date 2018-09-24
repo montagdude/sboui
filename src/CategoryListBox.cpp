@@ -180,7 +180,7 @@ std::string CategoryListBox::exec(MouseEvent * mevent)
 
   // Highlight first entry on first display
 
-  if (_highlight == 0) { highlightFirst(); }
+  if ( (_highlight == 0) && (_prevhighlight == 0) ) { highlightFirst(); }
 
   // Draw list elements
 

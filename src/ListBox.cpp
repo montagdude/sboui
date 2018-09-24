@@ -23,6 +23,7 @@ int ListBox::highlightFirst()
 
   if (_items.size() == 0) { return 0; }
 
+  _prevhighlight = _highlight;
   _highlight = 0;
   if (_firstprint == 0) { retval = 0; }
   else { retval = 1; }
@@ -41,6 +42,7 @@ int ListBox::highlightLast()
 {
   if (_items.size() == 0) { return 0; }
 
+  _prevhighlight = _highlight;
   _highlight = std::max(int(_items.size()) - 1, 0);
   return determineFirstPrint();
 }
@@ -58,6 +60,7 @@ int ListBox::highlightPrevious()
   if (_highlight == 0) { return 0; }
   else
   {
+    _prevhighlight = _highlight;
     _highlight -= 1;
     return determineFirstPrint();
   }
@@ -76,6 +79,7 @@ int ListBox::highlightNext()
   if (_highlight == int(_items.size())-1) { return 0; }
   else
   {
+    _prevhighlight = _highlight;
     _highlight += 1;
     return determineFirstPrint();
   }
@@ -109,6 +113,7 @@ int ListBox::highlightNextPage()
 
   // Determine which choice to highlight
 
+  _prevhighlight = _highlight;
   _highlight += rowsavail;
 
   return 1;
@@ -140,9 +145,27 @@ int ListBox::highlightPreviousPage()
 
   // Determine which choice to highlight
 
+  _prevhighlight = _highlight;
   _highlight -= rowsavail;
 
   return 1;
+}
+
+/*******************************************************************************
+
+Scrolls to a page based on a fractional value of all items in the list. Return
+value of 0 means that _firstprint hasn't changed; 1 means it has.
+
+*******************************************************************************/
+int ListBox::highlightFractional(const double & frac)
+{
+  if (_items.size() == 0) { return 0; }
+  if (frac < 0.) { return 0; }
+  else if (frac > 1.) { return 0; }
+
+  _prevhighlight = _highlight;
+  _highlight = std::floor(frac*double(_items.size()-1));
+  return determineFirstPrint();
 }
 
 /*******************************************************************************
@@ -348,8 +371,6 @@ Constructors
 *******************************************************************************/
 ListBox::ListBox()
 {
-  _highlight = 0;
-  _prevhighlight = 0;
   _activated = true;
 }
 
@@ -357,8 +378,6 @@ ListBox::ListBox(WINDOW *win, const std::string & name)
 {
   _win = win;
   _name = name;
-  _highlight = 0;
-  _prevhighlight = 0;
   _activated = true;
 }
 
@@ -517,9 +536,10 @@ ListItem * ListBox::highlightedItem()
 Handles mouse events
 
 *******************************************************************************/
-std::string ListBox::handleMouseEvent(const MouseEvent * mevent)
+std::string ListBox::handleMouseEvent(MouseEvent * mevent)
 {
   int rows, cols, begy, begx, ycurs, xcurs, rowsavail, check_redraw;
+  double frac;
 
   if (_items.size() == 0)
     return signals::nullEvent;
@@ -537,7 +557,7 @@ std::string ListBox::handleMouseEvent(const MouseEvent * mevent)
     else if ( (xcurs < 1) || (xcurs >= cols) )
       return signals::nullEvent;
 
-    // Check for clicking scroll arrows
+    // Check for clicking on scroll area
 
     else if (xcurs == cols-1)
     {
@@ -550,7 +570,6 @@ std::string ListBox::handleMouseEvent(const MouseEvent * mevent)
             _redraw_type = "all";
           else
             _redraw_type = "changed";
-          draw();
           return signals::highlight;
         }
         else
@@ -565,14 +584,22 @@ std::string ListBox::handleMouseEvent(const MouseEvent * mevent)
             _redraw_type = "all";
           else
             _redraw_type = "changed";
-          draw();
           return signals::highlight;
         }
         else
           return signals::nullEvent;
       }
       else
-        return signals::nullEvent;
+      {
+        frac = double(ycurs-_header_rows) /
+               double(rowsavail-1);
+        check_redraw = highlightFractional(frac);
+        if (check_redraw == 1)
+          _redraw_type = "all";
+        else
+          _redraw_type = "changed";
+        return signals::highlight;
+      }
     }
 
     // Clicked on empty space in the list box
@@ -590,7 +617,6 @@ std::string ListBox::handleMouseEvent(const MouseEvent * mevent)
         _redraw_type = "all";
       else
         _redraw_type = "changed";
-      draw();
 
       if (mevent->doubleClick())
         return signals::keyEnter;
@@ -652,7 +678,7 @@ std::string ListBox::exec(MouseEvent * mevent)
 
   // Highlight first entry on first display
 
-  if (_highlight == 0) { highlightFirst(); }
+  if ( (_highlight == 0) && (_prevhighlight == 0) ) { highlightFirst(); }
 
   // Draw list elements
 

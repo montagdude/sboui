@@ -84,9 +84,10 @@ class MainWindow: public CursesWidget {
     void browseFiles(const BuildListItem & build);
     bool modifyPackage(BuildListItem & build, const std::string & action,
                        int & ninstalled, int & nupgraded, int & nreinstalled,
-                       int & nremoved, bool & cancel_all, bool batch=false);
+                       int & nremoved, bool & cancel_all, bool batch=false,
+                       MouseEvent * mevent=NULL);
     void setBuildOptions(BuildListItem & build);
-    void showBuildOrder(BuildListItem & build);
+    void showBuildOrder(BuildListItem & build, MouseEvent * mevent=NULL);
     void showInverseReqs(const BuildListItem & build);
     void showPackageInfo(BuildListItem & build);
 
@@ -135,7 +136,8 @@ class MainWindow: public CursesWidget {
 
     void selectFilter();
     void search();
-    void showBuildActions(BuildListItem & build, bool limited_actions=false);
+    void showBuildActions(BuildListItem & build, bool limited_actions=false,
+                          MouseEvent * mevent=NULL);
 
     /* Quick search in active list */
 
@@ -148,7 +150,7 @@ class MainWindow: public CursesWidget {
 
     /* Mouse interaction */
 
-    std::string handleMouseEvent(const MouseEvent * mevent);
+    std::string handleMouseEvent(MouseEvent * mevent);
 
     /* Redraws the main window */
 

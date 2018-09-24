@@ -296,7 +296,7 @@ void ScrollBox::preferredSize(int & height, int & width) const
 Handles mouse events
 
 *******************************************************************************/
-std::string ScrollBox::handleMouseEvent(const MouseEvent * event)
+std::string ScrollBox::handleMouseEvent(MouseEvent * event)
 {
   //FIXME: implement
   return signals::nullEvent;

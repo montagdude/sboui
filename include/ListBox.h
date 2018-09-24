@@ -16,24 +16,24 @@ class ListBox: public AbstractListBox {
 
   protected:
 
-    int _highlight, _prevhighlight;
     bool _activated;
 
     /* Setting item to be highlighted */
-  
+
     int highlightFirst();
     int highlightLast();
     int highlightPrevious();
     int highlightNext();
     int highlightNextPage();
     int highlightPreviousPage();
-                   
+    int highlightFractional(const double & frac);
+
     /* Determines first item to print (needed for scrolling) */
-    
+
     int determineFirstPrint();
 
     /* Drawing */
-    
+
     virtual void redrawFrame() const;
     virtual void redrawSingleItem(unsigned int idx);
     void redrawChangedItems();
@@ -74,7 +74,7 @@ class ListBox: public AbstractListBox {
 
     /* Handles mouse event */
 
-    std::string handleMouseEvent(const MouseEvent * mevent);
+    std::string handleMouseEvent(MouseEvent * mevent);
 
     /* Draws frame, items, etc. as needed */
  

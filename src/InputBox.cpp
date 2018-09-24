@@ -559,7 +559,7 @@ unsigned int InputBox::numItems() const { return _items.size(); }
 Handles mouse events
 
 *******************************************************************************/
-std::string InputBox::handleMouseEvent(const MouseEvent * mevent)
+std::string InputBox::handleMouseEvent(MouseEvent * mevent)
 {
 //FIXME: implement
   return signals::nullEvent;

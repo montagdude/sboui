@@ -280,12 +280,13 @@ std::string SelectionBox::exec(MouseEvent * mevent)
   std::string retval;
   bool getting_input, check_hotkeys;
   unsigned int i;
+  MEVENT event;
 
   const int MY_ESC = 27;
 
   // Highlight first entry on first display
 
-  if (_highlight == 0) { highlightFirst(); }
+  if ( (_highlight == 0) && (_prevhighlight == 0) ) { highlightFirst(); }
 
   getting_input = true;
   while (getting_input)
@@ -294,15 +295,15 @@ std::string SelectionBox::exec(MouseEvent * mevent)
     check_hotkeys = false;
 
     // Draw list elements
-  
+
     draw();
-  
+
     // Get user input
-  
+
     switch (ch = getch()) {
-  
+
       // Enter key: accept selection
-  
+
       case '\n':
       case '\r':
       case KEY_ENTER:
@@ -310,9 +311,9 @@ std::string SelectionBox::exec(MouseEvent * mevent)
         _redraw_type = "all";
         getting_input = false;
         break;
-  
+
       // Arrows/Home/End/PgUp/Dn: change highlighted value
-  
+
       case KEY_UP:
         check_redraw = highlightPrevious();
         if (check_redraw == 1) { _redraw_type = "all"; }
@@ -343,21 +344,36 @@ std::string SelectionBox::exec(MouseEvent * mevent)
         if (check_redraw == 1) { _redraw_type = "all"; }
         else { _redraw_type = "changed"; }
         break;
-  
+
       // Resize signal
-  
+
       case KEY_RESIZE:
         retval = signals::resize;
         _redraw_type = "all";
         getting_input = false;
         break;
-  
+
       // Quit key
-  
+
       case MY_ESC:
         retval = signals::quit;
         _redraw_type = "all";
         getting_input = false;
+        break;
+
+      // Mouse
+
+      case KEY_MOUSE:
+        if ( (getmouse(&event) == OK) && mevent )
+        {
+          mevent->recordClick(event);
+          retval = handleMouseEvent(mevent);
+          if ( (retval == signals::keyEnter) || (retval == signals::quit) )
+          {
+            getting_input = false;
+            _redraw_type = "all";
+          }
+        }
         break;
 
       default:
@@ -365,7 +381,7 @@ std::string SelectionBox::exec(MouseEvent * mevent)
         check_hotkeys = true;
         break;
     }
-      
+
     // Handle hotkeys (allow upper and lower case)
 
     if (check_hotkeys)

@@ -46,7 +46,7 @@ class CursesWidget {
 
     /* Mouse interaction */
 
-    virtual std::string handleMouseEvent(const MouseEvent * mevent) = 0;
+    virtual std::string handleMouseEvent(MouseEvent * mevent) = 0;
 
     /* Draws frame and message */
 
