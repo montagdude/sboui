@@ -629,7 +629,7 @@ std::string ListBox::handleMouseEvent(MouseEvent * mevent)
 
   else if (mevent->button() == 4)
   {
-    check_redraw = highlightPrevious();
+    check_redraw = highlightPreviousPage();
     if (check_redraw == 1)
       _redraw_type = "all";
     else
@@ -638,7 +638,7 @@ std::string ListBox::handleMouseEvent(MouseEvent * mevent)
   }
   else if (mevent->button() == 5)
   {
-    check_redraw = highlightNext();
+    check_redraw = highlightNextPage();
     if (check_redraw == 1)
       _redraw_type = "all";
     else
