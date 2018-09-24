@@ -625,12 +625,26 @@ std::string ListBox::handleMouseEvent(MouseEvent * mevent)
     }
   }
 
-  // Scroll wheel (FIXME: cannot implement button 5 until ncurses 6)
+  // Scroll wheel
 
   else if (mevent->button() == 4)
-    return signals::nullEvent;
+  {
+    check_redraw = highlightPrevious();
+    if (check_redraw == 1)
+      _redraw_type = "all";
+    else
+      _redraw_type = "changed";
+    return signals::highlight;
+  }
   else if (mevent->button() == 5)
-    return signals::nullEvent;
+  {
+    check_redraw = highlightNext();
+    if (check_redraw == 1)
+      _redraw_type = "all";
+    else
+      _redraw_type = "changed";
+    return signals::highlight;
+  }
   else
     return signals::nullEvent;
 }

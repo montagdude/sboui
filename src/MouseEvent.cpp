@@ -35,11 +35,18 @@ void MouseEvent::recordClick(const MEVENT & event)
     newbutton = 1;
   else if (event.bstate & BUTTON2_PRESSED)
     newbutton = 2; 
+  else if (event.bstate & BUTTON4_PRESSED)
+    newbutton = 4;
+#if NCURSES_MOUSE_VERSION > 1
+  else if (event.bstate & BUTTON5_PRESSED)
+#else
+  // Note: this may not give desired scroll-down behavior with some values of
+  // TERM. For example, xterm-1003 activates this bit for all mouse movements.
+  else if (event.bstate & REPORT_MOUSE_POSITION)
+#endif
+    newbutton = 5;
   else
     return;
-  //FIXME: Button 4 supposedly reports scroll down events, but scroll up
-  //(button 5) is only available in ncurses 6. Add scroll wheel support once
-  //Slackware 15 is released.
 
   // Determine if a double click occurred
 
