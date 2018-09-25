@@ -614,29 +614,24 @@ std::string ListBox::handleMouseEvent(MouseEvent * mevent)
   {
     // Check for clicking on buttons
 
-    if (ycurs == rows-2)
+    nbuttons = _buttons.size();
+    if ( (nbuttons > 0) && (ycurs == rows-2) )
     {
-      nbuttons = _buttons.size();
-      if (nbuttons > 0)
+      for ( i = 0; i < nbuttons; i++ )
       {
-        for ( i = 0; i < nbuttons; i++ )
+        if ( (xcurs >= _button_left[i]) && (xcurs <= _button_right[i]) )
         {
-          if ( (xcurs >= _button_left[i]) && (xcurs <= _button_right[i]) )
-          {
-            _highlighted_button = i;
+          _highlighted_button = i;
 
-            // Redraw and pause for .1 seconds to make button selection visible
+          // Redraw and pause for .1 seconds to make button selection visible
 
-            _redraw_type = "changed";  //FIXME: buttons
-            draw(true);
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            return _button_signals[i];
-          }
+          _redraw_type = "changed";  //FIXME: buttons
+          draw(true);
+          std::this_thread::sleep_for(std::chrono::milliseconds(100));
+          return _button_signals[i];
         }
-        return signals::nullEvent;
       }
-      else
-        return signals::nullEvent;
+      return signals::nullEvent;
     }
 
     else if ( (ycurs < int(_header_rows)) ||
