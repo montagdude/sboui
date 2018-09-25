@@ -20,7 +20,7 @@ using namespace settings;
 Draws border and title
 
 *******************************************************************************/
-void OptionsWindow::redrawFrame() const
+void OptionsWindow::redrawFrame()
 {
   int rows, cols, namelen, i, left, right;
   double mid;

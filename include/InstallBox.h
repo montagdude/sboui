@@ -25,7 +25,7 @@ class InstallBox: public BuildOrderBox {
 
     /* Drawing */
     
-    void redrawFrame() const;
+    void redrawFrame();
     void redrawSingleItem(unsigned int idx);
 
   public:

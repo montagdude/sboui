@@ -13,7 +13,10 @@ Constructor
 BuildActionBox::BuildActionBox()
 {
   _name = "Select an action";
-  _info = "Enter: Ok | Esc: Back";
+  _buttons.resize(2);
+  _buttons[0] = "    Ok    ";
+  _buttons[1] = "  Cancel  ";
+  _highlighted_button = 0;
 }
 
 /*******************************************************************************

@@ -14,9 +14,7 @@ class SelectionBox: public ListBox {
   
   protected:
 
-    std::string _info;
-
-    void redrawFrame() const;
+    void redrawFrame();
     virtual void redrawSingleItem(unsigned int idx);
 
   public:
@@ -25,10 +23,6 @@ class SelectionBox: public ListBox {
 
     SelectionBox();
     SelectionBox(WINDOW *win, const std::string & name);
-
-    /* Set attributes */
-
-    void setInfo(const std::string & info);
 
     /* Get attributes */
 

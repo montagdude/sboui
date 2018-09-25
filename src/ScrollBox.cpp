@@ -144,7 +144,7 @@ int ScrollBox::scrollNextPage()
 Draws window border and title
 
 *******************************************************************************/
-void ScrollBox::redrawFrame() const
+void ScrollBox::redrawFrame()
 {
   int rows, cols, namelen, i, left, right;
   double mid;

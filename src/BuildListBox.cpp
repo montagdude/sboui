@@ -14,7 +14,7 @@
 Draws window border, title, and header
 
 *******************************************************************************/
-void BuildListBox::redrawFrame() const
+void BuildListBox::redrawFrame()
 {
   int rows, cols, namelen, i, nspaces, vlineloc, left, right;
   double mid;

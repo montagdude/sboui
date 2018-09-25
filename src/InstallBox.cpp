@@ -19,7 +19,7 @@
 Draws window border and title
 
 *******************************************************************************/
-void InstallBox::redrawFrame() const
+void InstallBox::redrawFrame()
 {
   int rows, cols, namelen, i, nspaces, action_cols, vlineloc;
   unsigned int j, nitems, actionlen;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <string>
 #include <curses.h>
 #include "AbstractListBox.h"
@@ -17,6 +18,11 @@ class ListBox: public AbstractListBox {
   protected:
 
     bool _activated;
+    std::vector<std::string> _buttons;  // At the bottom, e.g. OK/Cancel
+    std::vector<std::string> _button_signals;
+    std::vector<int> _button_left;      // Left edge of each button
+    std::vector<int> _button_right;     // Right edge of each button
+    int _highlighted_button;
 
     /* Setting item to be highlighted */
 
@@ -27,6 +33,8 @@ class ListBox: public AbstractListBox {
     int highlightNextPage();
     int highlightPreviousPage();
     int highlightFractional(const double & frac);
+    int highlightNextButton();
+    int highlightPreviousButton();
 
     /* Determines first item to print (needed for scrolling) */
 
@@ -34,7 +42,7 @@ class ListBox: public AbstractListBox {
 
     /* Drawing */
 
-    virtual void redrawFrame() const;
+    virtual void redrawFrame();
     virtual void redrawSingleItem(unsigned int idx);
     void redrawChangedItems();
     void redrawAllItems();
@@ -56,6 +64,7 @@ class ListBox: public AbstractListBox {
     void setActivated(bool activated);
     int setHighlight(int highlight);
     int setHighlight(const std::string & name);
+    void addButton(const std::string & button, const std::string & signal);
 
     /* Get attributes */
 
@@ -63,6 +72,7 @@ class ListBox: public AbstractListBox {
     const std::string & highlightedName() const;
     virtual void minimumSize(int & height, int & width) const;
     virtual void preferredSize(int & height, int & width) const;
+    int highlightedButton() const;
 
     /* Sets highlight by search for string */
 

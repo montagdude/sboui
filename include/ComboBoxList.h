@@ -14,7 +14,7 @@ class ComboBoxList: public ListBox {
   
   protected:
 
-    void redrawFrame() const;
+    void redrawFrame();
     void redrawSingleItem(unsigned int idx);
 
   public:

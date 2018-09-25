@@ -15,7 +15,7 @@
 Draws window border and title
 
 *******************************************************************************/
-void BuildOrderBox::redrawFrame() const
+void BuildOrderBox::redrawFrame()
 {
   int rows, cols, namelen, i, nspaces, vlineloc;
   double mid, left, right;

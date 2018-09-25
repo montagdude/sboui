@@ -27,7 +27,7 @@ class OptionsWindow: public InputBox {
 
     /* Drawing */
 
-    void redrawFrame() const;
+    void redrawFrame();
 
   public:
 

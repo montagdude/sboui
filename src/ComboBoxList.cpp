@@ -13,7 +13,7 @@ There is no frame, and scroll arrows are handled by redrawSingleItem, so
 do nothing here!
 
 *******************************************************************************/
-void ComboBoxList::redrawFrame() const {}
+void ComboBoxList::redrawFrame() {}
 
 /*******************************************************************************
  

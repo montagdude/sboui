@@ -25,7 +25,7 @@ class ScrollBox: public AbstractListBox {
 
     /* Drawing */
     
-    virtual void redrawFrame() const;
+    virtual void redrawFrame();
     virtual void redrawSingleItem(unsigned int idx);
     void redrawAllItems();
 

@@ -15,7 +15,7 @@
 Draws window border and title
 
 *******************************************************************************/
-void MessageBox::redrawFrame() const
+void MessageBox::redrawFrame()
 {
   int rows, cols, namelen, i, left;
   double mid;

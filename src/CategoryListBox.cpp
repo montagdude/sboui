@@ -14,7 +14,7 @@
 Draws window border, title, and header
 
 *******************************************************************************/
-void CategoryListBox::redrawFrame() const
+void CategoryListBox::redrawFrame()
 {
   int rows, cols, namelen, i, left, right;
   double mid;

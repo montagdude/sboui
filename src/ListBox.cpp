@@ -2,6 +2,8 @@
 #include <curses.h>
 #include <cmath>      // floor
 #include <algorithm>  // max, min
+#include <chrono>     // sleep_for
+#include <thread>     // this_thread
 #include "Color.h"
 #include "settings.h"
 #include "signals.h"
@@ -170,6 +172,44 @@ int ListBox::highlightFractional(const double & frac)
 
 /*******************************************************************************
 
+Highlights next button. Return value of 0 means that the highlighted button has
+not changed; 1 means that it has.
+
+*******************************************************************************/
+int ListBox::highlightNextButton()
+{
+  if (_buttons.size() < 2)
+    return 0;
+  else if (_highlighted_button < int(_buttons.size())-1)
+  {
+    _highlighted_button += 1;
+    return 1;
+  }
+  else
+    return 0;
+}
+
+/*******************************************************************************
+
+Highlights previous button. Return value of 0 means that the highlighted button
+has not changed; 1 means that it has.
+
+*******************************************************************************/
+int ListBox::highlightPreviousButton()
+{
+  if (_buttons.size() < 2)
+    return 0;
+  else if (_highlighted_button > 0)
+  {
+    _highlighted_button -= 1;
+    return 1;
+  }
+  else
+    return 0;
+}
+
+/*******************************************************************************
+
 Determine first item to print based on current highlighted and number of
 available rows. Returns 1 if this number has changed; 0 if not.
 
@@ -197,7 +237,7 @@ int ListBox::determineFirstPrint()
 Draws window border and title
 
 *******************************************************************************/
-void ListBox::redrawFrame() const
+void ListBox::redrawFrame()
 {
   int rows, cols, namelen, i, left, right;
   double mid;
@@ -214,6 +254,8 @@ void ListBox::redrawFrame() const
   wattron(_win, A_BOLD);
   wprintw(_win, _name.c_str());
   wattroff(_win, A_BOLD);
+
+  //FIXME: draw buttons if present
 
   // Corners
 
@@ -372,6 +414,9 @@ Constructors
 ListBox::ListBox()
 {
   _activated = true;
+  _buttons.resize(0);
+  _button_signals.resize(0);
+  _highlighted_button = -1;
 }
 
 ListBox::ListBox(WINDOW *win, const std::string & name)
@@ -379,6 +424,9 @@ ListBox::ListBox(WINDOW *win, const std::string & name)
   _win = win;
   _name = name;
   _activated = true;
+  _buttons.resize(0);
+  _button_signals.resize(0);
+  _highlighted_button = -1;
 }
 
 /*******************************************************************************
@@ -440,6 +488,15 @@ int ListBox::setHighlight(const std::string & name)
   return retval;
 }
 
+void ListBox::addButton(const std::string & button, const std::string & signal)
+{
+  _buttons.push_back(button);
+  _button_signals.push_back(signal);
+  _button_left.resize(_buttons.size());
+  _button_right.resize(_buttons.size());
+  _highlighted_button = 0;
+}
+
 /*******************************************************************************
 
 Get attributes
@@ -496,6 +553,8 @@ void ListBox::preferredSize(int & height, int & width) const
   width += reserved_cols + widthpadding;
 }
 
+int ListBox::highlightedButton() const { return _highlighted_button; }
+
 /*******************************************************************************
 
 Sets highlight based on a search. It doesn't have to be an exact match; the
@@ -539,6 +598,7 @@ Handles mouse events
 std::string ListBox::handleMouseEvent(MouseEvent * mevent)
 {
   int rows, cols, begy, begx, ycurs, xcurs, rowsavail, check_redraw;
+  unsigned int i, nbuttons;
   double frac;
 
   if (_items.size() == 0)
@@ -552,7 +612,35 @@ std::string ListBox::handleMouseEvent(MouseEvent * mevent)
 
   if ( (mevent->button() == 1) || (mevent->button() == 2) )
   {
-    if ( (ycurs < int(_header_rows)) || (ycurs >= int(_header_rows)+rowsavail) )
+    // Check for clicking on buttons
+
+    if (ycurs == rows-2)
+    {
+      nbuttons = _buttons.size();
+      if (nbuttons > 0)
+      {
+        for ( i = 0; i < nbuttons; i++ )
+        {
+          if ( (xcurs >= _button_left[i]) && (xcurs <= _button_right[i]) )
+          {
+            _highlighted_button = i;
+
+            // Redraw and pause for .1 seconds to make button selection visible
+
+            _redraw_type = "changed";  //FIXME: buttons
+            draw(true);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            return _button_signals[i];
+          }
+        }
+        return signals::nullEvent;
+      }
+      else
+        return signals::nullEvent;
+    }
+
+    else if ( (ycurs < int(_header_rows)) ||
+              (ycurs >= int(_header_rows)+rowsavail) )
       return signals::nullEvent;
     else if ( (xcurs < 1) || (xcurs >= cols) )
       return signals::nullEvent;
@@ -707,7 +795,10 @@ std::string ListBox::exec(MouseEvent * mevent)
     case '\n':
     case '\r':
     case KEY_ENTER:
-      retval = signals::keyEnter;
+      if (_buttons.size() > 0)
+        retval = _button_signals[_highlighted_button];
+      else
+        retval = signals::keyEnter;
       _redraw_type = "all";
       break;
 
@@ -715,17 +806,6 @@ std::string ListBox::exec(MouseEvent * mevent)
 
     case MY_TAB:
       retval = signals::keyTab;
-      _redraw_type = "changed";
-      break;
-
-    // Left/right arrows
-
-    case KEY_LEFT:
-      retval = signals::keyLeft;
-      _redraw_type = "changed";
-      break;
-    case KEY_RIGHT:
-      retval = signals::keyRight;
       _redraw_type = "changed";
       break;
 
@@ -766,6 +846,22 @@ std::string ListBox::exec(MouseEvent * mevent)
       check_redraw = highlightLast();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
+      break;
+
+    // Right/Left: change highlighted button
+
+    case KEY_RIGHT:
+      retval = signals::keyRight;
+      check_redraw = highlightNextButton();
+      if (check_redraw == 1) { _redraw_type = "changed"; }
+      else { _redraw_type = "none"; }
+      break;
+
+    case KEY_LEFT:
+      retval = signals::keyLeft;
+      check_redraw = highlightPreviousButton();
+      if (check_redraw == 1) { _redraw_type = "changed"; }
+      else { _redraw_type = "none"; }
       break;
 
     // Resize signal

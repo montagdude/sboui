@@ -18,7 +18,7 @@ class BuildListBox: public ListBox {
 
     TagList *_taglist;
 
-    virtual void redrawFrame() const;
+    virtual void redrawFrame();
     virtual void redrawSingleItem(unsigned int idx);
 
   public:

@@ -14,7 +14,7 @@ class CategoryListBox: public ListBox {
   
   private:
 
-    void redrawFrame() const;
+    void redrawFrame();
     void redrawSingleItem(unsigned int idx);
 
   public:

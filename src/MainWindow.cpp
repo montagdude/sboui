@@ -1740,8 +1740,8 @@ void MainWindow::showBuildActions(BuildListItem & build, bool limited_actions,
   {
     selected = "None";
     selection = actionbox.exec(mevent);
-    if (selection == signals::keyEnter) { 
-                               selected = actionbox.highlightedItem()->name(); }
+    if (selection == signals::keyEnter)
+      selected = actionbox.highlightedItem()->name();
 
     // Note that upper/lower case checking for hotkeys has already happened in
     // SelectionBox, so just check the actual character here.

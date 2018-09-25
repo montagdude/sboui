@@ -12,7 +12,7 @@
 Draws window border, title, and header
 
 *******************************************************************************/
-void HelpWindow::redrawFrame() const
+void HelpWindow::redrawFrame()
 {
   int rows, cols, namelen, i, nspaces, vlineloc;
   double mid, left, right;

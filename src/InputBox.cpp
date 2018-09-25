@@ -225,7 +225,7 @@ int InputBox::determineFirstPrint()
 Draws window border, message, and info
 
 *******************************************************************************/
-void InputBox::redrawFrame() const
+void InputBox::redrawFrame()
 {
   int rows, cols, msglen, i, left;
   double mid;

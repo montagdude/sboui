@@ -13,7 +13,7 @@
 Draws window border, message, and info
 
 *******************************************************************************/
-void SearchBox::redrawFrame() const
+void SearchBox::redrawFrame()
 {
   int rows, cols, msglen, i, left;
   double mid;

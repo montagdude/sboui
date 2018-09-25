@@ -19,7 +19,7 @@ class MessageBox: public CursesWidget {
     int _color_idx;
     bool _header_colorize, _centered;
 
-    void redrawFrame() const;
+    void redrawFrame();
     virtual void redrawMessage() const;
 
   public:

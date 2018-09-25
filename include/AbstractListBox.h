@@ -22,7 +22,7 @@ class AbstractListBox: public CursesWidget {
     unsigned int _reserved_rows, _header_rows;
     int _firstprint;
 
-    virtual void redrawFrame() const = 0;
+    virtual void redrawFrame() = 0;
     virtual void redrawSingleItem(unsigned int idx) = 0;
     virtual void redrawScrollIndicator() const;
 

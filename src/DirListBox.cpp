@@ -110,7 +110,10 @@ Constructors and destructor
 *******************************************************************************/
 DirListBox::DirListBox()
 {
-  _info = "Enter: View | Esc: Back";
+  _buttons.resize(2);
+  _buttons[0] = "Enter: View";
+  _buttons[1] = "Esc: Back";
+  _highlighted_button = 0;
   _reserved_rows = 6;
   _header_rows = 3;
   _topdir = "";
@@ -122,7 +125,10 @@ DirListBox::DirListBox(WINDOW *win, const std::string & name)
 {
   _win = win;
   _name = name;
-  _info = "Enter: View | Esc: Back";
+  _buttons.resize(2);
+  _buttons[0] = "Enter: View";
+  _buttons[1] = "Esc: Back";
+  _highlighted_button = 0;
   _reserved_rows = 6;
   _header_rows = 3;
   _topdir = "";

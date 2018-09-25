@@ -13,9 +13,9 @@
 Draws window border, title, and info
 
 *******************************************************************************/
-void SelectionBox::redrawFrame() const
+void SelectionBox::redrawFrame()
 {
-  int rows, cols, namelen, i, left;
+  int rows, cols, namelen, i, left, nbuttons, color_pair1, color_pair2;
   double mid;
 
   getmaxyx(_win, rows, cols);
@@ -32,16 +32,47 @@ void SelectionBox::redrawFrame() const
   printToEol(_name);
   colors.turnOff(_win);
 
-  // Info on bottom of window
+  // Buttons at bottom of window
+  // FIXME: Make this its own method
 
-  namelen = _info.size();
-  left = std::floor(mid - double(namelen)/2.0) + 1;
-  wmove(_win, rows-2, 1);
-  wclrtoeol(_win);
-  colors.turnOn(_win, "fg_info", "bg_info");
-  printSpaces(left-1);
-  printToEol(_info);
-  colors.turnOff(_win);
+  nbuttons = _buttons.size();
+  if (nbuttons > 0)
+  {
+    namelen = 0;
+    for ( i = 0; i < nbuttons; i++ )
+    {
+      namelen += _buttons[i].size();
+    }
+    left = std::floor(mid - double(namelen)/2.0) + 1;
+    _button_left[0] = left;
+    _button_right[0] = _button_left[0] + _buttons[0].size()-1;
+    for ( i = 1; i < nbuttons; i++ )
+    {
+      _button_left[i] = _button_right[i-1] + 1;
+      _button_right[i] = _button_left[i] + _buttons[i].size()-1;
+    }
+    wmove(_win, rows-2, 1);
+    wclrtoeol(_win);
+    color_pair1 = colors.getPair("fg_popup", "bg_popup");
+    color_pair2 = colors.getPair("fg_highlight_active", "bg_highlight_active");
+    colors.turnOn(_win, color_pair1);
+    printSpaces(left-1);
+    for ( i = 0; i < nbuttons; i++ )
+    {
+      if (i == _highlighted_button)
+      {
+        colors.turnOff(_win);
+        if (colors.turnOn(_win, color_pair2) != 0)
+          wattron(_win, A_REVERSE);
+        wprintw(_win, _buttons[i].c_str());
+        if (colors.turnOff(_win) != 0)
+          wattroff(_win, A_REVERSE);
+      }
+      else
+        wprintw(_win, _buttons[i].c_str());
+    }
+    colors.turnOff(_win);
+  }
 
   // Corners
 
@@ -168,26 +199,35 @@ Constructors
 *******************************************************************************/
 SelectionBox::SelectionBox()
 {
-  _info = "Enter: Ok | Esc: Cancel";
   _reserved_rows = 6;
   _header_rows = 3;
+  _buttons.resize(2);
+  _buttons[0] = "    Ok    ";
+  _buttons[1] = "  Cancel  ";
+  _button_signals.resize(2);
+  _button_signals[0] = signals::keyEnter;
+  _button_signals[1] = signals::quit;
+  _button_left.resize(2);
+  _button_right.resize(2);
+  _highlighted_button = 0;
 }
 
 SelectionBox::SelectionBox(WINDOW *win, const std::string & name)
 {
   _win = win;
   _name = name;
-  _info = "Enter: Ok | Esc: Cancel";
   _reserved_rows = 6;
   _header_rows = 3;
+  _buttons.resize(2);
+  _buttons[0] = "    Ok    ";
+  _buttons[1] = "  Cancel  ";
+  _button_signals.resize(2);
+  _button_signals[0] = signals::keyEnter;
+  _button_signals[1] = signals::quit;
+  _button_left.resize(2);
+  _button_right.resize(2);
+  _highlighted_button = 0;
 }
-
-/*******************************************************************************
-
-Set attributes
-
-*******************************************************************************/
-void SelectionBox::setInfo(const std::string & info) { _info = info; }
 
 /*******************************************************************************
 
@@ -197,7 +237,7 @@ Get attributes
 void SelectionBox::minimumSize(int & height, int & width) const
 {
   int namelen, reserved_cols;
-  unsigned int i, nitems;
+  unsigned int i, nitems, nbuttons;
 
   // Minimum usable height
 
@@ -207,7 +247,16 @@ void SelectionBox::minimumSize(int & height, int & width) const
 
   reserved_cols = 2;
   width = _name.size();
-  if (int(_info.size()) > width) { width = _info.size(); }
+  nbuttons = _buttons.size();
+  if (nbuttons > 0)
+  {
+    namelen = 0;
+    for ( i = 0; i < nbuttons; i++ )
+    {
+      namelen += _buttons[i].size();
+    }
+    if (namelen > width) { width = namelen; }
+  }
   nitems = _items.size();
   for ( i = 0; i < nitems; i++ )
   {
@@ -220,7 +269,7 @@ void SelectionBox::minimumSize(int & height, int & width) const
 void SelectionBox::preferredSize(int & height, int & width) const
 {
   int namelen, reserved_cols, widthpadding;
-  unsigned int i, nitems;
+  unsigned int i, nitems, nbuttons;
 
   // Preferred height: no scrolling
 
@@ -232,7 +281,16 @@ void SelectionBox::preferredSize(int & height, int & width) const
   widthpadding = 6;
   reserved_cols = 2;
   width = _name.size();
-  if (int(_info.size()) > width) { width = _info.size(); }
+  nbuttons = _buttons.size();
+  if (nbuttons > 0)
+  {
+    namelen = 0;
+    for ( i = 0; i < nbuttons; i++ )
+    {
+      namelen += _buttons[i].size();
+    }
+    if (namelen > width) { width = namelen; }
+  }
   for ( i = 0; i < nitems; i++ )
   {
     namelen = _items[i]->name().size();
@@ -307,7 +365,10 @@ std::string SelectionBox::exec(MouseEvent * mevent)
       case '\n':
       case '\r':
       case KEY_ENTER:
-        retval = signals::keyEnter;
+        if (_buttons.size() > 0)
+          retval = _button_signals[_highlighted_button];
+        else
+          retval = signals::keyEnter;
         _redraw_type = "all";
         getting_input = false;
         break;
@@ -343,6 +404,20 @@ std::string SelectionBox::exec(MouseEvent * mevent)
         check_redraw = highlightLast();
         if (check_redraw == 1) { _redraw_type = "all"; }
         else { _redraw_type = "changed"; }
+        break;
+
+      // Right/Left: change highlighted button
+
+      case KEY_RIGHT:
+        check_redraw = highlightNextButton();
+        if (check_redraw == 1) { _redraw_type = "frame"; }
+        else { _redraw_type = "none"; }
+        break;
+
+      case KEY_LEFT:
+        check_redraw = highlightPreviousButton();
+        if (check_redraw == 1) { _redraw_type = "frame"; }
+        else { _redraw_type = "none"; }
         break;
 
       // Resize signal
