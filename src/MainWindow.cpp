@@ -1595,7 +1595,7 @@ void MainWindow::setInfo(const std::string & info) { _info = info; }
 Filter dialog
 
 *******************************************************************************/
-void MainWindow::selectFilter()
+void MainWindow::selectFilter(MouseEvent * mevent)
 {
   WINDOW *filterwin;
   std::string selection, selected;
@@ -1613,7 +1613,7 @@ void MainWindow::selectFilter()
   while (getting_selection)
   {
     selected = "None";
-    selection = _fbox.exec();
+    selection = _fbox.exec(mevent);
     getting_selection = false;
     if (selection == signals::keyEnter) { 
                                    selected = _fbox.highlightedItem()->name(); }
@@ -2179,7 +2179,7 @@ std::string MainWindow::exec(MouseEvent * mevent)
 
     if (selection == "q") { getting_input = false; }
     else if (selection == signals::resize) { draw(true); }
-    else if (selection == "f") { selectFilter(); }
+    else if (selection == "f") { selectFilter(mevent); }
     else if (selection == "/") { search(); }
     else if (selection == "s") { syncRepo(); }
     else if (selection == "o") 

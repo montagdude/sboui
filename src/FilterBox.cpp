@@ -14,10 +14,6 @@ FilterBox::FilterBox()
   unsigned int i;
 
   _name = "Select a filter";
-  _buttons.resize(2);
-  _buttons[0] = "    Ok    ";
-  _buttons[1] = "  Cancel  ";
-  _highlighted_button = 0;
 
   addItem(new ListItem("All"));
   addItem(new ListItem("Installed"));
@@ -37,10 +33,6 @@ FilterBox::FilterBox(WINDOW *win, const std::string & name)
 
   _win = win;
   _name = name;
-  _buttons.resize(2);
-  _buttons[0] = "    Ok    ";
-  _buttons[1] = "  Cancel  ";
-  _highlighted_button = 0;
 
   addItem(new ListItem("All"));
   addItem(new ListItem("Installed"));
