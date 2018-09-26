@@ -42,17 +42,25 @@ Constructors
 *******************************************************************************/
 PackageInfoBox::PackageInfoBox()
 {
+  int color_pair;
+
   _name = "Package info";
   _info = "Enter: Dismiss";
   _centered = false;
+  color_pair = colors.getPair("fg_popup", "bg_popup");
+  if (color_pair != -1) { setColor(color_pair); }
 }
 
 PackageInfoBox::PackageInfoBox(WINDOW *win)
 {
+  int color_pair;
+
   _win = win;
   _name = "Package info";
   _info = "Enter: Dismiss";
   _centered = false;
+  color_pair = colors.getPair("fg_popup", "bg_popup");
+  if (color_pair != -1) { setColor(color_pair); }
 }
 
 /*******************************************************************************
@@ -100,19 +108,4 @@ void PackageInfoBox::preferredSize(int & height, int & width) const
   splitmsg = split(_message, '\n');
   nlines = splitmsg.size(); 
   height = reserved_rows + nlines;
-}
-
-/*******************************************************************************
-
-Draws box (frame, message). Since everything must be redrawn whenever this is
-called, there is no _redraw_type for it.
-
-*******************************************************************************/
-void PackageInfoBox::draw(bool force)
-{
-  clearWindow();
-  colors.setBackground(_win, "fg_popup", "bg_popup");
-  redrawFrame();
-  redrawMessage();
-  wrefresh(_win);
 }

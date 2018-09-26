@@ -25,8 +25,4 @@ class PackageInfoBox: public MessageBox {
 
     void minimumSize(int & height, int & width) const;
     void preferredSize(int & height, int & width) const;
-
-    /* Draws frame and message */
- 
-    void draw(bool force=false);
 };
