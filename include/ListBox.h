@@ -23,6 +23,7 @@ class ListBox: public AbstractListBox {
     std::vector<int> _button_left;      // Left edge of each button
     std::vector<int> _button_right;     // Right edge of each button
     int _highlighted_button;
+    std::string _bg_color, _fg_color;   // Default colors
 
     /* Setting item to be highlighted */
 
@@ -66,6 +67,7 @@ class ListBox: public AbstractListBox {
     int setHighlight(int highlight);
     int setHighlight(const std::string & name);
     void addButton(const std::string & button, const std::string & signal);
+    void setColor(const std::string & fg_color, const std::string & bg_color);
 
     /* Get attributes */
 
@@ -74,6 +76,8 @@ class ListBox: public AbstractListBox {
     virtual void minimumSize(int & height, int & width) const;
     virtual void preferredSize(int & height, int & width) const;
     int highlightedButton() const;
+    const std::string & fgColor() const;
+    const std::string & bgColor() const;
 
     /* Sets highlight by search for string */
 

@@ -239,7 +239,7 @@ Draws window border and title
 *******************************************************************************/
 void ListBox::redrawFrame()
 {
-  int rows, cols, namelen, i, left, right;
+  int rows, cols, namelen, i, left, color_pair;
   double mid;
 
   getmaxyx(_win, rows, cols);
@@ -249,11 +249,15 @@ void ListBox::redrawFrame()
   namelen = _name.size();
   mid = double(cols)/2.0;
   left = std::floor(mid - double(namelen)/2.0);
-  right = left + namelen;
-  wmove(_win, 0, left);
-  wattron(_win, A_BOLD);
-  wprintw(_win, _name.c_str());
-  wattroff(_win, A_BOLD);
+  wmove(_win, 1, 1);
+  wclrtoeol(_win);
+  color_pair = colors.getPair("fg_title", "bg_title");
+  if (colors.turnOn(_win, color_pair) != 0)
+    wattron(_win, A_BOLD);
+  printSpaces(left-1);
+  printToEol(_name);
+  if (colors.turnOff(_win) != 0)
+    wattroff(_win, A_BOLD);
 
   // Corners
 
@@ -269,17 +273,22 @@ void ListBox::redrawFrame()
   // Top border
 
   wmove(_win, 0, 1);
-  for ( i = 1; int(i) < left-1; i++ ) { waddch(_win, ACS_HLINE); }
-  wmove(_win, 0, right+1);
-  for ( i = right+1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
+  for ( i = 1; int(i) < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
   
   // Left border
 
   for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, 0, ACS_VLINE); }
 
-  // Right border
+  // Right border for header (footer only if there are buttons - below)
 
-  for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, cols-1, ACS_VLINE); }
+  mvwaddch(_win, 1, cols-1, ACS_VLINE);
+
+  // Divider for header (footer only if there are buttons - below)
+
+  wmove(_win, 2, 1);
+  for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
+  mvwaddch(_win, 2, 0, ACS_LTEE);
+  mvwaddch(_win, 2, cols-1, ACS_RTEE);
 
   // Bottom border
 
@@ -294,6 +303,7 @@ void ListBox::redrawFrame()
     for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
     mvwaddch(_win, rows-3, 0, ACS_LTEE);
     mvwaddch(_win, rows-3, cols-1, ACS_RTEE);
+    mvwaddch(_win, rows-2, cols-1, ACS_VLINE);
     redrawButtons();
   }
 }
@@ -387,8 +397,8 @@ void ListBox::redrawSingleItem(unsigned int idx)
   } 
   else
   {
-    color_pair1 = colors.getPair("fg_normal", "bg_normal");
-    color_pair2 = colors.getPair("hotkey", "bg_normal");
+    color_pair1 = colors.getPair(_fg_color, _bg_color);
+    color_pair2 = colors.getPair("hotkey", _bg_color);
   }
 
   // Save highlight idx for redrawing later.
@@ -477,20 +487,28 @@ Constructors
 *******************************************************************************/
 ListBox::ListBox()
 {
+  _header_rows = 3;
+  _reserved_rows = 4;   // Assumes no buttons
   _activated = true;
   _buttons.resize(0);
   _button_signals.resize(0);
   _highlighted_button = -1;
+  _fg_color = "fg_normal";
+  _bg_color = "bg_normal";
 }
 
 ListBox::ListBox(WINDOW *win, const std::string & name)
 {
   _win = win;
   _name = name;
+  _header_rows = 3;
+  _reserved_rows = 4;   // Assumes no buttons
   _activated = true;
   _buttons.resize(0);
   _button_signals.resize(0);
   _highlighted_button = -1;
+  _fg_color = "fg_normal";
+  _bg_color = "bg_normal";
 }
 
 /*******************************************************************************
@@ -559,6 +577,15 @@ void ListBox::addButton(const std::string & button, const std::string & signal)
   _button_left.resize(_buttons.size());
   _button_right.resize(_buttons.size());
   _highlighted_button = 0;
+  if (_reserved_rows == _header_rows+1)
+    _reserved_rows += 2;
+}
+
+void ListBox::setColor(const std::string & fg_color,
+                       const std::string & bg_color)
+{
+  _fg_color = fg_color;
+  _bg_color = bg_color;
 }
 
 /*******************************************************************************
@@ -575,7 +602,7 @@ const std::string & ListBox::highlightedName() const
 void ListBox::minimumSize(int & height, int & width) const
 {
   int namelen, reserved_cols;
-  unsigned int i, nitems;
+  unsigned int i, nitems, nbuttons;
 
   // Minimum usable height
 
@@ -583,8 +610,18 @@ void ListBox::minimumSize(int & height, int & width) const
 
   // Minimum usable width
 
-  width = _name.size();
   reserved_cols = 2;
+  width = _name.size();
+  nbuttons = _buttons.size();
+  if (nbuttons > 0)
+  {
+    namelen = 0;
+    for ( i = 0; i < nbuttons; i++ )
+    {
+      namelen += _buttons[i].size();
+    }
+    if (namelen > width) { width = namelen; }
+  }
   nitems = _items.size();
   for ( i = 0; i < nitems; i++ )
   {
@@ -597,7 +634,7 @@ void ListBox::minimumSize(int & height, int & width) const
 void ListBox::preferredSize(int & height, int & width) const
 {
   int namelen, reserved_cols, widthpadding;
-  unsigned int i, nitems;
+  unsigned int i, nitems, nbuttons;
 
   // Preferred height: no scrolling
 
@@ -609,6 +646,16 @@ void ListBox::preferredSize(int & height, int & width) const
   widthpadding = 6;
   reserved_cols = 2;
   width = _name.size();
+  nbuttons = _buttons.size();
+  if (nbuttons > 0)
+  {
+    namelen = 0;
+    for ( i = 0; i < nbuttons; i++ )
+    {
+      namelen += _buttons[i].size();
+    }
+    if (namelen > width) { width = namelen; }
+  }
   for ( i = 0; i < nitems; i++ )
   {
     namelen = _items[i]->name().size();
@@ -618,6 +665,9 @@ void ListBox::preferredSize(int & height, int & width) const
 }
 
 int ListBox::highlightedButton() const { return _highlighted_button; }
+
+const std::string & ListBox::fgColor() const { return _fg_color; }
+const std::string & ListBox::bgColor() const { return _bg_color; }
 
 /*******************************************************************************
 
@@ -810,7 +860,7 @@ void ListBox::draw(bool force)
   if (_redraw_type == "all")
   { 
     clearWindow(); 
-    colors.setBackground(_win, "fg_normal", "bg_normal");
+    colors.setBackground(_win, _fg_color, _bg_color);
   }
   if (_redraw_type == "buttons") { redrawButtons(); }
   else if (_redraw_type != "none") 

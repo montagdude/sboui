@@ -11,11 +11,6 @@ ListBox for making a selection
 
 *******************************************************************************/
 class SelectionBox: public ListBox {
-  
-  protected:
-
-    void redrawFrame();
-    virtual void redrawSingleItem(unsigned int idx);
 
   public:
 
@@ -23,15 +18,6 @@ class SelectionBox: public ListBox {
 
     SelectionBox();
     SelectionBox(WINDOW *win, const std::string & name);
-
-    /* Get attributes */
-
-    void minimumSize(int & height, int & width) const;
-    void preferredSize(int & height, int & width) const;
-
-    /* Drawing */
-
-    virtual void draw(bool force=false);
 
     /* User interaction loop */
 
