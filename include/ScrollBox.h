@@ -7,7 +7,7 @@
 
 /*******************************************************************************
 
-Same idea as a ListBox, but items are not selectable/highlightable
+Same idea as a ListBox, but items are not selectable/highlightable.
 
 *******************************************************************************/
 class ScrollBox: public AbstractListBox {
@@ -27,6 +27,7 @@ class ScrollBox: public AbstractListBox {
     
     virtual void redrawFrame();
     virtual void redrawSingleItem(unsigned int idx);
+    virtual void redrawScrollIndicator() const;
     void redrawAllItems();
 
   public:

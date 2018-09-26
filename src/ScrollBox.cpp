@@ -191,6 +191,50 @@ void ScrollBox::redrawFrame()
 }
 
 /*******************************************************************************
+
+Redraws scroll indicator. Differs from regular list box scroll indicator in that
+it is based on pages rather than highlighted item (there is no highlighted item
+in this class).
+
+*******************************************************************************/
+void ScrollBox::redrawScrollIndicator() const
+{
+  int rows, cols, i, rowsavail, maxscroll, pos;
+  bool need_up, need_dn;
+
+  // Check if a scroll indicator is needed
+
+  getmaxyx(_win, rows, cols);
+  rowsavail = rows-_reserved_rows;
+
+  need_up = false;
+  need_dn = false;
+  if (_firstprint != 0) { need_up = true; }
+  if (_items.size() > _firstprint + rows-_reserved_rows) { need_dn = true; }
+
+  // Draw right border
+
+  for ( i = _header_rows; i < int(_header_rows)+rowsavail; i++ )
+  {
+    mvwaddch(_win, i, cols-1, ACS_VLINE);
+  }
+
+  // Draw up and down arrows
+
+  if (need_up) { mvwaddch(_win, _header_rows, cols-1, ACS_UARROW); }
+  if (need_dn) { mvwaddch(_win, _header_rows+rowsavail-1, cols-1, ACS_DARROW); }
+
+  // Draw position indicator
+
+  if ( (need_up) || (need_dn) )
+  {
+    maxscroll = _items.size() - rowsavail;
+    pos = std::floor(double(_firstprint)/double(maxscroll)*(rowsavail-1));
+    mvwaddch(_win, _header_rows+pos, cols-1, ACS_DIAMOND);
+  }
+}
+
+/*******************************************************************************
  
 Redraws a single item. Note: doesn't check if the item is actually on the
 screen or not.

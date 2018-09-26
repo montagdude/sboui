@@ -434,6 +434,57 @@ void ListBox::redrawSingleItem(unsigned int idx)
 
 /*******************************************************************************
 
+Redraws right border between header and footer and scroll indicators
+
+*******************************************************************************/
+void ListBox::redrawScrollIndicator() const
+{
+  int rows, cols, i, rowsavail, pos;
+  double frac;
+  bool need_up, need_dn;
+
+  // Check if a scroll indicator is needed
+
+  getmaxyx(_win, rows, cols);
+  rowsavail = rows-_reserved_rows;
+
+  need_up = false;
+  need_dn = false;
+  if (_firstprint != 0) { need_up = true; }
+  if (_items.size() > _firstprint + rows-_reserved_rows) { need_dn = true; }
+
+  // Draw right border
+
+  for ( i = _header_rows; i < int(_header_rows)+rowsavail; i++ )
+  {
+    mvwaddch(_win, i, cols-1, ACS_VLINE);
+  }
+
+  // Draw up and down arrows
+
+  if (need_up) { mvwaddch(_win, _header_rows, cols-1, ACS_UARROW); }
+  if (need_dn) { mvwaddch(_win, _header_rows+rowsavail-1, cols-1, ACS_DARROW); }
+
+  // Draw position indicator
+
+  if ( (_items.size() > 0) && ((need_up) || (need_dn)) )
+  {
+    frac = double(_highlight)/double(_items.size()-1);
+
+    // Make sure we don't indicate the top or bottom before we're really there
+
+    if (frac < 0.5)
+      pos = std::ceil(frac*(rowsavail-1));
+    else
+      pos = std::floor(frac*(rowsavail-1));
+
+    mvwaddch(_win, _header_rows+pos, cols-1, ACS_DIAMOND);
+  }
+}
+
+
+/*******************************************************************************
+
 Redraws the previously and currently highlighted items
 
 *******************************************************************************/

@@ -15,8 +15,12 @@ List box with selectable items
 *******************************************************************************/
 class ListBox: public AbstractListBox {
 
+//FIXME: move as much of this stuff as possible up to AbstractListBox so that
+// it can be reused by ScrollBox.
+
   protected:
 
+    int _highlight, _prevhighlight;
     bool _activated;
     std::vector<std::string> _buttons;  // At the bottom, e.g. OK/Cancel
     std::vector<std::string> _button_signals;
@@ -46,6 +50,7 @@ class ListBox: public AbstractListBox {
     virtual void redrawFrame();
     virtual void redrawButtons();
     virtual void redrawSingleItem(unsigned int idx);
+    virtual void redrawScrollIndicator() const;
     void redrawChangedItems();
     void redrawAllItems();
 

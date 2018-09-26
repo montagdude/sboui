@@ -9,14 +9,14 @@ class ListItem;
 
 /*******************************************************************************
 
-Template list box class
+Template list box class. Used by both ListBox class (selectable items) and
+ScrollBox class (non-selectable items).
 
 *******************************************************************************/
 class AbstractListBox: public CursesWidget {
 
   protected:
 
-    int _highlight, _prevhighlight;
     std::string _name, _redraw_type;
     std::vector<ListItem *> _items;
     unsigned int _reserved_rows, _header_rows;
@@ -24,7 +24,7 @@ class AbstractListBox: public CursesWidget {
 
     virtual void redrawFrame() = 0;
     virtual void redrawSingleItem(unsigned int idx) = 0;
-    virtual void redrawScrollIndicator() const;
+    virtual void redrawScrollIndicator() const = 0;
 
   public:
 
