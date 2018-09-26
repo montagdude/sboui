@@ -43,6 +43,7 @@ class ListBox: public AbstractListBox {
     /* Drawing */
 
     virtual void redrawFrame();
+    virtual void redrawButtons();
     virtual void redrawSingleItem(unsigned int idx);
     void redrawChangedItems();
     void redrawAllItems();

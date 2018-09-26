@@ -15,7 +15,7 @@ Draws window border, title, and info
 *******************************************************************************/
 void SelectionBox::redrawFrame()
 {
-  int rows, cols, namelen, i, left, nbuttons, color_pair1, color_pair2;
+  int rows, cols, namelen, i, left;
   double mid;
 
   getmaxyx(_win, rows, cols);
@@ -31,48 +31,6 @@ void SelectionBox::redrawFrame()
   printSpaces(left-1);
   printToEol(_name);
   colors.turnOff(_win);
-
-  // Buttons at bottom of window
-  // FIXME: Make this its own method
-
-  nbuttons = _buttons.size();
-  if (nbuttons > 0)
-  {
-    namelen = 0;
-    for ( i = 0; i < nbuttons; i++ )
-    {
-      namelen += _buttons[i].size();
-    }
-    left = std::floor(mid - double(namelen)/2.0) + 1;
-    _button_left[0] = left;
-    _button_right[0] = _button_left[0] + _buttons[0].size()-1;
-    for ( i = 1; i < nbuttons; i++ )
-    {
-      _button_left[i] = _button_right[i-1] + 1;
-      _button_right[i] = _button_left[i] + _buttons[i].size()-1;
-    }
-    wmove(_win, rows-2, 1);
-    wclrtoeol(_win);
-    color_pair1 = colors.getPair("fg_popup", "bg_popup");
-    color_pair2 = colors.getPair("fg_highlight_active", "bg_highlight_active");
-    colors.turnOn(_win, color_pair1);
-    printSpaces(left-1);
-    for ( i = 0; i < nbuttons; i++ )
-    {
-      if (i == _highlighted_button)
-      {
-        colors.turnOff(_win);
-        if (colors.turnOn(_win, color_pair2) != 0)
-          wattron(_win, A_REVERSE);
-        wprintw(_win, _buttons[i].c_str());
-        if (colors.turnOff(_win) != 0)
-          wattroff(_win, A_REVERSE);
-      }
-      else
-        wprintw(_win, _buttons[i].c_str());
-    }
-    colors.turnOff(_win);
-  }
 
   // Corners
 
@@ -117,6 +75,10 @@ void SelectionBox::redrawFrame()
   mvwaddch(_win, 2, cols-1, ACS_RTEE);
   mvwaddch(_win, rows-3, 0, ACS_LTEE);
   mvwaddch(_win, rows-3, cols-1, ACS_RTEE);
+
+  // Buttons
+
+  redrawButtons();
 }
 
 /*******************************************************************************
@@ -315,7 +277,8 @@ void SelectionBox::draw(bool force)
     clearWindow();
     colors.setBackground(_win, "fg_popup", "bg_popup");
   }
-  if (_redraw_type != "none")
+  if (_redraw_type == "buttons") { redrawButtons(); }
+  else if (_redraw_type != "none")
   { 
     redrawFrame(); 
     redrawScrollIndicator();
@@ -410,13 +373,13 @@ std::string SelectionBox::exec(MouseEvent * mevent)
 
       case KEY_RIGHT:
         check_redraw = highlightNextButton();
-        if (check_redraw == 1) { _redraw_type = "frame"; }
+        if (check_redraw == 1) { _redraw_type = "buttons"; }
         else { _redraw_type = "none"; }
         break;
 
       case KEY_LEFT:
         check_redraw = highlightPreviousButton();
-        if (check_redraw == 1) { _redraw_type = "frame"; }
+        if (check_redraw == 1) { _redraw_type = "buttons"; }
         else { _redraw_type = "none"; }
         break;
 

@@ -255,8 +255,6 @@ void ListBox::redrawFrame()
   wprintw(_win, _name.c_str());
   wattroff(_win, A_BOLD);
 
-  //FIXME: draw buttons if present
-
   // Corners
 
   wmove(_win, 0, 0);
@@ -279,10 +277,76 @@ void ListBox::redrawFrame()
 
   for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, 0, ACS_VLINE); }
 
+  // Right border
+
+  for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, cols-1, ACS_VLINE); }
+
   // Bottom border
 
   wmove(_win, rows-1, 1);
   for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
+
+  // Button area
+
+  if (_buttons.size() > 0)
+  {
+    wmove(_win, rows-3, 1);
+    for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
+    mvwaddch(_win, rows-3, 0, ACS_LTEE);
+    mvwaddch(_win, rows-3, cols-1, ACS_RTEE);
+    redrawButtons();
+  }
+}
+
+/*******************************************************************************
+
+Redraws buttons at bottom of list box
+
+*******************************************************************************/
+void ListBox::redrawButtons()
+{
+  int rows, cols, nbuttons, namelen, i, left, color_pair;
+  double mid;
+
+  getmaxyx(_win, rows, cols);
+
+  nbuttons = _buttons.size();
+  if (nbuttons > 0)
+  {
+    namelen = 0;
+    for ( i = 0; i < nbuttons; i++ )
+    {
+      namelen += _buttons[i].size();
+    }
+    mid = double(cols-2)/2.;
+    left = std::floor(mid - double(namelen)/2.0) + 1;
+    _button_left[0] = left;
+    _button_right[0] = _button_left[0] + _buttons[0].size()-1;
+    for ( i = 1; i < nbuttons; i++ )
+    {
+      _button_left[i] = _button_right[i-1] + 1;
+      _button_right[i] = _button_left[i] + _buttons[i].size()-1;
+    }
+    for ( i = 1; i < cols-1; i++ )
+    {
+      mvwaddch(_win, rows-2, i, ' ');
+    }
+    color_pair = colors.getPair("fg_highlight_active", "bg_highlight_active");
+    wmove(_win, rows-2, left);
+    for ( i = 0; i < nbuttons; i++ )
+    {
+      if (i == _highlighted_button)
+      {
+        if (colors.turnOn(_win, color_pair) != 0)
+          wattron(_win, A_REVERSE);
+        wprintw(_win, _buttons[i].c_str());
+        if (colors.turnOff(_win) != 0)
+          wattroff(_win, A_REVERSE);
+      }
+      else
+        wprintw(_win, _buttons[i].c_str());
+    }
+  }
 }
 
 /*******************************************************************************
@@ -625,7 +689,7 @@ std::string ListBox::handleMouseEvent(MouseEvent * mevent)
 
           // Redraw and pause for .1 seconds to make button selection visible
 
-          _redraw_type = "changed";  //FIXME: buttons
+          _redraw_type = "buttons";
           draw(true);
           std::this_thread::sleep_for(std::chrono::milliseconds(100));
           return _button_signals[i];
@@ -748,7 +812,8 @@ void ListBox::draw(bool force)
     clearWindow(); 
     colors.setBackground(_win, "fg_normal", "bg_normal");
   }
-  if (_redraw_type != "none") 
+  if (_redraw_type == "buttons") { redrawButtons(); }
+  else if (_redraw_type != "none") 
   {
     redrawFrame();
     redrawScrollIndicator();
@@ -848,14 +913,14 @@ std::string ListBox::exec(MouseEvent * mevent)
     case KEY_RIGHT:
       retval = signals::keyRight;
       check_redraw = highlightNextButton();
-      if (check_redraw == 1) { _redraw_type = "changed"; }
+      if (check_redraw == 1) { _redraw_type = "buttons"; }
       else { _redraw_type = "none"; }
       break;
 
     case KEY_LEFT:
       retval = signals::keyLeft;
       check_redraw = highlightPreviousButton();
-      if (check_redraw == 1) { _redraw_type = "changed"; }
+      if (check_redraw == 1) { _redraw_type = "buttons"; }
       else { _redraw_type = "none"; }
       break;
 
