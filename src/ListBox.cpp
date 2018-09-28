@@ -166,7 +166,10 @@ int ListBox::highlightFractional(const double & frac)
   else if (frac > 1.) { return 0; }
 
   _prevhighlight = _highlight;
-  _highlight = std::floor(frac*double(_items.size()-1));
+  if (frac < 0.5)
+    _highlight = std::ceil(frac*double(_items.size()-1));
+  else
+    _highlight = std::floor(frac*double(_items.size()-1));
   return determineFirstPrint();
 }
 
@@ -323,8 +326,8 @@ void ListBox::redrawScrollIndicator() const
 
   need_up = false;
   need_dn = false;
-  if (_firstprint != 0) { need_up = true; }
-  if (_items.size() > _firstprint + rows-_reserved_rows) { need_dn = true; }
+  if (_highlight != 0) { need_up = true; }
+  if (_highlight < int(_items.size())-1) { need_dn = true; }
 
   // Draw right border
 
@@ -561,7 +564,7 @@ std::string ListBox::handleMouseEvent(MouseEvent * mevent)
     {
       if (ycurs == int(_header_rows))
       {
-        if (_firstprint != 0)
+        if (_highlight != 0)
         {
           check_redraw = highlightPreviousPage();
           if (check_redraw == 1)
@@ -575,7 +578,7 @@ std::string ListBox::handleMouseEvent(MouseEvent * mevent)
       }
       else if (ycurs == int(_header_rows)+rowsavail-1)
       {
-        if (_items.size() > _firstprint + rows-_reserved_rows)
+        if (int(_items.size())-1 > _highlight)
         {
           check_redraw = highlightNextPage();
           if (check_redraw == 1)
