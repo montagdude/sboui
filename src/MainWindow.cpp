@@ -723,7 +723,6 @@ int MainWindow::showHelp(MouseEvent * mevent)
   bool getting_input;
 
   clear();
-  setInfo("Esc: Back to main");
   redrawHeaderFooter();
 
   helpwin = newwin(1, 1, 0, 0);
@@ -734,7 +733,9 @@ int MainWindow::showHelp(MouseEvent * mevent)
   while (getting_input)
   {
     selection = _help.exec(mevent); 
-    if (selection == signals::quit) { getting_input = false; }
+    if ( (selection == signals::quit) ||
+         (selection == signals::keyEnter) )
+      getting_input = false;
     else if (selection == signals::resize) 
     { 
       clear();
@@ -743,7 +744,12 @@ int MainWindow::showHelp(MouseEvent * mevent)
     }
     else if (selection == "q") { return 1; }
     else if (selection == signals::mouseEvent)
-      _help.handleMouseEvent(mevent);
+    {
+      selection = _help.handleMouseEvent(mevent);
+      if ( (selection == signals::quit) ||
+           (selection == signals::keyEnter) )
+        getting_input = false;
+    }
   }
 
   clearStatus();

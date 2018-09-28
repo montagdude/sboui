@@ -547,8 +547,8 @@ std::string ListBox::handleMouseEvent(MouseEvent * mevent)
 
           // Redraw and pause for .1 seconds to make button selection visible
 
-          _redraw_type = "buttons";
-          draw(true);
+          _redraw_type = "all";
+          draw();
           std::this_thread::sleep_for(std::chrono::milliseconds(100));
           return _button_signals[i];
         }

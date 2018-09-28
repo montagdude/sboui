@@ -4,6 +4,7 @@
 #include <algorithm> // min
 #include "Color.h"
 #include "settings.h"
+#include "signals.h"
 #include "HelpItem.h"
 #include "HelpWindow.h"
 
@@ -80,14 +81,30 @@ void HelpWindow::redrawFrame()
   // Draw horizontal and then vertical line
 
   for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
-  for ( i = 3; i < rows-1; i++ ) { mvwaddch(_win, i, vlineloc, ACS_VLINE); }
+  for ( i = 3; i < rows-3; i++ ) { mvwaddch(_win, i, vlineloc, ACS_VLINE); }
 
   // Draw connections between horizontal and vertical lines
 
   mvwaddch(_win, 2, 0, ACS_LTEE);
   mvwaddch(_win, 2, cols-1, ACS_RTEE);
   mvwaddch(_win, 2, vlineloc, ACS_TTEE);
-  mvwaddch(_win, rows-1, vlineloc, ACS_BTEE);
+  mvwaddch(_win, rows-3, vlineloc, ACS_BTEE);
+
+  // Button area
+
+  if (_buttons.size() > 0)
+  {
+    wmove(_win, rows-3, 1);
+    for ( i = 1; i < vlineloc; i++ ) { waddch(_win, ACS_HLINE); }
+    for ( i = vlineloc+1; i < cols-1; i++ )
+    {
+      mvwaddch(_win, rows-3, i, ACS_HLINE);
+    }
+    mvwaddch(_win, rows-3, 0, ACS_LTEE);
+    mvwaddch(_win, rows-3, cols-1, ACS_RTEE);
+    mvwaddch(_win, rows-2, cols-1, ACS_VLINE);
+    redrawButtons();
+  }
 }
 
 /*******************************************************************************
@@ -221,6 +238,7 @@ HelpWindow::HelpWindow()
   _reserved_rows = 4; 
   _header_rows = 3;
   _shortcutwidth = 0;
+  addButton("  Back to main  ", signals::quit);
   createList();
 }
 
@@ -231,6 +249,7 @@ HelpWindow::HelpWindow(WINDOW *win, const std::string & name)
   _reserved_rows = 4;
   _header_rows = 3;
   _shortcutwidth = 0;
+  addButton("  Back to main  ", signals::quit);
   createList();
 }
 
@@ -254,5 +273,5 @@ void HelpWindow::placeWindow() const
 
   getmaxyx(stdscr, rows, cols);
   mvwin(_win, 2, 0);
-  wresize(_win, rows-4, cols);
+  wresize(_win, rows-2, cols);
 }

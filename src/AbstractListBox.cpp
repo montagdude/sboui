@@ -111,10 +111,6 @@ void AbstractListBox::redrawButtons()
       _button_left[i] = _button_right[i-1] + 1;
       _button_right[i] = _button_left[i] + _buttons[i].size()-1;
     }
-    for ( i = 1; i < cols-1; i++ )
-    {
-      mvwaddch(_win, rows-2, i, ' ');
-    }
     color_pair = colors.getPair("fg_highlight_active", "bg_highlight_active");
     wmove(_win, rows-2, left);
     for ( i = 0; i < nbuttons; i++ )
