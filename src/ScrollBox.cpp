@@ -140,54 +140,17 @@ int ScrollBox::scrollNextPage()
 }
 
 /*******************************************************************************
-
-Draws window border and title
+ 
+Redraws a single item. Note: doesn't check if the item is actually on the
+screen or not.
 
 *******************************************************************************/
-void ScrollBox::redrawFrame()
+void ScrollBox::redrawSingleItem(unsigned int idx)
 {
-  int rows, cols, namelen, i, left, right;
-  double mid;
+  // Go to item location and print item
 
-  getmaxyx(_win, rows, cols);
-
-  // Title
-
-  namelen = _name.size();
-  mid = double(cols)/2.0;
-  left = std::floor(mid - double(namelen)/2.0);
-  right = left + namelen;
-  wmove(_win, 0, left);
-  wattron(_win, A_BOLD);
-  wprintw(_win, _name.c_str());
-  wattroff(_win, A_BOLD);
-
-  // Corners
-
-  wmove(_win, 0, 0);
-  waddch(_win, ACS_ULCORNER);
-  wmove(_win, rows-1, 0);
-  waddch(_win, ACS_LLCORNER);
-  wmove(_win, rows-1, cols-1);
-  waddch(_win, ACS_LRCORNER);
-  wmove(_win, 0, cols-1);
-  waddch(_win, ACS_URCORNER);
-
-  // Top border
-
-  wmove(_win, 0, 1);
-  for ( i = 1; int(i) < left-1; i++ ) { waddch(_win, ACS_HLINE); }
-  wmove(_win, 0, right+1);
-  for ( i = right+1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
-  
-  // Left border
-
-  for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, 0, ACS_VLINE); }
-
-  // Bottom border
-
-  wmove(_win, rows-1, 1);
-  for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
+  wmove(_win, idx-_firstprint+_header_rows, 1);
+  printToEol(_items[idx]->name());
 }
 
 /*******************************************************************************
@@ -235,44 +198,6 @@ void ScrollBox::redrawScrollIndicator() const
 }
 
 /*******************************************************************************
- 
-Redraws a single item. Note: doesn't check if the item is actually on the
-screen or not.
-
-*******************************************************************************/
-void ScrollBox::redrawSingleItem(unsigned int idx)
-{
-  // Go to item location and print item
-
-  wmove(_win, idx-_firstprint+_header_rows, 1);
-  printToEol(_items[idx]->name());
-}
-
-/******************************************************************************
-
-Redraws all items
-
-*******************************************************************************/
-void ScrollBox::redrawAllItems()
-{
-  int rows, cols, rowsavail, i;
-
-  getmaxyx(_win, rows, cols);
-  rowsavail = rows-_reserved_rows;
-
-  if (_items.size() == 0)
-  {
-    wrefresh(_win);
-    return;
-  }
-  for ( i = _firstprint; i < _firstprint+rowsavail; i++ )
-  {
-    redrawSingleItem(i);
-    if (i == int(_items.size())-1) { break; }
-  }
-}
-
-/*******************************************************************************
 
 Constructors
 
@@ -287,56 +212,6 @@ ScrollBox::ScrollBox(WINDOW *win, const std::string & name)
 
 /*******************************************************************************
 
-Get attributes
-
-*******************************************************************************/
-void ScrollBox::minimumSize(int & height, int & width) const
-{
-  int namelen, reserved_cols;
-  unsigned int i, nitems;
-
-  // Minimum usable height
-
-  height = _reserved_rows + 2;
-
-  // Minimum usable width
-
-  width = _name.size();
-  reserved_cols = 2;
-  nitems = _items.size();
-  for ( i = 0; i < nitems; i++ )
-  {
-    namelen = _items[i]->name().size();
-    if (namelen > width) { width = namelen; }
-  }
-  width += reserved_cols;
-}
-
-void ScrollBox::preferredSize(int & height, int & width) const
-{
-  int namelen, reserved_cols, widthpadding;
-  unsigned int i, nitems;
-
-  // Preferred height: no scrolling
-
-  nitems = _items.size();
-  height = _reserved_rows + nitems;
-
-  // Preferred width: minimum usable + some padding
-
-  widthpadding = 6;
-  reserved_cols = 2;
-  width = _name.size();
-  for ( i = 0; i < nitems; i++ )
-  {
-    namelen = _items[i]->name().size();
-    if (namelen > width) { width = namelen; }
-  }
-  width += reserved_cols + widthpadding;
-}
-
-/*******************************************************************************
-
 Handles mouse events
 
 *******************************************************************************/
@@ -344,32 +219,6 @@ std::string ScrollBox::handleMouseEvent(MouseEvent * event)
 {
   //FIXME: implement
   return signals::nullEvent;
-}
-
-/*******************************************************************************
-
-Draws scroll box (frame, items, etc.) as needed
-
-*******************************************************************************/
-void ScrollBox::draw(bool force)
-{
-  if (force) { _redraw_type = "all"; }
-
-  // Draw list elements
-
-  if (_redraw_type == "all")
-  { 
-    clearWindow();
-    colors.setBackground(_win, "fg_normal", "bg_normal");
-  }
-  if (_redraw_type != "none")
-  {
-    redrawFrame();
-    redrawScrollIndicator();
-  }
-  if ( (_redraw_type == "all") || (_redraw_type == "items")) { 
-                                                            redrawAllItems(); }
-  wrefresh(_win);
 }
 
 /*******************************************************************************

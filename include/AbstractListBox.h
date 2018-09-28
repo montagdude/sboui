@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <curses.h>
+#include "MouseEvent.h"
 #include "CursesWidget.h"
 
 class ListItem;
@@ -21,10 +22,18 @@ class AbstractListBox: public CursesWidget {
     std::vector<ListItem *> _items;
     unsigned int _reserved_rows, _header_rows;
     int _firstprint;
+    std::vector<std::string> _buttons;  // At the bottom, e.g. OK/Cancel
+    std::vector<std::string> _button_signals;
+    std::vector<int> _button_left;      // Left edge of each button
+    std::vector<int> _button_right;     // Right edge of each button
+    int _highlighted_button;
+    std::string _bg_color, _fg_color;   // Default colors
 
-    virtual void redrawFrame() = 0;
+    virtual void redrawFrame();
+    virtual void redrawButtons();
     virtual void redrawSingleItem(unsigned int idx) = 0;
     virtual void redrawScrollIndicator() const = 0;
+    virtual void redrawAllItems();
 
   public:
 
@@ -42,13 +51,32 @@ class AbstractListBox: public CursesWidget {
     /* Set attributes */
 
     void setName(const std::string & name);
+    void addButton(const std::string & button, const std::string & signal);
+    void setColor(const std::string & fg_color, const std::string & bg_color);
 
     /* Get attributes */
 
     const std::string & name() const;
     unsigned int numItems() const;
+    virtual void minimumSize(int & height, int & width) const;
+    virtual void preferredSize(int & height, int & width) const;
+    int highlightedButton() const;
+    const std::string & fgColor() const;
+    const std::string & bgColor() const;
 
     /* Returns pointer to item */
 
     ListItem * itemByIdx(unsigned int idx);
+
+    /* Handles mouse event */
+
+    std::string handleMouseEvent(MouseEvent *mevent) = 0;
+
+    /* Draws frame, items, etc. as needed */
+
+    virtual void draw(bool force=false);
+
+    /* User interaction loop */
+
+    virtual std::string exec(MouseEvent * mevent=NULL) = 0;
 };
