@@ -392,6 +392,8 @@ ListBox::ListBox()
   _header_rows = 3;
   _reserved_rows = 4;   // Assumes no buttons
   _activated = true;
+  _highlight = 0;
+  _prevhighlight = 0;
 }
 
 ListBox::ListBox(WINDOW *win, const std::string & name)
@@ -401,6 +403,8 @@ ListBox::ListBox(WINDOW *win, const std::string & name)
   _header_rows = 3;
   _reserved_rows = 4;   // Assumes no buttons
   _activated = true;
+  _highlight = 0;
+  _prevhighlight = 0;
 }
 
 /*******************************************************************************
