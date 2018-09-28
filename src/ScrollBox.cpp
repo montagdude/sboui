@@ -2,6 +2,8 @@
 #include <curses.h>
 #include <cmath>     // floor
 #include <algorithm> // max, min
+#include <chrono>    // sleep_for
+#include <thread>    // this_thread
 #include "Color.h"
 #include "settings.h"
 #include "signals.h"
@@ -140,6 +142,35 @@ int ScrollBox::scrollNextPage()
 }
 
 /*******************************************************************************
+
+Scrolls to a page based on a fractional value of all items in the list. Return
+value of 0 means that _firstprint hasn't changed; 1 means it has.
+
+*******************************************************************************/
+int ScrollBox::scrollFractional(const double & frac)
+{
+  int rows, cols, rowsavail, maxscroll, firstprintstore;
+
+  if (_items.size() == 0) { return 0; }
+  if (frac < 0.) { return 0; }
+  else if (frac > 1.) { return 0; }
+
+  getmaxyx(_win, rows, cols);
+  rowsavail = rows-_reserved_rows;
+
+  firstprintstore = _firstprint;
+  maxscroll = _items.size() - rowsavail;
+  if (frac < 0.5)
+    _firstprint = std::ceil(frac*maxscroll);
+  else
+    _firstprint = std::floor(frac*maxscroll);
+  if (_firstprint == firstprintstore)
+    return 0;
+  else
+    return 1;
+}
+
+/*******************************************************************************
  
 Redraws a single item. Note: doesn't check if the item is actually on the
 screen or not.
@@ -215,10 +246,123 @@ ScrollBox::ScrollBox(WINDOW *win, const std::string & name)
 Handles mouse events
 
 *******************************************************************************/
-std::string ScrollBox::handleMouseEvent(MouseEvent * event)
+std::string ScrollBox::handleMouseEvent(MouseEvent * mevent)
 {
-  //FIXME: implement
-  return signals::nullEvent;
+  int rows, cols, begy, begx, ycurs, xcurs, rowsavail, check_redraw;
+  unsigned i, nbuttons;
+  double frac;
+
+  if (_items.size() == 0)
+    return signals::nullEvent;
+
+  getmaxyx(_win, rows, cols);
+  getbegyx(_win, begy, begx);
+  ycurs = mevent->y() - begy;
+  xcurs = mevent->x() - begx;
+  rowsavail = rows-_reserved_rows;
+
+  if ( (mevent->button() == 1) || (mevent->button() == 2) )
+  {
+    // Check for clicking on buttons
+
+    nbuttons = _buttons.size();
+    if ( (nbuttons > 0) && (ycurs == rows-2) )
+    {
+      for ( i = 0; i < nbuttons; i++ )
+      {
+        if ( (xcurs >= _button_left[i]) && (xcurs <= _button_right[i]) )
+        {
+          _highlighted_button = i;
+
+          // Redraw and pause for .1 seconds to make button selection visible
+
+          _redraw_type = "buttons";
+          draw(true);
+          std::this_thread::sleep_for(std::chrono::milliseconds(100));
+          return _button_signals[i];
+        }
+      }
+      return signals::nullEvent;
+    }
+
+    else if ( (ycurs < int(_header_rows)) ||
+              (ycurs >= int(_header_rows)+rowsavail) )
+      return signals::nullEvent;
+    else if ( (xcurs < cols-1) || (xcurs >= cols) )
+      return signals::nullEvent;
+
+    // Check for clicking on scroll area
+
+    else if (xcurs == cols-1)
+    {
+      if (ycurs == int(_header_rows))
+      {
+        if (_firstprint != 0)
+        {
+          check_redraw = scrollPreviousPage();
+          if (check_redraw == 1)
+            _redraw_type = "all";
+          else
+            _redraw_type = "none";
+          return signals::scroll;
+        }
+        else
+          return signals::nullEvent;
+      }
+      else if (ycurs == int(_header_rows)+rowsavail-1)
+      {
+        if (_items.size() > _firstprint + rows-_reserved_rows)
+        {
+          check_redraw = scrollNextPage();
+          if (check_redraw == 1)
+            _redraw_type = "all";
+          else
+            _redraw_type = "none";
+          return signals::scroll;
+        }
+        else
+          return signals::nullEvent;
+      }
+      else
+      {
+        frac = double(ycurs-_header_rows) /
+               double(rowsavail-1);
+        check_redraw = scrollFractional(frac);
+        if (check_redraw == 1)
+          _redraw_type = "all";
+        else
+          _redraw_type = "none";
+        return signals::scroll;
+      }
+    }
+
+    else
+      return signals::nullEvent;
+  }
+
+  // Scroll wheel
+
+  else if (mevent->button() == 4)
+  {
+    check_redraw = scrollPreviousPage();
+    if (check_redraw == 1)
+      _redraw_type = "all";
+    else
+      _redraw_type = "none";
+    return signals::scroll;
+  }
+  else if (mevent->button() == 5)
+  {
+    check_redraw = scrollNextPage();
+    if (check_redraw == 1)
+      _redraw_type = "all";
+    else
+      _redraw_type = "none";
+    return signals::scroll;
+  }
+  else
+    return signals::nullEvent;
+
 }
 
 /*******************************************************************************
@@ -230,6 +374,7 @@ std::string ScrollBox::exec(MouseEvent * mevent)
 {
   int ch, check_redraw;
   std::string retval;
+  MEVENT event;
 
   const int MY_ESC = 27;
   const int MY_TAB = 9;
@@ -309,6 +454,19 @@ std::string ScrollBox::exec(MouseEvent * mevent)
     case MY_ESC:
       retval = signals::quit;
       _redraw_type = "all";
+      break;
+
+    // Mouse
+
+    case KEY_MOUSE:
+      if ( (getmouse(&event) == OK) && mevent )
+      {
+        mevent->recordClick(event);
+        _redraw_type = "none";
+        retval = signals::mouseEvent;
+      }
+      else
+        return signals::nullEvent;
       break;
 
     default:

@@ -73,7 +73,7 @@ class MainWindow: public CursesWidget {
 
     /* Displays help window */
 
-    int showHelp();
+    int showHelp(MouseEvent * mevent=NULL);
 
     /* Sets taglist reference in BuildListBoxes */
 

@@ -22,6 +22,7 @@ class ScrollBox: public AbstractListBox {
     int scrollDown();
     int scrollPreviousPage();
     int scrollNextPage();
+    int scrollFractional(const double & frac);
 
     /* Drawing */
 

@@ -716,7 +716,7 @@ int MainWindow::showOptions()
 Shows help window
 
 *******************************************************************************/
-int MainWindow::showHelp()
+int MainWindow::showHelp(MouseEvent * mevent)
 {
   WINDOW *helpwin;
   std::string selection;
@@ -733,7 +733,7 @@ int MainWindow::showHelp()
   getting_input = true;
   while (getting_input)
   {
-    selection = _help.exec(); 
+    selection = _help.exec(mevent); 
     if (selection == signals::quit) { getting_input = false; }
     else if (selection == signals::resize) 
     { 
@@ -742,6 +742,8 @@ int MainWindow::showHelp()
       _help.placeWindow();
     }
     else if (selection == "q") { return 1; }
+    else if (selection == signals::mouseEvent)
+      _help.handleMouseEvent(mevent);
   }
 
   clearStatus();
@@ -2189,7 +2191,7 @@ std::string MainWindow::exec(MouseEvent * mevent)
     }
     else if (selection == "?") 
     {
-      check_quit = showHelp();
+      check_quit = showHelp(mevent);
       if (check_quit == 1) { getting_input = false; }
     }
     else if (selection == "l") { toggleLayout(); }
