@@ -59,8 +59,6 @@ class ListBox: public AbstractListBox {
     void setActivated(bool activated);
     int setHighlight(int highlight);
     int setHighlight(const std::string & name);
-    void addButton(const std::string & button, const std::string & signal);
-    void setColor(const std::string & fg_color, const std::string & bg_color);
 
     /* Get attributes */
 

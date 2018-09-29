@@ -3,6 +3,8 @@
 #include <curses.h>
 #include <cmath>     // floor
 #include <algorithm> // max
+#include <chrono>    // sleep_for
+#include <thread>    // this_thread
 #include "Color.h"
 #include "settings.h"
 #include "signals.h"
@@ -33,19 +35,6 @@ void MessageBox::redrawFrame()
   else { wattron(_win, A_BOLD); }
   printSpaces(left-1);
   printToEol(_name);
-  if (_header_colorize) { colors.turnOff(_win); }
-  else { wattroff(_win, A_BOLD); }
-
-  // Info on bottom of window
-
-  namelen = _info.size();
-  left = std::floor(mid - double(namelen)/2.0) + 1;
-  wmove(_win, rows-2, 1);
-  wclrtoeol(_win);
-  if (_header_colorize) { colors.turnOn(_win, "fg_title", "bg_title"); }
-  else { wattron(_win, A_BOLD); }
-  printSpaces(left-1);
-  printToEol(_info);
   if (_header_colorize) { colors.turnOff(_win); }
   else { wattroff(_win, A_BOLD); }
 
@@ -91,6 +80,65 @@ void MessageBox::redrawFrame()
   mvwaddch(_win, 2, cols-1, ACS_RTEE);
   mvwaddch(_win, rows-3, 0, ACS_LTEE);
   mvwaddch(_win, rows-3, cols-1, ACS_RTEE);
+
+  // Button area
+
+  if (_buttons.size() > 0)
+  {
+    wmove(_win, rows-3, 1);
+    for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
+    mvwaddch(_win, rows-3, 0, ACS_LTEE);
+    mvwaddch(_win, rows-3, cols-1, ACS_RTEE);
+    mvwaddch(_win, rows-2, cols-1, ACS_VLINE);
+    redrawButtons();
+  }
+}
+
+/*******************************************************************************
+
+Redraws buttons at bottom of list box
+
+*******************************************************************************/
+void MessageBox::redrawButtons()
+{
+  int rows, cols, nbuttons, namelen, i, left, color_pair;
+  double mid;
+
+  getmaxyx(_win, rows, cols);
+
+  nbuttons = _buttons.size();
+  if (nbuttons > 0)
+  {
+    namelen = 0;
+    for ( i = 0; i < nbuttons; i++ )
+    {
+      namelen += _buttons[i].size();
+    }
+    mid = double(cols-2)/2.;
+    left = std::floor(mid - double(namelen)/2.0) + 1;
+    _button_left[0] = left;
+    _button_right[0] = _button_left[0] + _buttons[0].size()-1;
+    for ( i = 1; i < nbuttons; i++ )
+    {
+      _button_left[i] = _button_right[i-1] + 1;
+      _button_right[i] = _button_left[i] + _buttons[i].size()-1;
+    }
+    color_pair = colors.getPair("fg_highlight_active", "bg_highlight_active");
+    wmove(_win, rows-2, left);
+    for ( i = 0; i < nbuttons; i++ )
+    {
+      if (i == _highlighted_button)
+      {
+        if (colors.turnOn(_win, color_pair) != 0)
+          wattron(_win, A_REVERSE);
+        wprintw(_win, _buttons[i].c_str());
+        if (colors.turnOff(_win) != 0)
+          wattroff(_win, A_REVERSE);
+      }
+      else
+        wprintw(_win, _buttons[i].c_str());
+    }
+  }
 }
 
 /*******************************************************************************
@@ -130,7 +178,8 @@ MessageBox::MessageBox(bool header_colorize, bool centered)
   _win = NULL;
   _name = "";
   _message = "";
-  _info = "Enter: Ok | Esc: Cancel";
+  addButton("    Ok    ", signals::keyEnter);
+  addButton("  Cancel  ", signals::quit);
   _margin_v = 0;
   _margin_h = 0;
   _color_idx = -1;
@@ -144,7 +193,8 @@ MessageBox::MessageBox(WINDOW *win, const std::string & name,
   _win = win;
   _name = name;
   _message = "";
-  _info = "Enter: Ok | Esc: Cancel";
+  addButton("    Ok    ", signals::keyEnter);
+  addButton("  Cancel  ", signals::quit);
   _margin_v = 0;
   _margin_h = 0;
   _color_idx = -1;
@@ -159,7 +209,6 @@ Set attributes
 *******************************************************************************/
 void MessageBox::setName(const std::string & name) { _name = name; }
 void MessageBox::setMessage(const std::string & msg) { _message = msg; }
-void MessageBox::setInfo(const std::string & info) { _info = info; }
 void MessageBox::setColor(int color_idx) { _color_idx = color_idx; }
 
 /*******************************************************************************
@@ -169,14 +218,26 @@ Get attributes
 *******************************************************************************/
 void MessageBox::minimumSize(int & height, int & width) const
 {
-  int reserved_rows, reserved_cols, msg_width;
+  int namelen, reserved_rows, reserved_cols, msg_width;
+  unsigned int i, nbuttons;
 
   reserved_rows = 6 + 2*_margin_v;
   reserved_cols = 2;
 
   // Minimum usable width -- pick some reasonable number (message width 15)
 
-  width = std::max(_name.size(), _info.size()) + reserved_cols;
+  width = _name.size();
+  nbuttons = _buttons.size();
+  if (nbuttons > 0)
+  {
+    namelen = 0;
+    for ( i = 0; i < nbuttons; i++ )
+    {
+      namelen += _buttons[i].size();
+    }
+    if (namelen > width) { width = namelen; }
+  }
+  width += reserved_cols;
   width = std::max(width, 15);
   msg_width = width-2-2*_margin_h;
 
@@ -187,16 +248,27 @@ void MessageBox::minimumSize(int & height, int & width) const
 
 void MessageBox::preferredSize(int & height, int & width) const
 {
-  int reserved_rows, reserved_cols, msg_width;
+  int namelen, reserved_rows, reserved_cols, msg_width;
   std::vector<std::string> wrapped_msg;
-  unsigned int i, nlines;
+  unsigned int i, nlines, nbuttons;
 
   reserved_rows = 6 + 2*_margin_v;
   reserved_cols = 2;
 
   // Preferred width -- pick some reasonable number (message width 50)
 
-  width = std::max(_name.size(), _info.size()) + reserved_cols;
+  width = _name.size();
+  nbuttons = _buttons.size();
+  if (nbuttons > 0)
+  {
+    namelen = 0;
+    for ( i = 0; i < nbuttons; i++ )
+    {
+      namelen += _buttons[i].size();
+    }
+    if (namelen > width) { width = namelen; }
+  }
+  width += reserved_cols;
   width = std::max(width, int(30+2+2*_margin_h));
   msg_width = width-2-2*_margin_h;
 
@@ -224,10 +296,43 @@ void MessageBox::preferredSize(int & height, int & width) const
 Handles mouse events
 
 *******************************************************************************/
-std::string MessageBox::handleMouseEvent(MouseEvent * event)
+std::string MessageBox::handleMouseEvent(MouseEvent * mevent)
 {
-//FIXME: implement
-  return signals::nullEvent;
+  int rows, cols, begy, begx, ycurs, xcurs;
+  unsigned int i, nbuttons;
+
+  getmaxyx(_win, rows, cols);
+  getbegyx(_win, begy, begx);
+  ycurs = mevent->y() - begy;
+  xcurs = mevent->x() - begx;
+
+  if (mevent->button() == 1)
+  {
+    // Check for clicking on buttons
+
+    nbuttons = _buttons.size();
+    if ( (nbuttons > 0) && (ycurs == rows-2) )
+    {
+      for ( i = 0; i < nbuttons; i++ )
+      {
+        if ( (xcurs >= _button_left[i]) && (xcurs <= _button_right[i]) )
+        {
+          _highlighted_button = i;
+
+          // Redraw and pause for .1 seconds to make button selection visible
+
+          draw();
+          std::this_thread::sleep_for(std::chrono::milliseconds(100));
+          return _button_signals[i];
+        }
+      }
+      return signals::nullEvent;
+    }
+    else
+      return signals::nullEvent;
+  }
+  else
+    return signals::nullEvent;
 }
 
 /*******************************************************************************
@@ -257,6 +362,7 @@ std::string MessageBox::exec(MouseEvent * mevent)
   int ch;
   std::string retval;
   bool getting_input;
+  MEVENT event;
 
   const int MY_ESC = 27;
 
@@ -295,6 +401,18 @@ std::string MessageBox::exec(MouseEvent * mevent)
       case MY_ESC:
         retval = signals::quit;
         getting_input = false;
+        break;
+
+      // Mouse
+
+      case KEY_MOUSE:
+        if ( (getmouse(&event) == OK) && mevent )
+        {
+          mevent->recordClick(event);
+          retval = handleMouseEvent(mevent);
+          if ( (retval == signals::keyEnter) || (retval == signals::quit) )
+            getting_input = false;
+        }
         break;
 
       default:

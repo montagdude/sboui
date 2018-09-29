@@ -20,13 +20,7 @@ class AbstractListBox: public CursesWidget {
 
     std::string _name, _redraw_type;
     std::vector<ListItem *> _items;
-    unsigned int _reserved_rows, _header_rows;
     int _firstprint;
-    std::vector<std::string> _buttons;  // At the bottom, e.g. OK/Cancel
-    std::vector<std::string> _button_signals;
-    std::vector<int> _button_left;      // Left edge of each button
-    std::vector<int> _button_right;     // Right edge of each button
-    int _highlighted_button;
     std::string _bg_color, _fg_color;   // Default colors
 
     virtual void redrawFrame();
@@ -51,7 +45,6 @@ class AbstractListBox: public CursesWidget {
     /* Set attributes */
 
     void setName(const std::string & name);
-    void addButton(const std::string & button, const std::string & signal);
     void setColor(const std::string & fg_color, const std::string & bg_color);
 
     /* Get attributes */
@@ -60,7 +53,6 @@ class AbstractListBox: public CursesWidget {
     unsigned int numItems() const;
     virtual void minimumSize(int & height, int & width) const;
     virtual void preferredSize(int & height, int & width) const;
-    int highlightedButton() const;
     const std::string & fgColor() const;
     const std::string & bgColor() const;
 

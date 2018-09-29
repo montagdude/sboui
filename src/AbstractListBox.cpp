@@ -166,11 +166,6 @@ AbstractListBox::AbstractListBox()
   _firstprint = 0;
   _header_rows = 3;
   _reserved_rows = 4;   // Assumes no buttons
-  _buttons.resize(0);
-  _button_left.resize(0);
-  _button_right.resize(0);
-  _button_signals.resize(0);
-  _highlighted_button = -1;
   _fg_color = "fg_normal";
   _bg_color = "bg_normal";
 }
@@ -184,11 +179,6 @@ AbstractListBox::AbstractListBox(WINDOW *win, const std::string & name)
   _firstprint = 0;
   _header_rows = 3;
   _reserved_rows = 4;   // Assumes no buttons
-  _buttons.resize(0);
-  _button_left.resize(0);
-  _button_right.resize(0);
-  _button_signals.resize(0);
-  _highlighted_button = -1;
   _fg_color = "fg_normal";
   _bg_color = "bg_normal";
 }
@@ -219,18 +209,6 @@ Set attributes
 
 *******************************************************************************/
 void AbstractListBox::setName(const std::string & name) { _name = name; }
-void AbstractListBox::addButton(const std::string & button,
-                                const std::string & signal)
-{
-  _buttons.push_back(button);
-  _button_signals.push_back(signal);
-  _button_left.resize(_buttons.size());
-  _button_right.resize(_buttons.size());
-  _highlighted_button = 0;
-  if (_reserved_rows == _header_rows+1)
-    _reserved_rows += 2;
-}
-
 void AbstractListBox::setColor(const std::string & fg_color,
                                const std::string & bg_color)
 {
@@ -310,8 +288,6 @@ void AbstractListBox::preferredSize(int & height, int & width) const
   }
   width += reserved_cols + widthpadding;
 }
-
-int AbstractListBox::highlightedButton() const { return _highlighted_button; }
 
 const std::string & AbstractListBox::fgColor() const { return _fg_color; }
 const std::string & AbstractListBox::bgColor() const { return _bg_color; }

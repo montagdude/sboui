@@ -89,7 +89,7 @@ class MainWindow: public CursesWidget {
     void setBuildOptions(BuildListItem & build);
     void showBuildOrder(BuildListItem & build, MouseEvent * mevent=NULL);
     void showInverseReqs(const BuildListItem & build);
-    void showPackageInfo(BuildListItem & build);
+    void showPackageInfo(BuildListItem & build, MouseEvent * mevent=NULL);
 
     /* Sync/update */
 

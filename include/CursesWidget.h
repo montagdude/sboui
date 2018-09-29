@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <curses.h>
 #include "MouseEvent.h"
 
@@ -18,6 +19,14 @@ class CursesWidget {
     void printSpaces(int nspaces) const;
     void clearWindow () const;
 
+    std::vector<std::string> _buttons;  // At the bottom, e.g. OK/Cancel
+    std::vector<std::string> _button_signals;
+    std::vector<int> _button_left;      // Left edge of each button
+    std::vector<int> _button_right;     // Right edge of each button
+    int _highlighted_button;
+
+    unsigned int _reserved_rows, _header_rows;
+
     WINDOW *_win;
 
   public:
@@ -29,6 +38,10 @@ class CursesWidget {
     /* Set attributes */
 
     virtual void setWindow(WINDOW *win);
+    void addButton(const std::string & button, const std::string & signal);
+    void clearButtons();
+    void setButtons(const std::vector<std::string> & buttons,
+                    const std::vector<std::string> & button_signals);
 
     /* Sets size and position of popup boxes */
 
@@ -43,6 +56,7 @@ class CursesWidget {
 
     virtual void minimumSize(int & height, int & width) const = 0;
     virtual void preferredSize(int & height, int & width) const = 0;
+    int highlightedButton() const;
 
     /* Mouse interaction */
 

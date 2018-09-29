@@ -14,12 +14,13 @@ class MessageBox: public CursesWidget {
 
   protected:
 
-    std::string _name, _message, _info;
+    std::string _name, _message;
     unsigned int _margin_v, _margin_h;
     int _color_idx;
     bool _header_colorize, _centered;
 
     void redrawFrame();
+    void redrawButtons();
     virtual void redrawMessage() const;
 
   public:

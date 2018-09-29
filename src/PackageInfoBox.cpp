@@ -4,6 +4,7 @@
 #include <cmath>     // floor
 #include <algorithm> // max
 #include "Color.h"
+#include "signals.h"
 #include "settings.h"
 #include "string_util.h"
 #include "PackageInfoBox.h"
@@ -43,9 +44,12 @@ Constructors
 PackageInfoBox::PackageInfoBox()
 {
   int color_pair;
+  std::vector<std::string> buttons(1), button_signals(1);
 
   _name = "Package info";
-  _info = "Enter: Dismiss";
+  buttons[0] = "  Dismiss  ";
+  button_signals[0] = signals::keyEnter;
+  setButtons(buttons, button_signals);
   _centered = false;
   color_pair = colors.getPair("fg_popup", "bg_popup");
   if (color_pair != -1) { setColor(color_pair); }
@@ -54,10 +58,13 @@ PackageInfoBox::PackageInfoBox()
 PackageInfoBox::PackageInfoBox(WINDOW *win)
 {
   int color_pair;
+  std::vector<std::string> buttons(1), button_signals(1);
 
   _win = win;
   _name = "Package info";
-  _info = "Enter: Dismiss";
+  buttons[0] = "  Dismiss  ";
+  button_signals[0] = signals::keyEnter;
+  setButtons(buttons, button_signals);
   _centered = false;
   color_pair = colors.getPair("fg_popup", "bg_popup");
   if (color_pair != -1) { setColor(color_pair); }
@@ -78,16 +85,27 @@ void PackageInfoBox::minimumSize(int & height, int & width) const
 
 void PackageInfoBox::preferredSize(int & height, int & width) const
 {
-  int reserved_rows, reserved_cols, msg_width;
+  int namelen, reserved_rows, reserved_cols, msg_width;
   std::vector<std::string> splitmsg;
-  unsigned int i, nlines;
+  unsigned int i, nlines, nbuttons;
 
   reserved_rows = 6 + 2*_margin_v;
   reserved_cols = 2;
 
   // Preferred width -- pick some reasonable number (message width 50)
 
-  width = std::max(_name.size(), _info.size()) + reserved_cols;
+  width = _name.size();
+  nbuttons = _buttons.size();
+  if (nbuttons > 0)
+  {
+    namelen = 0;
+    for ( i = 0; i < nbuttons; i++ )
+    {
+      namelen += _buttons[i].size();
+    }
+    if (namelen > width) { width = namelen; }
+  }
+  width += reserved_cols;
   width = std::max(width, int(30+2+2*_margin_h));
   msg_width = width-2-2*_margin_h;
 

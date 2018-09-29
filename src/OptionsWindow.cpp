@@ -2,6 +2,7 @@
 #include <curses.h>
 #include <cmath>      // floor
 #include <algorithm>  // min, max
+#include <vector>
 #include "Color.h"
 #include "signals.h"
 #include "settings.h"
@@ -557,6 +558,7 @@ void OptionsWindow::askSetDefaults(const std::string & new_pkg_mgr)
   DefaultOptionsBox defbox; 
   MessageBox msgbox;
   bool getting_input;
+  std::vector<std::string> buttons(1), button_signals(1);
 
   defwin = newwin(1, 1, 0, 0);
 
@@ -570,7 +572,9 @@ void OptionsWindow::askSetDefaults(const std::string & new_pkg_mgr)
         + std::string("repo_dir, sync_cmd, install_cmd, and upgrade_cmd ")
         + std::string("appropriately.");
     msgbox.setMessage(msg); 
-    msgbox.setInfo("Enter: Dismiss");
+    buttons[0] = "  Dismiss  ";
+    button_signals[0] = signals::keyEnter;
+    msgbox.setButtons(buttons, button_signals);
     msgbox.setColor(colors.getPair("fg_popup", "bg_popup"));
     placePopup(&msgbox, defwin);
     draw(true);

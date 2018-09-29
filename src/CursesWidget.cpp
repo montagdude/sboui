@@ -73,7 +73,15 @@ void CursesWidget::clearWindow() const
 Constructor
 
 *******************************************************************************/
-CursesWidget::CursesWidget() { _win = NULL; }
+CursesWidget::CursesWidget()
+{
+  _win = NULL;
+  _buttons.resize(0);
+  _button_left.resize(0);
+  _button_right.resize(0);
+  _button_signals.resize(0);
+  _highlighted_button = 0;
+}
 
 /*******************************************************************************
 
@@ -82,9 +90,41 @@ Set attributes
 *******************************************************************************/
 void CursesWidget::setWindow(WINDOW *win) { _win = win; }
 
+void CursesWidget::addButton(const std::string & button,
+                             const std::string & signal)
+{
+  _buttons.push_back(button);
+  _button_signals.push_back(signal);
+  _button_left.resize(_buttons.size());
+  _button_right.resize(_buttons.size());
+  _highlighted_button = 0;
+  if (_reserved_rows == _header_rows+1)
+    _reserved_rows += 2;
+}
+
+void CursesWidget::clearButtons()
+{
+  _buttons.resize(0);
+  _button_signals.resize(0);
+  _button_left.resize(0);
+  _button_right.resize(0);
+  _highlighted_button = 0;
+}
+
+void CursesWidget::setButtons(const std::vector<std::string> & buttons,
+                              const std::vector<std::string> & button_signals)
+{
+  clearButtons();
+  _buttons = buttons;
+  _button_signals = button_signals;
+  _button_left.resize(_buttons.size());
+  _button_right.resize(_buttons.size());
+  _highlighted_button = 0;
+}
+
 /*******************************************************************************
 
-Sets size and position of popup boxes
+Get properties
 
 *******************************************************************************/
 void CursesWidget::popupSize(int & height, int & width,
@@ -125,6 +165,8 @@ void CursesWidget::placePopup(CursesWidget *popup, WINDOW *win) const
   mvwin(win, top, left);
   wresize(win, height, width);
 }
+
+int CursesWidget::highlightedButton() const { return _highlighted_button; }
 
 /*******************************************************************************
 

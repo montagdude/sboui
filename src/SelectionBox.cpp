@@ -17,17 +17,9 @@ SelectionBox::SelectionBox()
 {
   _reserved_rows = 6;
   _header_rows = 3;
-  _buttons.resize(2);
-  _buttons[0] = "    Ok    ";
-  _buttons[1] = "  Cancel  ";
-  _button_signals.resize(2);
-  _button_signals[0] = signals::keyEnter;
-  _button_signals[1] = signals::quit;
-  _button_left.resize(2);
-  _button_right.resize(2);
-  _highlighted_button = 0;
-  _fg_color = "fg_popup";
-  _bg_color = "bg_popup";
+  addButton("    Ok    ", signals::keyEnter);
+  addButton("  Cancel  ", signals::quit);
+  setColor("fg_popup", "bg_popup");
 }
 
 SelectionBox::SelectionBox(WINDOW *win, const std::string & name)
@@ -36,17 +28,9 @@ SelectionBox::SelectionBox(WINDOW *win, const std::string & name)
   _name = name;
   _reserved_rows = 6;
   _header_rows = 3;
-  _buttons.resize(2);
-  _buttons[0] = "    Ok    ";
-  _buttons[1] = "  Cancel  ";
-  _button_signals.resize(2);
-  _button_signals[0] = signals::keyEnter;
-  _button_signals[1] = signals::quit;
-  _button_left.resize(2);
-  _button_right.resize(2);
-  _highlighted_button = 0;
-  _fg_color = "fg_popup";
-  _bg_color = "bg_popup";
+  addButton("    Ok    ", signals::keyEnter);
+  addButton("  Cancel  ", signals::quit);
+  setColor("fg_popup", "bg_popup");
 }
 
 /*******************************************************************************

@@ -1130,7 +1130,7 @@ void MainWindow::showInverseReqs(const BuildListItem & build)
 Shows package information about selected SlackBuild
 
 *******************************************************************************/
-void MainWindow::showPackageInfo(BuildListItem & build)
+void MainWindow::showPackageInfo(BuildListItem & build, MouseEvent * mevent)
 {
   std::string selection, msg;
   bool getting_selection;
@@ -1173,11 +1173,11 @@ void MainWindow::showPackageInfo(BuildListItem & build)
   getting_selection = true;
   while (getting_selection)
   {
-    selection = pkginfo.exec();
-    getting_selection = false;
+    selection = pkginfo.exec(mevent);
+    if (selection == signals::keyEnter)
+      getting_selection = false;
     if (selection == signals::resize)
     {
-      getting_selection = true;
       placePopup(&pkginfo, pkginfowin);
       draw(true);
     }
@@ -1395,6 +1395,7 @@ void MainWindow::viewCommandLine() const
 /*******************************************************************************
 
 Displays an error message. Returns response from message box.
+FIXME: add mouse support
 
 *******************************************************************************/
 std::string MainWindow::displayError(const std::string & msg, bool centered,
@@ -1404,6 +1405,7 @@ std::string MainWindow::displayError(const std::string & msg, bool centered,
   bool getting_selection;
   MessageBox errbox(false, centered);
   WINDOW *errwin;
+  std::vector<std::string> buttons(1), button_signals(1);
 
   // Place message box
 
@@ -1411,7 +1413,9 @@ std::string MainWindow::displayError(const std::string & msg, bool centered,
   errbox.setWindow(errwin);
   errbox.setName(name);
   errbox.setMessage(msg);
-  errbox.setInfo(info);
+  buttons[0] = info;
+  button_signals[0] = signals::keyEnter;
+  errbox.setButtons(buttons, button_signals);
   placePopup(&errbox, errwin);
   draw(true);
 
@@ -1441,6 +1445,7 @@ std::string MainWindow::displayError(const std::string & msg, bool centered,
 /*******************************************************************************
 
 Displays an info message. Returns response from message box.
+FIXME: add mouse support
 
 *******************************************************************************/
 std::string MainWindow::displayMessage(const std::string & msg, bool centered,
@@ -1450,6 +1455,7 @@ std::string MainWindow::displayMessage(const std::string & msg, bool centered,
   bool getting_selection;
   MessageBox msgbox(true, centered);
   WINDOW *msgwin;
+  std::vector<std::string> buttons(1), button_signals(1);
 
   // Place message box
 
@@ -1457,7 +1463,9 @@ std::string MainWindow::displayMessage(const std::string & msg, bool centered,
   msgbox.setWindow(msgwin);
   msgbox.setName(name);
   msgbox.setMessage(msg);
-  msgbox.setInfo(info);
+  buttons[0] = info;
+  button_signals[0] = signals::keyEnter;
+  msgbox.setButtons(buttons, button_signals);
   msgbox.setColor(colors.getPair("fg_popup", "bg_popup"));
   placePopup(&msgbox, msgwin);
   draw(true);
@@ -1782,7 +1790,7 @@ void MainWindow::showBuildActions(BuildListItem & build, bool limited_actions,
     {
       hideWindow(actionwin);
       draw(true);
-      showPackageInfo(build);
+      showPackageInfo(build, mevent);
       placePopup(&actionbox, actionwin);
       draw(true);
     }
