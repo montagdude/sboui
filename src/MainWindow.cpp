@@ -1166,7 +1166,7 @@ void MainWindow::showPackageInfo(BuildListItem & build, MouseEvent * mevent)
   pkginfo.setWindow(pkginfowin);
   pkginfo.setMessage(msg);
   placePopup(&pkginfo, pkginfowin);
-  draw(true);
+  //draw(true);
 
   // Get user input
 
