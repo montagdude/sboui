@@ -1,5 +1,6 @@
 #include <string>
 #include <curses.h>
+#include <vector>
 #include "Color.h"
 #include "settings.h"
 #include "signals.h"
@@ -110,12 +111,15 @@ Constructors and destructor
 *******************************************************************************/
 DirListBox::DirListBox()
 {
-  _buttons.resize(2);
-  _buttons[0] = "Enter: View";
-  _buttons[1] = "Esc: Back";
-  _highlighted_button = 0;
+  std::vector<std::string> buttons(2), button_signals(2);
+
   _reserved_rows = 6;
   _header_rows = 3;
+  buttons[0] = "  View/Edit  ";
+  buttons[1] = "    Back     ";
+  button_signals[0] = signals::keyEnter;
+  button_signals[1] = signals::quit;
+  setButtons(buttons, button_signals);
   _topdir = "";
   _currentdir = "";
   _limit_topdir = false;
@@ -123,14 +127,17 @@ DirListBox::DirListBox()
 
 DirListBox::DirListBox(WINDOW *win, const std::string & name)
 {
+  std::vector<std::string> buttons(2), button_signals(2);
+
   _win = win;
   _name = name;
-  _buttons.resize(2);
-  _buttons[0] = "Enter: View";
-  _buttons[1] = "Esc: Back";
-  _highlighted_button = 0;
   _reserved_rows = 6;
   _header_rows = 3;
+  buttons[0] = "  View/Edit  ";
+  buttons[1] = "    Back     ";
+  button_signals[0] = signals::keyEnter;
+  button_signals[1] = signals::quit;
+  setButtons(buttons, button_signals);
   _topdir = "";
   _currentdir = "";
   _limit_topdir = false;
@@ -215,6 +222,7 @@ std::string DirListBox::exec(MouseEvent * mevent)
   int ch, check_redraw;
   std::string retval;
   bool getting_input;
+  MEVENT event;
 
   const int MY_ESC = 27;
 
@@ -239,15 +247,24 @@ std::string DirListBox::exec(MouseEvent * mevent)
       case '\n':
       case '\r':
       case KEY_ENTER:
-        _redraw_type = "all";
-        if (_items[_highlight]->getProp("type") == "dir")
+        if (_highlighted_button == 0)
         {
-          if (_items[_highlight]->name() == "..") { navigateUp(); }
-          else { setDirectory(_currentdir + _items[_highlight]->name()); }
+          _redraw_type = "all";
+          if (_items[_highlight]->getProp("type") == "dir")
+          {
+            if (_items[_highlight]->name() == "..") { navigateUp(); }
+            else { setDirectory(_currentdir + _items[_highlight]->name()); }
+          }
+          else 
+          { 
+            retval = signals::keyEnter;
+            getting_input = false;
+          }
         }
-        else 
-        { 
-          retval = signals::keyEnter;
+        else
+        {
+          retval = signals::quit;
+          _redraw_type = "all";
           getting_input = false;
         }
         break;
@@ -284,6 +301,19 @@ std::string DirListBox::exec(MouseEvent * mevent)
         if (check_redraw == 1) { _redraw_type = "all"; }
         else { _redraw_type = "changed"; }
         break;
+
+      // Right/Left: change higlighted button
+
+      case KEY_RIGHT:
+        check_redraw = highlightNextButton();
+        if (check_redraw == 1) { _redraw_type = "buttons"; }
+        else { _redraw_type = "none"; }
+        break;
+      case KEY_LEFT:
+        check_redraw = highlightPreviousButton();
+        if (check_redraw == 1) { _redraw_type = "buttons"; }
+        else { _redraw_type = "none"; }
+        break;
   
       // Resize signal
   
@@ -299,6 +329,35 @@ std::string DirListBox::exec(MouseEvent * mevent)
         retval = signals::quit;
         _redraw_type = "all";
         getting_input = false;
+        break;
+
+      // Mouse
+
+      case KEY_MOUSE:
+        if ( (getmouse(&event) == OK) && mevent )
+        {
+          mevent->recordClick(event);
+          retval = handleMouseEvent(mevent);
+          if (retval == signals::keyEnter)
+          {
+            _redraw_type = "all";
+            if (_items[_highlight]->getProp("type") == "dir")
+            {
+              if (_items[_highlight]->name() == "..") { navigateUp(); }
+              else { setDirectory(_currentdir + _items[_highlight]->name()); }
+            }
+            else 
+            { 
+              retval = signals::keyEnter;
+              getting_input = false;
+            }
+          }
+          else if (retval == signals::quit)
+          {
+            _redraw_type = "all";
+            getting_input = false;
+          }
+        }
         break;
 
       default:

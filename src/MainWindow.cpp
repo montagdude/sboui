@@ -1166,7 +1166,6 @@ void MainWindow::showPackageInfo(BuildListItem & build, MouseEvent * mevent)
   pkginfo.setWindow(pkginfowin);
   pkginfo.setMessage(msg);
   placePopup(&pkginfo, pkginfowin);
-  //draw(true);
 
   // Get user input
 
@@ -1194,7 +1193,7 @@ void MainWindow::showPackageInfo(BuildListItem & build, MouseEvent * mevent)
 Displays a file browser in the directory of a given SlackBuild
 
 *******************************************************************************/
-void MainWindow::browseFiles(const BuildListItem & build)
+void MainWindow::browseFiles(const BuildListItem & build, MouseEvent * mevent)
 {
   WINDOW *browserwin;
   std::string selection, builddir, type, fname;
@@ -1221,7 +1220,7 @@ void MainWindow::browseFiles(const BuildListItem & build)
   getting_input = true;
   while (getting_input)
   {
-    selection = browser.exec(); 
+    selection = browser.exec(mevent); 
     if (selection == signals::keyEnter)
     {
       type = browser.highlightedItem()->getProp("type");
@@ -1774,7 +1773,7 @@ void MainWindow::showBuildActions(BuildListItem & build, bool limited_actions,
     {
       hideWindow(actionwin);
       draw(true);
-      browseFiles(build);
+      browseFiles(build, mevent);
       placePopup(&actionbox, actionwin);
       draw(true);
     }

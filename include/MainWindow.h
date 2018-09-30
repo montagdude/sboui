@@ -81,7 +81,7 @@ class MainWindow: public CursesWidget {
 
     /* Actions for a selected SlackBuild */
 
-    void browseFiles(const BuildListItem & build);
+    void browseFiles(const BuildListItem & build, MouseEvent * mevent=NULL);
     bool modifyPackage(BuildListItem & build, const std::string & action,
                        int & ninstalled, int & nupgraded, int & nreinstalled,
                        int & nremoved, bool & cancel_all, bool batch=false,
