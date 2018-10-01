@@ -164,6 +164,21 @@ CategoryListBox::CategoryListBox(WINDOW *win, const std::string & name)
 
 /*******************************************************************************
 
+Tags a single category
+
+*******************************************************************************/
+void CategoryListBox::tagCategory(unsigned int idx)
+{
+  if (idx < numItems())
+  {
+    _items[idx]->setBoolProp("tagged", 
+                             (! _items[idx]->getBoolProp("tagged")));
+  }
+}
+void CategoryListBox::tagHighlightedCategory() { tagCategory(_highlight); }
+
+/*******************************************************************************
+
 User interaction: returns key stroke or other signal. This is the same
 as the one for BuildListBox, except that tagging doesn't highlight the next
 entry.
@@ -273,21 +288,13 @@ std::string CategoryListBox::exec(MouseEvent * mevent)
     // t or T: tag item
 
     case 't':
-      retval = "t";
-      _items[_highlight]->setBoolProp("tagged", 
-                                 (! _items[_highlight]->getBoolProp("tagged")));
-      check_redraw = highlightNext();
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
+      retval = signals::tag;
+      _redraw_type = "changed";
       break;
 
     case 'T':
-      retval = "T";
-      _items[_highlight]->setBoolProp("tagged", 
-                                 (! _items[_highlight]->getBoolProp("tagged")));
-      check_redraw = highlightPrevious();
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
+      retval = signals::tag;
+      _redraw_type = "changed";
       break;
 
     // Mouse

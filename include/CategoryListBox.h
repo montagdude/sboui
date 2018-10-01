@@ -24,6 +24,11 @@ class CategoryListBox: public ListBox {
     CategoryListBox();
     CategoryListBox(WINDOW *win, const std::string & name);
 
+    /* Tagging */
+
+    void tagCategory(unsigned int idx);
+    void tagHighlightedCategory();
+
     /* User interaction loop */
 
     std::string exec(MouseEvent * mevent=NULL);

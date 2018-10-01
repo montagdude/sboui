@@ -33,8 +33,8 @@ void MouseEvent::recordClick(const MEVENT & event)
 
   if (event.bstate & BUTTON1_PRESSED)
     newbutton = 1;
-  else if (event.bstate & BUTTON2_PRESSED)
-    newbutton = 2; 
+  else if (event.bstate & BUTTON3_PRESSED)
+    newbutton = 3; 
   else if (event.bstate & BUTTON4_PRESSED)
     newbutton = 4;
 #if NCURSES_MOUSE_VERSION > 1

@@ -1938,6 +1938,7 @@ std::string MainWindow::handleMouseEvent(MouseEvent * mevent)
   int ymin1, xmin1, ymax1, xmax1;
   int ymin2, xmin2, ymax2, xmax2;
   unsigned int i, ncategories;
+  bool all_tagged;
   std::string action;
   BuildListItem *build;
 
@@ -1951,6 +1952,9 @@ std::string MainWindow::handleMouseEvent(MouseEvent * mevent)
   ymax1 += ymin1;   // absolute coordinates
   xmax2 += xmin2;
   ymax2 += ymin2;
+
+  //FIXME: a lot of the operations below are duplicated in exec(). Move these
+  // to their own methods.
 
   // Category list box
 
@@ -1974,6 +1978,15 @@ std::string MainWindow::handleMouseEvent(MouseEvent * mevent)
       _category_idx = _clistbox.highlight(); 
       _blistboxes[_category_idx].draw(true);
     }
+    else if (action == signals::tag)
+    {
+      _category_idx = _clistbox.highlight();
+      _clistbox.tagHighlightedCategory();
+      _clistbox.draw();
+      _blistboxes[_category_idx].tagAll();
+      _category_idx = _clistbox.highlight();
+      _blistboxes[_category_idx].draw(true);
+    }
   }
 
   // Builds list box
@@ -1986,7 +1999,6 @@ std::string MainWindow::handleMouseEvent(MouseEvent * mevent)
     if (_activated_listbox == 0)
     {
       _clistbox.setActivated(false);
-      _clistbox.draw();
       _blistboxes[_category_idx].setActivated(true);
       _activated_listbox = 1;
     }
@@ -2017,6 +2029,28 @@ std::string MainWindow::handleMouseEvent(MouseEvent * mevent)
         else { _clistbox.itemByIdx(i)->setBoolProp("tagged", false); }
       }
       draw(true);
+    }
+
+    else if (action == signals::tag)
+    {
+      _blistboxes[_category_idx].tagHighlightedSlackBuild();
+      all_tagged = _blistboxes[_category_idx].allTagged();
+      if (_clistbox.highlightedItem()->getBoolProp("tagged"))
+      {
+        if (! all_tagged) 
+        { 
+          _clistbox.highlightedItem()->setBoolProp("tagged", false);
+          _clistbox.draw(true);
+        }
+      }
+      else 
+      {
+        if (all_tagged) 
+        { 
+          _clistbox.highlightedItem()->setBoolProp("tagged", true);
+          _clistbox.draw(true);
+        }
+      }
     }
   }
 
@@ -2094,8 +2128,9 @@ std::string MainWindow::exec(MouseEvent * mevent)
 
       // Tag signal: tag/untag all items in category
 
-      else if ( (selection == "t") || (selection == "T") )
+      else if (selection == signals::tag)
       {
+        _clistbox.tagHighlightedCategory();
         _blistboxes[_category_idx].tagAll();
         _category_idx = _clistbox.highlight();
         _blistboxes[_category_idx].draw(true);
@@ -2138,8 +2173,9 @@ std::string MainWindow::exec(MouseEvent * mevent)
 
       // Tag signal
 
-      else if ( (selection == "t") || (selection == "T") )
+      else if (selection == signals::tag)
       {
+        _blistboxes[_category_idx].tagHighlightedSlackBuild();
         all_tagged = _blistboxes[_category_idx].allTagged();
         if (_clistbox.highlightedItem()->getBoolProp("tagged"))
         {

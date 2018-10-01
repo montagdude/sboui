@@ -542,7 +542,7 @@ std::string ListBox::handleMouseEvent(MouseEvent * mevent)
   xcurs = mevent->x() - begx;
   rowsavail = rows-_reserved_rows;
 
-  if ( (mevent->button() == 1) || (mevent->button() == 2) )
+  if ( (mevent->button() == 1) || (mevent->button() == 3) )
   {
     // Check for clicking on buttons
 
@@ -633,10 +633,15 @@ std::string ListBox::handleMouseEvent(MouseEvent * mevent)
       else
         _redraw_type = "changed";
 
-      if (mevent->doubleClick())
-        return signals::keyEnter;
+      if (mevent->button() == 3)
+        return signals::tag;
       else
-        return signals::highlight;
+      {
+        if (mevent->doubleClick())
+          return signals::keyEnter;
+        else
+          return signals::highlight;
+      }
     }
   }
 

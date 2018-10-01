@@ -247,6 +247,7 @@ void BuildListBox::tagSlackBuild(unsigned int idx)
     else { _taglist->removeItem(_items[idx]); }
   }
 }
+void BuildListBox::tagHighlightedSlackBuild() { tagSlackBuild(_highlight); }
 
 /*******************************************************************************
 
@@ -400,19 +401,13 @@ std::string BuildListBox::exec(MouseEvent * mevent)
     // t and T: tag item
 
     case 't':
-      retval = "t";
-      tagSlackBuild(_highlight);
-      check_redraw = highlightNext();
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
+      retval = signals::tag;
+      _redraw_type = "changed";
       break;
 
     case 'T':
-      retval = "T";
-      tagSlackBuild(_highlight);
-      check_redraw = highlightPrevious();
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
+      retval = signals::tag;
+      _redraw_type = "changed";
       break;
 
     // Mouse

@@ -34,12 +34,12 @@ int main(int argc, char *argv[])
   set_escdelay(25);
   keypad(stdscr, TRUE);
 #if NCURSES_MOUSE_VERSION > 1
-  mousemask(BUTTON1_PRESSED | BUTTON2_PRESSED | BUTTON4_PRESSED |
+  mousemask(BUTTON1_PRESSED | BUTTON3_PRESSED | BUTTON4_PRESSED |
             BUTTON5_PRESSED, NULL);
 #else
   // Note: this may not give desired scroll-down behavior with some values of
   // TERM. For example, xterm-1003 activates this bit for all mouse movements.
-  mousemask(BUTTON1_PRESSED | BUTTON2_PRESSED | BUTTON4_PRESSED |
+  mousemask(BUTTON1_PRESSED | BUTTON3_PRESSED | BUTTON4_PRESSED |
             REPORT_MOUSE_POSITION, NULL);
 #endif
   mouseinterval(0);

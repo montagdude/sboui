@@ -32,6 +32,7 @@ class BuildListBox: public ListBox {
 
     void setTagList(TagList *taglist);
     void tagSlackBuild(unsigned int idx);
+    void tagHighlightedSlackBuild();
     unsigned int tagAll();
 
     /* Accessing properties */
