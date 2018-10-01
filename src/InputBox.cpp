@@ -120,23 +120,27 @@ int InputBox::highlightNext()
 
 int InputBox::highlightPreviousPage()
 {
-  int rows, cols, rowsavail, firstprintstore;
+  int rows, cols, rowsavail, firstprintstore, buffer_rows;
   unsigned int i, nitems;
   bool highlight_found;
 
   getmaxyx(_win, rows, cols);
   rowsavail = rows-_reserved_rows;
 
+  // Number of rows from current page to keep visible
+
+  buffer_rows = std::floor(double(rowsavail)/4.);
+
   // Determine how far to page
 
   firstprintstore = _firstprint;
-  if (_firstprint - rowsavail <= _header_rows)
+  if (_firstprint - (rowsavail-buffer_rows) <= _header_rows)
   {
-    if (_items[_highlight]->posy() - rowsavail <= _header_rows)
+    if (_items[_highlight]->posy() - (rowsavail-buffer_rows) <= _header_rows)
       return highlightFirst();
     _firstprint = _header_rows;
   }
-  else { _firstprint -= rowsavail; }
+  else { _firstprint -= (rowsavail-buffer_rows); }
 
   // Highlight next selectable choice after _firstprint
 
@@ -159,24 +163,29 @@ int InputBox::highlightPreviousPage()
 
 int InputBox::highlightNextPage()
 {
-  int rows, cols, rowsavail, firstprintstore, lastprint;
+  int rows, cols, rowsavail, firstprintstore, lastprint, buffer_rows;
   unsigned int i, nitems;
   bool highlight_found;
 
   getmaxyx(_win, rows, cols);
   rowsavail = rows-_reserved_rows;
 
+  // Number of rows from current page to keep visible
+
+  buffer_rows = std::floor(double(rowsavail)/4.);
+
   // Determine how far to page
 
   nitems = _items.size();
   firstprintstore = _firstprint;
   lastprint = _items[nitems-1]->posy();
-  if (_items[_highlight]->posy() + rowsavail-1 >= lastprint)
+  if (_items[_highlight]->posy() + (rowsavail-1-buffer_rows) >= lastprint)
     return highlightLast();
-  if (_firstprint + rowsavail-1 >= lastprint) { return highlightLast(); }
-  else if (_firstprint + 2*(rowsavail-1) >= lastprint)
-    _firstprint = lastprint - (rowsavail-1);
-  else { _firstprint += rowsavail; }
+  if (_firstprint + (rowsavail-1-buffer_rows) >= lastprint)
+    return highlightLast();
+  else if (_firstprint + 2*(rowsavail-1-buffer_rows) >= lastprint)
+    _firstprint = lastprint - (rowsavail-1-buffer_rows);
+  else { _firstprint += rowsavail-buffer_rows; }
 
   // Highlight next selectable choice after _firstprint
 
@@ -321,7 +330,7 @@ void InputBox::redrawScrollIndicator() const
   need_dn = false;
   nitems = _items.size();
   if (_firstprint != _header_rows) { need_up = true; }
-  if (_items[nitems-1]->posy() > _firstprint + rows-_reserved_rows - 1)
+  if (_items[nitems-1]->posy() > _firstprint + rows - int(_reserved_rows) - 1)
     need_dn = true;
 
   // Draw right border

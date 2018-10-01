@@ -100,17 +100,21 @@ Scrolls 1 page up. Return value of 0 means that _firstprint hasn't changed;
 *******************************************************************************/
 int ScrollBox::scrollPreviousPage()
 {
-  int rows, cols, rowsavail;
+  int rows, cols, rowsavail, buffer_rows;
 
   if (_items.size() == 0) { return 0; }
 
   getmaxyx(_win, rows, cols);
   rowsavail = rows-_reserved_rows;
 
+  // Number of rows from current page to keep visible
+
+  buffer_rows = std::floor(double(rowsavail)/4.);
+
   // Determine how far to page
 
-  if (_firstprint - rowsavail <= 0) { return scrollFirst(); }
-  else { _firstprint -= rowsavail; }
+  if (_firstprint - (rowsavail-buffer_rows) <= 0) { return scrollFirst(); }
+  else { _firstprint -= (rowsavail-buffer_rows); }
 
   return 1;
 }
@@ -123,19 +127,24 @@ Scrolls 1 page down. Return value of 0 means that _firstprint hasn't changed;
 *******************************************************************************/
 int ScrollBox::scrollNextPage()
 {
-  int rows, cols, rowsavail, nitems, firstprintstore;
+  int rows, cols, rowsavail, nitems, firstprintstore, buffer_rows;
 
   if (_items.size() == 0) { return 0; }
 
   getmaxyx(_win, rows, cols);
   rowsavail = rows-_reserved_rows;
 
+  // Number of rows from current page to keep visible
+
+  buffer_rows = std::floor(double(rowsavail)/4.);
+
   // Determine how far to page
 
   firstprintstore = _firstprint;
   nitems = _items.size();
-  if (_firstprint + 2*rowsavail >= nitems-1) { return scrollLast(); }
-  else { _firstprint += rowsavail; }
+  if (_firstprint + 2*(rowsavail-buffer_rows) >= nitems-1)
+    return scrollLast();
+  else { _firstprint += rowsavail - buffer_rows; }
 
   if (firstprintstore == _firstprint) { return 0; }
   else { return 1; }

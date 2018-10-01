@@ -95,28 +95,34 @@ Scrolls 1 page down. Return value of 0 means that _firstprint hasn't changed;
 *******************************************************************************/
 int ListBox::highlightNextPage()
 {
-  int rows, cols, rowsavail, nitems;
+  int rows, cols, rowsavail, nitems, buffer_rows;
 
   if (_items.size() == 0) { return 0; }
 
   getmaxyx(_win, rows, cols);
   rowsavail = rows-_reserved_rows;
 
+  // Number of rows from current page to keep visible
+
+  buffer_rows = std::floor(double(rowsavail)/4.);
+
   // Determine how far to page and which item to highlight
 
   nitems = _items.size();
-  if (_highlight + rowsavail >= nitems-1) { return highlightLast(); }
-  if (_firstprint + rowsavail >= nitems-1) { return highlightLast(); }
-  else if (_firstprint + 2*rowsavail > nitems-1)
+  if (_highlight + rowsavail - buffer_rows >= nitems-1)
+    return highlightLast();
+  if (_firstprint + rowsavail - buffer_rows >= nitems-1)
+    return highlightLast();
+  else if (_firstprint + 2*(rowsavail-buffer_rows) > nitems-1)
   {
     _firstprint = nitems - rowsavail;
   }
-  else { _firstprint += rowsavail; }
+  else { _firstprint += rowsavail - buffer_rows; }
 
   // Determine which choice to highlight
 
   _prevhighlight = _highlight;
-  _highlight += rowsavail;
+  _highlight += rowsavail - buffer_rows;
 
   return 1;
 }
@@ -129,26 +135,30 @@ Scrolls 1 page up. Return value of 0 means that _firstprintstore hasn't changed;
 *******************************************************************************/
 int ListBox::highlightPreviousPage()
 {
-  int rows, cols, rowsavail;
+  int rows, cols, rowsavail, buffer_rows;
 
   if (_items.size() == 0) { return 0; }
 
   getmaxyx(_win, rows, cols);
   rowsavail = rows-_reserved_rows;
 
+  // Number of rows from current page to keep visible
+
+  buffer_rows = std::floor(double(rowsavail)/4.);
+
   // Determine how far to page
 
-  if (_firstprint - rowsavail <= 0)
+  if (_firstprint - (rowsavail-buffer_rows) <= 0)
   {
-    if (_highlight - rowsavail <= 0) { return highlightFirst(); }
+    if (_highlight - (rowsavail-buffer_rows) <= 0) { return highlightFirst(); }
     _firstprint = 0;
   }
-  else { _firstprint -= rowsavail; }
+  else { _firstprint -= (rowsavail-buffer_rows); }
 
   // Determine which choice to highlight
 
   _prevhighlight = _highlight;
-  _highlight -= rowsavail;
+  _highlight -= (rowsavail-buffer_rows);
 
   return 1;
 }
