@@ -1999,6 +1999,7 @@ std::string MainWindow::handleMouseEvent(MouseEvent * mevent)
     if (_activated_listbox == 0)
     {
       _clistbox.setActivated(false);
+      _clistbox.draw();
       _blistboxes[_category_idx].setActivated(true);
       _activated_listbox = 1;
     }
