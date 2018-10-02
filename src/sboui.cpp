@@ -37,10 +37,10 @@ int main(int argc, char *argv[])
   mousemask(BUTTON1_PRESSED | BUTTON3_PRESSED | BUTTON4_PRESSED |
             BUTTON5_PRESSED, NULL);
 #else
-  // Note: this may not give desired scroll-down behavior with some values of
-  // TERM. For example, xterm-1003 activates this bit for all mouse movements.
-  mousemask(BUTTON1_PRESSED | BUTTON3_PRESSED | BUTTON4_PRESSED |
-            REPORT_MOUSE_POSITION, NULL);
+  // Note: in some terminals, REPORT_MOUSE_POSITION can be used to simulate
+  // button 5, but in others it gives undesired behavior, so to be safe disable
+  // scroll-down.
+  mousemask(BUTTON1_PRESSED | BUTTON3_PRESSED | BUTTON4_PRESSED, NULL);
 #endif
   mouseinterval(0);
 
