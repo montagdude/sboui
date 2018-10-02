@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <locale.h>
 #include "CLOParser.h"
 #include "curses.h"
 #include "settings.h"
@@ -27,6 +28,7 @@ int main(int argc, char *argv[])
 
   // Set up ncurses (needed because we set colors while reading config file)
 
+  setlocale(LC_ALL, "");
   initscr();
   curs_set(0);
   raw();

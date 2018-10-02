@@ -36,6 +36,7 @@ add_definitions(-DPACKAGE_DIR=\"${PACKAGEDIR}\")
 add_definitions(-DDATADIR=\"${DATADIR}\")
 
 # Check for curses library
+set(CURSES_NEED_WIDE TRUE)
 find_package(Curses REQUIRED)
 if (CURSES_FOUND)
   include_directories(${CURSES_INCLUDE_DIRS})
