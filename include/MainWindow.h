@@ -116,6 +116,16 @@ class MainWindow: public CursesWidget {
 
     void printPackageVersion(const BuildListItem & build);
 
+    /* Various operations performed by both exec and handleMouseEvent */
+
+    void printSelectedPackageVersion();
+    void activateListBox(unsigned int list);
+    void drawSelectedCategory();
+    void tagSelectedCategory();
+    void tagSelectedSlackBuild();
+    void showSelectedBuildActions(bool limited_actions=false,
+                                  MouseEvent * mevent=NULL);
+
   public:
 
     /* Constructor and destructor */

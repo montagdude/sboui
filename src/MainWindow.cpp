@@ -1521,6 +1521,104 @@ void MainWindow::printPackageVersion(const BuildListItem & build)
 
 /*******************************************************************************
 
+Various operations performed by both exec and handleMouseEvent
+
+*******************************************************************************/
+void MainWindow::printSelectedPackageVersion()
+{
+  BuildListItem *build;
+
+  // Note on static cast: allows the original BuildListItem pointer to
+  // be referenced.
+
+  build = static_cast<BuildListItem *>(
+                            _blistboxes[_category_idx].highlightedItem());
+  printPackageVersion(*build);
+}
+
+void MainWindow::activateListBox(unsigned int list)
+{
+  if (list == 0)
+  {
+    _blistboxes[_category_idx].setActivated(false);
+    _blistboxes[_category_idx].draw();
+    _clistbox.setActivated(true);
+    _activated_listbox = 0;
+    clearStatus();
+  }
+  else if (list == 1)
+  {
+    _clistbox.setActivated(false);
+    _clistbox.draw();
+    _blistboxes[_category_idx].setActivated(true);
+    _activated_listbox = 1;
+    printSelectedPackageVersion();
+  }
+}
+
+void MainWindow::drawSelectedCategory()
+{
+  _category_idx = _clistbox.highlight();
+  _blistboxes[_category_idx].draw(true);
+}
+
+void MainWindow::tagSelectedCategory()
+{
+  _category_idx = _clistbox.highlight();
+  _clistbox.tagHighlightedCategory();
+  _clistbox.draw();
+  _blistboxes[_category_idx].tagAll();
+  _blistboxes[_category_idx].draw(true);
+}
+
+void MainWindow::tagSelectedSlackBuild()
+{
+  bool all_tagged;
+
+  _blistboxes[_category_idx].tagHighlightedSlackBuild();
+  all_tagged = _blistboxes[_category_idx].allTagged();
+  if (_clistbox.highlightedItem()->getBoolProp("tagged"))
+  {
+    if (! all_tagged) 
+    { 
+      _clistbox.highlightedItem()->setBoolProp("tagged", false);
+      _clistbox.draw(true);
+    }
+  }
+  else 
+  {
+    if (all_tagged) 
+    { 
+      _clistbox.highlightedItem()->setBoolProp("tagged", true);
+      _clistbox.draw(true);
+    }
+  }
+}
+
+void MainWindow::showSelectedBuildActions(bool limited_actions,
+                                          MouseEvent * mevent)
+{
+  unsigned int i, ncategories;
+  BuildListItem *build;
+
+  build = static_cast<BuildListItem *>(
+                            _blistboxes[_category_idx].highlightedItem());
+  showBuildActions(*build, limited_actions, mevent);
+
+  // Determine if categories should be tagged and redraw
+
+  ncategories = _clistbox.numItems();
+  for ( i = 0; i < ncategories; i++ )
+  {
+    if (_blistboxes[i].allTagged())
+      _clistbox.itemByIdx(i)->setBoolProp("tagged", true);
+    else { _clistbox.itemByIdx(i)->setBoolProp("tagged", false); }
+  }
+  draw(true);
+}
+
+/*******************************************************************************
+
 Constructor and destructor
 
 *******************************************************************************/
@@ -1937,10 +2035,7 @@ std::string MainWindow::handleMouseEvent(MouseEvent * mevent)
 {
   int ymin1, xmin1, ymax1, xmax1;
   int ymin2, xmin2, ymax2, xmax2;
-  unsigned int i, ncategories;
-  bool all_tagged;
   std::string action;
-  BuildListItem *build;
 
   // Determine what was clicked
 
@@ -1953,9 +2048,6 @@ std::string MainWindow::handleMouseEvent(MouseEvent * mevent)
   xmax2 += xmin2;
   ymax2 += ymin2;
 
-  //FIXME: a lot of the operations below are duplicated in exec(). Move these
-  // to their own methods.
-
   // Category list box
 
   if ( (mevent->y() >= ymin1) && (mevent->y() <= ymax1) &&
@@ -1964,29 +2056,13 @@ std::string MainWindow::handleMouseEvent(MouseEvent * mevent)
     // Activate CategoryListBox if needed
 
     if (_activated_listbox == 1)
-    {
-      _blistboxes[_category_idx].setActivated(false);
-      _blistboxes[_category_idx].draw();
-      _clistbox.setActivated(true);
-      _activated_listbox = 0;
-      clearStatus();
-    }
+      activateListBox(0);
 
     action = _clistbox.handleMouseEvent(mevent);
     if ( (action == signals::highlight) || (action == signals::keyEnter) )
-    {
-      _category_idx = _clistbox.highlight(); 
-      _blistboxes[_category_idx].draw(true);
-    }
+      drawSelectedCategory();
     else if (action == signals::tag)
-    {
-      _category_idx = _clistbox.highlight();
-      _clistbox.tagHighlightedCategory();
-      _clistbox.draw();
-      _blistboxes[_category_idx].tagAll();
-      _category_idx = _clistbox.highlight();
-      _blistboxes[_category_idx].draw(true);
-    }
+      tagSelectedCategory();
   }
 
   // Builds list box
@@ -1997,62 +2073,17 @@ std::string MainWindow::handleMouseEvent(MouseEvent * mevent)
     // Activate BuildListBox if needed
 
     if (_activated_listbox == 0)
-    {
-      _clistbox.setActivated(false);
-      _clistbox.draw();
-      _blistboxes[_category_idx].setActivated(true);
-      _activated_listbox = 1;
-    }
+      activateListBox(1);
 
     action = _blistboxes[_category_idx].handleMouseEvent(mevent);
     if (action == signals::highlight)
-    {
-      // Display status message for installed SlackBuild
-
-      build = static_cast<BuildListItem *>(
-                                _blistboxes[_category_idx].highlightedItem());
-      printPackageVersion(*build);
-    }
+      printSelectedPackageVersion();
 
     else if (action == signals::keyEnter)
-    {
-      build = static_cast<BuildListItem *>(
-                                _blistboxes[_category_idx].highlightedItem());
-      showBuildActions(*build, false, mevent);
-
-      // Determine if categories should be tagged and redraw
-
-      ncategories = _clistbox.numItems();
-      for ( i = 0; i < ncategories; i++ )
-      {
-        if (_blistboxes[i].allTagged())
-          _clistbox.itemByIdx(i)->setBoolProp("tagged", true);
-        else { _clistbox.itemByIdx(i)->setBoolProp("tagged", false); }
-      }
-      draw(true);
-    }
+      showSelectedBuildActions(false, mevent);
 
     else if (action == signals::tag)
-    {
-      _blistboxes[_category_idx].tagHighlightedSlackBuild();
-      all_tagged = _blistboxes[_category_idx].allTagged();
-      if (_clistbox.highlightedItem()->getBoolProp("tagged"))
-      {
-        if (! all_tagged) 
-        { 
-          _clistbox.highlightedItem()->setBoolProp("tagged", false);
-          _clistbox.draw(true);
-        }
-      }
-      else 
-      {
-        if (all_tagged) 
-        { 
-          _clistbox.highlightedItem()->setBoolProp("tagged", true);
-          _clistbox.draw(true);
-        }
-      }
-    }
+      tagSelectedSlackBuild();
   }
 
   return action;
@@ -2082,10 +2113,8 @@ Displays the main window
 std::string MainWindow::exec(MouseEvent * mevent)
 {
   std::string selection;
-  bool getting_input, all_tagged;
+  bool getting_input;
   int check_quit;
-  unsigned int i, ncategories;
-  BuildListItem *build;
 
   draw();
 
@@ -2103,39 +2132,18 @@ std::string MainWindow::exec(MouseEvent * mevent)
       // Highlighted item changed
 
       if (selection == signals::highlight)
-      {
-        _category_idx = _clistbox.highlight(); 
-        _blistboxes[_category_idx].draw(true);
-      }
+        drawSelectedCategory();
 
       // Tab signal or right key
 
       else if ( (selection == signals::keyTab) ||
                 (selection == signals::keyRight) )
-      {
-        _clistbox.setActivated(false);
-        _clistbox.draw();
-        _blistboxes[_category_idx].setActivated(true);
-        _activated_listbox = 1;
-
-        // Display status message for installed SlackBuild
-        // Note on static cast: allows the original BuildListItem pointer to
-        // be referenced.
-
-        build = static_cast<BuildListItem *>(
-                                  _blistboxes[_category_idx].highlightedItem());
-        printPackageVersion(*build);
-      }
+        activateListBox(1);
 
       // Tag signal: tag/untag all items in category
 
       else if (selection == signals::tag)
-      {
-        _clistbox.tagHighlightedCategory();
-        _blistboxes[_category_idx].tagAll();
-        _category_idx = _clistbox.highlight();
-        _blistboxes[_category_idx].draw(true);
-      }
+        tagSelectedCategory();
 
       // Mouse input
 
@@ -2152,74 +2160,23 @@ std::string MainWindow::exec(MouseEvent * mevent)
       // Highlighted item changed
 
       if (selection == signals::highlight)
-      {
-        // Display status message for installed SlackBuild
-
-        build = static_cast<BuildListItem *>(
-                                  _blistboxes[_category_idx].highlightedItem());
-        printPackageVersion(*build);
-      }
+        printSelectedPackageVersion();
 
       // Tab signal or left key
 
       else if ( (selection == signals::keyTab) ||
                 (selection == signals::keyLeft) )
-      {
-        _blistboxes[_category_idx].setActivated(false);
-        _blistboxes[_category_idx].draw();
-        _clistbox.setActivated(true);
-        _activated_listbox = 0;
-        clearStatus();
-      }
+        activateListBox(0);
 
       // Tag signal
 
       else if (selection == signals::tag)
-      {
-        _blistboxes[_category_idx].tagHighlightedSlackBuild();
-        all_tagged = _blistboxes[_category_idx].allTagged();
-        if (_clistbox.highlightedItem()->getBoolProp("tagged"))
-        {
-          if (! all_tagged) 
-          { 
-            _clistbox.highlightedItem()->setBoolProp("tagged", false);
-            _clistbox.draw(true);
-          }
-        }
-        else 
-        {
-          if (all_tagged) 
-          { 
-            _clistbox.highlightedItem()->setBoolProp("tagged", true);
-            _clistbox.draw(true);
-          }
-        }
-        // Display status message for installed SlackBuild
-
-        build = static_cast<BuildListItem *>(
-                                  _blistboxes[_category_idx].highlightedItem());
-        printPackageVersion(*build);
-      }
+        tagSelectedSlackBuild();
 
       // Enter signal: show action dialog
 
       else if (selection == signals::keyEnter)
-      {
-        build = static_cast<BuildListItem *>(
-                                  _blistboxes[_category_idx].highlightedItem());
-        showBuildActions(*build, false, mevent);
-
-        // Determine if categories should be tagged and redraw
-
-        ncategories = _clistbox.numItems();
-        for ( i = 0; i < ncategories; i++ )
-        {
-          if (_blistboxes[i].allTagged())
-            _clistbox.itemByIdx(i)->setBoolProp("tagged", true);
-          else { _clistbox.itemByIdx(i)->setBoolProp("tagged", false); }
-        }
-        draw(true);
-      }
+        showSelectedBuildActions(false, mevent);
 
       // Mouse input
 
