@@ -39,8 +39,9 @@ int main(int argc, char *argv[])
 #else
   // Note: in some terminals, REPORT_MOUSE_POSITION can be used to simulate
   // button 5, but in others it gives undesired behavior, so to be safe disable
-  // scroll-down.
-  mousemask(BUTTON1_PRESSED | BUTTON3_PRESSED | BUTTON4_PRESSED, NULL);
+  // scroll-down. Button 4 can still be used for scroll up, but I don't think
+  // it makes sense to have scroll up without scroll down.
+  mousemask(BUTTON1_PRESSED | BUTTON3_PRESSED, NULL);
 #endif
   mouseinterval(0);
 
