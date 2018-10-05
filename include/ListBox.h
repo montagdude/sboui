@@ -75,7 +75,7 @@ class ListBox: public AbstractListBox {
 
     /* Handles mouse event */
 
-    std::string handleMouseEvent(MouseEvent * mevent);
+    virtual std::string handleMouseEvent(MouseEvent * mevent);
 
     /* Draws frame, items, etc. as needed */
  

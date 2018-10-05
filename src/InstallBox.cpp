@@ -27,18 +27,6 @@ void InstallBox::redrawFrame()
 
   getmaxyx(_win, rows, cols);
 
-  // Info on bottom of window
-
-  namelen = _info.size();
-  mid = double(cols-2)/2.0;
-  left = std::floor(mid - double(namelen)/2.0) + 1;
-  wmove(_win, rows-2, 1);
-  wclrtoeol(_win);
-  colors.turnOn(_win, "fg_info", "bg_info");
-  printSpaces(left-1);
-  printToEol(_info);
-  colors.turnOff(_win);
-
   // Title
 
   namelen = _name.size();
@@ -72,7 +60,7 @@ void InstallBox::redrawFrame()
 
   for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, 0, ACS_VLINE); }
 
-  // Right border for header and footer
+  // Right border for header
 
   mvwaddch(_win, 1, cols-1, ACS_VLINE);
   mvwaddch(_win, rows-2, cols-1, ACS_VLINE);
@@ -118,6 +106,11 @@ void InstallBox::redrawFrame()
   mvwaddch(_win, rows-3, cols-1, ACS_RTEE);
   mvwaddch(_win, 2, vlineloc, ACS_TTEE);
   mvwaddch(_win, rows-3, vlineloc, ACS_BTEE);
+
+  // Button area
+
+  if (_buttons.size() > 0)
+    redrawButtons();
 }
 
 /*******************************************************************************
@@ -217,7 +210,15 @@ Constructors
 *******************************************************************************/
 InstallBox::InstallBox()
 { 
-  _info = "Enter: Ok | Esc: Cancel | a: Actions";
+  std::vector<std::string> buttons(3), button_signals(3);
+
+  buttons[0] = "   Ok   ";
+  buttons[1] = " Cancel ";
+  buttons[2] = " Actions ";
+  button_signals[0] = signals::keyEnter;
+  button_signals[1] = signals::quit;
+  button_signals[2] = "a";
+  setButtons(buttons, button_signals);
   _builds.resize(0);
   _ndeps = 0;
   _ninvdeps = 0;
@@ -225,7 +226,15 @@ InstallBox::InstallBox()
 
 InstallBox::InstallBox(WINDOW *win, const std::string & name)
 {
-  _info = "Enter: Ok | Esc: Cancel | a: Actions"; 
+  std::vector<std::string> buttons(3), button_signals(3);
+
+  buttons[0] = "   Ok   ";
+  buttons[1] = " Cancel ";
+  buttons[2] = " Actions ";
+  button_signals[0] = signals::keyEnter;
+  button_signals[1] = signals::quit;
+  button_signals[2] = "a";
+  setButtons(buttons, button_signals);
   _builds.resize(0);
   _ndeps = 0;
   _ninvdeps = 0;
@@ -241,7 +250,7 @@ Get attributes
 void InstallBox::minimumSize(int & height, int & width) const
 {
   int namelen, actionlen, reserved_cols, action_cols;
-  unsigned int i, nitems;
+  unsigned int i, nitems, nbuttons;
 
   // Minimum usable height
 
@@ -253,7 +262,16 @@ void InstallBox::minimumSize(int & height, int & width) const
   reserved_cols = 2;
   width = _name.size();
   action_cols = 0;
-  if (int(_info.size()) > width) { width = _info.size(); }
+  nbuttons = _buttons.size();
+  if (nbuttons > 0)
+  {
+    namelen = 0;
+    for ( i = 0; i < nbuttons; i++ )
+    {
+      namelen += _buttons[i].size();
+    }
+    if (namelen > width) { width = namelen; }
+  }
   for ( i = 0; i < nitems; i++ )
   {
     actionlen = _items[i]->getProp("action").size() + 1;
@@ -266,8 +284,10 @@ void InstallBox::minimumSize(int & height, int & width) const
 
 void InstallBox::preferredSize(int & height, int & width) const
 {
-  int namelen, actionlen, reserved_cols, widthpadding, action_cols;
-  unsigned int i, nitems;
+  int widthpadding;
+  unsigned int nitems;
+
+  minimumSize(height, width);
 
   // Preferred height: no scrolling
 
@@ -277,18 +297,7 @@ void InstallBox::preferredSize(int & height, int & width) const
   // Preferred width: minimum usable + some padding
 
   widthpadding = 6;
-  reserved_cols = 2;
-  width = _name.size();
-  action_cols = 0;
-  if (int(_info.size()) > width) { width = _info.size(); }
-  for ( i = 0; i < nitems; i++ )
-  {
-    actionlen = _items[i]->getProp("action").size() + 1;
-    if (actionlen > action_cols) { action_cols = actionlen; }
-    namelen = _items[i]->name().size() + 4 + action_cols;
-    if (namelen > width) { width = namelen; }
-  }
-  width += reserved_cols + widthpadding;
+  width += widthpadding;
 }
 
 /* Note that this will be 0 unless create() is called with resolve_deps */
@@ -336,6 +345,7 @@ int InstallBox::create(BuildListItem & build,
   std::string action_applied;
   std::string installed_version, available_version;
   std::vector<BuildListItem *> reqlist;
+  std::vector<std::string> buttons, button_signals;
 
   // Get list of reqs and/or add requested SlackBuild to list
 
@@ -349,7 +359,31 @@ int InstallBox::create(BuildListItem & build,
   _ndeps = reqlist.size();
   reqlist.push_back(&build);
 
-  if (batch) { _info = "Enter: Ok | Esc: Skip | c: Cancel | a: Actions"; }
+  if (batch)
+  { 
+    buttons.resize(4);
+    button_signals.resize(4);
+    buttons[0] = "   Ok   ";
+    buttons[1] = "  Skip  ";
+    buttons[2] = " Cancel ";
+    buttons[3] = " Actions ";
+    button_signals[0] = signals::keyEnter;
+    button_signals[1] = signals::quit;
+    button_signals[2] = "c";
+    button_signals[3] = "a";
+  }
+  else
+  {
+    buttons.resize(3);
+    button_signals.resize(3);
+    buttons[0] = "   Ok   ";
+    buttons[1] = " Cancel ";
+    buttons[2] = " Actions ";
+    button_signals[0] = signals::keyEnter;
+    button_signals[1] = signals::quit;
+    button_signals[2] = "a";
+  }
+  setButtons(buttons, button_signals);
 
   // Copy reqlist to _builds list and determine action for each
 
@@ -476,6 +510,47 @@ int InstallBox::create(BuildListItem & build,
 
 /*******************************************************************************
 
+Handles mouse event
+
+*******************************************************************************/
+std::string InstallBox::handleMouseEvent(MouseEvent * mevent)
+{
+  int rows, cols, begy, begx, ycurs, xcurs;
+  std::string retval;
+
+  getmaxyx(_win, rows, cols);
+  getbegyx(_win, begy, begx);
+  ycurs = mevent->y() - begy;
+  xcurs = mevent->x() - begx;
+
+  // Use the inherited method from ListBox, but modify some behaviors
+
+  retval = ListBox::handleMouseEvent(mevent);
+
+  // Double-click on item: show actions
+
+  if ( (ycurs >= int(_header_rows)) && (ycurs < rows-2) &&
+       (retval == signals::keyEnter) )
+    retval = "a";
+
+  // Check for marking an item by clicking in (or on) the box
+
+  else if ( ((retval == signals::highlight) || (retval == signals::tag)) &&
+            ((xcurs >= 1) && (xcurs <= 3)) )
+  {
+    if (! _items[_highlight]->getBoolProp("blacklisted"))
+    {
+      _items[_highlight]->setBoolProp("marked", 
+                                 (! _items[_highlight]->getBoolProp("marked")));
+      _redraw_type = "changed";
+    }
+  }
+
+  return retval;
+}
+
+/*******************************************************************************
+
 User interaction: returns key stroke or other signal
 
 *******************************************************************************/
@@ -483,6 +558,7 @@ std::string InstallBox::exec(MouseEvent * mevent)
 {
   int ch, check_redraw;
   std::string retval;
+  MEVENT event;
 
   const int MY_ESC = 27;
 
@@ -505,8 +581,8 @@ std::string InstallBox::exec(MouseEvent * mevent)
     case '\n':
     case '\r':
     case KEY_ENTER:
-      retval = signals::keyEnter;
       _redraw_type = "all";
+      retval = _button_signals[_highlighted_button];
       break;
 
     // Arrows/Home/End/PgUp/Dn: change highlighted value
@@ -548,6 +624,22 @@ std::string InstallBox::exec(MouseEvent * mevent)
       else { _redraw_type = "changed"; }
       break;
 
+    // Right/Left: change highlighted button
+
+    case KEY_RIGHT:
+      retval = signals::keyRight;
+      check_redraw = highlightNextButton();
+      if (check_redraw == 1) { _redraw_type = "changed"; }
+      else { _redraw_type = "none"; }
+      break;
+
+    case KEY_LEFT:
+      retval = signals::keyLeft;
+      check_redraw = highlightPreviousButton();
+      if (check_redraw == 1) { _redraw_type = "changed"; }
+      else { _redraw_type = "none"; }
+      break;
+
     // Resize signal: redraw (may not work with some curses implementations)
 
     case KEY_RESIZE:
@@ -570,9 +662,7 @@ std::string InstallBox::exec(MouseEvent * mevent)
       {
         _items[_highlight]->setBoolProp("marked", 
                                  (! _items[_highlight]->getBoolProp("marked")));
-        check_redraw = highlightNext();
-        if (check_redraw == 1) { _redraw_type = "all"; }
-        else { _redraw_type = "changed"; }
+        _redraw_type = "changed";
       }
       else { _redraw_type = "none"; }
       break;
@@ -580,19 +670,27 @@ std::string InstallBox::exec(MouseEvent * mevent)
     // t and T: tag item
 
     case 't':
-      retval = "t";
-      tagSlackBuild(_highlight);
-      check_redraw = highlightNext();
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
+      retval = signals::tag;
+      _redraw_type = "changed";
       break;
 
     case 'T':
-      retval = "T";
-      tagSlackBuild(_highlight);
-      check_redraw = highlightPrevious();
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
+      retval = signals::tag;
+      _redraw_type = "changed";
+      break;
+
+    // Mouse
+
+    case KEY_MOUSE:
+      if ( (getmouse(&event) == OK) && mevent )
+      {
+        mevent->recordClick(event);
+        _redraw_type = "changed";
+        retval = handleMouseEvent(mevent);
+        if ( (retval == signals::keyEnter) || (retval == signals::quit) ||
+             (retval == "c") || (retval == "a") )
+          _redraw_type = "all";
+      }
       break;
 
     default:

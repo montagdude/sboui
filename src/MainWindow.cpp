@@ -866,7 +866,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
     getting_input = true;
     while (getting_input)
     {
-      selection = installer.exec(); 
+      selection = installer.exec(mevent); 
       if (selection == signals::keyEnter)
       {
         // Warn about changing foreign packages
@@ -921,6 +921,8 @@ bool MainWindow::modifyPackage(BuildListItem & build,
         placePopup(&installer, installerwin);
         draw(true);
       }
+      else if (selection == signals::tag)
+        installer.tagHighlightedSlackBuild();
     }
     delwin(installerwin);
   }
@@ -1277,7 +1279,7 @@ int MainWindow::syncRepo()
 Applies action to tagged SlackBuilds
 
 *******************************************************************************/
-void MainWindow::applyTags(const std::string & action)
+void MainWindow::applyTags(const std::string & action, MouseEvent * mevent)
 {
   WINDOW *tagwin;
   unsigned int ndisplay, i, j, ncategories;
@@ -1345,7 +1347,8 @@ void MainWindow::applyTags(const std::string & action)
       if (build->getBoolProp("marked"))
       { 
         any_modified = modifyPackage(*build, action, ninstalled, nupgraded,
-                                     nreinstalled, nremoved, cancel_all, true);
+                                     nreinstalled, nremoved, cancel_all, true,
+                                     mevent);
         if (! needs_rebuild) { needs_rebuild = any_modified; }
 
         // Because tags could have changed, determine if categories should be
@@ -1921,7 +1924,8 @@ void MainWindow::showBuildActions(BuildListItem & build, bool limited_actions,
         nreinstalled = 0;
         nremoved = 0;
         check_rebuild = modifyPackage(build, action, ninstalled, nupgraded,
-                                      nreinstalled, nremoved, cancel_all);
+                                      nreinstalled, nremoved, cancel_all, false,
+                                      mevent);
         if (! needs_rebuild) { needs_rebuild = check_rebuild; }
 
         // If any changes were made, actions might need to change too
@@ -2203,10 +2207,10 @@ std::string MainWindow::exec(MouseEvent * mevent)
     }
     else if (selection == "l") { toggleLayout(); }
     else if (selection == "c") { viewCommandLine(); }
-    else if (selection == "i") { applyTags("Install"); }
-    else if (selection == "u") { applyTags("Upgrade"); }
-    else if (selection == "r") { applyTags("Remove"); }
-    else if (selection == "e") { applyTags("Reinstall"); }
+    else if (selection == "i") { applyTags("Install", mevent); }
+    else if (selection == "u") { applyTags("Upgrade", mevent); }
+    else if (selection == "r") { applyTags("Remove", mevent); }
+    else if (selection == "e") { applyTags("Reinstall", mevent); }
     else if ( (selection.size() == 1) && (selection[0] == 0x13) )  // Ctrl-s
       quickSearch(); 
   }

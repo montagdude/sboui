@@ -97,7 +97,7 @@ class MainWindow: public CursesWidget {
 
     /* Apply action to tagged SlackBuilds */
 
-    void applyTags(const std::string & action);
+    void applyTags(const std::string & action, MouseEvent * mevent=NULL);
 
     /* View command line output */
  

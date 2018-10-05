@@ -15,7 +15,7 @@ class BuildOrderBox: public BuildListBox {
 
   protected:
 
-    std::string _info;
+    std::string _info; // FIXME: use buttons instead
 
     /* Drawing */
     
@@ -31,7 +31,7 @@ class BuildOrderBox: public BuildListBox {
 
     /* Set attributes */
 
-    void setInfo(const std::string & info);
+    void setInfo(const std::string & info); // FIXME: use buttons instead
 
     /* Get attributes */
 

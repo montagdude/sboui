@@ -53,6 +53,10 @@ class InstallBox: public BuildOrderBox {
                const std::string & action, bool resolve_deps=true,
                bool batch=false, bool rebuild_inv_deps=false);
 
+    /* Handles mouse event */
+
+    std::string handleMouseEvent(MouseEvent * mevent);
+
     /* User interaction loop. Differs from standard BuildListBox exec() in
        that the space bar is used to tag (select/unselect) items */
 
