@@ -19,7 +19,6 @@
 #include "BuildActionBox.h"
 #include "BuildOptionsBox.h"
 #include "BuildOrderBox.h"
-#include "InvReqBox.h"
 #include "InstallBox.h"
 #include "DirListBox.h"
 #include "MessageBox.h"
@@ -1010,10 +1009,12 @@ void MainWindow::setBuildOptions(BuildListItem & build)
 
 /*******************************************************************************
 
-Shows build order for a SlackBuild
+Shows build order for a SlackBuild. Mode is expected to be "forward" (for a
+regular build order) or "inverse" (to list installed inverse dependencies)
 
 *******************************************************************************/
-void MainWindow::showBuildOrder(BuildListItem & build, MouseEvent * mevent)
+void MainWindow::showBuildOrder(BuildListItem & build, const std::string & mode,
+                                MouseEvent * mevent)
 {
   WINDOW *buildorderwin;
   int check;
@@ -1023,8 +1024,12 @@ void MainWindow::showBuildOrder(BuildListItem & build, MouseEvent * mevent)
   BuildOrderBox buildorder;
   BuildListItem *subbuild;
 
-  printStatus("Computing build order for " + build.name() + " ...");
-  check = buildorder.create(build, _slackbuilds);
+  if (mode == "inverse")
+    printStatus("Computing installed SlackBuilds depending on "
+                + build.name() + " ...");
+  else
+    printStatus("Computing build order for " + build.name() + " ...");
+  check = buildorder.create(build, _slackbuilds, mode);
   buildorder.setTagList(&_taglist);
 
   if (check == 1) 
@@ -1044,10 +1049,24 @@ void MainWindow::showBuildOrder(BuildListItem & build, MouseEvent * mevent)
 
   nbuildorder = buildorder.numItems();
 
-  if (nbuildorder == 1) { printStatus(
-                     "1 SlackBuild in build order for " + build.name() + "."); }
-  else { printStatus(int_to_string(nbuildorder) + 
-                     " SlackBuilds in build order for " + build.name() + "."); }
+  if (mode == "inverse")
+  {
+    if (nbuildorder == 0)
+      printStatus("No installed SlackBuilds depend on " + build.name() + ".");
+    else if (nbuildorder == 1)
+      printStatus("1 installed SlackBuild depends on " + build.name() + ".");
+    else
+      printStatus(int_to_string(nbuildorder) +
+                  " installed SlackBuilds depend on " + build.name() + ".");
+  }
+  else
+  {
+    if (nbuildorder == 1)
+      printStatus("1 SlackBuild in build order for " + build.name() + ".");
+    else
+      printStatus(int_to_string(nbuildorder) + 
+                  " SlackBuilds in build order for " + build.name() + ".");
+  }
 
   buildorderwin = newwin(1, 1, 0, 0);
   buildorder.setWindow(buildorderwin);
@@ -1063,7 +1082,7 @@ void MainWindow::showBuildOrder(BuildListItem & build, MouseEvent * mevent)
       need_selection = true;
     if ( (selection == signals::keyEnter) || 
          (selection == signals::quit) ) { getting_input = false; }
-    else if (selection == "a")
+    else if ( (selection == "a") && (buildorder.numItems() > 0) )
     {
       hideWindow(buildorderwin);
       draw(true);
@@ -1084,60 +1103,11 @@ void MainWindow::showBuildOrder(BuildListItem & build, MouseEvent * mevent)
       need_selection = false;
     }
     else if (selection == signals::tag)
-    {
       buildorder.tagHighlightedSlackBuild();
-    }
   }
 
   clearStatus();
   delwin(buildorderwin);
-}
-
-/*******************************************************************************
-
-Shows installed SlackBuilds depending on a given SlackBuild
-
-*******************************************************************************/
-void MainWindow::showInverseReqs(const BuildListItem & build)
-{
-  WINDOW *invreqwin;
-  std::string selection;
-  bool getting_input;
-  unsigned int ninvreqs;
-  InvReqBox invreqs;
-
-  printStatus("Computing installed SlackBuilds depending on "
-              + build.name() + " ...");
-  invreqs.create(build, _slackbuilds);
-  invreqs.setTagList(&_taglist);
-
-  ninvreqs = invreqs.numItems();
-  if (ninvreqs == 0) { printStatus("No installed SlackBuilds depend on "
-                                   + build.name() + "."); }
-  else if (ninvreqs == 1) { printStatus(
-          "1 installed SlackBuild depends on " + build.name() + "."); }
-  else { printStatus(int_to_string(ninvreqs) + 
-           " installed SlackBuilds depend on " + build.name() + "."); }
-
-  invreqwin = newwin(1, 1, 0, 0);
-  invreqs.setWindow(invreqwin);
-  placePopup(&invreqs, invreqwin);
-
-  getting_input = true;
-  while (getting_input)
-  {
-    selection = invreqs.exec(); 
-    if ( (selection == signals::keyEnter) || 
-         (selection == signals::quit) ) { getting_input = false; }
-    else if (selection == signals::resize) 
-    { 
-      placePopup(&invreqs, invreqwin);
-      draw(true);
-    }
-  }
-
-  clearStatus();
-  delwin(invreqwin);
 }
 
 /*******************************************************************************
@@ -1951,7 +1921,7 @@ void MainWindow::showBuildActions(BuildListItem & build, bool limited_actions,
       { 
         hideWindow(actionwin);
         draw(true);
-        showBuildOrder(build, mevent);
+        showBuildOrder(build, "forward", mevent);
         placePopup(&actionbox, actionwin);
         draw(true);
       }                                              
@@ -1959,7 +1929,7 @@ void MainWindow::showBuildActions(BuildListItem & build, bool limited_actions,
       { 
         hideWindow(actionwin);
         draw(true);
-        showInverseReqs(build);
+        showBuildOrder(build, "inverse", mevent);
         placePopup(&actionbox, actionwin);
         draw(true);
       }

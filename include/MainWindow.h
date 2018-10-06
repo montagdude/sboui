@@ -87,8 +87,9 @@ class MainWindow: public CursesWidget {
                        int & nremoved, bool & cancel_all, bool batch=false,
                        MouseEvent * mevent=NULL);
     void setBuildOptions(BuildListItem & build);
-    void showBuildOrder(BuildListItem & build, MouseEvent * mevent=NULL);
-    void showInverseReqs(const BuildListItem & build);
+    void showBuildOrder(BuildListItem & build,
+                        const std::string & mode="forward",
+                        MouseEvent * mevent=NULL);
     void showPackageInfo(BuildListItem & build, MouseEvent * mevent=NULL);
 
     /* Sync/update */

@@ -278,22 +278,55 @@ void BuildOrderBox::preferredSize(int & height, int & width) const
 /*******************************************************************************
 
 Creates list based on SlackBuild selected. Returns 0 if dependency resolution
-succeeded or 1 if some could not be found in the repository.
+succeeded or 1 if some could not be found in the repository, or 2 if a bad mode
+was specified. Mode is "forward"
+or "inverse" to display a regular build order or a list of inverse requirements.
 
 *******************************************************************************/
 int BuildOrderBox::create(BuildListItem & build,
-                         std::vector<std::vector<BuildListItem> > & slackbuilds)
+                         std::vector<std::vector<BuildListItem> > & slackbuilds,
+                         const std::string & mode)
 {
   int check; 
   unsigned int nbuilds, i;
   std::vector<BuildListItem *> reqlist;
+  std::vector<std::string> buttons, button_signals;
 
-  setName(build.name() + " build order");
-  check = compute_reqs_order(build, reqlist, slackbuilds);
-  reqlist.push_back(&build);
+  if (mode == "forward")
+  {
+    setName(build.name() + " build order");
+    check = compute_reqs_order(build, reqlist, slackbuilds);
+    reqlist.push_back(&build);
+  }
+  else if (mode == "inverse")
+  {
+    setName(build.name() + " inverse deps");
+    compute_inv_reqs(build, reqlist, slackbuilds);
+  }
+  else
+    return 2;
 
   nbuilds = reqlist.size();
   for ( i = 0; i < nbuilds; i++ ) { addItem(reqlist[i]); }
+
+  if (nbuilds > 0)
+  {
+    buttons.resize(2);
+    button_signals.resize(2);
+    buttons[0] = "  Back  ";
+    buttons[1] = "  Actions  ";
+    button_signals[0] = signals::quit;
+    button_signals[1] = "a";
+    setButtons(buttons, button_signals);
+  }
+  else
+  {
+    buttons.resize(1);
+    button_signals.resize(1);
+    buttons[0] = "  Back  ";
+    button_signals[0] = signals::quit;
+    setButtons(buttons, button_signals);
+  }
 
   return check;
 }
@@ -305,13 +338,12 @@ Handles mouse events
 *******************************************************************************/
 std::string BuildOrderBox::handleMouseEvent(MouseEvent * mevent)
 {
-  int rows, cols, begy, begx, ycurs, xcurs;
+  int rows, cols, begy, begx, ycurs;
   std::string retval;
 
   getmaxyx(_win, rows, cols);
   getbegyx(_win, begy, begx);
   ycurs = mevent->y() - begy;
-  xcurs = mevent->x() - begx;
 
   // Use the inherited method from ListBox, but modify some behaviors
 

@@ -533,9 +533,6 @@ std::string ListBox::handleMouseEvent(MouseEvent * mevent)
   unsigned int i, nbuttons;
   double frac;
 
-  if (_items.size() == 0)
-    return signals::nullEvent;
-
   getmaxyx(_win, rows, cols);
   getbegyx(_win, begy, begx);
   ycurs = mevent->y() - begy;
