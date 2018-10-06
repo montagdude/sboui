@@ -5,6 +5,7 @@
 #include <curses.h>
 #include "BuildListItem.h"
 #include "BuildListBox.h"
+#include "MouseEvent.h"
 
 /*******************************************************************************
 
@@ -14,8 +15,6 @@ Displays build order
 class BuildOrderBox: public BuildListBox {
 
   protected:
-
-    std::string _info; // FIXME: use buttons instead
 
     /* Drawing */
     
@@ -29,10 +28,6 @@ class BuildOrderBox: public BuildListBox {
     BuildOrderBox();
     BuildOrderBox(WINDOW *win, const std::string & name);
 
-    /* Set attributes */
-
-    void setInfo(const std::string & info); // FIXME: use buttons instead
-
     /* Get attributes */
 
     virtual void minimumSize(int & height, int & width) const;
@@ -43,7 +38,7 @@ class BuildOrderBox: public BuildListBox {
     int create(BuildListItem & build,
                std::vector<std::vector<BuildListItem> > & slackbuilds);
 
-    /* Draws frame, items, etc. as needed */
- 
-    void draw(bool force=false);
+    /* Handles mouse event */
+
+    std::string handleMouseEvent(MouseEvent * mevent);
 };

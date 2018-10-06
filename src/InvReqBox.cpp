@@ -2,6 +2,7 @@
 #include <string>
 #include <curses.h>
 #include "requirements.h"
+#include "signals.h"
 #include "BuildListItem.h"
 #include "BuildOrderBox.h"
 #include "InvReqBox.h"
@@ -11,10 +12,21 @@
 Constructors
 
 *******************************************************************************/
-InvReqBox::InvReqBox() { _info = "Esc: Back"; }
+InvReqBox::InvReqBox()
+{ 
+  std::vector<std::string> buttons(1), button_signals(1);
+
+  buttons[0] = "  Back  ";
+  button_signals[0] = signals::quit;
+  setButtons(buttons, button_signals);
+}
+
 InvReqBox::InvReqBox(WINDOW *win, const std::string & name)
 {
-  _info = "Esc: Back";
+  std::vector<std::string> buttons(1), button_signals(1);
+
+  buttons[0] = "  Back  ";
+  button_signals[0] = signals::quit;
   _win = win;
   _name = name;
 }

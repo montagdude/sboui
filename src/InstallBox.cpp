@@ -60,7 +60,7 @@ void InstallBox::redrawFrame()
 
   for ( i = 1; i < rows-1; i++ ) { mvwaddch(_win, i, 0, ACS_VLINE); }
 
-  // Right border for header
+  // Right border for header and footer
 
   mvwaddch(_win, 1, cols-1, ACS_VLINE);
   mvwaddch(_win, rows-2, cols-1, ACS_VLINE);
@@ -582,7 +582,10 @@ std::string InstallBox::exec(MouseEvent * mevent)
     case '\r':
     case KEY_ENTER:
       _redraw_type = "all";
-      retval = _button_signals[_highlighted_button];
+      if (_buttons.size() > 0)
+        retval = _button_signals[_highlighted_button];
+      else
+        retval = signals::keyEnter;
       break;
 
     // Arrows/Home/End/PgUp/Dn: change highlighted value

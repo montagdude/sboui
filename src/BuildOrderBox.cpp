@@ -6,6 +6,7 @@
 #include "Color.h"
 #include "settings.h"
 #include "signals.h"
+#include "MouseEvent.h"
 #include "requirements.h"
 #include "BuildListItem.h"
 #include "BuildOrderBox.h"
@@ -21,18 +22,6 @@ void BuildOrderBox::redrawFrame()
   double mid, left, right;
 
   getmaxyx(_win, rows, cols);
-
-  // Info on bottom of window
-
-  namelen = _info.size();
-  mid = double(cols-2)/2.0;
-  left = std::floor(mid - double(namelen)/2.0) + 1;
-  wmove(_win, rows-2, 1);
-  wclrtoeol(_win);
-  colors.turnOn(_win, "fg_info", "bg_info");
-  printSpaces(left-1);
-  printToEol(_info);
-  colors.turnOff(_win);
 
   // Title
 
@@ -106,6 +95,11 @@ void BuildOrderBox::redrawFrame()
   mvwaddch(_win, rows-3, cols-1, ACS_RTEE);
   mvwaddch(_win, 2, vlineloc, ACS_TTEE);
   mvwaddch(_win, rows-3, vlineloc, ACS_BTEE);
+
+  // Button area
+
+  if (_buttons.size() > 0)
+    redrawButtons();
 }
 
 /*******************************************************************************
@@ -197,26 +191,33 @@ Constructors
 *******************************************************************************/
 BuildOrderBox::BuildOrderBox()
 { 
+  std::vector<std::string> buttons(2), button_signals(2);
+
   _reserved_rows = 6;
   _header_rows = 3;
-  _info = "Esc: Back | a: Actions";
+  buttons[0] = "  Back  ";
+  buttons[1] = "  Actions  ";
+  button_signals[0] = signals::quit;
+  button_signals[1] = "a";
+  setButtons(buttons, button_signals);
+  setColor("fg_popup", "bg_popup");
 }
 
 BuildOrderBox::BuildOrderBox(WINDOW *win, const std::string & name)
 {
+  std::vector<std::string> buttons(2), button_signals(2);
+
   _reserved_rows = 6;
   _header_rows = 3;
-  _info = "Esc: Back | a: Actions";
+  buttons[0] = "  Back  ";
+  buttons[1] = "  Actions  ";
+  button_signals[0] = signals::quit;
+  button_signals[1] = "a";
+  setButtons(buttons, button_signals);
+  setColor("fg_popup", "bg_popup");
   _win = win;
   _name = name;
 }
-
-/*******************************************************************************
-
-Set attributes
-
-*******************************************************************************/
-void BuildOrderBox::setInfo(const std::string & info) { _info = info; }
 
 /*******************************************************************************
 
@@ -226,7 +227,7 @@ Get attributes
 void BuildOrderBox::minimumSize(int & height, int & width) const
 {
   int namelen, reserved_cols, installed_cols;
-  unsigned int i, nitems;
+  unsigned int i, nitems, nbuttons;
 
   // Minimum usable height
 
@@ -238,7 +239,16 @@ void BuildOrderBox::minimumSize(int & height, int & width) const
   installed_cols = std::string("Installed").size() + 1; // Room for divider
   reserved_cols = 2;
   width = _name.size() + installed_cols;
-  if (int(_info.size()) > width) { width = _info.size(); }
+  nbuttons = _buttons.size();
+  if (nbuttons > 0)
+  {
+    namelen = 0;
+    for ( i = 0; i < nbuttons; i++ )
+    {
+      namelen += _buttons[i].size();
+    }
+    if (namelen > width) { width = namelen; }
+  }
   for ( i = 0; i < nitems; i++ )
   {
     namelen = _items[i]->name().size() + installed_cols;
@@ -249,8 +259,10 @@ void BuildOrderBox::minimumSize(int & height, int & width) const
 
 void BuildOrderBox::preferredSize(int & height, int & width) const
 {
-  int namelen, reserved_cols, widthpadding, installed_cols;
-  unsigned int i, nitems;
+  int widthpadding;
+  unsigned int nitems;
+
+  minimumSize(height, width);
 
   // Preferred height: no scrolling
 
@@ -259,17 +271,8 @@ void BuildOrderBox::preferredSize(int & height, int & width) const
 
   // Preferred width: minimum usable + some padding
 
-  installed_cols = std::string("Installed").size() + 1; // Room for divider
   widthpadding = 6;
-  reserved_cols = 2;
-  width = _name.size() + installed_cols;
-  if (int(_info.size()) > width) { width = _info.size(); }
-  for ( i = 0; i < nitems; i++ )
-  {
-    namelen = _items[i]->name().size() + installed_cols;
-    if (namelen > width) { width = namelen; }
-  }
-  width += reserved_cols + widthpadding;
+  width += widthpadding;
 }
 
 /*******************************************************************************
@@ -297,27 +300,28 @@ int BuildOrderBox::create(BuildListItem & build,
 
 /*******************************************************************************
 
-Draws scroll box (frame, items, etc.) as needed
+Handles mouse events
 
 *******************************************************************************/
-void BuildOrderBox::draw(bool force)
+std::string BuildOrderBox::handleMouseEvent(MouseEvent * mevent)
 {
-  if (force) { _redraw_type = "all"; }
+  int rows, cols, begy, begx, ycurs, xcurs;
+  std::string retval;
 
-  // Draw list elements
+  getmaxyx(_win, rows, cols);
+  getbegyx(_win, begy, begx);
+  ycurs = mevent->y() - begy;
+  xcurs = mevent->x() - begx;
 
-  if (_redraw_type == "all")
-  { 
-    clearWindow();
-    colors.setBackground(_win, "fg_popup", "bg_popup");
-  }
-  if (_redraw_type != "none") 
-  {
-    redrawFrame();
-    redrawScrollIndicator();
-  }
-  if ( (_redraw_type == "all") || (_redraw_type == "items")) { 
-                                                            redrawAllItems(); }
-  else if (_redraw_type == "changed") { redrawChangedItems(); }
-  wrefresh(_win);
+  // Use the inherited method from ListBox, but modify some behaviors
+
+  retval = ListBox::handleMouseEvent(mevent);
+
+  // Double-click on item: show actions
+
+  if ( (ycurs >= int(_header_rows)) && (ycurs < rows-2) &&
+       (retval == signals::keyEnter) )
+    retval = "a";
+
+  return retval;
 }

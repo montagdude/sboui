@@ -323,25 +323,17 @@ std::string BuildListBox::exec(MouseEvent * mevent)
     case '\n':
     case '\r':
     case KEY_ENTER:
-      retval = signals::keyEnter;
       _redraw_type = "all";
+      if (_buttons.size() > 0)
+        retval = _button_signals[_highlighted_button];
+      else
+        retval = signals::keyEnter;
       break;
 
     // Tab key: return keyTab
 
     case MY_TAB:
       retval = signals::keyTab;
-      _redraw_type = "changed";
-      break;
-
-    // Left/right arrows
-
-    case KEY_LEFT:
-      retval = signals::keyLeft;
-      _redraw_type = "changed";
-      break;
-    case KEY_RIGHT:
-      retval = signals::keyRight;
       _redraw_type = "changed";
       break;
 
@@ -382,6 +374,22 @@ std::string BuildListBox::exec(MouseEvent * mevent)
       check_redraw = highlightLast();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
+      break;
+
+    // Right and left keys: change highlighted button (if present)
+
+    case KEY_RIGHT:
+      retval = signals::keyRight;
+      check_redraw = highlightNextButton();
+      if (check_redraw == 1) { _redraw_type = "changed"; }
+      else { _redraw_type = "none"; }
+      break;
+
+    case KEY_LEFT:
+      retval = signals::keyLeft;
+      check_redraw = highlightPreviousButton();
+      if (check_redraw == 1) { _redraw_type = "changed"; }
+      else { _redraw_type = "none"; }
       break;
 
     // Resize signal: redraw (may not work with some curses implementations)

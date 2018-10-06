@@ -1018,7 +1018,7 @@ void MainWindow::showBuildOrder(BuildListItem & build, MouseEvent * mevent)
   WINDOW *buildorderwin;
   int check;
   std::string selection;
-  bool getting_input;
+  bool getting_input, need_selection;
   unsigned int nbuildorder;
   BuildOrderBox buildorder;
   BuildListItem *subbuild;
@@ -1054,9 +1054,13 @@ void MainWindow::showBuildOrder(BuildListItem & build, MouseEvent * mevent)
   placePopup(&buildorder, buildorderwin);
 
   getting_input = true;
+  need_selection = true;
   while (getting_input)
   {
-    selection = buildorder.exec(); 
+    if (need_selection)
+      selection = buildorder.exec(mevent); 
+    else
+      need_selection = true;
     if ( (selection == signals::keyEnter) || 
          (selection == signals::quit) ) { getting_input = false; }
     else if (selection == "a")
@@ -1073,6 +1077,15 @@ void MainWindow::showBuildOrder(BuildListItem & build, MouseEvent * mevent)
     { 
       placePopup(&buildorder, buildorderwin);
       draw(true);
+    }
+    else if (selection == signals::mouseEvent)
+    {
+      selection = buildorder.handleMouseEvent(mevent);
+      need_selection = false;
+    }
+    else if (selection == signals::tag)
+    {
+      buildorder.tagHighlightedSlackBuild();
     }
   }
 
@@ -1938,7 +1951,7 @@ void MainWindow::showBuildActions(BuildListItem & build, bool limited_actions,
       { 
         hideWindow(actionwin);
         draw(true);
-        showBuildOrder(build);
+        showBuildOrder(build, mevent);
         placePopup(&actionbox, actionwin);
         draw(true);
       }                                              
@@ -1949,7 +1962,7 @@ void MainWindow::showBuildActions(BuildListItem & build, bool limited_actions,
         showInverseReqs(build);
         placePopup(&actionbox, actionwin);
         draw(true);
-      }                                              
+      }
     }
   }
 
