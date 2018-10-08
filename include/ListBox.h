@@ -29,8 +29,6 @@ class ListBox: public AbstractListBox {
     int highlightNextPage();
     int highlightPreviousPage();
     int highlightFractional(const double & frac);
-    int highlightNextButton();
-    int highlightPreviousButton();
 
     /* Determines first item to print (needed for scrolling) */
 

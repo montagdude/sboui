@@ -17,7 +17,7 @@ class InputBox: public CursesWidget {
 
   protected:
 
-    std::string _msg, _info, _redraw_type;
+    std::string _msg, _info;
     std::vector<InputItem *> _items;    
     int _highlight, _prevhighlight, _firstprint;
     int _header_rows, _first_selectable, _last_selectable;

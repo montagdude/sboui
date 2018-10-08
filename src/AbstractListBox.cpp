@@ -82,53 +82,6 @@ void AbstractListBox::redrawFrame()
   }
 }
 
-/*******************************************************************************
-
-Redraws buttons at bottom of list box
-
-*******************************************************************************/
-void AbstractListBox::redrawButtons()
-{
-  int rows, cols, nbuttons, namelen, i, left, color_pair;
-  double mid;
-
-  getmaxyx(_win, rows, cols);
-
-  nbuttons = _buttons.size();
-  if (nbuttons > 0)
-  {
-    namelen = 0;
-    for ( i = 0; i < nbuttons; i++ )
-    {
-      namelen += _buttons[i].size();
-    }
-    mid = double(cols-2)/2.;
-    left = std::floor(mid - double(namelen)/2.0) + 1;
-    _button_left[0] = left;
-    _button_right[0] = _button_left[0] + _buttons[0].size()-1;
-    for ( i = 1; i < nbuttons; i++ )
-    {
-      _button_left[i] = _button_right[i-1] + 1;
-      _button_right[i] = _button_left[i] + _buttons[i].size()-1;
-    }
-    color_pair = colors.getPair("fg_highlight_active", "bg_highlight_active");
-    wmove(_win, rows-2, left);
-    for ( i = 0; i < nbuttons; i++ )
-    {
-      if (i == _highlighted_button)
-      {
-        if (colors.turnOn(_win, color_pair) != 0)
-          wattron(_win, A_REVERSE);
-        wprintw(_win, _buttons[i].c_str());
-        if (colors.turnOff(_win) != 0)
-          wattroff(_win, A_REVERSE);
-      }
-      else
-        wprintw(_win, _buttons[i].c_str());
-    }
-  }
-}
-
 /******************************************************************************
 
 Redraws all items

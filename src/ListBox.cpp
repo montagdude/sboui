@@ -185,44 +185,6 @@ int ListBox::highlightFractional(const double & frac)
 
 /*******************************************************************************
 
-Highlights next button. Return value of 0 means that the highlighted button has
-not changed; 1 means that it has.
-
-*******************************************************************************/
-int ListBox::highlightNextButton()
-{
-  if (_buttons.size() < 2)
-    return 0;
-  else if (_highlighted_button < int(_buttons.size())-1)
-  {
-    _highlighted_button += 1;
-    return 1;
-  }
-  else
-    return 0;
-}
-
-/*******************************************************************************
-
-Highlights previous button. Return value of 0 means that the highlighted button
-has not changed; 1 means that it has.
-
-*******************************************************************************/
-int ListBox::highlightPreviousButton()
-{
-  if (_buttons.size() < 2)
-    return 0;
-  else if (_highlighted_button > 0)
-  {
-    _highlighted_button -= 1;
-    return 1;
-  }
-  else
-    return 0;
-}
-
-/*******************************************************************************
-
 Determine first item to print based on current highlighted and number of
 available rows. Returns 1 if this number has changed; 0 if not.
 
@@ -725,7 +687,7 @@ std::string ListBox::exec(MouseEvent * mevent)
     case '\n':
     case '\r':
     case KEY_ENTER:
-      if (_buttons.size() > 0)
+      if (int(_button_signals.size()) >= _highlighted_button+1)
         retval = _button_signals[_highlighted_button];
       else
         retval = signals::keyEnter;

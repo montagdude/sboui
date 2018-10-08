@@ -72,7 +72,7 @@ std::string SelectionBox::exec(MouseEvent * mevent)
       case '\n':
       case '\r':
       case KEY_ENTER:
-        if (_buttons.size() > 0)
+        if (int(_button_signals.size()) >= _highlighted_button+1)
           retval = _button_signals[_highlighted_button];
         else
           retval = signals::keyEnter;

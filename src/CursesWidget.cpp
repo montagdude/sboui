@@ -1,5 +1,7 @@
 #include <curses.h>
 #include <cmath>     // floor
+#include "Color.h"
+#include "settings.h"
 #include "CursesWidget.h"
 #include "MouseEvent.h"
 
@@ -70,6 +72,91 @@ void CursesWidget::clearWindow() const
 
 /*******************************************************************************
 
+Highlights next button. Return value of 0 means that the highlighted button has
+not changed; 1 means that it has.
+
+*******************************************************************************/
+int CursesWidget::highlightNextButton()
+{
+  if (_buttons.size() < 2)
+    return 0;
+  else if (_highlighted_button < int(_buttons.size())-1)
+  {
+    _highlighted_button += 1;
+    return 1;
+  }
+  else
+    return 0;
+}
+
+/*******************************************************************************
+
+Highlights previous button. Return value of 0 means that the highlighted button
+has not changed; 1 means that it has.
+
+*******************************************************************************/
+int CursesWidget::highlightPreviousButton()
+{
+  if (_buttons.size() < 2)
+    return 0;
+  else if (_highlighted_button > 0)
+  {
+    _highlighted_button -= 1;
+    return 1;
+  }
+  else
+    return 0;
+}
+
+/*******************************************************************************
+
+Redraws buttons at bottom of list box
+
+*******************************************************************************/
+void CursesWidget::redrawButtons()
+{
+  int rows, cols, nbuttons, namelen, i, left, color_pair;
+  double mid;
+
+  getmaxyx(_win, rows, cols);
+
+  nbuttons = _buttons.size();
+  if (nbuttons > 0)
+  {
+    namelen = 0;
+    for ( i = 0; i < nbuttons; i++ )
+    {
+      namelen += _buttons[i].size();
+    }
+    mid = double(cols-2)/2.;
+    left = std::floor(mid - double(namelen)/2.0) + 1;
+    _button_left[0] = left;
+    _button_right[0] = _button_left[0] + _buttons[0].size()-1;
+    for ( i = 1; i < nbuttons; i++ )
+    {
+      _button_left[i] = _button_right[i-1] + 1;
+      _button_right[i] = _button_left[i] + _buttons[i].size()-1;
+    }
+    color_pair = colors.getPair(_button_fg, _button_bg);
+    wmove(_win, rows-2, left);
+    for ( i = 0; i < nbuttons; i++ )
+    {
+      if (i == _highlighted_button)
+      {
+        if (colors.turnOn(_win, color_pair) != 0)
+          wattron(_win, A_REVERSE);
+        wprintw(_win, _buttons[i].c_str());
+        if (colors.turnOff(_win) != 0)
+          wattroff(_win, A_REVERSE);
+      }
+      else
+        wprintw(_win, _buttons[i].c_str());
+    }
+  }
+}
+
+/*******************************************************************************
+
 Constructor
 
 *******************************************************************************/
@@ -80,7 +167,10 @@ CursesWidget::CursesWidget()
   _button_left.resize(0);
   _button_right.resize(0);
   _button_signals.resize(0);
+  _button_bg = "bg_highlight_active";
+  _button_fg = "fg_highlight_active";
   _highlighted_button = 0;
+  _redraw_type = "all";
 }
 
 /*******************************************************************************
@@ -120,6 +210,13 @@ void CursesWidget::setButtons(const std::vector<std::string> & buttons,
   _button_left.resize(_buttons.size());
   _button_right.resize(_buttons.size());
   _highlighted_button = 0;
+}
+
+void CursesWidget::setButtonColor(const std::string & button_fg,
+                                  const std::string & button_bg)
+{
+  _button_fg = button_fg;
+  _button_bg = button_bg;
 }
 
 /*******************************************************************************

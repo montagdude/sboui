@@ -52,12 +52,12 @@ class MainWindow: public CursesWidget {
     /* Clearing and setting up lists, etc. */
 
     void clearData();
-    int readLists();
-    void rebuild();
+    int readLists(MouseEvent * mevent=NULL);
+    void rebuild(MouseEvent * mevent=NULL);
 
     /* Filters lists */
 
-    void filterAll();
+    void filterAll(MouseEvent * mevent=NULL);
     void filterInstalled();
     void filterUpgradable();
     void filterTagged();
@@ -69,7 +69,7 @@ class MainWindow: public CursesWidget {
 
     /* Displays options window */
 
-    int showOptions();
+    int showOptions(MouseEvent * mevent=NULL);
 
     /* Displays help window */
 
@@ -86,7 +86,7 @@ class MainWindow: public CursesWidget {
                        int & ninstalled, int & nupgraded, int & nreinstalled,
                        int & nremoved, bool & cancel_all, bool batch=false,
                        MouseEvent * mevent=NULL);
-    void setBuildOptions(BuildListItem & build);
+    void setBuildOptions(BuildListItem & build, MouseEvent * mevent=NULL);
     void showBuildOrder(BuildListItem & build,
                         const std::string & mode="forward",
                         MouseEvent * mevent=NULL);
@@ -94,7 +94,7 @@ class MainWindow: public CursesWidget {
 
     /* Sync/update */
 
-    int syncRepo();
+    int syncRepo(MouseEvent * mevent=NULL);
 
     /* Apply action to tagged SlackBuilds */
 
@@ -106,9 +106,10 @@ class MainWindow: public CursesWidget {
 
     /* Displays an error message */
 
-    std::string displayError(const std::string & msg, bool centered=true,
-                             const std::string & name="Error",
-                             const std::string & info="Enter: Dismiss");
+    std::string displayError(const std::string & msg, bool centered,
+                             const std::string & name,
+                             const std::string & buttonnames,
+                             MouseEvent * mevent=NULL);
     std::string displayMessage(const std::string & msg, bool centered=true,
                                const std::string & name="Information",
                                const std::string & info="Enter: Dismiss");
@@ -136,7 +137,7 @@ class MainWindow: public CursesWidget {
 
     /* Window setup */
 
-    int initialize();
+    int initialize(MouseEvent * mevent=NULL);
 
     /* Set properties */
 

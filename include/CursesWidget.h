@@ -18,14 +18,19 @@ class CursesWidget {
     void printToEol(const std::string & msg, int printable_cols=-1) const;
     void printSpaces(int nspaces) const;
     void clearWindow () const;
+    virtual int highlightNextButton();
+    virtual int highlightPreviousButton();
+    virtual void redrawButtons();
 
     std::vector<std::string> _buttons;  // At the bottom, e.g. OK/Cancel
     std::vector<std::string> _button_signals;
     std::vector<int> _button_left;      // Left edge of each button
     std::vector<int> _button_right;     // Right edge of each button
-    int _highlighted_button;
 
+    int _highlighted_button;
     unsigned int _reserved_rows, _header_rows;
+    std::string _redraw_type;
+    std::string _button_fg, _button_bg;
 
     WINDOW *_win;
 
@@ -42,6 +47,8 @@ class CursesWidget {
     void clearButtons();
     void setButtons(const std::vector<std::string> & buttons,
                     const std::vector<std::string> & button_signals);
+    void setButtonColor(const std::string & button_fg,
+                        const std::string & button_bg);
 
     /* Sets size and position of popup boxes */
 

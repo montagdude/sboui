@@ -96,53 +96,6 @@ void MessageBox::redrawFrame()
 
 /*******************************************************************************
 
-Redraws buttons at bottom of list box
-
-*******************************************************************************/
-void MessageBox::redrawButtons()
-{
-  int rows, cols, nbuttons, namelen, i, left, color_pair;
-  double mid;
-
-  getmaxyx(_win, rows, cols);
-
-  nbuttons = _buttons.size();
-  if (nbuttons > 0)
-  {
-    namelen = 0;
-    for ( i = 0; i < nbuttons; i++ )
-    {
-      namelen += _buttons[i].size();
-    }
-    mid = double(cols-2)/2.;
-    left = std::floor(mid - double(namelen)/2.0) + 1;
-    _button_left[0] = left;
-    _button_right[0] = _button_left[0] + _buttons[0].size()-1;
-    for ( i = 1; i < nbuttons; i++ )
-    {
-      _button_left[i] = _button_right[i-1] + 1;
-      _button_right[i] = _button_left[i] + _buttons[i].size()-1;
-    }
-    color_pair = colors.getPair("fg_highlight_active", "bg_highlight_active");
-    wmove(_win, rows-2, left);
-    for ( i = 0; i < nbuttons; i++ )
-    {
-      if (i == _highlighted_button)
-      {
-        if (colors.turnOn(_win, color_pair) != 0)
-          wattron(_win, A_REVERSE);
-        wprintw(_win, _buttons[i].c_str());
-        if (colors.turnOff(_win) != 0)
-          wattroff(_win, A_REVERSE);
-      }
-      else
-        wprintw(_win, _buttons[i].c_str());
-    }
-  }
-}
-
-/*******************************************************************************
-
 Prints message in box within defined margins
 
 *******************************************************************************/
@@ -185,6 +138,7 @@ MessageBox::MessageBox(bool header_colorize, bool centered)
   _color_idx = -1;
   _header_colorize = header_colorize;
   _centered = centered;
+  setButtonColor("bg_warning", "fg_warning");
 }
 
 MessageBox::MessageBox(WINDOW *win, const std::string & name,
@@ -200,6 +154,7 @@ MessageBox::MessageBox(WINDOW *win, const std::string & name,
   _color_idx = -1;
   _header_colorize = header_colorize;
   _centered = centered;
+  setButtonColor("bg_warning", "fg_warning");
 }
 
 /*******************************************************************************
@@ -343,12 +298,17 @@ called, there is no _redraw_type for it.
 *******************************************************************************/
 void MessageBox::draw(bool force)
 {
-  clearWindow();
-  if (_color_idx == -1)
-    colors.setBackground(_win, "fg_warning", "bg_warning");
-  else { colors.setBackground(_win, _color_idx); }
-  redrawFrame();
-  redrawMessage();
+  if (_redraw_type == "buttons")
+    redrawButtons();
+  else
+  {
+    clearWindow();
+    if (_color_idx == -1)
+      colors.setBackground(_win, "fg_warning", "bg_warning");
+    else { colors.setBackground(_win, _color_idx); }
+    redrawFrame();
+    redrawMessage();
+  }
   wrefresh(_win);
 }
 
@@ -374,6 +334,7 @@ std::string MessageBox::exec(MouseEvent * mevent)
    
     // Draw message box
 
+    _redraw_type = "all";
     draw();
 
     // Get user input
@@ -385,7 +346,10 @@ std::string MessageBox::exec(MouseEvent * mevent)
       case '\n':
       case '\r':
       case KEY_ENTER:
-        retval = signals::keyEnter;
+        if (int(_button_signals.size()) >= _highlighted_button+1)
+          retval = _button_signals[_highlighted_button];
+        else
+          retval = signals::keyEnter;
         getting_input = false;
         break;
 
@@ -401,6 +365,20 @@ std::string MessageBox::exec(MouseEvent * mevent)
       case MY_ESC:
         retval = signals::quit;
         getting_input = false;
+        break;
+
+      // Right/left keys
+
+      case KEY_RIGHT:
+        retval = signals::keyRight;
+        _redraw_type = "buttons";
+        highlightNextButton();
+        break;
+
+      case KEY_LEFT:
+        retval = signals::keyLeft;
+        _redraw_type = "buttons";
+        highlightPreviousButton();
         break;
 
       // Mouse
@@ -422,4 +400,3 @@ std::string MessageBox::exec(MouseEvent * mevent)
   
   return retval;
 }
-

@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
   // User interaction loop (note: call constructor after setting colors)
 
   MainWindow mainwindow(PACKAGE_VERSION);
-  mainwindow.initialize();
+  mainwindow.initialize(&mevent);
   mainwindow.exec(&mevent);
 
   endwin();

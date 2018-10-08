@@ -200,7 +200,8 @@ void ColorTheme::applyTheme(Color & colors) const
   colors.addPair("tagged", _tagged,
                  "bg_highlight_inactive",_bg_highlight_inactive); 
   colors.addPair("tagged", _tagged, "bg_popup", _bg_popup); 
-  colors.addPair("fg_warning", _fg_warning, "bg_warning", _bg_warning); 
+  colors.addPair("fg_warning", _fg_warning, "bg_warning", _bg_warning);
+  colors.addPair("bg_warning", _bg_warning, "fg_warning", _fg_warning);
   colors.addPair("hotkey", _hotkey, "bg_normal", _bg_normal); 
   colors.addPair("hotkey", _hotkey, "bg_popup", _bg_popup); 
   colors.addPair("hotkey", _hotkey, "bg_highlight_active",_bg_highlight_active);

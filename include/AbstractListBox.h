@@ -18,13 +18,12 @@ class AbstractListBox: public CursesWidget {
 
   protected:
 
-    std::string _name, _redraw_type;
+    std::string _name;
     std::vector<ListItem *> _items;
     int _firstprint;
     std::string _bg_color, _fg_color;   // Default colors
 
     virtual void redrawFrame();
-    virtual void redrawButtons();
     virtual void redrawSingleItem(unsigned int idx) = 0;
     virtual void redrawScrollIndicator() const = 0;
     virtual void redrawAllItems();

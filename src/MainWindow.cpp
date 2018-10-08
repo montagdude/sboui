@@ -226,7 +226,7 @@ void MainWindow::clearData()
 Creates master list of SlackBuilds
 
 *******************************************************************************/
-int MainWindow::readLists()
+int MainWindow::readLists(MouseEvent * mevent)
 {
   int check;
   unsigned int i, ncategories, npkgerr, nmissing; 
@@ -268,7 +268,7 @@ int MainWindow::readLists()
     for ( i = 0; i < npkgerr; i++ ) { errmsg += "\n" + pkg_errors[i]; }
     errmsg += "\n\nThis warning may be disabled by setting "
            +  std::string("warn_invalid_pkgnames = false.");
-    displayError(errmsg, true, "Warning");
+    displayError(errmsg, true, "Warning", "Ok", mevent);
   }
 
   // Warning for missing info files
@@ -279,7 +279,7 @@ int MainWindow::readLists()
     errmsg = "The following installed SlackBuilds are missing .info files:\n";
     for ( i = 0; i < nmissing; i++ ) { errmsg += "\n" + missing_info[i]; }
     errmsg += "\n\nYou should run the sync command to fix this problem.";
-    displayError(errmsg);
+    displayError(errmsg, true, "Error", "Ok", mevent);
   }
 
   return 0;
@@ -290,7 +290,7 @@ int MainWindow::readLists()
 Rebuilds lists after applying changes
 
 *******************************************************************************/
-void MainWindow::rebuild()
+void MainWindow::rebuild(MouseEvent * mevent)
 {
   unsigned int k, ncategories, list_highlight, prev_activated;
   int ntagged;
@@ -324,7 +324,7 @@ void MainWindow::rebuild()
 
   // Re-filter (data, tags could have changed), unless filtered by search
 
-  if (_filter == "all SlackBuilds") { filterAll(); }
+  if (_filter == "all SlackBuilds") { filterAll(mevent); }
   else if (_filter == "installed SlackBuilds") { filterInstalled(); }
   else if (_filter == "upgradable SlackBuilds") { filterUpgradable(); } 
   else if (_filter == "tagged SlackBuilds") { filterTagged(); } 
@@ -361,7 +361,7 @@ void MainWindow::rebuild()
 Displays all SlackBuilds
 
 *******************************************************************************/
-void MainWindow::filterAll()
+void MainWindow::filterAll(MouseEvent * mevent)
 {
   unsigned int nbuilds;
   std::string choice;
@@ -381,8 +381,8 @@ void MainWindow::filterAll()
   {
     clearStatus();
     choice = displayError("Repository is empty. Run the sync command now?",
-                          true, "Error", "Enter: Yes | Esc: No");
-    if (choice == signals::keyEnter) { syncRepo(); }
+                          true, "Error", "Yes No", mevent);
+    if (choice == signals::keyEnter) { syncRepo(mevent); }
   } 
   else if (nbuilds == 1)
     printStatus("1 SlackBuild in repository.");
@@ -620,7 +620,7 @@ void MainWindow::filterSearch(const std::string & searchterm,
 Shows options window
 
 *******************************************************************************/
-int MainWindow::showOptions()
+int MainWindow::showOptions(MouseEvent * mevent)
 {
   WINDOW *optionswin;
   std::string selection, errmsg, old_repo_dir, msg;
@@ -675,7 +675,7 @@ int MainWindow::showOptions()
         errmsg = "Color is not supported in this terminal.";
         break;
     }
-    displayError(errmsg);
+    displayError(errmsg, true, "Error", "Ok", mevent);
   }
   if (check_write != 0)
   {
@@ -687,7 +687,7 @@ int MainWindow::showOptions()
         errmsg = "Error writing ~/.sboui.conf.";
         break;
     }
-    displayError(errmsg);
+    displayError(errmsg, true, "Error", "Ok", mevent);
   }
   if ( (check_color == 0) && (check_write == 0) )
   {
@@ -803,7 +803,8 @@ bool MainWindow::modifyPackage(BuildListItem & build,
     clearStatus();
     displayError("Unable to find one or more dependencies of " + build.name() +
                  std::string(" in repository. Disable dependency resolution ") +
-                 std::string("to ignore this error."));
+                 std::string("to ignore this error."), true, "Error", "Ok",
+                 mevent);
     return false;
   }
   else if (check == 2)
@@ -811,7 +812,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
     clearStatus();
     displayError("A .info file seems to be missing from the repository, so " +
                  std::string("build order is incomplete. Syncing may fix ") +
-                 std::string("this problem."));
+                 std::string("this problem."), true, "Error", "Ok", mevent);
     return false;
   }
 
@@ -881,8 +882,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
             msg += foreign[i]->getProp("package_name") + "\n";
           }
           msg += "\nContinue anyway?";
-          choice = displayError(msg, true, "Warning",
-                                "Enter: Continue | Esc: Edit");
+          choice = displayError(msg, true, "Warning", "Yes No", mevent);
           if (choice != signals::keyEnter) { continue; }
         }
 
@@ -895,7 +895,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
         {
           choice = displayError("You have chosen to skip some dependencies." +
                                 std::string(" Continue anyway? "), true,
-                                "Warning", "Enter: Yes | Esc: No"); 
+                                "Warning", "Yes No", mevent); 
           if (choice == signals::keyEnter) { response = 1; }
           else { response = 0; }
         }
@@ -941,7 +941,8 @@ bool MainWindow::modifyPackage(BuildListItem & build,
     reset_prog_mode();
     draw(true);
     if (check != 0)
-      displayError("One or more requested changes was not applied.");
+      displayError("One or more requested changes was not applied.", true,
+                   "Warning", "Ok", mevent);
     else
       if ( (! batch) && (needs_rebuild) )
         displayMessage("All changes were successfully applied. Summary:\n\n"
@@ -960,7 +961,7 @@ bool MainWindow::modifyPackage(BuildListItem & build,
 Allows user to set build options for SlackBuild
 
 *******************************************************************************/
-void MainWindow::setBuildOptions(BuildListItem & build)
+void MainWindow::setBuildOptions(BuildListItem & build, MouseEvent * mevent)
 {
   WINDOW *buildoptionswin;
   std::string selection, msg;
@@ -991,7 +992,7 @@ void MainWindow::setBuildOptions(BuildListItem & build)
           msg = "Unable to save build options: "
               + std::string("cannot write to /var/lib/sboui/buildopts. ")
               + std::string("Please check permissions.");
-          displayError(msg, true, "Warning", "Enter: Dismiss");
+          displayError(msg, true, "Warning", "Ok", mevent);
         }
       }
     }
@@ -1037,14 +1038,15 @@ void MainWindow::showBuildOrder(BuildListItem & build, const std::string & mode,
     clearStatus();
     displayError("Unable to find one or more dependencies of " + build.name() +
                  std::string(" in repository. Build order will be incomplete."),
-                 true, "Warning");
+                 true, "Warning", "Ok", mevent);
   }
   else if (check == 2)
   { 
     clearStatus();
     displayError("A .info file seems to be missing from the repository, so " +
                  std::string("build order will be incomplete. Syncing may ") +
-                 std::string("fix this problem."), true, "Warning");
+                 std::string("fix this problem."), true, "Warning", "Ok",
+                 mevent);
   }
 
   nbuildorder = buildorder.numItems();
@@ -1193,7 +1195,8 @@ void MainWindow::browseFiles(const BuildListItem & build, MouseEvent * mevent)
 
   if (check != 0) 
   { 
-    displayError("Unable to access build directory for " + build.name() + ".");
+    displayError("Unable to access build directory for " + build.name() + ".",
+                 true, "Error", "Ok", mevent);
     return;
   }
 
@@ -1218,7 +1221,8 @@ void MainWindow::browseFiles(const BuildListItem & build, MouseEvent * mevent)
         reset_prog_mode();
         draw(true);
       }
-      else { displayError("Can only view files and symlinks."); }
+      else { displayError("Can only view files and symlinks.", true, "Error",
+                          "Ok", mevent); }
     }
     else if (selection == signals::quit) { getting_input = false; }
     else if (selection == signals::resize) 
@@ -1237,7 +1241,7 @@ void MainWindow::browseFiles(const BuildListItem & build, MouseEvent * mevent)
 Syncs/updates SlackBuilds repository
 
 *******************************************************************************/
-int MainWindow::syncRepo()
+int MainWindow::syncRepo(MouseEvent * mevent)
 {
   int check;
 
@@ -1252,7 +1256,8 @@ int MainWindow::syncRepo()
     clearData();
     initialize();
   }
-  else { displayError("An error occurred while trying to sync."); }
+  else { displayError("An error occurred while trying to sync.", true, "Error",
+                      "Ok", mevent); }
 
   return check;
 }
@@ -1274,7 +1279,8 @@ void MainWindow::applyTags(const std::string & action, MouseEvent * mevent)
   ndisplay = _taglist.getDisplayList(action);
   if (ndisplay == 0)
   {
-    displayError("No tagged SlackBuilds to " + string_to_lower(action) + ".");
+    displayError("No tagged SlackBuilds to " + string_to_lower(action) + ".",
+                 true, "Error", "Ok", mevent);
     return;
   }
   else if (ndisplay == 1)
@@ -1357,7 +1363,7 @@ void MainWindow::applyTags(const std::string & action, MouseEvent * mevent)
 
     // Rebuild lists if SlackBuilds were installed/upgraded/reinstalled/removed
 
-    if (needs_rebuild) { rebuild(); }
+    if (needs_rebuild) { rebuild(mevent); }
   } 
 }
 
@@ -1379,18 +1385,50 @@ void MainWindow::viewCommandLine() const
 
 /*******************************************************************************
 
-Displays an error message. Returns response from message box.
-FIXME: add mouse support
+Displays an error message. Returns response from message box. buttons can
+either be "Ok" (the default), "Ok Cancel", or "Yes No".
 
 *******************************************************************************/
 std::string MainWindow::displayError(const std::string & msg, bool centered,
-                             const std::string & name, const std::string & info)
+                                     const std::string & name,
+                                     const std::string & buttonnames,
+                                     MouseEvent * mevent) 
+
 {
   std::string selection;
   bool getting_selection;
   MessageBox errbox(false, centered);
   WINDOW *errwin;
-  std::vector<std::string> buttons(1), button_signals(1);
+  std::vector<std::string> buttons, button_signals;
+  
+  // Set up buttons
+
+  if (buttonnames == "Ok Cancel")
+  {
+    buttons.resize(2);
+    button_signals.resize(2);
+    buttons[0] = "  Ok  ";
+    buttons[1] = "  Cancel  ";
+    button_signals[0] = signals::keyEnter;
+    button_signals[1] = signals::quit;
+  }
+  else if (buttonnames == "Yes No")
+  {
+    buttons.resize(2);
+    button_signals.resize(2);
+    buttons[0] = "   Yes   ";
+    buttons[1] = "   No   ";
+    button_signals[0] = signals::keyEnter;
+    button_signals[1] = signals::quit;
+  }
+  else
+  {
+    buttons.resize(1);
+    button_signals.resize(1);
+    buttons[0] = "   Ok   ";
+    button_signals[0] = signals::keyEnter;
+  }
+  errbox.setButtons(buttons, button_signals);
 
   // Place message box
 
@@ -1398,9 +1436,6 @@ std::string MainWindow::displayError(const std::string & msg, bool centered,
   errbox.setWindow(errwin);
   errbox.setName(name);
   errbox.setMessage(msg);
-  buttons[0] = info;
-  button_signals[0] = signals::keyEnter;
-  errbox.setButtons(buttons, button_signals);
   placePopup(&errbox, errwin);
   draw(true);
 
@@ -1409,7 +1444,7 @@ std::string MainWindow::displayError(const std::string & msg, bool centered,
   getting_selection = true;
   while (getting_selection)
   {
-    selection = errbox.exec();
+    selection = errbox.exec(mevent);
     getting_selection = false;
     if (selection == signals::resize)
     {
@@ -1631,7 +1666,7 @@ MainWindow::~MainWindow() { clearData(); }
 First time window setup
 
 *******************************************************************************/
-int MainWindow::initialize()
+int MainWindow::initialize(MouseEvent * mevent)
 {
   BuildListBox initlistbox;
   int retval;
@@ -1655,7 +1690,7 @@ int MainWindow::initialize()
   // Read SlackBuilds repository
 
   printStatus("Reading SlackBuilds repository ...");
-  retval = readLists();
+  retval = readLists(mevent);
 
   // Set filter
 
@@ -1663,7 +1698,8 @@ int MainWindow::initialize()
   { 
     clearStatus();
     displayError("Error reading SlackBuilds repository. Please make sure that "
-               + std::string("you have set repo_dir correctly in sboui.conf."));
+                + std::string("you have set repo_dir correctly in sboui.conf."),
+                 true, "Error", "Ok", mevent);
   }
   else 
   { 
@@ -1674,7 +1710,7 @@ int MainWindow::initialize()
     else if (_filter == "non-dependencies") { filterNonDeps(); }
     else if (_filter == "SlackBuilds with build options set")
       filterBuildOptions();
-    else { filterAll(); }
+    else { filterAll(mevent); }
   }
   draw(true);
 
@@ -1722,7 +1758,7 @@ void MainWindow::selectFilter(MouseEvent * mevent)
 
     if ( (selected == "All") || (selection == "A") )
     {
-      if (_filter != "all SlackBuilds") { filterAll(); } 
+      if (_filter != "all SlackBuilds") { filterAll(mevent); } 
     }
     else if ( (selected == "Installed") || (selection == "I") )
     {
@@ -1865,7 +1901,7 @@ void MainWindow::showBuildActions(BuildListItem & build, bool limited_actions,
     { 
       hideWindow(actionwin);
       draw(true);
-      setBuildOptions(build);
+      setBuildOptions(build, mevent);
       placePopup(&actionbox, actionwin);
       draw(true);
     }                                              
@@ -1942,7 +1978,7 @@ void MainWindow::showBuildActions(BuildListItem & build, bool limited_actions,
 
   // Rebuild lists if SlackBuilds were installed/upgraded/reinstalled/removed
 
-  if (needs_rebuild) { rebuild(); }
+  if (needs_rebuild) { rebuild(mevent); }
 }
 
 /*******************************************************************************
@@ -2177,10 +2213,10 @@ std::string MainWindow::exec(MouseEvent * mevent)
     else if (selection == signals::resize) { draw(true); }
     else if (selection == "f") { selectFilter(mevent); }
     else if (selection == "/") { search(); }
-    else if (selection == "s") { syncRepo(); }
+    else if (selection == "s") { syncRepo(mevent); }
     else if (selection == "o") 
     {
-      check_quit = showOptions();
+      check_quit = showOptions(mevent);
       if (check_quit == 1) { getting_input = false; }
     }
     else if (selection == "?") 
