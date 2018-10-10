@@ -46,11 +46,12 @@ PackageInfoBox::PackageInfoBox()
   std::vector<std::string> buttons(1), button_signals(1);
 
   _name = "Package info";
-  buttons[0] = "  Dismiss  ";
+  buttons[0] = "  Ok  ";
   button_signals[0] = signals::keyEnter;
   setButtons(buttons, button_signals);
   _centered = false;
   setColor("fg_popup", "bg_popup");
+  setButtonColor("fg_highlight_active", "bg_highlight_active");
 }
 
 PackageInfoBox::PackageInfoBox(WINDOW *win)
@@ -59,11 +60,12 @@ PackageInfoBox::PackageInfoBox(WINDOW *win)
 
   _win = win;
   _name = "Package info";
-  buttons[0] = "  Dismiss  ";
+  buttons[0] = "  Ok  ";
   button_signals[0] = signals::keyEnter;
   setButtons(buttons, button_signals);
   _centered = false;
   setColor("fg_popup", "bg_popup");
+  setButtonColor("fg_highlight_active", "bg_highlight_active");
 }
 
 /*******************************************************************************
