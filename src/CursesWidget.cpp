@@ -169,6 +169,8 @@ CursesWidget::CursesWidget()
   _button_signals.resize(0);
   _button_bg = "bg_highlight_active";
   _button_fg = "fg_highlight_active";
+  _fg_color = "fg_normal";
+  _bg_color = "bg_normal";
   _highlighted_button = 0;
   _redraw_type = "all";
 }
@@ -217,6 +219,13 @@ void CursesWidget::setButtonColor(const std::string & button_fg,
 {
   _button_fg = button_fg;
   _button_bg = button_bg;
+}
+
+void CursesWidget::setColor(const std::string & fg_color,
+                            const std::string & bg_color)
+{
+  _fg_color = fg_color;
+  _bg_color = bg_color;
 }
 
 /*******************************************************************************

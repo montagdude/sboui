@@ -135,9 +135,9 @@ MessageBox::MessageBox(bool header_colorize, bool centered)
   addButton("  Cancel  ", signals::quit);
   _margin_v = 0;
   _margin_h = 0;
-  _color_idx = -1;
   _header_colorize = header_colorize;
   _centered = centered;
+  setColor("fg_warning", "bg_warning");
   setButtonColor("bg_warning", "fg_warning");
 }
 
@@ -151,9 +151,9 @@ MessageBox::MessageBox(WINDOW *win, const std::string & name,
   addButton("  Cancel  ", signals::quit);
   _margin_v = 0;
   _margin_h = 0;
-  _color_idx = -1;
   _header_colorize = header_colorize;
   _centered = centered;
+  setColor("fg_warning", "bg_warning");
   setButtonColor("bg_warning", "fg_warning");
 }
 
@@ -164,7 +164,6 @@ Set attributes
 *******************************************************************************/
 void MessageBox::setName(const std::string & name) { _name = name; }
 void MessageBox::setMessage(const std::string & msg) { _message = msg; }
-void MessageBox::setColor(int color_idx) { _color_idx = color_idx; }
 
 /*******************************************************************************
 
@@ -303,9 +302,7 @@ void MessageBox::draw(bool force)
   else
   {
     clearWindow();
-    if (_color_idx == -1)
-      colors.setBackground(_win, "fg_warning", "bg_warning");
-    else { colors.setBackground(_win, _color_idx); }
+    colors.setBackground(_win, _fg_color, _bg_color);
     redrawFrame();
     redrawMessage();
   }

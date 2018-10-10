@@ -699,7 +699,7 @@ int MainWindow::showOptions(MouseEvent * mevent)
             + std::string("before continuing.");
       else
         msg = "Settings were successfully applied.";
-      displayMessage(msg);
+      displayMessage(msg, true, "Information", "Ok", mevent);
     }
   }
 
@@ -949,7 +949,8 @@ bool MainWindow::modifyPackage(BuildListItem & build,
              + std::string("Installed: ") + int_to_string(ninstalled) + "\n"
              + std::string("Upgraded: ") + int_to_string(nupgraded) + "\n"
              + std::string("Reinstalled: ") + int_to_string(nreinstalled) + "\n"
-             + std::string("Removed: ") + int_to_string(nremoved), false);
+             + std::string("Removed: ") + int_to_string(nremoved), false,
+             "Information", "Ok", mevent);
   }
   clearStatus();
 
@@ -1359,7 +1360,8 @@ void MainWindow::applyTags(const std::string & action, MouseEvent * mevent)
            + std::string("Installed: ") + int_to_string(ninstalled) + "\n"
            + std::string("Upgraded: ") + int_to_string(nupgraded) + "\n"
            + std::string("Reinstalled: ") + int_to_string(nreinstalled) + "\n"
-           + std::string("Removed: ") + int_to_string(nremoved), false);
+           + std::string("Removed: ") + int_to_string(nremoved), false,
+           "Information", "Ok", mevent);
 
     // Rebuild lists if SlackBuilds were installed/upgraded/reinstalled/removed
 
@@ -1464,18 +1466,49 @@ std::string MainWindow::displayError(const std::string & msg, bool centered,
 
 /*******************************************************************************
 
-Displays an info message. Returns response from message box.
-FIXME: add mouse support
+Displays an info message. Returns response from message box. Buttons can be
+"Ok" (the default), "Ok Cancel", or "Yes No".
 
 *******************************************************************************/
 std::string MainWindow::displayMessage(const std::string & msg, bool centered,
-                             const std::string & name, const std::string & info)
+                                       const std::string & name,
+                                       const std::string & buttonnames,
+                                       MouseEvent * mevent)
 {
   std::string selection;
   bool getting_selection;
   MessageBox msgbox(true, centered);
   WINDOW *msgwin;
-  std::vector<std::string> buttons(1), button_signals(1);
+  std::vector<std::string> buttons, button_signals;
+
+  // Set up buttons
+
+  if (buttonnames == "Ok Cancel")
+  {
+    buttons.resize(2);
+    button_signals.resize(2);
+    buttons[0] = "  Ok  ";
+    buttons[1] = "  Cancel  ";
+    button_signals[0] = signals::keyEnter;
+    button_signals[1] = signals::quit;
+  }
+  else if (buttonnames == "Yes No")
+  {
+    buttons.resize(2);
+    button_signals.resize(2);
+    buttons[0] = "   Yes   ";
+    buttons[1] = "   No   ";
+    button_signals[0] = signals::keyEnter;
+    button_signals[1] = signals::quit;
+  }
+  else
+  {
+    buttons.resize(1);
+    button_signals.resize(1);
+    buttons[0] = "   Ok   ";
+    button_signals[0] = signals::keyEnter;
+  }
+  msgbox.setButtons(buttons, button_signals);
 
   // Place message box
 
@@ -1483,10 +1516,8 @@ std::string MainWindow::displayMessage(const std::string & msg, bool centered,
   msgbox.setWindow(msgwin);
   msgbox.setName(name);
   msgbox.setMessage(msg);
-  buttons[0] = info;
-  button_signals[0] = signals::keyEnter;
-  msgbox.setButtons(buttons, button_signals);
-  msgbox.setColor(colors.getPair("fg_popup", "bg_popup"));
+  msgbox.setColor("fg_popup", "bg_popup");
+  msgbox.setButtonColor("fg_highlight_active", "bg_highlight_active");
   placePopup(&msgbox, msgwin);
   draw(true);
 
@@ -1495,7 +1526,7 @@ std::string MainWindow::displayMessage(const std::string & msg, bool centered,
   getting_selection = true;
   while (getting_selection)
   {
-    selection = msgbox.exec();
+    selection = msgbox.exec(mevent);
     getting_selection = false;
     if (selection == signals::resize)
     {

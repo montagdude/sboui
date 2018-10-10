@@ -110,9 +110,10 @@ class MainWindow: public CursesWidget {
                              const std::string & name,
                              const std::string & buttonnames,
                              MouseEvent * mevent=NULL);
-    std::string displayMessage(const std::string & msg, bool centered=true,
-                               const std::string & name="Information",
-                               const std::string & info="Enter: Dismiss");
+    std::string displayMessage(const std::string & msg, bool centered,
+                               const std::string & name,
+                               const std::string & buttonnames,
+                               MouseEvent * mevent=NULL);
 
     /* Prints package version information as status */
 

@@ -575,7 +575,8 @@ void OptionsWindow::askSetDefaults(const std::string & new_pkg_mgr)
     buttons[0] = "  Dismiss  ";
     button_signals[0] = signals::keyEnter;
     msgbox.setButtons(buttons, button_signals);
-    msgbox.setColor(colors.getPair("fg_popup", "bg_popup"));
+    msgbox.setColor("fg_popup", "bg_popup");
+    msgbox.setButtonColor("fg_highlight_active", "bg_highlight_active");
     placePopup(&msgbox, defwin);
     draw(true);
 

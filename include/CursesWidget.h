@@ -31,6 +31,7 @@ class CursesWidget {
     unsigned int _reserved_rows, _header_rows;
     std::string _redraw_type;
     std::string _button_fg, _button_bg;
+    std::string _bg_color, _fg_color;   // Default colors
 
     WINDOW *_win;
 
@@ -49,6 +50,7 @@ class CursesWidget {
                     const std::vector<std::string> & button_signals);
     void setButtonColor(const std::string & button_fg,
                         const std::string & button_bg);
+    void setColor(const std::string & fg_color, const std::string & bg_color);
 
     /* Sets size and position of popup boxes */
 

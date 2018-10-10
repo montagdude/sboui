@@ -21,7 +21,6 @@ class AbstractListBox: public CursesWidget {
     std::string _name;
     std::vector<ListItem *> _items;
     int _firstprint;
-    std::string _bg_color, _fg_color;   // Default colors
 
     virtual void redrawFrame();
     virtual void redrawSingleItem(unsigned int idx) = 0;
@@ -44,7 +43,6 @@ class AbstractListBox: public CursesWidget {
     /* Set attributes */
 
     void setName(const std::string & name);
-    void setColor(const std::string & fg_color, const std::string & bg_color);
 
     /* Get attributes */
 

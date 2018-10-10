@@ -119,8 +119,6 @@ AbstractListBox::AbstractListBox()
   _firstprint = 0;
   _header_rows = 3;
   _reserved_rows = 4;   // Assumes no buttons
-  _fg_color = "fg_normal";
-  _bg_color = "bg_normal";
 }
 
 AbstractListBox::AbstractListBox(WINDOW *win, const std::string & name)
@@ -132,8 +130,6 @@ AbstractListBox::AbstractListBox(WINDOW *win, const std::string & name)
   _firstprint = 0;
   _header_rows = 3;
   _reserved_rows = 4;   // Assumes no buttons
-  _fg_color = "fg_normal";
-  _bg_color = "bg_normal";
 }
 
 /*******************************************************************************
@@ -162,12 +158,6 @@ Set attributes
 
 *******************************************************************************/
 void AbstractListBox::setName(const std::string & name) { _name = name; }
-void AbstractListBox::setColor(const std::string & fg_color,
-                               const std::string & bg_color)
-{
-  _fg_color = fg_color;
-  _bg_color = bg_color;
-}
 
 /*******************************************************************************
 

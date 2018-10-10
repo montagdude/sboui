@@ -43,7 +43,6 @@ Constructors
 *******************************************************************************/
 PackageInfoBox::PackageInfoBox()
 {
-  int color_pair;
   std::vector<std::string> buttons(1), button_signals(1);
 
   _name = "Package info";
@@ -51,13 +50,11 @@ PackageInfoBox::PackageInfoBox()
   button_signals[0] = signals::keyEnter;
   setButtons(buttons, button_signals);
   _centered = false;
-  color_pair = colors.getPair("fg_popup", "bg_popup");
-  if (color_pair != -1) { setColor(color_pair); }
+  setColor("fg_popup", "bg_popup");
 }
 
 PackageInfoBox::PackageInfoBox(WINDOW *win)
 {
-  int color_pair;
   std::vector<std::string> buttons(1), button_signals(1);
 
   _win = win;
@@ -66,8 +63,7 @@ PackageInfoBox::PackageInfoBox(WINDOW *win)
   button_signals[0] = signals::keyEnter;
   setButtons(buttons, button_signals);
   _centered = false;
-  color_pair = colors.getPair("fg_popup", "bg_popup");
-  if (color_pair != -1) { setColor(color_pair); }
+  setColor("fg_popup", "bg_popup");
 }
 
 /*******************************************************************************
