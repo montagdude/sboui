@@ -99,28 +99,28 @@ OptionsWindow::OptionsWindow()
   addItem(&_resolve_toggle);
   _items[count]->setName("Resolve dependencies");
   _items[count]->setPosition(line,1);
-  _items[count]->setWidth(_items[count]->name().size());
+  _items[count]->setWidth(_items[count]->name().size()+4);
   count++;
   line += 1;
 
   addItem(&_rebuild_toggle);
   _items[count]->setName("Rebuild inverse dependencies");
   _items[count]->setPosition(line,1);
-  _items[count]->setWidth(_items[count]->name().size());
+  _items[count]->setWidth(_items[count]->name().size()+4);
   count++;
   line += 1;
 
   addItem(&_confirm_toggle);
   _items[count]->setName("Ask for confirmation before applying changes");
   _items[count]->setPosition(line,1);
-  _items[count]->setWidth(_items[count]->name().size());
+  _items[count]->setWidth(_items[count]->name().size()+4);
   count++;
   line += 1;
 
   addItem(&_buildopts_toggle);
   _items[count]->setName("Save build options");
   _items[count]->setPosition(line,1);
-  _items[count]->setWidth(_items[count]->name().size());
+  _items[count]->setWidth(_items[count]->name().size()+4);
   count++;
   line += 1;
 
@@ -152,7 +152,7 @@ OptionsWindow::OptionsWindow()
   addItem(&_color_toggle);
   _items[count]->setName("Enable color");
   _items[count]->setPosition(line,1);
-  _items[count]->setWidth(_items[count]->name().size());
+  _items[count]->setWidth(_items[count]->name().size()+4);
   count++;
   line += 1;
 
@@ -344,7 +344,7 @@ OptionsWindow::OptionsWindow()
   addItem(&_warninval_toggle);
   _items[count]->setName("Display a warning for invalid package names");
   _items[count]->setPosition(line,1);
-  _items[count]->setWidth(_items[count]->name().size());
+  _items[count]->setWidth(_items[count]->name().size()+4);
 }
 
 OptionsWindow::~OptionsWindow()
