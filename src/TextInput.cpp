@@ -104,6 +104,42 @@ void TextInput::removeLabel()
 
 /*******************************************************************************
 
+Handles mouse event
+
+*******************************************************************************/
+std::string TextInput::handleMouseEvent(MouseEvent * mevent, int y_offset)
+{
+  int begy, begx, ycurs, xcurs, xinpbeg, xinpend;
+
+  getbegyx(_win, begy, begx);
+  ycurs = mevent->y() - begy;
+  xcurs = mevent->x() - begx;
+
+  if ( (mevent->button() == 1) || (mevent->button() == 3) )
+  {
+    // Check for clicking in the input box
+
+    if ( (xcurs >= _posx) && (xcurs < _posx+_width) &&
+         (ycurs == _posy-y_offset) )
+    {
+      xinpbeg = _posx + _labellen;
+      xinpend = xinpbeg + _entry.size() - _firsttext;
+      if (xcurs < xinpbeg)
+        _cursidx = _firsttext;
+      else if (xcurs >= xinpend)
+        _cursidx = _entry.size();
+      else
+        _cursidx = xcurs-1+_firsttext-_labellen;
+      _redraw_type = "entry";
+      return signals::mouseEvent;
+    }
+  }
+
+  return signals::nullEvent;
+}
+
+/*******************************************************************************
+
 Draws text input
 
 *******************************************************************************/
@@ -136,6 +172,7 @@ std::string TextInput::exec(int y_offset, MouseEvent * mevent)
   bool getting_input;
   std::string retval;
   unsigned int check_redraw;
+  MEVENT event;
 
   const int MY_DELETE = 330;
   const int MY_ESC = 27;
@@ -250,6 +287,21 @@ std::string TextInput::exec(int y_offset, MouseEvent * mevent)
         retval = signals::quit;
         _redraw_type = "entry";
         getting_input = false;
+        break;
+
+      // Mouse
+
+      case KEY_MOUSE:
+        if ( (getmouse(&event) == OK) && mevent )
+        {
+          mevent->recordClick(event);
+          if (handleMouseEvent(mevent, y_offset) == signals::nullEvent)
+          {
+            retval = signals::mouseEvent;
+            _redraw_type = "entry";
+            getting_input = false;
+          }
+        }
         break;
 
       // Add character to entry
