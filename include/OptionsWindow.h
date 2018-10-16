@@ -51,5 +51,6 @@ class OptionsWindow: public InputBox {
 
     /* Automatic defaults dialog when package manager is changed */
 
-    void askSetDefaults(const std::string & new_pkg_mgr); 
+    void askSetDefaults(const std::string & new_pkg_mgr,
+                        MouseEvent * mevent=NULL); 
 };

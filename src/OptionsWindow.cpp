@@ -487,7 +487,7 @@ std::string OptionsWindow::exec(MouseEvent * mevent)
     // If package manager has changed, ask to set other defaults automatically
 
     if (_pmgr_box.choice() != prev_pkg_mgr)
-      askSetDefaults(_pmgr_box.choice());
+      askSetDefaults(_pmgr_box.choice(), mevent);
   }
 
   return retval;
@@ -500,7 +500,8 @@ and upgrade_cmd when package manager is changed. In case it was changed to
 custom, just display an info message.
 
 *******************************************************************************/
-void OptionsWindow::askSetDefaults(const std::string & new_pkg_mgr)
+void OptionsWindow::askSetDefaults(const std::string & new_pkg_mgr,
+                                   MouseEvent * mevent)
 {
   WINDOW *defwin;
   std::string selection, msg;
@@ -534,7 +535,7 @@ void OptionsWindow::askSetDefaults(const std::string & new_pkg_mgr)
     getting_input = true;
     while (getting_input)
     {
-      selection = msgbox.exec();
+      selection = msgbox.exec(mevent);
       getting_input = false;
       if (selection == signals::resize)
       {
@@ -557,7 +558,7 @@ void OptionsWindow::askSetDefaults(const std::string & new_pkg_mgr)
     getting_input = true;
     while (getting_input)
     {
-      selection = defbox.exec();
+      selection = defbox.exec(mevent);
       if (selection == signals::keyEnter)
       {
         getting_input = false;
