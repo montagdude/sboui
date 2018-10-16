@@ -681,9 +681,14 @@ std::string InputBox::handleMouseEvent(MouseEvent * mevent)
         if ( (ybox == _items[i]->posy()) && (xcurs >= _items[i]->posx()) &&
              (xcurs < _items[i]->posx() + _items[i]->width()) )
         {
-          _highlight = i;
-          _items[_highlight]->handleMouseEvent(mevent, y_offset);
-          return signals::highlight;
+          if (_items[i]->selectable())
+          {
+            _prevhighlight = _highlight;
+            _highlight = i;
+            _redraw_type = "changed";
+            draw();
+            return _items[_highlight]->handleMouseEvent(mevent, y_offset);
+          }
         }
       }
       return signals::nullEvent;
@@ -743,13 +748,93 @@ void InputBox::draw(bool force)
 
 /*******************************************************************************
 
+Handles response from InputItem. Broken out here so that it is easier to modify
+in derived classes.
+
+*******************************************************************************/
+std::string InputBox::handleInput(std::string & selection, bool & getting_input,
+                                  bool & needs_selection, MouseEvent * mevent)
+{
+  std::string retval;
+  int check_redraw;
+
+  if (selection == signals::resize)
+  {
+    retval = selection;
+    _redraw_type = "all";
+    getting_input = false;
+  }
+  //FIXME: handle buttons
+  else if ( (selection == signals::quit) ||
+            (selection == signals::keyEnter) ||
+            (selection == signals::keySpace) )
+  {
+    retval = selection;
+    _redraw_type = "all";
+    getting_input = false;
+  }
+  else if (selection == signals::highlightFirst)
+  { 
+    if (highlightFirst() == 1) { _redraw_type = "all"; }
+    else { _redraw_type = "changed"; }
+  }
+  else if (selection == signals::highlightLast) 
+  { 
+    if (highlightLast() == 1) { _redraw_type = "all"; }
+    else { _redraw_type = "changed"; }
+  }
+  else if (selection == signals::highlightPrevPage)
+  {
+    if (highlightPreviousPage() == 1) { _redraw_type = "all"; }
+    else { _redraw_type = "changed"; }
+  }
+  else if (selection == signals::highlightNextPage)
+  {
+    if (highlightNextPage() == 1) { _redraw_type = "all"; }
+    else { _redraw_type = "changed"; }
+  }
+  else if (selection == signals::highlightPrev)
+  { 
+    if (_highlight == _first_selectable)
+      check_redraw = highlightFirst();
+    else { check_redraw = highlightPrevious(); }
+    if (check_redraw == 1) { _redraw_type = "all"; }
+    else { _redraw_type = "changed"; }
+  }
+  else if (selection == signals::highlightNext)
+  {
+    if (_highlight == _last_selectable)
+      check_redraw = highlightLast();
+    else { check_redraw = highlightNext(); }
+    if (check_redraw == 1) { _redraw_type = "all"; }
+    else { _redraw_type = "changed"; }
+  }
+  else if (selection == signals::mouseEvent)
+  {
+    selection = handleMouseEvent(mevent); 
+    if ( (selection == signals::quit) || (selection == signals::keyEnter) )
+      needs_selection = false;
+    _redraw_type = "changed";
+  }
+  else
+  {
+    retval = selection;
+    _redraw_type = "all";
+    getting_input = false;
+  }
+
+  return retval;
+}
+
+/*******************************************************************************
+
 User interaction with input items in the box
 
 *******************************************************************************/
 std::string InputBox::exec(MouseEvent * mevent)
 {
   bool getting_input, needs_selection;
-  int y_offset, check_redraw;
+  int y_offset;
   std::string selection, retval;
 
   getting_input = true;
@@ -768,70 +853,8 @@ std::string InputBox::exec(MouseEvent * mevent)
       selection = _items[_highlight]->exec(y_offset, mevent);
     else
       needs_selection = true;
-    if (selection == signals::resize)
-    {
-      retval = selection;
-      _redraw_type = "all";
-      getting_input = false;
-    }
-    //FIXME: handle buttons
-    else if ( (selection == signals::quit) ||
-              (selection == signals::keyEnter) ||
-              (selection == signals::keySpace) )
-    {
-      retval = selection;
-      _redraw_type = "all";
-      getting_input = false;
-    }
-    else if (selection == signals::highlightFirst)
-    { 
-      if (highlightFirst() == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
-    }
-    else if (selection == signals::highlightLast) 
-    { 
-      if (highlightLast() == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
-    }
-    else if (selection == signals::highlightPrevPage)
-    {
-      if (highlightPreviousPage() == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
-    }
-    else if (selection == signals::highlightNextPage)
-    {
-      if (highlightNextPage() == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
-    }
-    else if (selection == signals::highlightPrev)
-    { 
-      if (_highlight == _first_selectable)
-        check_redraw = highlightFirst();
-      else { check_redraw = highlightPrevious(); }
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
-    }
-    else if (selection == signals::highlightNext)
-    {
-      if (_highlight == _last_selectable)
-        check_redraw = highlightLast();
-      else { check_redraw = highlightNext(); }
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
-    }
-    else if (selection == signals::mouseEvent)
-    {
-      selection = handleMouseEvent(mevent); 
-      if ( (selection == signals::quit) || (selection == signals::keyEnter) )
-        needs_selection = false;
-      _redraw_type = "changed";
-    }
-    else
-    {
-      retval = selection;
-      _redraw_type = "all";
-      getting_input = false;
-    }
+
+    retval = handleInput(selection, getting_input, needs_selection, mevent);
   }
 
   return retval;

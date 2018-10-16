@@ -59,7 +59,28 @@ Handles mouse event
 *******************************************************************************/
 std::string ToggleInput::handleMouseEvent(MouseEvent * mevent, int y_offset)
 {
-  //FIXME: implement
+  int begy, begx, ycurs, xcurs;
+
+  getbegyx(_win, begy, begx);
+  ycurs = mevent->y() - begy;
+  xcurs = mevent->x() - begx;
+
+  if ( (mevent->button() == 1) || (mevent->button() == 3) )
+  {
+    // Check for clicking in the ToggleInput
+
+    if ( (xcurs >= _posx) && (xcurs < _posx+_width) &&
+         (ycurs == _posy-y_offset) )
+    {
+      // Check for clicking in or on the check box
+
+      if ( (xcurs-_posx >= 0) && (xcurs-_posx <= 2) )
+        toggle();
+      return signals::nullEvent;  // Because the event was handled here
+    }
+  }
+
+  return signals::mouseEvent;     // Defer to InputBox to handle event
 }
 
 /*******************************************************************************
@@ -97,6 +118,7 @@ std::string ToggleInput::exec(int y_offset, MouseEvent * mevent)
   int ch;
   bool getting_input;
   std::string retval;
+  MEVENT event;
 
   const int MY_ESC = 27;
   const int MY_TAB = 9;
@@ -117,6 +139,7 @@ std::string ToggleInput::exec(int y_offset, MouseEvent * mevent)
     switch (ch = getch()) {
 
       // Enter key: return enter signal
+      // FIXME: handle buttons
 
       case '\n':
       case '\r':
@@ -182,6 +205,23 @@ std::string ToggleInput::exec(int y_offset, MouseEvent * mevent)
         retval = signals::quit;
         _redraw_type = "all";
         getting_input = false;
+        break;
+
+      // Mouse
+
+      case KEY_MOUSE:
+        if ( (getmouse(&event) == OK) && mevent )
+        {
+          mevent->recordClick(event);
+          retval = handleMouseEvent(mevent, y_offset);
+          if (retval == signals::mouseEvent)
+          {
+            _redraw_type = "all";
+            getting_input = false;
+          }
+          else
+            _redraw_type = "entry";
+        }
         break;
 
       default:

@@ -642,7 +642,7 @@ int MainWindow::showOptions(MouseEvent * mevent)
   old_repo_dir = settings::repo_dir;
   while (getting_input)
   {
-    selection = _options.exec(); 
+    selection = _options.exec(mevent); 
     if (selection == signals::quit) { getting_input = false; }
     else if (selection == signals::resize) 
     { 

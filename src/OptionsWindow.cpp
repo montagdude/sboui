@@ -459,8 +459,8 @@ User interaction
 *******************************************************************************/
 std::string OptionsWindow::exec(MouseEvent * mevent)
 {
-  bool getting_input;
-  int y_offset, check_redraw;
+  bool getting_input, needs_selection;
+  int y_offset;
   std::string selection, retval, prev_pkg_mgr;
   
   prev_pkg_mgr = _pmgr_box.choice();
@@ -477,63 +477,12 @@ std::string OptionsWindow::exec(MouseEvent * mevent)
     // Get user input from highlighted item
 
     prev_pkg_mgr = _pmgr_box.choice();
-    selection = _items[_highlight]->exec(y_offset);
-    if (selection == signals::resize)
-    {
-      retval = selection;
-      _redraw_type = "all";
-      getting_input = false;
-    }
-    else if ( (selection == signals::quit) ||
-              (selection == signals::keyEnter) ||
-              (selection == signals::keySpace) )
-    {
-      retval = selection;
-      _redraw_type = "all";
-      getting_input = false;
-    }
-    else if (selection == signals::highlightFirst)
-    { 
-      if (highlightFirst() == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
-    }
-    else if (selection == signals::highlightLast) 
-    { 
-      if (highlightLast() == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
-    }
-    else if (selection == signals::highlightPrevPage)
-    {
-      if (highlightPreviousPage() == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
-    }
-    else if (selection == signals::highlightNextPage)
-    {
-      if (highlightNextPage() == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
-    }
-    else if (selection == signals::highlightPrev)
-    { 
-      if (_highlight == _first_selectable)
-        check_redraw = highlightFirst();
-      else { check_redraw = highlightPrevious(); }
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
-    }
-    else if (selection == signals::highlightNext)
-    {
-      if (_highlight == _last_selectable)
-        check_redraw = highlightLast();
-      else { check_redraw = highlightNext(); }
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
-    }
+    if (needs_selection)
+      selection = _items[_highlight]->exec(y_offset, mevent);
     else
-    {
-      retval = selection;
-      _redraw_type = "all";
-      getting_input = false;
-    }
+      needs_selection = true;
+
+    retval = handleInput(selection, getting_input, needs_selection, mevent);
 
     // If package manager has changed, ask to set other defaults automatically
 

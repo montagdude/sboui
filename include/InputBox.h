@@ -81,5 +81,7 @@ class InputBox: public CursesWidget {
 
     /* User interaction loop */
 
+    std::string handleInput(std::string & selection, bool & getting_input,
+                            bool & needs_selection, MouseEvent * mevent=NULL);
     virtual std::string exec(MouseEvent * mevent=NULL);
 };
