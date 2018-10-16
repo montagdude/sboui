@@ -129,7 +129,7 @@ std::string TextInput::handleMouseEvent(MouseEvent * mevent, int y_offset)
       else if (xcurs >= xinpend)
         _cursidx = _entry.size();
       else
-        _cursidx = xcurs-1+_firsttext-_labellen;
+        _cursidx = xcurs-_posx+_firsttext-_labellen;
       _redraw_type = "entry";
       return signals::nullEvent;  // Because the event was handled here
     }
