@@ -33,6 +33,7 @@ class Label: public InputItem {
 
     /* User interaction */
 
+    std::string handleMouseEvent(MouseEvent * mevent, int y_offset);
     void draw(int y_offset, bool force=false, bool highlight=false);
     std::string exec(int y_offset, MouseEvent * mevent=NULL);
 };

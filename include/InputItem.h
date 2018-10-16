@@ -55,6 +55,7 @@ class InputItem {
 
     // User interaction
 
+    virtual std::string handleMouseEvent(MouseEvent * mevent, int y_offset) = 0;
     virtual void draw(int y_offset, bool force=false, bool highlight=false) = 0;
     virtual std::string exec(int y_offset, MouseEvent * mevent=NULL);
 

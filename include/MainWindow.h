@@ -148,7 +148,7 @@ class MainWindow: public CursesWidget {
     /* Dialogs */
 
     void selectFilter(MouseEvent * mevent=NULL);
-    void search();
+    void search(MouseEvent * mevent=NULL);
     void showBuildActions(BuildListItem & build, bool limited_actions=false,
                           MouseEvent * mevent=NULL);
 

@@ -17,7 +17,7 @@ class InputBox: public CursesWidget {
 
   protected:
 
-    std::string _msg, _info;
+    std::string _msg, _info; //FIXME: use buttons instead
     std::vector<InputItem *> _items;    
     int _highlight, _prevhighlight, _firstprint;
     int _header_rows, _first_selectable, _last_selectable;
@@ -32,6 +32,7 @@ class InputBox: public CursesWidget {
     int highlightNext();
     int highlightPreviousPage();
     int highlightNextPage();
+    int highlightFractional(const double & frac);
 
     /* Determines first line to print (needed for scrolling) */
     
@@ -60,7 +61,7 @@ class InputBox: public CursesWidget {
 
     void setWindow(WINDOW *win);
     void setMessage(const std::string & msg);
-    void setInfo(const std::string & info);
+    void setInfo(const std::string & info);  // FIXME: use buttons instead
     void setHighlight(unsigned int highlight);
     void setColor(int color_idx);
 

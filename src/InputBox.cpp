@@ -2,6 +2,8 @@
 #include <curses.h>
 #include <cmath>      // floor
 #include <algorithm>  // min, max
+#include <chrono>     // sleep_for
+#include <thread>     // this_thread
 #include "Color.h"
 #include "settings.h"
 #include "signals.h"
@@ -116,6 +118,13 @@ int InputBox::highlightNext()
   }
 
   return determineFirstPrint();
+}
+
+int InputBox::highlightFractional(const double & frac)
+{
+  //FIXME: implement.
+
+  return 0;
 }
 
 int InputBox::highlightPreviousPage()
@@ -570,8 +579,139 @@ Handles mouse events
 *******************************************************************************/
 std::string InputBox::handleMouseEvent(MouseEvent * mevent)
 {
-//FIXME: implement
-  return signals::nullEvent;
+  int rows, cols, begy, begx, ycurs, xcurs, rowsavail, y_offset, ybox;
+  int check_redraw;
+  unsigned int i, nbuttons, nitems;
+  double frac;
+
+  getmaxyx(_win, rows, cols);
+  getbegyx(_win, begy, begx);
+  ycurs = mevent->y() - begy;
+  xcurs = mevent->x() - begx;
+  rowsavail = rows-_reserved_rows;
+
+  // FIXME: Everything except the "Clicked in the box" section is identical to
+  // handleMouseEvent in ListBox.cpp. Maybe it can be abstracted?
+
+  if ( (mevent->button() == 1) || (mevent->button() == 3) )
+  {
+    // Check for clicking on buttons
+
+    nbuttons = _buttons.size();
+    if ( (nbuttons > 0) && (ycurs == rows-1) )
+    {
+      for ( i = 0; i < nbuttons; i++ )
+      {
+        if ( (xcurs >= _button_left[i]) && (xcurs <= _button_right[i]) )
+        {
+          _highlighted_button = i;
+
+          // Redraw and pause for .1 seconds to make button selection visible
+
+          _redraw_type = "all";
+          draw();
+          std::this_thread::sleep_for(std::chrono::milliseconds(100));
+          return _button_signals[i];
+        }
+      }
+      return signals::nullEvent;
+    }
+
+    else if ( (ycurs < int(_header_rows)) ||
+              (ycurs >= int(_header_rows)+rowsavail) )
+      return signals::nullEvent;
+    else if ( (xcurs < 1) || (xcurs >= cols) )
+      return signals::nullEvent;
+
+    // Check for clicking on scroll area
+
+    else if (xcurs == cols-1)
+    {
+      if (ycurs == int(_header_rows))
+      {
+        if (_highlight != 0)
+        {
+          check_redraw = highlightPreviousPage();
+          if (check_redraw == 1)
+            _redraw_type = "all";
+          else
+            _redraw_type = "changed";
+          return signals::highlight;
+        }
+        else
+          return signals::nullEvent;
+      }
+      else if (ycurs == int(_header_rows)+rowsavail-1)
+      {
+        if (int(_items.size())-1 > _highlight)
+        {
+          check_redraw = highlightNextPage();
+          if (check_redraw == 1)
+            _redraw_type = "all";
+          else
+            _redraw_type = "changed";
+          return signals::highlight;
+        }
+        else
+          return signals::nullEvent;
+      }
+      else
+      {
+        frac = double(ycurs-_header_rows) /
+               double(rowsavail-1);
+        check_redraw = highlightFractional(frac);
+        if (check_redraw == 1)
+          _redraw_type = "all";
+        else
+          _redraw_type = "changed";
+        return signals::highlight;
+      }
+    }
+
+    // Clicked in the box -> detect change of highlighted item
+
+    else
+    {
+      y_offset = _firstprint - _header_rows;
+      ybox = ycurs + y_offset;
+
+      nitems = _items.size();
+      for ( i = 0; i < nitems; i++ )
+      {
+        if ( (ybox == _items[i]->posy()) && (xcurs >= _items[i]->posx()) &&
+             (xcurs < _items[i]->posx() + _items[i]->width()) )
+        {
+          _highlight = i;
+          _items[_highlight]->handleMouseEvent(mevent, y_offset);
+          return signals::highlight;
+        }
+      }
+      return signals::nullEvent;
+    }
+  }
+
+  // Scroll wheel
+
+  else if (mevent->button() == 4)
+  {
+    check_redraw = highlightPreviousPage();
+    if (check_redraw == 1)
+      _redraw_type = "all";
+    else
+      _redraw_type = "changed";
+    return signals::highlight;
+  }
+  else if (mevent->button() == 5)
+  {
+    check_redraw = highlightNextPage();
+    if (check_redraw == 1)
+      _redraw_type = "all";
+    else
+      _redraw_type = "changed";
+    return signals::highlight;
+  }
+  else
+    return signals::nullEvent;
 }
 
 /*******************************************************************************
@@ -608,11 +748,12 @@ User interaction with input items in the box
 *******************************************************************************/
 std::string InputBox::exec(MouseEvent * mevent)
 {
-  bool getting_input;
+  bool getting_input, needs_selection;
   int y_offset, check_redraw;
   std::string selection, retval;
 
   getting_input = true;
+  needs_selection = true;
   while (getting_input)
   {
     // Draw input box elements
@@ -623,13 +764,17 @@ std::string InputBox::exec(MouseEvent * mevent)
 
     // Get user input from highlighted item
 
-    selection = _items[_highlight]->exec(y_offset);
+    if (needs_selection)
+      selection = _items[_highlight]->exec(y_offset, mevent);
+    else
+      needs_selection = true;
     if (selection == signals::resize)
     {
       retval = selection;
       _redraw_type = "all";
       getting_input = false;
     }
+    //FIXME: handle buttons
     else if ( (selection == signals::quit) ||
               (selection == signals::keyEnter) ||
               (selection == signals::keySpace) )
@@ -673,6 +818,13 @@ std::string InputBox::exec(MouseEvent * mevent)
       else { check_redraw = highlightNext(); }
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
+    }
+    else if (selection == signals::mouseEvent)
+    {
+      selection = handleMouseEvent(mevent); 
+      if ( (selection == signals::quit) || (selection == signals::keyEnter) )
+        needs_selection = false;
+      _redraw_type = "changed";
     }
     else
     {

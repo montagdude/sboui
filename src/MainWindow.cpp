@@ -1833,7 +1833,7 @@ void MainWindow::selectFilter(MouseEvent * mevent)
 Search dialog
 
 *******************************************************************************/
-void MainWindow::search()
+void MainWindow::search(MouseEvent * mevent)
 {
   WINDOW *searchwin;
   std::string selection;
@@ -1851,7 +1851,7 @@ void MainWindow::search()
   while (getting_input)
   {
     _searchbox.clearSearch();
-    selection = _searchbox.exec();
+    selection = _searchbox.exec(mevent);
     if (selection == signals::resize)
     {
       placePopup(&_searchbox, searchwin);
@@ -2243,7 +2243,7 @@ std::string MainWindow::exec(MouseEvent * mevent)
     if (selection == "q") { getting_input = false; }
     else if (selection == signals::resize) { draw(true); }
     else if (selection == "f") { selectFilter(mevent); }
-    else if (selection == "/") { search(); }
+    else if (selection == "/") { search(mevent); }
     else if (selection == "s") { syncRepo(mevent); }
     else if (selection == "o") 
     {
