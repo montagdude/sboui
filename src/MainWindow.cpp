@@ -980,7 +980,7 @@ void MainWindow::setBuildOptions(BuildListItem & build, MouseEvent * mevent)
   getting_input = true;
   while (getting_input)
   {
-    selection = buildoptions.exec(); 
+    selection = buildoptions.exec(mevent); 
     if (selection == signals::keyEnter)
     {
       getting_input = false;

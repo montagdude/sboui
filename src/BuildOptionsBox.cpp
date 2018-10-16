@@ -227,11 +227,12 @@ User interaction with input items in the box
 *******************************************************************************/
 std::string BuildOptionsBox::exec(MouseEvent * mevent)
 {
-  bool getting_input;
-  int y_offset, check_redraw;
+  bool getting_input, needs_selection;
+  int y_offset;
   std::string selection, retval;
 
   getting_input = true;
+  needs_selection = true;
   while (getting_input)
   {
     // Draw input box elements
@@ -242,68 +243,20 @@ std::string BuildOptionsBox::exec(MouseEvent * mevent)
 
     // Get user input from highlighted item
 
-    selection = _items[_highlight]->exec(y_offset);
-    if (selection == signals::resize)
-    {
-      retval = selection;
-      _redraw_type = "all";
-      getting_input = false;
-    }
-    else if ( (selection == signals::quit) || (selection == signals::keyEnter) )
-    {
-      retval = selection;
-      _redraw_type = "all";
-      getting_input = false;
-    }
-    else if (selection == signals::keySpace)
+    if (needs_selection)
+      selection = _items[_highlight]->exec(y_offset, mevent);
+    else
+      needs_selection = true;
+
+    retval = handleInput(selection, getting_input, needs_selection, mevent);
+
+    if (retval == signals::keySpace)  // FIXME: use buttons for this
     {
       if (_items[_highlight]->name() == "+ Add (press space)")
         addEntry();
       else if (_items[_highlight]->name() == "- Remove last (press space)")
         removeLast();
       retval = signals::resize;
-      _redraw_type = "all";
-      getting_input = false;
-    }
-    else if (selection == signals::highlightFirst)
-    { 
-      if (highlightFirst() == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
-    }
-    else if (selection == signals::highlightLast) 
-    { 
-      if (highlightLast() == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
-    }
-    else if (selection == signals::highlightPrevPage)
-    {
-      if (highlightPreviousPage() == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
-    }
-    else if (selection == signals::highlightNextPage)
-    {
-      if (highlightNextPage() == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
-    }
-    else if (selection == signals::highlightPrev)
-    { 
-      if (_highlight == _first_selectable)
-        check_redraw = highlightFirst();
-      else { check_redraw = highlightPrevious(); }
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
-    }
-    else if (selection == signals::highlightNext)
-    {
-      if (_highlight == _last_selectable)
-        check_redraw = highlightLast();
-      else { check_redraw = highlightNext(); }
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
-    }
-    else
-    {
-      retval = selection;
       _redraw_type = "all";
       getting_input = false;
     }
