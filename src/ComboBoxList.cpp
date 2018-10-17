@@ -86,6 +86,7 @@ ComboBoxList::ComboBoxList()
 { 
   _reserved_rows = 0;
   _header_rows = 0;
+  clearButtons();
 }
 
 ComboBoxList::ComboBoxList(WINDOW *win) 
@@ -93,6 +94,7 @@ ComboBoxList::ComboBoxList(WINDOW *win)
   _win = win;
   _reserved_rows = 0; 
   _header_rows = 0;
+  clearButtons();
 }
 
 /*******************************************************************************
@@ -158,101 +160,4 @@ void ComboBoxList::draw(bool force)
                                                             redrawAllItems(); }
   else if (_redraw_type == "changed") { redrawChangedItems(); }
   wrefresh(_win);
-}
-
-/*******************************************************************************
-
-User interaction: show display until user hits Enter or Esc
-
-*******************************************************************************/
-std::string ComboBoxList::exec(MouseEvent * mevent)
-{
-  int ch, check_redraw, highlightstore;
-  std::string retval;
-  bool getting_input;
-
-  const int MY_ESC = 27;
-
-  // Highlight first entry on first display
-
-  if ( (_highlight == 0) && (_prevhighlight == 0) ) { highlightFirst(); }
-
-  getting_input = true;
-  highlightstore = _highlight;
-  while (getting_input)
-  {
-    // Draw list elements
-  
-    draw();
-  
-    // Get user input
-  
-    switch (ch = getch()) {
-  
-      // Enter key: accept selection
-  
-      case '\n':
-      case '\r':
-      case KEY_ENTER:
-        retval = signals::keyEnter;
-        _redraw_type = "all";
-        getting_input = false;
-        break;
-  
-      // Arrows/Home/End/PgUp/Dn: change highlighted value
-  
-      case KEY_UP:
-        check_redraw = highlightPrevious();
-        if (check_redraw == 1) { _redraw_type = "all"; }
-        else { _redraw_type = "changed"; }
-        break;
-      case KEY_DOWN:
-        check_redraw = highlightNext();
-        if (check_redraw == 1) { _redraw_type = "all"; }
-        else { _redraw_type = "changed"; }
-        break;
-      case KEY_PPAGE:
-        check_redraw = highlightPreviousPage();
-        if (check_redraw == 1) { _redraw_type = "all"; }
-        else { _redraw_type = "changed"; }
-        break;
-      case KEY_NPAGE:
-        check_redraw = highlightNextPage();
-        if (check_redraw == 1) { _redraw_type = "all"; }
-        else { _redraw_type = "changed"; }
-        break;
-      case KEY_HOME:
-        check_redraw = highlightFirst();
-        if (check_redraw == 1) { _redraw_type = "all"; }
-        else { _redraw_type = "changed"; }
-        break;
-      case KEY_END:
-        check_redraw = highlightLast();
-        if (check_redraw == 1) { _redraw_type = "all"; }
-        else { _redraw_type = "changed"; }
-        break;
-  
-      // Resize signal
-  
-      case KEY_RESIZE:
-        retval = signals::resize;
-        _redraw_type = "all";
-        getting_input = false;
-        break;
-  
-      // Quit key
-  
-      case MY_ESC:
-        retval = signals::quit;
-        _highlight = highlightstore;
-        _redraw_type = "all";
-        getting_input = false;
-        break;
-
-      default:
-        _redraw_type = "none";
-        break;
-    }
-  }
-  return retval;
 }

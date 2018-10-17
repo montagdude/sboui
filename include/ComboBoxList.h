@@ -2,7 +2,7 @@
 
 #include <string>
 #include <curses.h>
-#include "ListBox.h"
+#include "SelectionBox.h"
 #include "MouseEvent.h"
 
 /*******************************************************************************
@@ -10,7 +10,7 @@
 List displayed by a ComboBox
 
 *******************************************************************************/
-class ComboBoxList: public ListBox {
+class ComboBoxList: public SelectionBox {
   
   protected:
 
@@ -35,8 +35,4 @@ class ComboBoxList: public ListBox {
     /* Drawing */
 
     void draw(bool force=false);
-
-    /* User interaction loop */
-
-    std::string exec(MouseEvent * mevent=NULL);
 };

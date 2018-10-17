@@ -47,12 +47,12 @@ void ComboBox::placeListBox(int y_offset)
 User interaction with list
 
 *******************************************************************************/
-void ComboBox::execList(int y_offset)
+void ComboBox::execList(int y_offset, MouseEvent * mevent)
 {
   int rows, cols, left, top;
 
   placeListBox(y_offset);
-  _list.exec();
+  _list.exec(mevent);
 
   getmaxyx(_win, rows, cols);
   left = std::floor(double(cols)/2.);
@@ -125,7 +125,25 @@ Handles mouse event
 *******************************************************************************/
 std::string ComboBox::handleMouseEvent(MouseEvent * mevent, int y_offset)
 {
-  //FIXME: implement
+  int begy, begx, ycurs, xcurs;
+
+  getbegyx(_win, begy, begx);
+  ycurs = mevent->y() - begy;
+  xcurs = mevent->x() - begx;
+
+  if ( (mevent->button() == 1) || (mevent->button() == 3) )
+  {
+    // Check for clicking in the ComboBox
+
+    if ( (xcurs >= _posx) && (xcurs < _posx+_width) &&
+         (ycurs == _posy-y_offset) )
+    {
+      execList(y_offset, mevent);
+      return signals::nullEvent;    // Because the event was handled here
+    }
+  }
+
+  return signals::mouseEvent;       // Defer to InputBox to handle event
 }
 
 /*******************************************************************************
@@ -171,6 +189,7 @@ std::string ComboBox::exec(int y_offset, MouseEvent * mevent)
   int ch;
   bool getting_input;
   std::string retval;
+  MEVENT event;
 
   const int MY_ESC = 27;
   const int MY_TAB = 9;
@@ -199,7 +218,7 @@ std::string ComboBox::exec(int y_offset, MouseEvent * mevent)
       // Space: display list box
 
       case ' ':
-        execList(y_offset);
+        execList(y_offset, mevent);
         retval = signals::keySpace;
         getting_input = false;
         break;
@@ -253,6 +272,18 @@ std::string ComboBox::exec(int y_offset, MouseEvent * mevent)
       case MY_ESC:
         retval = signals::quit;
         getting_input = false;
+        break;
+
+      // Mouse
+
+      case KEY_MOUSE:
+        if ( (getmouse(&event) == OK) && mevent )
+        {
+          mevent->recordClick(event);
+          retval = handleMouseEvent(mevent, y_offset);
+          if (retval == signals::mouseEvent)
+            getting_input = false;
+        }
         break;
  
       default:

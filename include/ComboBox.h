@@ -4,6 +4,7 @@
 #include <curses.h>
 #include "ComboBoxList.h"
 #include "InputItem.h"
+#include "MouseEvent.h"
 
 class InputBox;
 
@@ -26,7 +27,7 @@ class ComboBox: public InputItem {
 
     /* User interaction with list */
 
-    void execList(int y_offset);
+    void execList(int y_offset, MouseEvent * mevent=NULL);
 
   public:
 
