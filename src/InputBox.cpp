@@ -262,17 +262,6 @@ void InputBox::redrawFrame()
   printToEol(_msg);
   colors.turnOff(_win);
 
-  // Info on bottom of window
-
-  msglen = _info.size();
-  left = std::floor(mid - double(msglen)/2.0) + 1;
-  wmove(_win, rows-2, 1);
-  wclrtoeol(_win);
-  colors.turnOn(_win, "fg_info", "bg_info");
-  printSpaces(left-1);
-  printToEol(_info);
-  colors.turnOff(_win);
-
   // Corners
 
   wmove(_win, 0, 0);
@@ -303,19 +292,26 @@ void InputBox::redrawFrame()
   wmove(_win, rows-1, 1);
   for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
 
-  // Horizontal dividers for header and footer
+  // Horizontal dividers for header (footer only if there are buttons - below)
 
   wmove(_win, 2, 1);
-  for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
-  wmove(_win, rows-3, 1);
   for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
 
   // Connections
 
   mvwaddch(_win, 2, 0, ACS_LTEE);
   mvwaddch(_win, 2, cols-1, ACS_RTEE);
-  mvwaddch(_win, rows-3, 0, ACS_LTEE);
-  mvwaddch(_win, rows-3, cols-1, ACS_RTEE);
+
+  // Button area
+  
+  if (_buttons.size() > 0)
+  {
+    wmove(_win, rows-3, 1);
+    for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
+    mvwaddch(_win, rows-3, 0, ACS_LTEE);
+    mvwaddch(_win, rows-3, cols-1, ACS_RTEE);
+    redrawButtons();
+  }
 }
 
 /*******************************************************************************
@@ -428,7 +424,8 @@ Constructors
 InputBox::InputBox()
 {
   _msg = "";
-  _info = "Enter: Ok | Esc: Cancel";
+  addButton("    Ok    ", signals::keyEnter);
+  addButton("  Cancel  ", signals::quit);
   _redraw_type = "all";
   _highlight = 0;
   _prevhighlight = 0;
@@ -445,7 +442,8 @@ InputBox::InputBox(WINDOW *win, const std::string & msg)
 {
   _win = win;
   _msg = msg;
-  _info = "Enter: Ok | Esc: Cancel";
+  addButton("    Ok    ", signals::keyEnter);
+  addButton("  Cancel  ", signals::quit);
   _redraw_type = "all";
   _highlight = 0;
   _prevhighlight = 0;
@@ -501,7 +499,6 @@ Set attributes
 
 *******************************************************************************/
 void InputBox::setMessage(const std::string & msg) { _msg = msg; }
-void InputBox::setInfo(const std::string & info) { _info = info; }
 void InputBox::setWindow(WINDOW *win) 
 { 
   unsigned int i, nitems;
@@ -528,8 +525,8 @@ Get attributes
 *******************************************************************************/
 void InputBox::minimumSize(int & height, int & width) const
 {
-  int reserved_cols, right;
-  unsigned int nitems, i;
+  int namelen, reserved_cols, right;
+  unsigned int nitems, i, nbuttons;
 
   // Minimum usable height
 
@@ -537,8 +534,18 @@ void InputBox::minimumSize(int & height, int & width) const
 
   // Minimum usable width
 
+  width = _msg.size();
+  nbuttons = _buttons.size();
+  if (nbuttons > 0)
+  {
+    namelen = 0;
+    for ( i = 0; i < nbuttons; i++ )
+    {
+      namelen += _buttons[i].size();
+    }
+    if (namelen > width) { width = namelen; }
+  }
   nitems = _items.size();
-  width = std::max(_msg.size(), _info.size());
   for ( i = 0; i < nitems; i++ )
   {
     right = _items[i]->posx() + _items[i]->width() - 1;
@@ -598,7 +605,7 @@ std::string InputBox::handleMouseEvent(MouseEvent * mevent)
     // Check for clicking on buttons
 
     nbuttons = _buttons.size();
-    if ( (nbuttons > 0) && (ycurs == rows-1) )
+    if ( (nbuttons > 0) && (ycurs == rows-2) )
     {
       for ( i = 0; i < nbuttons; i++ )
       {
@@ -740,8 +747,12 @@ void InputBox::draw(bool force)
   }
   else
   {
-    redrawChangedItems(force);
-    if (_has_scroll_indicator) { redrawScrollIndicator(); }
+    if (_redraw_type == "buttons") { redrawButtons(); }
+    else
+    {
+      redrawChangedItems(force);
+      if (_has_scroll_indicator) { redrawScrollIndicator(); }
+    }
   }
   wrefresh(_win);
 }
@@ -764,9 +775,16 @@ std::string InputBox::handleInput(std::string & selection, bool & getting_input,
     _redraw_type = "all";
     getting_input = false;
   }
-  //FIXME: handle buttons
+  else if (selection == signals::keyEnter)
+  {
+    if (int(_button_signals.size()) >= _highlighted_button+1)
+      retval = _button_signals[_highlighted_button];
+    else
+      retval = signals::keyEnter;
+    _redraw_type = "all";
+    getting_input = false;
+  }
   else if ( (selection == signals::quit) ||
-            (selection == signals::keyEnter) ||
             (selection == signals::keySpace) )
   {
     retval = selection;
@@ -813,8 +831,24 @@ std::string InputBox::handleInput(std::string & selection, bool & getting_input,
   {
     selection = handleMouseEvent(mevent); 
     if ( (selection == signals::quit) || (selection == signals::keyEnter) )
+    {
+      retval = selection;
       needs_selection = false;
-    _redraw_type = "changed";
+      getting_input = false;
+    }
+    _redraw_type = "all";
+  }
+  else if (selection == signals::keyRight)
+  {
+    check_redraw = highlightNextButton();
+    if (check_redraw == 1) { _redraw_type = "buttons"; }
+    else { _redraw_type = "none"; }
+  }
+  else if (selection == signals::keyLeft)
+  {
+    check_redraw = highlightPreviousButton();
+    if (check_redraw == 1) { _redraw_type = "buttons"; }
+    else { _redraw_type = "none"; }
   }
   else
   {

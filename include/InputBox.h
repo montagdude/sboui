@@ -17,11 +17,11 @@ class InputBox: public CursesWidget {
 
   protected:
 
-    std::string _msg, _info; //FIXME: use buttons instead
+    std::string _msg;
     std::vector<InputItem *> _items;    
     int _highlight, _prevhighlight, _firstprint;
     int _header_rows, _first_selectable, _last_selectable;
-    int _color_idx;
+    int _color_idx;   // FIXME: use method from CursesWidget
     bool _has_scroll_indicator;
 
     /* Setting item to be highlighted */
@@ -61,9 +61,8 @@ class InputBox: public CursesWidget {
 
     void setWindow(WINDOW *win);
     void setMessage(const std::string & msg);
-    void setInfo(const std::string & info);  // FIXME: use buttons instead
     void setHighlight(unsigned int highlight);
-    void setColor(int color_idx);
+    void setColor(int color_idx); // FIXME: use method from CursesWidget
 
     /* Get attributes */
 

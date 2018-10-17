@@ -190,6 +190,16 @@ std::string ToggleInput::exec(int y_offset, MouseEvent * mevent)
         _redraw_type = "all";
         getting_input = false;
         break;
+      case KEY_RIGHT:
+        retval = signals::keyRight;
+        _redraw_type = "all";
+        getting_input = false;
+        break;
+      case KEY_LEFT:
+        retval = signals::keyLeft;
+        _redraw_type = "all";
+        getting_input = false;
+        break;
 
       // Resize signal
     

@@ -232,6 +232,14 @@ std::string ComboBox::exec(int y_offset, MouseEvent * mevent)
         retval = signals::highlightNext;
         getting_input = false;
         break;
+      case KEY_RIGHT:
+        retval = signals::keyRight;
+        getting_input = false;
+        break;
+      case KEY_LEFT:
+        retval = signals::keyLeft;
+        getting_input = false;
+        break;
 
       // Resize signal
 

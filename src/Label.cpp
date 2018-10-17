@@ -172,6 +172,12 @@ std::string Label::exec(int y_offset, MouseEvent * mevent)
     case MY_TAB:
       retval = signals::highlightNext;
       break;
+    case KEY_RIGHT:
+      retval = signals::keyRight;
+      break;
+    case KEY_LEFT:
+      retval = signals::keyLeft;
+      break;
 
     // Resize signal
 

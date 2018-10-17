@@ -13,7 +13,6 @@ DefaultOptionsBox::DefaultOptionsBox()
 {
   _firstprint = _header_rows;
   setPackageManager("sbopkg");
-  _info = "Enter: Ok | Esc: None";
 
   addItem(&_repoitem);
   _repoitem.setName("repo_dir");

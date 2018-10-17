@@ -1850,7 +1850,6 @@ void MainWindow::search(MouseEvent * mevent)
   getting_input = true;
   while (getting_input)
   {
-    _searchbox.clearSearch();
     selection = _searchbox.exec(mevent);
     if (selection == signals::resize)
     {

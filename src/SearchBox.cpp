@@ -32,17 +32,6 @@ void SearchBox::redrawFrame()
   printToEol(_msg);
   colors.turnOff(_win);
 
-  // Info on bottom of window
-
-  msglen = _info.size();
-  left = std::floor(mid - double(msglen)/2.0) + 1;
-  wmove(_win, rows-2, 1);
-  wclrtoeol(_win);
-  colors.turnOn(_win, "fg_info", "bg_info");
-  printSpaces(left-1);
-  printToEol(_info);
-  colors.turnOff(_win);
-
   // Corners
 
   wmove(_win, 0, 0);
@@ -72,13 +61,11 @@ void SearchBox::redrawFrame()
   wmove(_win, rows-1, 1);
   for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
 
-  // Horizontal dividers for header, footer, and text input
+  // Horizontal dividers for header and text input
 
   wmove(_win, 2, 1);
   for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
   wmove(_win, 5, 1);
-  for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
-  wmove(_win, rows-3, 1);
   for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
 
   // Connections
@@ -87,8 +74,17 @@ void SearchBox::redrawFrame()
   mvwaddch(_win, 2, cols-1, ACS_RTEE);
   mvwaddch(_win, 5, 0, ACS_LTEE);
   mvwaddch(_win, 5, cols-1, ACS_RTEE);
-  mvwaddch(_win, rows-3, 0, ACS_LTEE);
-  mvwaddch(_win, rows-3, cols-1, ACS_RTEE);
+
+  // Button area
+  
+  if (_buttons.size() > 0)
+  {
+    wmove(_win, rows-3, 1);
+    for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
+    mvwaddch(_win, rows-3, 0, ACS_LTEE);
+    mvwaddch(_win, rows-3, cols-1, ACS_RTEE);
+    redrawButtons();
+  }
 }
 
 /*******************************************************************************

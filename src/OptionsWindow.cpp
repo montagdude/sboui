@@ -65,6 +65,18 @@ void OptionsWindow::redrawFrame()
 
   wmove(_win, rows-1, 1);
   for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
+
+  // Button area
+
+  if (_buttons.size() > 0)
+  {
+    wmove(_win, rows-3, 1);
+    for ( i = 1; i < cols-1; i++ ) { waddch(_win, ACS_HLINE); }
+    mvwaddch(_win, rows-3, 0, ACS_LTEE);
+    mvwaddch(_win, rows-3, cols-1, ACS_RTEE);
+    mvwaddch(_win, rows-2, cols-1, ACS_VLINE);
+    redrawButtons();
+  }
 }
 
 /*******************************************************************************
@@ -77,7 +89,7 @@ OptionsWindow::OptionsWindow()
   int count, line;
   unsigned int i, nthemes;
 
-  _reserved_rows = 2;
+  _reserved_rows = 4;
   _header_rows = 1;
   _firstprint = _header_rows;
   _msg = "Options";
