@@ -836,6 +836,12 @@ std::string InputBox::handleInput(std::string & selection, bool & getting_input,
       needs_selection = false;
       getting_input = false;
     }
+    else if (selection == signals::mouseEvent)
+    {
+      retval = selection;
+      needs_selection = false;
+      getting_input = true;
+    }
     _redraw_type = "all";
   }
   else if (selection == signals::keyRight)

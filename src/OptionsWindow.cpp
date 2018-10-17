@@ -454,7 +454,7 @@ void OptionsWindow::placeWindow()
 
   getmaxyx(stdscr, rows, cols);
   mvwin(_win, 2, 0);
-  wresize(_win, rows-4, cols);
+  wresize(_win, rows-2, cols);
 
   nitems = _items.size();
   for ( i = 0; i < nitems; i++ )

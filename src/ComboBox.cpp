@@ -47,12 +47,13 @@ void ComboBox::placeListBox(int y_offset)
 User interaction with list
 
 *******************************************************************************/
-void ComboBox::execList(int y_offset, MouseEvent * mevent)
+std::string ComboBox::execList(int y_offset, MouseEvent * mevent)
 {
   int rows, cols, left, top;
+  std::string retval;
 
   placeListBox(y_offset);
-  _list.exec(mevent);
+  retval = _list.exec(mevent);
 
   getmaxyx(_win, rows, cols);
   left = std::floor(double(cols)/2.);
@@ -61,6 +62,8 @@ void ComboBox::execList(int y_offset, MouseEvent * mevent)
   wresize(_listwin, 0, 0);
   wrefresh(_listwin);
   _parent->draw(true);
+
+  return retval;
 }
 
 /*******************************************************************************
@@ -138,12 +141,14 @@ std::string ComboBox::handleMouseEvent(MouseEvent * mevent, int y_offset)
     if ( (xcurs >= _posx) && (xcurs < _posx+_width) &&
          (ycurs == _posy-y_offset) )
     {
-      execList(y_offset, mevent);
-      return signals::nullEvent;    // Because the event was handled here
+      if (execList(y_offset, mevent) == signals::mouseEvent)
+        return signals::mouseEvent;
+      else
+        return signals::nullEvent;    // Because the event was handled here
     }
   }
 
-  return signals::mouseEvent;       // Defer to InputBox to handle event
+  return signals::mouseEvent;         // Defer to InputBox to handle event
 }
 
 /*******************************************************************************
@@ -281,8 +286,7 @@ std::string ComboBox::exec(int y_offset, MouseEvent * mevent)
         {
           mevent->recordClick(event);
           retval = handleMouseEvent(mevent, y_offset);
-          if (retval == signals::mouseEvent)
-            getting_input = false;
+          getting_input = false;
         }
         break;
  

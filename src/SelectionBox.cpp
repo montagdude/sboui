@@ -20,6 +20,7 @@ SelectionBox::SelectionBox()
   addButton("    Ok    ", signals::keyEnter);
   addButton("  Cancel  ", signals::quit);
   setColor("fg_popup", "bg_popup");
+  _modal = true;
 }
 
 SelectionBox::SelectionBox(WINDOW *win, const std::string & name)
@@ -31,7 +32,16 @@ SelectionBox::SelectionBox(WINDOW *win, const std::string & name)
   addButton("    Ok    ", signals::keyEnter);
   addButton("  Cancel  ", signals::quit);
   setColor("fg_popup", "bg_popup");
+  _modal = true;
 }
+
+/*******************************************************************************
+
+Get / set attributes
+
+*******************************************************************************/
+void SelectionBox::setModal(bool modal) { _modal = modal; }
+bool SelectionBox::modal() const { return _modal; }
 
 /*******************************************************************************
 
@@ -152,6 +162,12 @@ std::string SelectionBox::exec(MouseEvent * mevent)
           retval = handleMouseEvent(mevent);
           if ( (retval == signals::keyEnter) || (retval == signals::quit) )
           {
+            getting_input = false;
+            _redraw_type = "all";
+          }
+          else if ( (retval == signals::nullEvent) && (! _modal) )
+          {
+            retval = signals::mouseEvent;
             getting_input = false;
             _redraw_type = "all";
           }

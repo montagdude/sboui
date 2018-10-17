@@ -87,6 +87,7 @@ ComboBoxList::ComboBoxList()
   _reserved_rows = 0;
   _header_rows = 0;
   clearButtons();
+  setModal(false);
 }
 
 ComboBoxList::ComboBoxList(WINDOW *win) 
@@ -95,6 +96,7 @@ ComboBoxList::ComboBoxList(WINDOW *win)
   _reserved_rows = 0; 
   _header_rows = 0;
   clearButtons();
+  setModal(false);
 }
 
 /*******************************************************************************

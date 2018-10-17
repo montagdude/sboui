@@ -27,7 +27,7 @@ class ComboBox: public InputItem {
 
     /* User interaction with list */
 
-    void execList(int y_offset, MouseEvent * mevent=NULL);
+    std::string execList(int y_offset, MouseEvent * mevent=NULL);
 
   public:
 

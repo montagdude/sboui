@@ -628,7 +628,6 @@ int MainWindow::showOptions(MouseEvent * mevent)
   int check_color, check_write;
 
   clear();
-  setInfo("Enter: Apply settings | Esc: Back to main");
   redrawHeaderFooter();
 
   optionswin = newwin(1, 1, 0, 0);
