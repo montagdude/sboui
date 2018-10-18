@@ -68,6 +68,7 @@ std::string Label::handleMouseEvent(MouseEvent * mevent, int y_offset)
     if ( (xcurs >= _posx) && (xcurs < _posx+_width) &&
          (ycurs == _posx-y_offset) )
     {
+      //FIXME: seems to cause infinite loop in InputBox
       if (_selectable)
       {
         if (mevent->doubleClick())

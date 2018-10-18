@@ -1,6 +1,6 @@
 #include <string>
 #include <curses.h>
-#include <cmath>      // floor
+#include <cmath>      // floor, ceil
 #include <algorithm>  // min, max
 #include <chrono>     // sleep_for
 #include <thread>     // this_thread
@@ -120,13 +120,6 @@ int InputBox::highlightNext()
   return determineFirstPrint();
 }
 
-int InputBox::highlightFractional(const double & frac)
-{
-  //FIXME: implement.
-
-  return 0;
-}
-
 int InputBox::highlightPreviousPage()
 {
   int rows, cols, rowsavail, firstprintstore, buffer_rows;
@@ -172,7 +165,7 @@ int InputBox::highlightPreviousPage()
 
 int InputBox::highlightNextPage()
 {
-  int rows, cols, rowsavail, firstprintstore, lastprint, buffer_rows;
+  int rows, cols, rowsavail, firstprintstore, ymax, buffer_rows;
   unsigned int i, nitems;
   bool highlight_found;
 
@@ -187,13 +180,18 @@ int InputBox::highlightNextPage()
 
   nitems = _items.size();
   firstprintstore = _firstprint;
-  lastprint = _items[nitems-1]->posy();
-  if (_items[_highlight]->posy() + (rowsavail-1-buffer_rows) >= lastprint)
+  ymax = 0;
+  for ( i = 0; i < nitems; i++ )
+  {
+    if (_items[i]->posy() > ymax)
+      ymax = _items[i]->posy();
+  }
+  if (_items[_highlight]->posy() + (rowsavail-1) >= ymax)
     return highlightLast();
-  if (_firstprint + (rowsavail-1-buffer_rows) >= lastprint)
+  if (_firstprint + (rowsavail-1) >= ymax)
     return highlightLast();
-  else if (_firstprint + 2*(rowsavail-1-buffer_rows) >= lastprint)
-    _firstprint = lastprint - (rowsavail-1-buffer_rows);
+  else if (_firstprint + (rowsavail-1) >= ymax-(rowsavail-1))
+    _firstprint = ymax - (rowsavail-1);
   else { _firstprint += rowsavail-buffer_rows; }
 
   // Highlight next selectable choice after _firstprint
@@ -212,6 +210,53 @@ int InputBox::highlightNextPage()
   
   if (_firstprint == firstprintstore) { return 0; }
   else { return 1; }
+}
+
+int InputBox::highlightFractional(const double & frac)
+{
+  int rows, cols, rowsavail, firstprintstore, firstprint_max, ymax;
+  unsigned int i, nitems;
+
+  getmaxyx(_win, rows, cols);
+  rowsavail = rows-_reserved_rows;
+  
+  nitems = _items.size();
+  ymax = 0;
+  for ( i = 0; i < nitems; i++ )
+  {
+    if (_items[i]->posy() > ymax) { ymax = _items[i]->posy(); }
+  }
+
+  // Determine first item to print
+
+  firstprintstore = _firstprint;
+  firstprint_max = ymax - (rowsavail-1);
+  if (frac < 0.5)
+    _firstprint = std::ceil(frac*double(firstprint_max-_header_rows))
+                + _header_rows;
+  else
+    _firstprint = std::floor(frac*double(firstprint_max-_header_rows))
+                + _header_rows;
+
+  // Determine item to highlight (next below _firstprint)
+
+  if ( (nitems > 0) && (_firstprint < int(_items.size())-1) )
+  {
+    _prevhighlight = _highlight;
+    for ( i = _firstprint; i < nitems; i++ )
+    {
+      if (_items[i]->selectable())
+      {
+        _highlight = i;
+        break;
+      }
+    }
+  }
+
+  if (_firstprint == firstprintstore)
+    return 0;
+  else
+    return 1;
 }
 
 /*******************************************************************************
@@ -334,8 +379,13 @@ void InputBox::redrawScrollIndicator() const
   need_up = false;
   need_dn = false;
   nitems = _items.size();
+  ymax = 0;
+  for ( i = 0; i < int(nitems); i++ )
+  {
+    if (_items[i]->posy() > ymax) { ymax = _items[i]->posy(); }
+  }
   if (_firstprint != _header_rows) { need_up = true; }
-  if (_items[nitems-1]->posy() > _firstprint + rows - int(_reserved_rows) - 1)
+  if (ymax > _firstprint + rows - int(_reserved_rows) - 1)
     need_dn = true;
 
   // Draw right border
@@ -354,11 +404,6 @@ void InputBox::redrawScrollIndicator() const
 
   if ( (need_up) || (need_dn) )
   {
-    ymax = 0;
-    for ( i = 0; i < int(nitems); i++ )
-    {
-      if (_items[i]->posy() > ymax) { ymax = _items[i]->posy(); }
-    }
     firstprint_max = ymax - (rowsavail-1);
     pos_ratio = double(_firstprint-_header_rows) /
                 double(firstprint_max-_header_rows);
