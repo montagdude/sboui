@@ -66,16 +66,10 @@ std::string Label::handleMouseEvent(MouseEvent * mevent, int y_offset)
     // Check for clicking in the Label
 
     if ( (xcurs >= _posx) && (xcurs < _posx+_width) &&
-         (ycurs == _posx-y_offset) )
+         (ycurs == _posy-y_offset) )
     {
-      //FIXME: seems to cause infinite loop in InputBox
       if (_selectable)
-      {
-        if (mevent->doubleClick())
-          return signals::keyEnter;
-        else
-          return signals::nullEvent;  // Because the event was handled here
-      }
+        return signals::keySpace;
     }
   }
 

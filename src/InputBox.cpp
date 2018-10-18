@@ -814,9 +814,9 @@ std::string InputBox::handleInput(std::string & selection, bool & getting_input,
   std::string retval;
   int check_redraw;
 
+  retval = selection;
   if (selection == signals::resize)
   {
-    retval = selection;
     _redraw_type = "all";
     getting_input = false;
   }
@@ -832,7 +832,6 @@ std::string InputBox::handleInput(std::string & selection, bool & getting_input,
   else if ( (selection == signals::quit) ||
             (selection == signals::keySpace) )
   {
-    retval = selection;
     _redraw_type = "all";
     getting_input = false;
   }
@@ -875,15 +874,14 @@ std::string InputBox::handleInput(std::string & selection, bool & getting_input,
   else if (selection == signals::mouseEvent)
   {
     selection = handleMouseEvent(mevent); 
+    retval = selection;
     if ( (selection == signals::quit) || (selection == signals::keyEnter) )
     {
-      retval = selection;
       needs_selection = false;
       getting_input = false;
     }
-    else if (selection == signals::mouseEvent)
+    else
     {
-      retval = selection;
       needs_selection = false;
       getting_input = true;
     }
@@ -903,7 +901,6 @@ std::string InputBox::handleInput(std::string & selection, bool & getting_input,
   }
   else
   {
-    retval = selection;
     _redraw_type = "all";
     getting_input = false;
   }

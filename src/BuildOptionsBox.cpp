@@ -203,21 +203,7 @@ void BuildOptionsBox::draw(bool force)
       _items[i]->setWidth(cols-2);
     }
   }
-
-  if (_redraw_type == "all") 
-  { 
-    clearWindow();
-    colors.setBackground(_win, "fg_popup", "bg_popup");
-    redrawFrame();
-    redrawScrollIndicator();
-    redrawAllItems(force);
-  }
-  else
-  {
-    redrawScrollIndicator();
-    redrawChangedItems(force);
-  }
-  wrefresh(_win);
+  InputBox::draw(force);
 }
 
 /*******************************************************************************

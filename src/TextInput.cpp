@@ -232,13 +232,27 @@ std::string TextInput::exec(int y_offset, MouseEvent * mevent)
 
       case KEY_LEFT:
         if (_cursidx > 0) { _cursidx--; }
-        if (_cursidx < _firsttext) { _firsttext = _cursidx; }
-        else { _redraw_type = "none"; }
+        else if (_cursidx < _firsttext) { _firsttext = _cursidx; }
+        else
+        {
+          retval = signals::keyLeft;
+          _redraw_type = "entry";
+          getting_input = false;
+        }
         break;
       case KEY_RIGHT:
-        if (_cursidx < _entry.size()) { _cursidx++; }
-        check_redraw = determineFirstText();
-        if (check_redraw == 0) { _redraw_type = "none"; }
+        if (_cursidx < _entry.size())
+        {
+          _cursidx++;
+          check_redraw = determineFirstText();
+          if (check_redraw == 0) { _redraw_type = "none"; }
+        }
+        else
+        {
+          retval = signals::keyRight;
+          _redraw_type = "entry";
+          getting_input = false;
+        }
         break;
       case KEY_HOME:
         if (_cursidx == 0) { _redraw_type = "none"; }
