@@ -50,8 +50,6 @@ class AbstractListBox: public CursesWidget {
     unsigned int numItems() const;
     virtual void minimumSize(int & height, int & width) const;
     virtual void preferredSize(int & height, int & width) const;
-    const std::string & fgColor() const;
-    const std::string & bgColor() const;
 
     /* Returns pointer to item */
 

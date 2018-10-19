@@ -232,9 +232,6 @@ void AbstractListBox::preferredSize(int & height, int & width) const
   width += reserved_cols + widthpadding;
 }
 
-const std::string & AbstractListBox::fgColor() const { return _fg_color; }
-const std::string & AbstractListBox::bgColor() const { return _bg_color; }
-
 /*******************************************************************************
 
 Returns pointer to item

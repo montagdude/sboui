@@ -66,6 +66,8 @@ class CursesWidget {
     virtual void minimumSize(int & height, int & width) const = 0;
     virtual void preferredSize(int & height, int & width) const = 0;
     int highlightedButton() const;
+    const std::string & fgColor() const;
+    const std::string & bgColor() const;
 
     /* Mouse interaction */
 

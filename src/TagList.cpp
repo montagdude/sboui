@@ -194,12 +194,10 @@ Handles mouse event
 *******************************************************************************/
 std::string TagList::handleMouseEvent(MouseEvent * mevent)
 {
-  int rows, cols, begy, begx, ycurs, xcurs;
+  int begy, begx, xcurs;
   std::string retval;
 
-  getmaxyx(_win, rows, cols);
   getbegyx(_win, begy, begx);
-  ycurs = mevent->y() - begy;
   xcurs = mevent->x() - begx;
 
   // Use the inherited method from ListBox, but modify some behaviors

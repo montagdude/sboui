@@ -274,6 +274,9 @@ void CursesWidget::placePopup(CursesWidget *popup, WINDOW *win) const
 
 int CursesWidget::highlightedButton() const { return _highlighted_button; }
 
+const std::string & CursesWidget::fgColor() const { return _fg_color; }
+const std::string & CursesWidget::bgColor() const { return _bg_color; }
+
 /*******************************************************************************
 
 Hides a window by putting it at the center of the screen and giving it 0 size
