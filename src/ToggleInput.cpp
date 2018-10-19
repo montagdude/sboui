@@ -139,7 +139,6 @@ std::string ToggleInput::exec(int y_offset, MouseEvent * mevent)
     switch (ch = getch()) {
 
       // Enter key: return enter signal
-      // FIXME: handle buttons
 
       case '\n':
       case '\r':

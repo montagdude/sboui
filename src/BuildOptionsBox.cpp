@@ -236,7 +236,7 @@ std::string BuildOptionsBox::exec(MouseEvent * mevent)
 
     retval = handleInput(selection, getting_input, needs_selection, mevent);
 
-    if (retval == signals::keySpace)  // FIXME: use buttons for this
+    if (retval == signals::keySpace)
     {
       if (_items[_highlight]->name() == "+ Add (press space)")
         addEntry();

@@ -189,6 +189,38 @@ unsigned int TagList::getDisplayList(const std::string & action)
 
 /*******************************************************************************
 
+Handles mouse event
+
+*******************************************************************************/
+std::string TagList::handleMouseEvent(MouseEvent * mevent)
+{
+  int rows, cols, begy, begx, ycurs, xcurs;
+  std::string retval;
+
+  getmaxyx(_win, rows, cols);
+  getbegyx(_win, begy, begx);
+  ycurs = mevent->y() - begy;
+  xcurs = mevent->x() - begx;
+
+  // Use the inherited method from ListBox, but modify some behaviors
+
+  retval = ListBox::handleMouseEvent(mevent);
+
+  // Check for marking an item by clicking in (or on) the box
+
+  if ( ((retval == signals::highlight) || (retval == signals::tag)) &&
+       ((xcurs >= 1) && (xcurs <= 3)) )
+  {
+    _items[_highlight]->setBoolProp("marked", 
+                               (! _items[_highlight]->getBoolProp("marked")));
+    _redraw_type = "changed";
+  }
+
+  return retval;
+}
+
+/*******************************************************************************
+
 User interaction: returns key stroke or other signal. getDisplayList must be
 called first or nothing will be displayed!
 
@@ -197,6 +229,7 @@ std::string TagList::exec(MouseEvent * mevent)
 {
   int ch, check_redraw;
   std::string retval;
+  MEVENT event;
 
   const int MY_ESC = 27;
 
@@ -220,6 +253,10 @@ std::string TagList::exec(MouseEvent * mevent)
     case '\r':
     case KEY_ENTER:
       retval = signals::keyEnter;
+      if (int(_button_signals.size()) >= _highlighted_button+1)
+        retval = _button_signals[_highlighted_button];
+      else
+        retval = signals::keyEnter;
       _redraw_type = "all";
       break;
 
@@ -262,6 +299,22 @@ std::string TagList::exec(MouseEvent * mevent)
       else { _redraw_type = "changed"; }
       break;
 
+    // Right/left: change highlighted button
+
+    case KEY_RIGHT:
+      retval = signals::keyRight;
+      check_redraw = highlightNextButton();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+
+    case KEY_LEFT:
+      retval = signals::keyLeft;
+      check_redraw = highlightPreviousButton();
+      if (check_redraw == 1) { _redraw_type = "all"; }
+      else { _redraw_type = "changed"; }
+      break;
+
     // Resize signal: redraw (may not work with some curses implementations)
 
     case KEY_RESIZE:
@@ -285,6 +338,19 @@ std::string TagList::exec(MouseEvent * mevent)
       check_redraw = highlightNext();
       if (check_redraw == 1) { _redraw_type = "all"; }
       else { _redraw_type = "changed"; }
+      break;
+
+    // Mouse
+
+    case KEY_MOUSE:
+      if ( (getmouse(&event) == OK) && mevent )
+      {
+        mevent->recordClick(event);
+        _redraw_type = "changed";
+        retval = handleMouseEvent(mevent);
+        if ( (retval == signals::keyEnter) || (retval == signals::quit) )
+          _redraw_type = "all";
+      }
       break;
 
     default:

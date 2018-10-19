@@ -1299,7 +1299,7 @@ void MainWindow::applyTags(const std::string & action, MouseEvent * mevent)
   getting_input = true;
   while (getting_input)
   {
-    selection = _taglist.exec(); 
+    selection = _taglist.exec(mevent); 
     if (selection == signals::keyEnter) 
     { 
       apply_changes = true; 

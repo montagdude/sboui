@@ -49,6 +49,10 @@ class TagList: public SelectionBox {
 
     unsigned int getDisplayList(const std::string & action);
 
+    /* Handles mouse event */
+
+    std::string handleMouseEvent(MouseEvent * mevent);
+
     /* User interaction loop */
 
     std::string exec(MouseEvent * mevent=NULL);
