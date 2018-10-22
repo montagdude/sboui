@@ -1,5 +1,7 @@
 #include <string>
 #include <curses.h>
+#include <chrono>    // sleep_for
+#include <thread>    // this_thread
 #include "Color.h"
 #include "settings.h"
 #include "signals.h"
@@ -162,4 +164,29 @@ void ComboBoxList::draw(bool force)
                                                             redrawAllItems(); }
   else if (_redraw_type == "changed") { redrawChangedItems(); }
   wrefresh(_win);
+}
+
+/*******************************************************************************
+
+Handles mouse event
+
+*******************************************************************************/
+std::string ComboBoxList::handleMouseEvent(MouseEvent * mevent)
+{
+  std::string retval;
+
+  // Use method from ListBox, but return keyEnter when item is selected
+
+  retval = ListBox::handleMouseEvent(mevent);
+  if ( (retval == signals::tag) || (retval == signals::highlight) )
+  {
+    // Redraw and pause for .1 seconds to make button selection visible
+
+    _redraw_type = "all";
+    draw();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    retval = signals::keyEnter;
+  }
+
+  return retval;
 }
