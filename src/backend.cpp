@@ -6,6 +6,7 @@
 #include <sstream>
 #include <algorithm>  // sort
 #include <fstream>
+#include <atomic>
 #include "DirListing.h"
 #include "ListItem.h"
 #include "BuildListItem.h"
@@ -130,10 +131,14 @@ int find_slackbuild(const std::string & name,
                     int & idx0, int & idx1)
 {
   int i, ncategories, nbuilds, check, lbound, rbound;
+  std::atomic<bool> found(false);
 
   ncategories = slackbuilds.size();
+#pragma omp parallel for private(i,nbuilds,lbound,rbound,check)
   for ( i = 0; i < ncategories; i++ )
   {
+    if (found)
+      continue;
     nbuilds = slackbuilds[i].size();
     lbound = 0;
     rbound = nbuilds-1;
@@ -141,11 +146,14 @@ int find_slackbuild(const std::string & name,
     if (check == 0)
     {
       idx0 = i;
-      return 0;
+      found = true;
     }
   }
 
-  return 1;
+  if (found)
+    return 0;
+  else
+    return 1;
 }
 
 /*******************************************************************************
