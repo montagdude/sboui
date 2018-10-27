@@ -10,6 +10,6 @@ Constructor
 CategoryListItem::CategoryListItem() 
 { 
   _name = ""; 
-  addProp("category", "");
   addBoolProp("tagged", false);
+  addProp("category", "");
 }

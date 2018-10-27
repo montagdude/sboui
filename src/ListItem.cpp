@@ -1,4 +1,5 @@
 #include <string>
+#include <cmath>        // floor
 #include "ListItem.h"
 
 /*******************************************************************************
@@ -20,26 +21,72 @@ bool ListItem::string2Bool(const std::string & value) const
 
 /*******************************************************************************
 
+Finds prop by name using bisection search
+
+*******************************************************************************/
+int ListItem::findPropByName(const std::string & propname, int & propidx,
+                             int & lbound, int & rbound) const
+{
+  std::string left, right, mid;
+  int midbound;
+
+  left = _props[lbound].propname;
+  right = _props[rbound].propname;
+
+  // Check if outside the bounds
+
+  if ( (propname < left) || (propname > right) )
+    return 1;
+
+  // Check bounds for match
+
+  if (propname == left)
+  {
+    propidx = lbound;
+    return 0;
+  }
+  else if (propname == right)
+  {
+    propidx = rbound;
+    return 0;
+  }
+
+  // Cut the list in half and try again
+
+  midbound = std::floor(double(lbound+rbound)/2.);
+  mid = _props[midbound].propname;
+
+  if (propname <= mid)
+    rbound = midbound;
+  else
+    lbound = midbound;
+
+  return findPropByName(propname, propidx, lbound, rbound);
+}
+
+/*******************************************************************************
+
 Searches for a property in the list and returns its index. If it does not
 exist, returns -1.
 
 *******************************************************************************/
 int ListItem::propIdxByName(const std::string & propname) const
 {
-  int i, nprops, propidx;
+  int nprops, propidx, lbound, rbound, check;
+
+  nprops = _props.size();
+  if (nprops == 0)
+    return -1;
 
   propidx = -1;
-  nprops = _props.size();
-  for ( i = 0; i < nprops; i++ )
-  {
-    if (_props[i].propname == propname)
-    {
-      propidx = i;
-      break;
-    }
-  } 
+  lbound = 0;
+  rbound = nprops-1;
+  check = findPropByName(propname, propidx, lbound, rbound);
 
-  return propidx;
+  if (check == 0)
+    return propidx;
+  else
+    return -1;
 }
 
 /*******************************************************************************
@@ -81,6 +128,7 @@ void ListItem::setHotKey(int hotkey) { _hotkey = hotkey; }
 void ListItem::addProp(const std::string & propname, const std::string & value)
 {
   int propidx;
+  unsigned int i, nprops, propinsert;
   listprop prop;
 
   propidx = propIdxByName(propname);
@@ -89,13 +137,27 @@ void ListItem::addProp(const std::string & propname, const std::string & value)
   {
     prop.propname = propname;
     prop.value = value;
-    _props.push_back(prop);
+    nprops = _props.size();
+
+    // Insert in sorted order
+
+    propinsert = nprops;
+    for ( i = 0; i < nprops; i++ )
+    {
+      if (propname < _props[i].propname)
+      {
+        propinsert = i;
+        break;
+      }
+    }
+    _props.insert(_props.begin()+propinsert, prop);
   }
 }
 
 void ListItem::addBoolProp(const std::string & propname, bool value)
 {
   int propidx;
+  unsigned int i, nprops, propinsert;
   listprop prop;
 
   propidx = propIdxByName(propname);
@@ -104,7 +166,20 @@ void ListItem::addBoolProp(const std::string & propname, bool value)
   {
     prop.propname = propname;
     prop.value = bool2String(value);
-    _props.push_back(prop);
+    nprops = _props.size();
+
+    // Insert in sorted order
+
+    propinsert = nprops;
+    for ( i = 0; i < nprops; i++ )
+    {
+      if (propname < _props[i].propname)
+      {
+        propinsert = i;
+        break;
+      }
+    }
+    _props.insert(_props.begin()+propinsert, prop);
   }
 }
 

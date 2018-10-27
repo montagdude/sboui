@@ -31,6 +31,8 @@ class ListItem {
 
     // Accessing props
 
+    int findPropByName(const std::string & propname, int & propidx,
+                       int & lbound, int & rbound) const;
     int propIdxByName(const std::string & propname) const;
     void setPropByIdx(unsigned int idx, const std::string & value);
 

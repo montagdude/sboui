@@ -95,19 +95,22 @@ Constructor
 BuildListItem::BuildListItem() 
 { 
   _name = ""; 
-  addProp("category", "");
-  addProp("installed_version", "");
-  addProp("available_version", "");
-  addProp("installed_buildnum", "");
-  addProp("available_buildnum", "");
-  addProp("requires", "");
-  addBoolProp("installed", false);
+
+  // Add props in reverse alphabetical order (should be fastest)
+
   addBoolProp("upgradable", false);
   addBoolProp("tagged", false);
-  addBoolProp("blacklisted", false);
-  addBoolProp("marked", false);
-  addProp("build_options", "");
+  addProp("requires", "");
   addProp("package_name", "");
+  addBoolProp("marked", false);
+  addProp("installed_version", "");
+  addProp("installed_buildnum", "");
+  addBoolProp("installed", false);
+  addProp("category", "");
+  addProp("build_options", "");
+  addBoolProp("blacklisted", false);
+  addProp("available_version", "");
+  addProp("available_buildnum", "");
   addProp("action", "");
 }
 
