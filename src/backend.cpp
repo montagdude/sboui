@@ -273,6 +273,7 @@ int get_reqs(const BuildListItem & build, std::string & reqs)
 /*******************************************************************************
 
 Gets SlackBuild version and reqs from repository
+Note: this function seems to be the biggest bottleneck for speed.
 
 *******************************************************************************/
 int get_repo_info(const BuildListItem & build, std::string & available_version,
@@ -352,6 +353,8 @@ void determine_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
   missing_info.resize(0);
   installedpkgs = list_installed_packages();
   ninstalled = installedpkgs.size();
+#pragma omp parallel for private(k,pkgcheck,name,version,arch,build,check,i,j,\
+                                 infocheck)
   for ( k = 0; k < ninstalled; k++ )
   {
     // Check for invalid package names
@@ -359,7 +362,8 @@ void determine_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
     pkgcheck = get_pkg_info(installedpkgs[k], name, version, arch, build);
     if (pkgcheck != 0)
     {
-      pkg_errors.push_back(installedpkgs[k]);
+#pragma omp critical
+      { pkg_errors.push_back(installedpkgs[k]); }
       continue;
     }
     check = find_slackbuild(name, slackbuilds, i, j);
@@ -377,7 +381,9 @@ void determine_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
       // Read props, set upgradable status, and check for missing .info file
 
       infocheck = slackbuilds[i][j].readPropsFromRepo();
-      if (infocheck != 0) { missing_info.push_back(slackbuilds[i][j].name()); }
+      if (infocheck != 0)
+#pragma omp critical
+        { missing_info.push_back(slackbuilds[i][j].name()); }
     }
   } 
 }

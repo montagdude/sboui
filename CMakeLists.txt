@@ -14,7 +14,7 @@ set_property(TARGET sboui PROPERTY CXX_STANDARD_REQUIRED ON)
 
 # Default compiler flags
 set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall")
-set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+set(CMAKE_CXX_FLAGS_RELEASE "-O2 -fopenmp")
 
 # Some default directories
 set(CONFDIR /etc/sboui
