@@ -381,15 +381,13 @@ std::string BuildListBox::exec(MouseEvent * mevent)
     case KEY_RIGHT:
       retval = signals::keyRight;
       check_redraw = highlightNextButton();
-      if (check_redraw == 1) { _redraw_type = "changed"; }
-      else { _redraw_type = "none"; }
+      _redraw_type = "changed";
       break;
 
     case KEY_LEFT:
       retval = signals::keyLeft;
       check_redraw = highlightPreviousButton();
-      if (check_redraw == 1) { _redraw_type = "changed"; }
-      else { _redraw_type = "none"; }
+      _redraw_type = "changed";
       break;
 
     // Resize signal: redraw (may not work with some curses implementations)

@@ -14,8 +14,8 @@ class ComboBoxList: public SelectionBox {
   
   protected:
 
-    void redrawFrame();
-    void redrawSingleItem(unsigned int idx);
+    virtual void redrawFrame();
+    virtual void redrawSingleItem(unsigned int idx);
 
   public:
 
@@ -30,9 +30,13 @@ class ComboBoxList: public SelectionBox {
 
     /* Accessing properties */
 
-    void preferredSize(int & height, int & width) const;
+    virtual void preferredSize(int & height, int & width) const;
 
     /* Drawing */
 
     void draw(bool force=false);
+
+    /* Handles mouse event */
+
+    std::string handleMouseEvent(MouseEvent * mevent);
 };
