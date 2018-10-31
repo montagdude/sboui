@@ -5,6 +5,9 @@
 CONF=${CONF:-/etc/sboui/sboui-backend.conf}
 . $CONF
 
+# Where to drop completed package
+OUTPUT=${OUTPUT:-/tmp}
+
 ################################################################################
 # Removes quotes around string
 function remove_quotes ()
@@ -367,9 +370,9 @@ function install_slackbuild ()
   # Go to SlackBuild directory
   cd $BUILDPATH
 
-  # Remove any package in /tmp with $BUILD in the name (could mess up
+  # Remove any package in $OUTPUT with $BUILD in the name (could mess up
   # installation later)
-  local PKG=$(find /tmp -maxdepth 1 -name "$BUILD*.t?z")
+  local PKG=$(find "$OUTPUT" -maxdepth 1 -name "$BUILD*.t?z")
   if [ -n "$PKG" ]; then
     rm $PKG
   fi
@@ -470,7 +473,7 @@ function install_slackbuild ()
   ./$BUILD.SlackBuild
 
   # Exit if not successful
-  PKG=$(find /tmp -maxdepth 1 -name "$BUILD*.t?z")
+  PKG=$(find "$OUTPUT" -maxdepth 1 -name "$BUILD*.t?z")
   if [ -z "$PKG" ]; then
     echo "Error: build failed."
 
