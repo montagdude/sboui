@@ -22,4 +22,5 @@ namespace signals
   extern std::string mouseEvent;
   extern std::string nullEvent;
   extern std::string tag;
+  extern std::string keyF9;
 }

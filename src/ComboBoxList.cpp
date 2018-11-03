@@ -158,7 +158,11 @@ void ComboBoxList::draw(bool force)
 
   // Draw list elements
 
-  if (_redraw_type == "all") { clearWindow(); }
+  if (_redraw_type == "all")
+  {
+    clearWindow();
+    colors.setBackground(_win, "fg_combobox", "bg_combobox");
+  }
   if (_redraw_type != "none") { redrawFrame(); }
   if ( (_redraw_type == "all") || (_redraw_type == "items") ) {
                                                             redrawAllItems(); }

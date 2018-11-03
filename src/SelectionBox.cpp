@@ -45,7 +45,7 @@ bool SelectionBox::modal() const { return _modal; }
 
 /*******************************************************************************
 
-User interaction: show display until user hits Enter or Esc
+User interaction
 
 *******************************************************************************/
 std::string SelectionBox::exec(MouseEvent * mevent)
@@ -126,15 +126,33 @@ std::string SelectionBox::exec(MouseEvent * mevent)
       // Right/Left: change highlighted button
 
       case KEY_RIGHT:
-        check_redraw = highlightNextButton();
-        if (check_redraw == 1) { _redraw_type = "buttons"; }
-        else { _redraw_type = "none"; }
+        if (_buttons.size() > 0)
+        {
+          check_redraw = highlightNextButton();
+          if (check_redraw == 1) { _redraw_type = "buttons"; }
+          else { _redraw_type = "none"; }
+        }
+        else
+        {
+          retval = signals::keyRight;
+          _redraw_type = "all";
+          getting_input = false;
+        }
         break;
 
       case KEY_LEFT:
-        check_redraw = highlightPreviousButton();
-        if (check_redraw == 1) { _redraw_type = "buttons"; }
-        else { _redraw_type = "none"; }
+        if (_buttons.size() > 0)
+        {
+          check_redraw = highlightPreviousButton();
+          if (check_redraw == 1) { _redraw_type = "buttons"; }
+          else { _redraw_type = "none"; }
+        }
+        else
+        {
+          retval = signals::keyLeft;
+          _redraw_type = "all";
+          getting_input = false;
+        }
         break;
 
       // Resize signal
@@ -149,6 +167,14 @@ std::string SelectionBox::exec(MouseEvent * mevent)
 
       case MY_ESC:
         retval = signals::quit;
+        _redraw_type = "all";
+        getting_input = false;
+        break;
+
+      // F9
+
+      case KEY_F(9):
+        retval = signals::keyF9;
         _redraw_type = "all";
         getting_input = false;
         break;

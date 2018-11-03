@@ -67,24 +67,16 @@ void MainWindow::refreshStatus() { printStatus(_status); }
 Redraws header and footer
 
 *******************************************************************************/
-void MainWindow::redrawHeaderFooter() const
+void MainWindow::redrawHeaderFooter()
 {
   int rows, cols, namelen, left;
   double mid;
 
   getmaxyx(stdscr, rows, cols);
 
-  // Draw title
+  // Draw menubar
 
-  namelen = _title.size();
-  mid = double(cols)/2.0;
-  left = std::floor(mid - double(namelen)/2.0) + 1;
-  move(0, 0);
-  clrtoeol();
-  colors.turnOn(stdscr, "fg_title", "bg_title");
-  printSpaces(left-1);
-  printToEol(_title, cols-(left-1));
-  colors.turnOff(stdscr);
+  _menubar.draw();
 
   // Print filter selection
 
@@ -95,6 +87,7 @@ void MainWindow::redrawHeaderFooter() const
   // Draw footer
 
   namelen = _info.size();
+  mid = double(cols)/2.0;
   left = std::floor(mid - double(namelen)/2.0) + 1;
   move(rows-1, 0);
   clrtoeol();
@@ -1572,6 +1565,37 @@ void MainWindow::printPackageVersion(const BuildListItem & build)
 
 /*******************************************************************************
 
+User interaction with menubar
+
+*******************************************************************************/
+void MainWindow::activateMenubar(MouseEvent * mevent)
+{
+  std::string selection;
+
+  _blistboxes[_category_idx].setActivated(false);
+  _blistboxes[_category_idx].draw();
+  _clistbox.setActivated(false);
+  _clistbox.draw();
+  _menubar.setActivated(true);
+  redrawHeaderFooter();
+  selection = _menubar.exec();
+
+  if (_activated_listbox == 0)
+  {
+    _clistbox.setActivated(true);
+    _clistbox.draw();
+  }
+  else
+  {
+    _blistboxes[_category_idx].setActivated(true);
+    _blistboxes[_category_idx].draw();
+  }
+  _menubar.setActivated(false);
+  redrawHeaderFooter();
+}
+
+/*******************************************************************************
+
 Various operations performed by both exec and handleMouseEvent
 
 *******************************************************************************/
@@ -1680,13 +1704,48 @@ MainWindow::MainWindow(const std::string & version)
   _blistboxes.resize(0);
   _slackbuilds.resize(0);
   _categories.resize(0);
-  _title = "sboui " + version;
   _filter = "all SlackBuilds";
-  _info = "s: Sync | f: Filter | /: Search | o: Options | ?: Keys";
+  _info = "s: Sync | f: Filter | /: Search | o: Options | F9: Menu";
   _status = "";
   _category_idx = 0;
   _activated_listbox = 0;
   setWindow(stdscr);
+
+  // Set up menubar
+
+  _menubar.setWindow(stdscr);
+  _menubar.setParent(this);
+  _menubar.setPad(1);
+  _menubar.setListPad(0, 3);
+
+  _menubar.addList("File");
+  _menubar.addListItem("File", "Options", "o");
+  _menubar.addListItem("File", "Quit", "q");
+
+  _menubar.addList("Actions");
+  _menubar.addListItem("Actions", "Sync", "s");
+  _menubar.addListItem("Actions", "Upgrade all", "a");
+  _menubar.addListItem("Actions", "Search", "/");
+
+  _menubar.addList("Filter");
+  _menubar.addListItem("Filter", "All");
+  _menubar.addListItem("Filter", "Installed");
+  _menubar.addListItem("Filter", "Upgradable");
+  _menubar.addListItem("Filter", "Tagged");
+  _menubar.addListItem("Filter", "Blacklisted");
+  _menubar.addListItem("Filter", "Non-dependencies");
+  _menubar.addListItem("Filter", "Build options set");
+
+  _menubar.addList("Tagged");
+  _menubar.addListItem("Tagged", "Install", "i");
+  _menubar.addListItem("Tagged", "Upgrade", "u");
+  _menubar.addListItem("Tagged", "Reinstall", "e");
+  _menubar.addListItem("Tagged", "Remove", "r");
+
+  _menubar.addList("Help");
+  _menubar.addListItem("Help", "About");
+  _menubar.addListItem("Help", "Keys", "?");
+  _menubar.addListItem("Help", "Mouse");
 }
 
 MainWindow::~MainWindow() { clearData(); }
@@ -1752,7 +1811,6 @@ int MainWindow::initialize(MouseEvent * mevent)
 Sets properties
 
 *******************************************************************************/
-void MainWindow::setTitle(const std::string & title) { _title = title; }
 void MainWindow::setInfo(const std::string & info) { _info = info; }
 
 /*******************************************************************************
@@ -2261,6 +2319,8 @@ std::string MainWindow::exec(MouseEvent * mevent)
     else if (selection == "e") { applyTags("Reinstall", mevent); }
     else if ( (selection.size() == 1) && (selection[0] == 0x13) )  // Ctrl-s
       quickSearch(); 
+    else if (selection == signals::keyF9)
+      activateMenubar(mevent);
   }
 
   return signals::quit;

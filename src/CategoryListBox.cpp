@@ -297,6 +297,13 @@ std::string CategoryListBox::exec(MouseEvent * mevent)
       _redraw_type = "changed";
       break;
 
+    // F9 key: activates menubar
+
+    case KEY_F(9):
+      retval = signals::keyF9;
+      _redraw_type = "changed";
+      break;
+
     // Mouse
 
     case KEY_MOUSE:

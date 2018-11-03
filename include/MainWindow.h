@@ -15,6 +15,7 @@
 #include "TagList.h"
 #include "OptionsWindow.h"
 #include "HelpWindow.h"
+#include "Menubar.h"
 #include "MouseEvent.h"
 
 /*******************************************************************************
@@ -36,14 +37,15 @@ class MainWindow: public CursesWidget {
     TagList _taglist;
     OptionsWindow _options;
     HelpWindow _help;
-    std::string _title, _filter, _info, _status;
+    Menubar _menubar;
+    std::string _filter, _info, _status;
     unsigned int _category_idx, _activated_listbox;
 
     void printStatus(const std::string & msg, bool bold=false);
     void clearStatus();
     void refreshStatus();
 
-    void redrawHeaderFooter() const;
+    void redrawHeaderFooter();
     void redrawWindowsHorz();
     void redrawWindowsVert();
     void redrawWindows(bool force=false);
@@ -119,6 +121,10 @@ class MainWindow: public CursesWidget {
 
     void printPackageVersion(const BuildListItem & build);
 
+    /* Activates menubar */
+
+    void activateMenubar(MouseEvent * mevent=NULL);
+
     /* Various operations performed by both exec and handleMouseEvent */
 
     void printSelectedPackageVersion();
@@ -142,7 +148,6 @@ class MainWindow: public CursesWidget {
 
     /* Set properties */
 
-    void setTitle(const std::string & title);
     void setInfo(const std::string & info);
 
     /* Dialogs */

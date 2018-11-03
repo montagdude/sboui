@@ -21,4 +21,5 @@ namespace signals
   std::string mouseEvent = "__MOUSEEVENT__";
   std::string nullEvent = "__NULLEVENT__";
   std::string tag = "__TAG__";
+  std::string keyF9 = "__KEYF9__";
 }
