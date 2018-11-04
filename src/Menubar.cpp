@@ -118,6 +118,17 @@ void Menubar::highlightNext()
   }
 }
 
+void Menubar::setHighlight(int highlight)
+{
+  if ( (highlight >= 0) && (highlight < int(_lists.size())) )
+  {
+    _prevhighlight = _highlight;
+    _highlight = highlight;
+  }
+  else if (highlight >= int(_lists.size()))
+    highlightLast();
+}
+
 /*******************************************************************************
 
 Redraws a single menu label
@@ -125,8 +136,8 @@ Redraws a single menu label
 *******************************************************************************/
 void Menubar::redrawSingleItem(unsigned int idx)
 {
-  unsigned int nlists, pos, i;
-  int color_pair;
+  unsigned int nlists, pos, i, len, hidx;
+  int color_pair1, color_pair2;
 
   nlists = _lists.size();
   if (idx >= nlists)
@@ -136,9 +147,18 @@ void Menubar::redrawSingleItem(unsigned int idx)
 
   pos = menuColumn(idx);
   if ( (int(idx) == _highlight) && (_activated) )
-    color_pair = colors.getPair("fg_highlight_active", "bg_highlight_active");
+  {
+    color_pair1 = colors.getPair("fg_highlight_active", "bg_highlight_active");
+    color_pair2 = colors.getPair("hotkey", "bg_highlight_active");
+  }
   else
-    color_pair = colors.getPair(_fg_color, _bg_color);
+  {
+    color_pair1 = colors.getPair(_fg_color, _bg_color);
+    if (_activated)
+      color_pair2 = colors.getPair("hotkey", _bg_color);
+    else
+      color_pair2 = color_pair1;    // Don't show hotkeys unless activated
+  }
 
   // Save highlight idx for redrawing later.
   // Note: prevents this method from being const.
@@ -148,8 +168,10 @@ void Menubar::redrawSingleItem(unsigned int idx)
 
   // Print item
 
+  len = _lists[idx].name().size();
+  hidx = _lists[idx].hotKey();
   wmove(_win, 0, pos);
-  if (colors.turnOn(_win, color_pair) != 0)
+  if (colors.turnOn(_win, color_pair1) != 0)
   {
     if ( (int(idx) == _highlight) && (_activated) )
       wattron(_win, A_REVERSE);
@@ -158,7 +180,18 @@ void Menubar::redrawSingleItem(unsigned int idx)
   {
     waddch(_win, ' ');
   }
-  wprintw(_win, _lists[idx].name().c_str());
+  for ( i = 0; i < len; i++ )
+  {
+    if ( i == hidx )
+    {
+      colors.turnOff(_win);
+      if (colors.turnOn(_win, color_pair2) != 0) { wattron(_win, A_BOLD); }
+      wprintw(_win, _lists[idx].name().substr(i,1).c_str());
+      if (colors.turnOff(_win) != 0) { wattroff(_win, A_BOLD); }
+      colors.turnOn(_win, color_pair1);
+    }
+    else { wprintw(_win, _lists[idx].name().substr(i,1).c_str()); }
+  }
   for ( i = 0; i < _pad; i++ )
   {
     waddch(_win, ' ');
@@ -283,7 +316,7 @@ Adds a list and returns 0, or does nothing and returns 1 if a list already
 exists by that name.
 
 *******************************************************************************/
-int Menubar::addList(const std::string & lname)
+int Menubar::addList(const std::string & lname, int hotkey)
 {
   unsigned int i, nlists;
 
@@ -299,6 +332,7 @@ int Menubar::addList(const std::string & lname)
   list.setName(lname);
   list.setWindow(_listwins[nlists]);
   list.setPad(_outerpad, _innerpad);
+  list.setHotKey(hotkey);
   _lists.push_back(list);
 
   return 0;
@@ -435,8 +469,25 @@ User interaction
 *******************************************************************************/
 std::string Menubar::exec(MouseEvent * mevent)
 {
+  int hotkey;
   std::string retval;
   bool getting_input;
+  unsigned int i, nlists;
+  char hotcharN, hotcharL;
+  std::vector<char> hotkey_vec;
+
+  nlists = _lists.size();
+  hotkey_vec.resize(0);
+  for ( i = 0; i < nlists; i++ )
+  {
+    hotkey = _lists[i].hotKey();
+    if (hotkey != -1)
+      hotkey_vec.push_back(_lists[i].name()[hotkey]);
+  }
+  for ( i = 0; i < nlists; i++ )
+  {
+    _lists[i].setExternalHotKeys(hotkey_vec);
+  }
 
   // Highlight first entry on first display
 
@@ -481,6 +532,26 @@ std::string Menubar::exec(MouseEvent * mevent)
 
     else if (retval == signals::mouseEvent)
       getting_input = false;
+
+    // Check hotkeys
+
+    else if (retval.size() == 1)
+    {
+      for ( i = 0; i < nlists; i++ )
+      {
+        hotkey = _lists[i].hotKey();
+        if (hotkey != -1)
+        {
+          hotcharN = _lists[i].name()[hotkey];
+          hotcharL = std::tolower(_lists[i].name()[hotkey]);
+          if ( (retval[0] == hotcharN) || (retval[0] == hotcharL) )
+          {
+            _redraw_type = "changed";
+            setHighlight(i);
+          }
+        }
+      }
+    }
   }
 
   return retval;

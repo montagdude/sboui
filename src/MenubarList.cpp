@@ -44,7 +44,8 @@ screen or not.
 void MenubarList::redrawSingleItem(unsigned int idx)
 {
   std::string fg, bg;
-  int rows, cols, rowsavail, lastrow, nspaces, i;
+  int rows, cols, rowsavail, lastrow, nspaces, i, hidx, len;
+  int color_pair1, color_pair2;
 
   getmaxyx(_win, rows, cols);
   rowsavail = rows-_reserved_rows;
@@ -68,12 +69,18 @@ void MenubarList::redrawSingleItem(unsigned int idx)
       fg = "fg_highlight_inactive"; 
       bg = "bg_highlight_inactive"; 
     }
-    if (colors.turnOn(_win, fg, bg) != 0)
+    color_pair1 = colors.getPair(fg, bg);
+    color_pair2 = colors.getPair("hotkey", bg);
+    if (colors.turnOn(_win, color_pair1) != 0)
     { 
       if (_activated) { wattron(_win, A_REVERSE); }
     }
   } 
-  else { colors.turnOn(_win, "fg_combobox", "bg_combobox"); }
+  else
+  {
+    color_pair1 = colors.getPair("fg_combobox", "bg_combobox");
+    color_pair2 = colors.getPair("hotkey", "bg_combobox");
+  }
 
   // Save highlight idx for redrawing later.
   // Note: prevents this method from being const.
@@ -84,8 +91,21 @@ void MenubarList::redrawSingleItem(unsigned int idx)
 
   nspaces = cols - 2 - 2*_outerpad - _items[idx]->name().size()
           - _items[idx]->getProp("shortcut").size();
+  len = _items[idx]->name().size();
+  hidx = _items[idx]->hotKey();
   for ( i = 0; i < int(_outerpad); i++ ) { waddch(_win, ' '); }
-  wprintw(_win, _items[idx]->name().c_str());
+  for ( i = 0; i < len; i++ )
+  {
+    if ( i == hidx )
+    {
+      colors.turnOff(_win);
+      if (colors.turnOn(_win, color_pair2) != 0) { wattron(_win, A_BOLD); }
+      wprintw(_win, _items[idx]->name().substr(i,1).c_str());
+      if (colors.turnOff(_win) != 0) { wattroff(_win, A_BOLD); }
+      colors.turnOn(_win, color_pair1);
+    }
+    else { wprintw(_win, _items[idx]->name().substr(i,1).c_str()); }
+  }
   for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
   printToEol(_items[idx]->getProp("shortcut"));
   if (colors.turnOff(_win) != 0)
@@ -113,6 +133,7 @@ MenubarList::MenubarList()
   _header_rows = 1;
   _outerpad = 0;
   _innerpad = 0;
+  _hotkey = -1;
   clearButtons();
   setModal(false);
 }
@@ -124,6 +145,7 @@ MenubarList::MenubarList(WINDOW *win)
   _header_rows = 1;
   _outerpad = 0;
   _innerpad = 0;
+  _hotkey = -1;
   clearButtons();
   setModal(false);
 }
@@ -139,11 +161,14 @@ void MenubarList::setPad(unsigned int outerpad, unsigned int innerpad)
   _innerpad = innerpad;
 }
 
+void MenubarList::setHotKey(int hotkey) { _hotkey = hotkey; }
+
 /*******************************************************************************
 
 Get attributes
 
 *******************************************************************************/
+int MenubarList::hotKey() const { return _hotkey; }
 void MenubarList::minimumSize(int & height, int & width) const
 {
   int namelen, reserved_cols;

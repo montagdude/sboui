@@ -70,7 +70,7 @@ void ColorTheme::setDefaultColors()
   _bg_popup = "white";
   _fg_warning = "white";
   _bg_warning = "red";
-  _hotkey = "brightblack";
+  _hotkey = "brightred";
   _fg_combobox = "blue";
   _bg_combobox = "white";
 }
@@ -208,5 +208,7 @@ void ColorTheme::applyTheme(Color & colors) const
   colors.addPair("hotkey", _hotkey,
                  "bg_highlight_inactive",_bg_highlight_inactive); 
   colors.addPair("fg_combobox", _fg_combobox, "bg_combobox", _bg_combobox); 
+  colors.addPair("hotkey", _hotkey, "bg_combobox", _bg_combobox);
+  colors.addPair("hotkey", _hotkey, "bg_title", _bg_title);
   colors.setBackground(stdscr, "fg_normal", "bg_normal");
 }

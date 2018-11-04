@@ -32,6 +32,7 @@ class Menubar: public CursesWidget {
     void highlightLast();
     void highlightPrevious();
     void highlightNext();
+    void setHighlight(int highlight);
 
     void redrawSingleItem(unsigned int idx);
     void redrawChangedItems();
@@ -53,7 +54,7 @@ class Menubar: public CursesWidget {
     void setParent(CursesWidget * parent);
     void setPad(unsigned int pad);
     void setListPad(unsigned int outerpad, unsigned int innerpad);
-    int addList(const std::string & lname);
+    int addList(const std::string & lname, int hotkey=-1);
     int addListItem(unsigned int lidx, const std::string & text,
                     const std::string & shortcut="", int hotkey=-1);
     int addListItem(const std::string & lname, const std::string & text,

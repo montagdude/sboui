@@ -696,7 +696,7 @@ int MainWindow::showOptions(MouseEvent * mevent)
   }
 
   clearStatus();
-  setInfo("s: Sync | f: Filter | /: Search | o: Options | ?: Keys");
+  setInfo("s: Sync | f: Filter | /: Search | o: Options | F9: Menu");
   delwin(optionswin);
   draw(true);
   return 0;
@@ -744,7 +744,7 @@ int MainWindow::showHelp(MouseEvent * mevent)
   }
 
   clearStatus();
-  setInfo("s: Sync | f: Filter | /: Search | o: Options | ?: Keys");
+  setInfo("s: Sync | f: Filter | /: Search | o: Options | F9: Menu");
   delwin(helpwin);
   draw(true);
   return 0;
@@ -1718,34 +1718,34 @@ MainWindow::MainWindow(const std::string & version)
   _menubar.setPad(1);
   _menubar.setListPad(0, 3);
 
-  _menubar.addList("File");
-  _menubar.addListItem("File", "Options", "o");
-  _menubar.addListItem("File", "Quit", "q");
+  _menubar.addList("File", 0);
+  _menubar.addListItem("File", "Options", "o", 0);
+  _menubar.addListItem("File", "Quit", "q", 0);
 
-  _menubar.addList("Actions");
-  _menubar.addListItem("Actions", "Sync", "s");
-  _menubar.addListItem("Actions", "Upgrade all", "a");
-  _menubar.addListItem("Actions", "Search", "/");
+  _menubar.addList("Actions", 1);
+  _menubar.addListItem("Actions", "Sync", "s", 0);
+  _menubar.addListItem("Actions", "Upgrade all", "a", 0);
+  _menubar.addListItem("Actions", "Search", "/", 1);
 
-  _menubar.addList("Filter");
-  _menubar.addListItem("Filter", "All");
-  _menubar.addListItem("Filter", "Installed");
-  _menubar.addListItem("Filter", "Upgradable");
-  _menubar.addListItem("Filter", "Tagged");
-  _menubar.addListItem("Filter", "Blacklisted");
-  _menubar.addListItem("Filter", "Non-dependencies");
-  _menubar.addListItem("Filter", "Build options set");
+  _menubar.addList("Filter", 2);
+  _menubar.addListItem("Filter", "All", "", 0);
+  _menubar.addListItem("Filter", "Installed", "", 0);
+  _menubar.addListItem("Filter", "Upgradable", "", 0);
+  _menubar.addListItem("Filter", "Tagged", "", 0);
+  _menubar.addListItem("Filter", "Blacklisted", "", 0);
+  _menubar.addListItem("Filter", "Non-dependencies", "", 0);
+  _menubar.addListItem("Filter", "Build options set", "", 3);
 
-  _menubar.addList("Tagged");
-  _menubar.addListItem("Tagged", "Install", "i");
-  _menubar.addListItem("Tagged", "Upgrade", "u");
-  _menubar.addListItem("Tagged", "Reinstall", "e");
-  _menubar.addListItem("Tagged", "Remove", "r");
+  _menubar.addList("Tagged", 2);
+  _menubar.addListItem("Tagged", "Install", "i", 0);
+  _menubar.addListItem("Tagged", "Upgrade", "u", 0);
+  _menubar.addListItem("Tagged", "Remove", "r", 0);
+  _menubar.addListItem("Tagged", "Reinstall", "e", 1);
 
-  _menubar.addList("Help");
-  _menubar.addListItem("Help", "About");
-  _menubar.addListItem("Help", "Keys", "?");
-  _menubar.addListItem("Help", "Mouse");
+  _menubar.addList("Help", 0);
+  _menubar.addListItem("Help", "About", "", 0);
+  _menubar.addListItem("Help", "Keys", "?", 0);
+  _menubar.addListItem("Help", "Mouse", "", 0);
 }
 
 MainWindow::~MainWindow() { clearData(); }

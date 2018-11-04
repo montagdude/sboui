@@ -21,6 +21,7 @@ SelectionBox::SelectionBox()
   addButton("  Cancel  ", signals::quit);
   setColor("fg_popup", "bg_popup");
   _modal = true;
+  _external_hotkeys.resize(0);
 }
 
 SelectionBox::SelectionBox(WINDOW *win, const std::string & name)
@@ -33,6 +34,7 @@ SelectionBox::SelectionBox(WINDOW *win, const std::string & name)
   addButton("  Cancel  ", signals::quit);
   setColor("fg_popup", "bg_popup");
   _modal = true;
+  _external_hotkeys.resize(0);
 }
 
 /*******************************************************************************
@@ -42,6 +44,14 @@ Get / set attributes
 *******************************************************************************/
 void SelectionBox::setModal(bool modal) { _modal = modal; }
 bool SelectionBox::modal() const { return _modal; }
+void SelectionBox::addExternalHotKey(char ch)
+{
+  _external_hotkeys.push_back(ch);
+}
+void SelectionBox::setExternalHotKeys(std::vector<char> hotkeys)
+{
+  _external_hotkeys = hotkeys;
+}
 
 /*******************************************************************************
 
@@ -203,6 +213,7 @@ std::string SelectionBox::exec(MouseEvent * mevent)
       default:
         _redraw_type = "none";
         check_hotkeys = true;
+        getting_input = true;
         break;
     }
 
@@ -211,13 +222,29 @@ std::string SelectionBox::exec(MouseEvent * mevent)
     if (check_hotkeys)
     {
       ch_char = char(ch);
-      for ( i = 0; i < numItems(); i++ )
+      for ( i = 0; i < numItems() + _external_hotkeys.size(); i++ )
       {
-        hotkey = _items[i]->hotKey();
-        if (hotkey != -1)
+        if (i < numItems())
         {
-          hotcharN = _items[i]->name()[hotkey];
-          hotcharL = std::tolower(_items[i]->name()[hotkey]);
+          hotkey = _items[i]->hotKey();
+          if (hotkey != -1)
+          {
+            hotcharN = _items[i]->name()[hotkey];
+            hotcharL = std::tolower(_items[i]->name()[hotkey]);
+            if ( (ch_char == hotcharN) || (ch_char == hotcharL) )
+            {
+              retval = hotcharN;
+              _redraw_type = "all";
+              getting_input = true;
+              setHighlight(i);
+              break;
+            }
+          }
+        }
+        else
+        {
+          hotcharN = _external_hotkeys[i-numItems()];
+          hotcharL = std::tolower(_external_hotkeys[i-numItems()]);
           if ( (ch_char == hotcharN) || (ch_char == hotcharL) )
           {
             retval = hotcharN;
@@ -228,7 +255,6 @@ std::string SelectionBox::exec(MouseEvent * mevent)
         }
       }
     }
-
   }
   return retval;
 }

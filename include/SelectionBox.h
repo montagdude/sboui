@@ -17,6 +17,9 @@ class SelectionBox: public ListBox {
     bool _modal;      // If false, mouse click outside of window will kick out
                       // of user interaction loop
 
+    std::vector<char> _external_hotkeys;
+                      // Extra hotkeys that can be used to kick out of the loop
+
   public:
 
     /* Constructors */
@@ -28,6 +31,8 @@ class SelectionBox: public ListBox {
 
     void setModal(bool modal);
     bool modal() const;
+    void addExternalHotKey(char ch);
+    void setExternalHotKeys(std::vector<char> hotkeys);
 
     /* User interaction loop */
 
