@@ -352,20 +352,13 @@ void MainWindow::rebuild(MouseEvent * mevent)
 
 /*******************************************************************************
 
-Ask for confirmation and quit
+Exit sboui
 
 *******************************************************************************/
 void MainWindow::quit(MouseEvent * mevent)
 {
-  std::string selection;
-
-  selection = displayMessage("Are you sure you want to quit?", true,
-                             "Confirmation", "Ok Cancel", mevent);
-  if (selection == signals::keyEnter)
-  {
-    endwin();
-    exit(EXIT_SUCCESS);
-  }
+  endwin();
+  exit(EXIT_SUCCESS);
 }
 
 /*******************************************************************************
