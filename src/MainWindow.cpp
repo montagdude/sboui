@@ -1619,6 +1619,7 @@ void MainWindow::activateMenubar(MouseEvent * mevent)
 void MainWindow::menubarActions(MouseEvent * mevent)
 {
   std::string list, entry;
+  int check_quit;
 
   list = _menubar.highlightedListName();
   entry = _menubar.highlightedListItem();
@@ -1626,9 +1627,82 @@ void MainWindow::menubarActions(MouseEvent * mevent)
   if (list == "File")
   {
     if (entry == "Options")
-      showOptions(mevent);
-    else if (entry == "Quit");
+    {
+      check_quit = showOptions(mevent);
+      if (check_quit == 1) { quit(mevent); }
+    }
+    else if (entry == "Quit")
       quit(mevent);
+  }
+  else if (list == "Actions")
+  {
+    if (entry == "Sync")
+      syncRepo(mevent);
+    else if (entry == "Upgrade all")
+    {
+      //FIXME: implement
+    }
+    else if (entry == "Search")
+      search(mevent);
+  }
+  else if (list == "Filter")
+  {
+    if (entry == "All")
+    {
+      if (_filter != "all SlackBilds") { filterAll(mevent); }
+    }
+    else if (entry == "Installed")
+    {
+      if (_filter != "installed SlackBuilds") { filterInstalled(); }
+    }
+    else if (entry == "Upgradable")
+    {
+      if (_filter != "upgradable SlackBuilds") { filterUpgradable(); }
+    }
+    else if (entry == "Tagged")
+    {
+      // Tagged items could have changed, so allow this one to be re-selected
+
+      filterTagged();
+    }
+    else if (entry == "Blacklisted")
+    {
+      if (_filter != "blacklisted SlackBuilds") { filterBlacklisted(); }
+    }
+    else if (entry == "Non-dependencies")
+    {
+      if (_filter != "non-dependencies") { filterNonDeps(); }
+    }
+    else if (entry == "Build options set")
+    {
+      // Build options could have changed, so allow this one to be re-selected
+
+      filterBuildOptions();
+    }
+    draw(true);
+  }
+  else if (list == "Tagged")
+  {
+    if (entry == "Install") { applyTags("Install", mevent); }
+    else if (entry == "Upgrade") { applyTags("Upgrade", mevent); }
+    else if (entry == "Remove") { applyTags("Remove", mevent); }
+    else if (entry == "Reinstall") { applyTags("Reinstall", mevent); }
+  }
+  else if (list == "Help")
+  {
+    if (entry == "About")
+    {
+      //FIXME: implement
+    }
+    else if (entry == "Keys")
+    {
+      check_quit = showHelp(mevent);
+      if (check_quit == 1) { quit(mevent); }
+    }
+    else if (entry == "Mouse")
+    {
+      //FIXME: implement
+    }
   }
 }
 

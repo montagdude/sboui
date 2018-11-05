@@ -480,7 +480,7 @@ std::string ScrollBox::exec(MouseEvent * mevent)
 
     default:
       retval = char(ch);
-      _redraw_type = "none";
+      _redraw_type = "all";
       break;
   }
   return retval;
