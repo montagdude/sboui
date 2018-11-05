@@ -125,6 +125,10 @@ class MainWindow: public CursesWidget {
 
     void printPackageVersion(const BuildListItem & build);
 
+    /* Shows 'About' dialog */
+
+    void showAbout(MouseEvent * mevent=NULL);
+
     /* Menubar */
 
     void activateMenubar(MouseEvent * mevent=NULL);

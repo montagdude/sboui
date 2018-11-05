@@ -10,10 +10,6 @@
 #include "MainWindow.h"
 #include "MouseEvent.h"
 
-#ifndef PACKAGE_VERSION
-  #define PACKAGE_VERSION ""
-#endif
-
 int main(int argc, char *argv[])
 {
   int check;

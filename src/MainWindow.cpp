@@ -1577,6 +1577,20 @@ void MainWindow::printPackageVersion(const BuildListItem & build)
 
 /*******************************************************************************
 
+Shows 'About' dialog
+
+*******************************************************************************/
+void MainWindow::showAbout(MouseEvent * mevent)
+{
+  std::string msg;
+
+  msg = "sboui " + std::string(PACKAGE_VERSION)
+      + "\nCopyright 2016-2018\nDaniel Prosser";
+  displayMessage(msg, true, "About", "Ok", mevent);
+}
+
+/*******************************************************************************
+
 User interaction with menubar
 
 *******************************************************************************/
@@ -1682,9 +1696,7 @@ void MainWindow::menubarActions(MouseEvent * mevent)
   else if (list == "Help")
   {
     if (entry == "About")
-    {
-      //FIXME: implement
-    }
+      showAbout(mevent);
     else if (entry == "Keys")
     {
       check_quit = showHelp(mevent);

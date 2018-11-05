@@ -5,6 +5,10 @@
 #include "Color.h"
 #include "ColorTheme.h"
 
+#ifndef PACKAGE_VERSION
+  #define PACKAGE_VERSION ""
+#endif
+
 namespace settings
 {
   extern std::string repo_dir, repo_tag;
