@@ -154,10 +154,7 @@ void Menubar::redrawSingleItem(unsigned int idx)
   else
   {
     color_pair1 = colors.getPair(_fg_color, _bg_color);
-    if (_activated)
-      color_pair2 = colors.getPair("hotkey", _bg_color);
-    else
-      color_pair2 = color_pair1;    // Don't show hotkeys unless activated
+    color_pair2 = colors.getPair("hotkey", _bg_color);
   }
 
   // Save highlight idx for redrawing later.
@@ -182,7 +179,7 @@ void Menubar::redrawSingleItem(unsigned int idx)
   }
   for ( i = 0; i < len; i++ )
   {
-    if ( i == hidx )
+    if ( (i == hidx) && _activated )
     {
       colors.turnOff(_win);
       if (colors.turnOn(_win, color_pair2) != 0) { wattron(_win, A_BOLD); }
