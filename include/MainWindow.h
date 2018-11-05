@@ -166,6 +166,10 @@ class MainWindow: public CursesWidget {
 
     void quickSearch();
 
+    /* Upgrade all */
+
+    void upgradeAll(MouseEvent * mevent=NULL);
+
     /* Not used, but needed for MainWindow to be derived from CursesWidget */
 
     void minimumSize(int & height, int & width) const;

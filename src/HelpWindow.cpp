@@ -173,6 +173,7 @@ void HelpWindow::createList()
 {
   unsigned int i, nitems;
 
+  //FIXME: add upgradeAll
   addItem(new HelpItem("Main window", "", true, false));
   addItem(new HelpItem("Activate left/top list", "Left arrow"));
   addItem(new HelpItem("Activate right/bottom list", "Right arrow"));

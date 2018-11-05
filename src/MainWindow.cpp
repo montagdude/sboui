@@ -1632,9 +1632,7 @@ void MainWindow::menubarActions(MouseEvent * mevent)
     if (entry == "Sync")
       syncRepo(mevent);
     else if (entry == "Upgrade all")
-    {
-      //FIXME: implement
-    }
+      upgradeAll(mevent);
     else if (entry == "Search")
       search(mevent);
   }
@@ -2235,6 +2233,31 @@ void MainWindow::quickSearch()
 
 /*******************************************************************************
 
+Filters by upgradable, tags, and then upgrades tags
+
+*******************************************************************************/
+void MainWindow::upgradeAll(MouseEvent * mevent)
+{
+  unsigned int i, ncategories;
+
+  _taglist.clearList();
+  filterUpgradable();
+
+  ncategories = _clistbox.numItems();
+  for ( i = 0; i < ncategories; i++ )
+  {
+    _clistbox.setHighlight(i);
+    _clistbox.tagHighlightedCategory();
+    _blistboxes[i].tagAll();
+  }
+  _clistbox.setHighlight(_category_idx);
+  draw(true);
+
+  applyTags("Upgrade", mevent);
+}
+
+/*******************************************************************************
+
 Not used, but needed for MainWindow to be derived from CursesWidget
 
 *******************************************************************************/
@@ -2400,6 +2423,7 @@ std::string MainWindow::exec(MouseEvent * mevent)
     }
 
     // Key signals with the same action w/ either type of list box
+    //FIXME: add upgradeAll
 
     if (selection == "q") { quit(mevent); }
     else if (selection == signals::resize) { draw(true); }
