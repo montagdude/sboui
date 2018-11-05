@@ -410,6 +410,21 @@ Get attributes
 
 *******************************************************************************/
 unsigned int Menubar::numLists() const { return _lists.size(); }
+unsigned int Menubar::highlightedList() const { return _highlight; }
+std::string Menubar::highlightedListName() const
+{
+  if ( (_highlight >= 0) && (_highlight < int(_lists.size())) )
+    return _lists[_highlight].name();
+  else
+    return "";
+}
+std::string Menubar::highlightedListItem() const
+{
+  if ( (_highlight >= 0) && (_highlight < int(_lists.size())) )
+    return _lists[_highlight].highlightedName();
+  else
+    return "";
+}
 void Menubar::minimumSize(int & height, int & width) const
 {
   int rows, cols;

@@ -65,8 +65,8 @@ class Menubar: public CursesWidget {
 
     unsigned int numLists() const;
     unsigned int highlightedList() const;
-    const std::string & highlightListName() const;
-    const std::string & highlightedListItem() const;
+    std::string highlightedListName() const;
+    std::string highlightedListItem() const;
     void minimumSize(int & height, int & width) const;
     void preferredSize(int & height, int & width) const;
 

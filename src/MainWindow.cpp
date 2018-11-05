@@ -1,8 +1,9 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include <cmath>     // floor
+#include <cmath>      // floor
 #include <curses.h>
+#include <stdlib.h>   // exit, EXIT_SUCCESS
 #include "Color.h"
 #include "settings.h"
 #include "string_util.h"
@@ -347,6 +348,24 @@ void MainWindow::rebuild(MouseEvent * mevent)
   }
 
   draw(true);
+}
+
+/*******************************************************************************
+
+Ask for confirmation and quit
+
+*******************************************************************************/
+void MainWindow::quit(MouseEvent * mevent)
+{
+  std::string selection;
+
+  selection = displayMessage("Are you sure you want to quit?", true,
+                             "Confirmation", "Ok Cancel", mevent);
+  if (selection == signals::keyEnter)
+  {
+    endwin();
+    exit(EXIT_SUCCESS);
+  }
 }
 
 /*******************************************************************************
@@ -1592,6 +1611,25 @@ void MainWindow::activateMenubar(MouseEvent * mevent)
   }
   _menubar.setActivated(false);
   redrawHeaderFooter();
+
+  if (selection == signals::keyEnter)
+    menubarActions(mevent);
+}
+
+void MainWindow::menubarActions(MouseEvent * mevent)
+{
+  std::string list, entry;
+
+  list = _menubar.highlightedListName();
+  entry = _menubar.highlightedListItem();
+
+  if (list == "File")
+  {
+    if (entry == "Options")
+      showOptions(mevent);
+    else if (entry == "Quit");
+      quit(mevent);
+  }
 }
 
 /*******************************************************************************
@@ -2296,7 +2334,7 @@ std::string MainWindow::exec(MouseEvent * mevent)
 
     // Key signals with the same action w/ either type of list box
 
-    if (selection == "q") { getting_input = false; }
+    if (selection == "q") { quit(mevent); }
     else if (selection == signals::resize) { draw(true); }
     else if (selection == "f") { selectFilter(mevent); }
     else if (selection == "/") { search(mevent); }
@@ -2304,12 +2342,12 @@ std::string MainWindow::exec(MouseEvent * mevent)
     else if (selection == "o") 
     {
       check_quit = showOptions(mevent);
-      if (check_quit == 1) { getting_input = false; }
+      if (check_quit == 1) { quit(mevent); }
     }
     else if (selection == "?") 
     {
       check_quit = showHelp(mevent);
-      if (check_quit == 1) { getting_input = false; }
+      if (check_quit == 1) { quit(mevent); }
     }
     else if (selection == "l") { toggleLayout(); }
     else if (selection == "c") { viewCommandLine(); }

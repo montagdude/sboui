@@ -57,6 +57,10 @@ class MainWindow: public CursesWidget {
     int readLists(MouseEvent * mevent=NULL);
     void rebuild(MouseEvent * mevent=NULL);
 
+    /* Asks for confirmation and quits */
+
+    void quit(MouseEvent * mevent=NULL);
+
     /* Filters lists */
 
     void filterAll(MouseEvent * mevent=NULL);
@@ -121,9 +125,10 @@ class MainWindow: public CursesWidget {
 
     void printPackageVersion(const BuildListItem & build);
 
-    /* Activates menubar */
+    /* Menubar */
 
     void activateMenubar(MouseEvent * mevent=NULL);
+    void menubarActions(MouseEvent * mevent=NULL);
 
     /* Various operations performed by both exec and handleMouseEvent */
 
