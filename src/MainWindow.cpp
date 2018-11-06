@@ -2285,14 +2285,22 @@ void MainWindow::upgradeAll(MouseEvent * mevent)
   filterUpgradable();
 
   ncategories = _clistbox.numItems();
-  for ( k = 0; k < ncategories; k++ )
+  if (ncategories > 0)
   {
-    _clistbox.tagCategory(k);
-    _blistboxes[k].tagAll();
-  }
-  draw(true);
+    for ( k = 0; k < ncategories; k++ )
+    {
+      _clistbox.tagCategory(k);
+      _blistboxes[k].tagAll();
+    }
+    draw(true);
 
-  applyTags("Upgrade", mevent);
+    applyTags("Upgrade", mevent);
+  }
+  else
+  {
+    filterAll(mevent);
+    displayMessage("Nothing to upgrade.", true, "Information", "Ok", mevent);
+  }
 }
 
 /*******************************************************************************
