@@ -633,7 +633,7 @@ int MainWindow::showOptions(MouseEvent * mevent)
   int check_color, check_write;
 
   clear();
-  redrawHeaderFooter();
+  refresh();
 
   optionswin = newwin(1, 1, 0, 0);
   _options.setWindow(optionswin);
@@ -651,7 +651,7 @@ int MainWindow::showOptions(MouseEvent * mevent)
     else if (selection == signals::resize) 
     { 
       clear();
-      redrawHeaderFooter();
+      refresh();
       _options.placeWindow();
     }
     else if (selection == "q") { return 1; }
@@ -726,7 +726,7 @@ int MainWindow::showHelp(MouseEvent * mevent)
   bool getting_input;
 
   clear();
-  redrawHeaderFooter();
+  refresh();
 
   helpwin = newwin(1, 1, 0, 0);
   _help.setWindow(helpwin);
@@ -742,7 +742,7 @@ int MainWindow::showHelp(MouseEvent * mevent)
     else if (selection == signals::resize) 
     { 
       clear();
-      redrawHeaderFooter();
+      refresh();
       _help.placeWindow();
     }
     else if (selection == "q") { return 1; }

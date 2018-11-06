@@ -272,6 +272,6 @@ void HelpWindow::placeWindow() const
   int rows, cols;
 
   getmaxyx(stdscr, rows, cols);
-  mvwin(_win, 2, 0);
-  wresize(_win, rows-2, cols);
+  mvwin(_win, 0, 0);
+  wresize(_win, rows, cols);
 }
