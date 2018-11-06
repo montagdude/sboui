@@ -13,9 +13,10 @@ Help window: lists keyboard shortcuts
 *******************************************************************************/
 class HelpWindow: public ScrollBox {
 
-  private:
+  protected:
 
     unsigned int _shortcutwidth;
+    std::string _leftlabel, _rightlabel;
 
     /* List of items to display */
 
@@ -26,9 +27,9 @@ class HelpWindow: public ScrollBox {
     void redrawFrame();
     void redrawSingleItem(unsigned int idx);
 
-    /* Constructs list to display */
- 
-    void createList();
+    /* Width needed for right column */
+
+    void shortcutWidth();
 
   public:
 
@@ -38,7 +39,16 @@ class HelpWindow: public ScrollBox {
     HelpWindow(WINDOW *win, const std::string & name);
     ~HelpWindow();
 
+    /* Set labels (usually 'Action' and 'Shortcut') */
+
+    void setLabels(const std::string & leftlabel,
+                   const std::string & rightlabel);
+
     /* Window sizing and placement */
 
     void placeWindow() const;
+
+    /* Constructs list to display */
+ 
+    virtual void createList();
 };

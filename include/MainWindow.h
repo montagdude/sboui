@@ -15,6 +15,7 @@
 #include "TagList.h"
 #include "OptionsWindow.h"
 #include "HelpWindow.h"
+#include "MouseHelpWindow.h"
 #include "Menubar.h"
 #include "MouseEvent.h"
 
@@ -37,6 +38,7 @@ class MainWindow: public CursesWidget {
     TagList _taglist;
     OptionsWindow _options;
     HelpWindow _help;
+    MouseHelpWindow _mousehelp;
     Menubar _menubar;
     std::string _filter, _info, _status;
     unsigned int _category_idx, _activated_listbox;
@@ -59,7 +61,7 @@ class MainWindow: public CursesWidget {
 
     /* Asks for confirmation and quits */
 
-    void quit(MouseEvent * mevent=NULL);
+    void quit();
 
     /* Filters lists */
 
@@ -77,9 +79,9 @@ class MainWindow: public CursesWidget {
 
     int showOptions(MouseEvent * mevent=NULL);
 
-    /* Displays help window */
+    /* Displays help window (mouse or keyboard shortcuts) */
 
-    int showHelp(MouseEvent * mevent=NULL);
+    int showHelp(MouseEvent * mevent=NULL, bool mouse_help=false);
 
     /* Sets taglist reference in BuildListBoxes */
 

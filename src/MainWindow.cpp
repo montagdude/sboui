@@ -26,6 +26,7 @@
 #include "TagList.h"
 #include "OptionsWindow.h"
 #include "HelpWindow.h"
+#include "MouseHelpWindow.h"
 #include "QuickSearch.h"
 #include "PackageInfoBox.h"
 #include "MainWindow.h"
@@ -355,7 +356,7 @@ void MainWindow::rebuild(MouseEvent * mevent)
 Exit sboui
 
 *******************************************************************************/
-void MainWindow::quit(MouseEvent * mevent)
+void MainWindow::quit()
 {
   endwin();
   exit(EXIT_SUCCESS);
@@ -719,23 +720,30 @@ int MainWindow::showOptions(MouseEvent * mevent)
 Shows help window
 
 *******************************************************************************/
-int MainWindow::showHelp(MouseEvent * mevent)
+int MainWindow::showHelp(MouseEvent * mevent, bool mouse_help)
 {
   WINDOW *helpwin;
   std::string selection;
   bool getting_input;
+  HelpWindow *help;
 
   clear();
   refresh();
 
   helpwin = newwin(1, 1, 0, 0);
-  _help.setWindow(helpwin);
-  _help.placeWindow();
+  if (mouse_help)
+    help = &_mousehelp;
+  else
+    help = &_help;
+
+  help->setWindow(helpwin);
+  help->placeWindow();
+  help->createList();
 
   getting_input = true;
   while (getting_input)
   {
-    selection = _help.exec(mevent); 
+    selection = help->exec(mevent); 
     if ( (selection == signals::quit) ||
          (selection == signals::keyEnter) )
       getting_input = false;
@@ -743,12 +751,12 @@ int MainWindow::showHelp(MouseEvent * mevent)
     { 
       clear();
       refresh();
-      _help.placeWindow();
+      help->placeWindow();
     }
     else if (selection == "q") { return 1; }
     else if (selection == signals::mouseEvent)
     {
-      selection = _help.handleMouseEvent(mevent);
+      selection = help->handleMouseEvent(mevent);
       if ( (selection == signals::quit) ||
            (selection == signals::keyEnter) )
         getting_input = false;
@@ -1636,10 +1644,10 @@ void MainWindow::menubarActions(MouseEvent * mevent)
     if (entry == "Options")
     {
       check_quit = showOptions(mevent);
-      if (check_quit == 1) { quit(mevent); }
+      if (check_quit == 1) { quit(); }
     }
     else if (entry == "Quit")
-      quit(mevent);
+      quit();
   }
   else if (list == "Actions")
   {
@@ -1697,14 +1705,15 @@ void MainWindow::menubarActions(MouseEvent * mevent)
   {
     if (entry == "About")
       showAbout(mevent);
-    else if (entry == "Keys")
+    else if (entry == "Keyboard shortcuts")
     {
       check_quit = showHelp(mevent);
-      if (check_quit == 1) { quit(mevent); }
+      if (check_quit == 1) { quit(); }
     }
-    else if (entry == "Mouse")
+    else if (entry == "Mouse bindings")
     {
-      //FIXME: implement
+      check_quit = showHelp(mevent, true);
+      if (check_quit == 1) { quit(); }
     }
   }
 }
@@ -1859,8 +1868,8 @@ MainWindow::MainWindow(const std::string & version)
 
   _menubar.addList("Help", 0);
   _menubar.addListItem("Help", "About", "", 0);
-  _menubar.addListItem("Help", "Keys", "?", 0);
-  _menubar.addListItem("Help", "Mouse", "", 0);
+  _menubar.addListItem("Help", "Keyboard shortcuts", "?", 0);
+  _menubar.addListItem("Help", "Mouse bindings", "", 0);
 }
 
 MainWindow::~MainWindow() { clearData(); }
@@ -2454,7 +2463,7 @@ std::string MainWindow::exec(MouseEvent * mevent)
 
     // Key signals with the same action w/ either type of list box
 
-    if (selection == "q") { quit(mevent); }
+    if (selection == "q") { quit(); }
     else if (selection == signals::resize) { draw(true); }
     else if (selection == "f") { selectFilter(mevent); }
     else if (selection == "/") { search(mevent); }
@@ -2462,12 +2471,12 @@ std::string MainWindow::exec(MouseEvent * mevent)
     else if (selection == "o") 
     {
       check_quit = showOptions(mevent);
-      if (check_quit == 1) { quit(mevent); }
+      if (check_quit == 1) { quit(); }
     }
     else if (selection == "?") 
     {
       check_quit = showHelp(mevent);
-      if (check_quit == 1) { quit(mevent); }
+      if (check_quit == 1) { quit(); }
     }
     else if (selection == "l") { toggleLayout(); }
     else if (selection == "c") { viewCommandLine(); }

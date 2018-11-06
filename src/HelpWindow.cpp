@@ -66,15 +66,15 @@ void HelpWindow::redrawFrame()
 
   wmove(_win, 1, 1);
   colors.turnOn(_win, "header", "bg_normal");
-  wprintw(_win, "Action");
+  wprintw(_win, _leftlabel.c_str());
   colors.turnOff(_win);
 
   vlineloc = cols-2 - _shortcutwidth;
-  nspaces = vlineloc - std::string("Action").size();
+  nspaces = vlineloc - _leftlabel.size();
   for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
 
   colors.turnOn(_win, "header", "bg_normal");
-  printToEol(" Shortcut");
+  printToEol(" " + _rightlabel);
   wmove(_win, 2, 1);
   colors.turnOff(_win);
 
@@ -166,13 +166,93 @@ void HelpWindow::redrawSingleItem(unsigned int idx)
 
 /*******************************************************************************
 
+Determines width needed for right column
+
+*******************************************************************************/
+void HelpWindow::shortcutWidth()
+{
+  unsigned int i, nitems;
+
+  nitems = numItems();
+  _shortcutwidth = _rightlabel.size();
+  for ( i = 0; i < nitems; i++ )
+  {
+    if (_items[i]->getProp("shortcut").size() > _shortcutwidth)
+      _shortcutwidth = _items[i]->getProp("shortcut").size();
+  } 
+  if (std::string("Shortcut").size() > _shortcutwidth)
+    _shortcutwidth = std::string("Shortcut").size();
+  _shortcutwidth += 2;  // Margins
+}
+
+/*******************************************************************************
+
+Constructors and destructor
+
+*******************************************************************************/
+HelpWindow::HelpWindow()
+{ 
+  _name = "Keyboard shortcuts";
+  _reserved_rows = 4; 
+  _header_rows = 3;
+  _shortcutwidth = 0;
+  setLabels("Action", "Shortcut");
+  addButton("  Back to main  ", signals::quit);
+}
+
+HelpWindow::HelpWindow(WINDOW *win, const std::string & name)
+{
+  _win = win;
+  _name = name;
+  _reserved_rows = 4;
+  _header_rows = 3;
+  _shortcutwidth = 0;
+  setLabels("Action", "Shortcut");
+  addButton("  Back to main  ", signals::quit);
+}
+
+HelpWindow::~HelpWindow()
+{
+  unsigned int i, nitems;
+
+  nitems = numItems();
+  for ( i = 0; i < nitems; i++ ) { delete _items[i]; }
+  _items.resize(0);
+}
+
+/*******************************************************************************
+
+Set labels
+
+*******************************************************************************/
+void HelpWindow::setLabels(const std::string & leftlabel,
+                           const std::string & rightlabel)
+{
+  _leftlabel = leftlabel;
+  _rightlabel = rightlabel;
+}
+
+/*******************************************************************************
+
+Sizes and places window
+
+*******************************************************************************/
+void HelpWindow::placeWindow() const
+{
+  int rows, cols;
+
+  getmaxyx(stdscr, rows, cols);
+  mvwin(_win, 0, 0);
+  wresize(_win, rows, cols);
+}
+
+/*******************************************************************************
+
 Constructs list to display
 
 *******************************************************************************/
 void HelpWindow::createList()
 {
-  unsigned int i, nitems;
-
   addItem(new HelpItem("Main window", "", true, false));
   addItem(new HelpItem("Activate left/top list", "Left arrow"));
   addItem(new HelpItem("Activate menubar", "F9"));
@@ -216,63 +296,5 @@ void HelpWindow::createList()
    
   // Determine width needed to display shortcut
 
-  nitems = numItems();
-  _shortcutwidth = 0;
-  for ( i = 0; i < nitems; i++ )
-  {
-    if (_items[i]->getProp("shortcut").size() > _shortcutwidth)
-      _shortcutwidth = _items[i]->getProp("shortcut").size();
-  } 
-  if (std::string("Shortcut").size() > _shortcutwidth)
-    _shortcutwidth = std::string("Shortcut").size();
-  _shortcutwidth += 2;  // Margins
-}
-
-/*******************************************************************************
-
-Constructors and destructor
-
-*******************************************************************************/
-HelpWindow::HelpWindow()
-{ 
-  _name = "Keyboard shortcuts";
-  _reserved_rows = 4; 
-  _header_rows = 3;
-  _shortcutwidth = 0;
-  addButton("  Back to main  ", signals::quit);
-  createList();
-}
-
-HelpWindow::HelpWindow(WINDOW *win, const std::string & name)
-{
-  _win = win;
-  _name = name;
-  _reserved_rows = 4;
-  _header_rows = 3;
-  _shortcutwidth = 0;
-  addButton("  Back to main  ", signals::quit);
-  createList();
-}
-
-HelpWindow::~HelpWindow()
-{
-  unsigned int i, nitems;
-
-  nitems = numItems();
-  for ( i = 0; i < nitems; i++ ) { delete _items[i]; }
-  _items.resize(0);
-}
-
-/*******************************************************************************
-
-Sizes and places window
-
-*******************************************************************************/
-void HelpWindow::placeWindow() const
-{
-  int rows, cols;
-
-  getmaxyx(stdscr, rows, cols);
-  mvwin(_win, 0, 0);
-  wresize(_win, rows, cols);
+  shortcutWidth();
 }
