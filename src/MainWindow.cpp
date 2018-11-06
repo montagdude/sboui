@@ -1839,7 +1839,7 @@ MainWindow::MainWindow(const std::string & version)
 
   _menubar.addList("Actions", 1);
   _menubar.addListItem("Actions", "Sync", "s", 0);
-  _menubar.addListItem("Actions", "Upgrade all", "a", 0);
+  _menubar.addListItem("Actions", "Upgrade all", "Ctrl-u", 0);
   _menubar.addListItem("Actions", "Search", "/", 1);
 
   _menubar.addList("Filter", 2);
@@ -2250,19 +2250,37 @@ Filters by upgradable, tags, and then upgrades tags
 *******************************************************************************/
 void MainWindow::upgradeAll(MouseEvent * mevent)
 {
-  unsigned int i, ncategories;
+  unsigned int k, ntagged, ncategories;
+  BuildListItem * build;
 
+  // Clear tags
+
+  ntagged = _taglist.numTagged();
+  for ( k = 0; k < ntagged; k++ )
+  {
+    build = static_cast<BuildListItem *>(_taglist.taggedByIdx(k));
+    build->setBoolProp("tagged", false);
+  }
   _taglist.clearList();
+
+  // Un-tag all categories
+
+  ncategories = _clistbox.numItems();
+  for ( k = 0; k < ncategories; k++ )
+  {
+    _clistbox.itemByIdx(k)->setBoolProp("tagged", false);
+  }
+
+  // Tag all upgradable and upgrade
+
   filterUpgradable();
 
   ncategories = _clistbox.numItems();
-  for ( i = 0; i < ncategories; i++ )
+  for ( k = 0; k < ncategories; k++ )
   {
-    _clistbox.setHighlight(i);
-    _clistbox.tagHighlightedCategory();
-    _blistboxes[i].tagAll();
+    _clistbox.tagCategory(k);
+    _blistboxes[k].tagAll();
   }
-  _clistbox.setHighlight(_category_idx);
   draw(true);
 
   applyTags("Upgrade", mevent);
@@ -2435,7 +2453,6 @@ std::string MainWindow::exec(MouseEvent * mevent)
     }
 
     // Key signals with the same action w/ either type of list box
-    //FIXME: add upgradeAll
 
     if (selection == "q") { quit(mevent); }
     else if (selection == signals::resize) { draw(true); }
@@ -2462,6 +2479,8 @@ std::string MainWindow::exec(MouseEvent * mevent)
       quickSearch(); 
     else if (selection == signals::keyF9)
       activateMenubar(mevent);
+    else if ( (selection.size() == 1) && (selection[0] == 0x15) )  // Ctrl-u
+      upgradeAll(mevent);
   }
 
   return signals::quit;
