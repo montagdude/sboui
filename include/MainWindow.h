@@ -133,7 +133,8 @@ class MainWindow: public CursesWidget {
 
     /* Menubar */
 
-    void activateMenubar(MouseEvent * mevent=NULL);
+    void activateMenubar();
+    void deactivateMenubar();
     void menubarActions(MouseEvent * mevent=NULL);
 
     /* Various operations performed by both exec and handleMouseEvent */

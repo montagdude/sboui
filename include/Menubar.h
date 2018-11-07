@@ -69,6 +69,7 @@ class Menubar: public CursesWidget {
     std::string highlightedListItem() const;
     void minimumSize(int & height, int & width) const;
     void preferredSize(int & height, int & width) const;
+    void bounds(int & xmin, int & xmax) const;
 
     /* Handles mouse event */
 

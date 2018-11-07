@@ -237,7 +237,7 @@ std::string Menubar::execList(MouseEvent * mevent)
   std::string retval;
 
   placeListBox();
-  retval = _lists[_highlight].exec();
+  retval = _lists[_highlight].exec(mevent);
 
   wresize(_listwins[_highlight], 0, 0);
   wrefresh(_listwins[_highlight]);
@@ -439,6 +439,16 @@ void Menubar::preferredSize(int & height, int & width) const
   minimumSize(height, width);
 }
 
+void Menubar::bounds(int & xmin, int & xmax) const
+{
+  unsigned int lastmenu;
+
+  lastmenu = _lists.size()-1;
+  xmin = 0;
+  xmax = menuColumn(lastmenu) + _lists[lastmenu].name().size()
+       + 2*_pad;
+}
+
 /*******************************************************************************
 
 Handles mouse event
@@ -446,7 +456,38 @@ Handles mouse event
 *******************************************************************************/
 std::string Menubar::handleMouseEvent(MouseEvent * mevent)
 {
-  return "";
+  int xmin, xmax, begy, begx, ycurs, xcurs;
+  unsigned int i, nlists;
+
+  getbegyx(_win, begy, begx);
+  ycurs = mevent->y() - begy;
+  xcurs = mevent->x() - begx;
+
+  if ( (mevent->button() == 1) || (mevent->button() == 3) )
+  {
+    // Check for clicking on menu labels
+
+    if (ycurs != 0) { return signals::mouseEvent; }
+
+    nlists = _lists.size();
+    if (nlists > 0)
+    {
+      for ( i = 0; i < nlists; i++ )
+      {
+        xmin = menuColumn(i);
+        xmax = xmin + _lists[i].name().size() + 2*_pad;
+        if ( (xcurs >= xmin) && (xcurs <= xmax) )
+        {
+          setHighlight(i);
+          return exec(mevent);
+        }
+      }
+      return signals::mouseEvent;   // To be handled by parent
+    }
+    else { return signals::nullEvent; }
+  }
+  else
+    return signals::nullEvent;
 }
 
 /*******************************************************************************
@@ -483,7 +524,7 @@ std::string Menubar::exec(MouseEvent * mevent)
 {
   int hotkey;
   std::string retval;
-  bool getting_input;
+  bool getting_input, needs_selection;
   unsigned int i, nlists;
   char hotcharN, hotcharL;
   std::vector<char> hotkey_vec;
@@ -506,6 +547,7 @@ std::string Menubar::exec(MouseEvent * mevent)
   if ( (_highlight == 0) && (_prevhighlight == 0) ) { highlightFirst(); }
 
   getting_input = true;
+  needs_selection = true;
   while (getting_input)
   {
     // Draw list elements
@@ -515,7 +557,10 @@ std::string Menubar::exec(MouseEvent * mevent)
 
     // Get user input
 
-    retval = execList(mevent);
+    if (needs_selection)
+      retval = execList(mevent);
+    else
+      needs_selection = true;
 
     // Enter/Esc/F9: leave menu
 
@@ -540,10 +585,14 @@ std::string Menubar::exec(MouseEvent * mevent)
     }
 
     // Mouse
-    //FIXME: handle this
 
     else if (retval == signals::mouseEvent)
-      getting_input = false;
+    {
+      needs_selection = false;
+      retval = handleMouseEvent(mevent);
+      if (retval == signals::mouseEvent)
+        getting_input = false;    // To be handled by parent
+    }
 
     // Check hotkeys
 

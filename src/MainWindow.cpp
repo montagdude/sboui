@@ -1602,18 +1602,18 @@ void MainWindow::showAbout(MouseEvent * mevent)
 User interaction with menubar
 
 *******************************************************************************/
-void MainWindow::activateMenubar(MouseEvent * mevent)
+void MainWindow::activateMenubar()
 {
-  std::string selection;
-
   _blistboxes[_category_idx].setActivated(false);
   _blistboxes[_category_idx].draw();
   _clistbox.setActivated(false);
   _clistbox.draw();
   _menubar.setActivated(true);
   redrawHeaderFooter();
-  selection = _menubar.exec();
+}
 
+void MainWindow::deactivateMenubar()
+{
   if (_activated_listbox == 0)
   {
     _clistbox.setActivated(true);
@@ -1626,9 +1626,6 @@ void MainWindow::activateMenubar(MouseEvent * mevent)
   }
   _menubar.setActivated(false);
   redrawHeaderFooter();
-
-  if (selection == signals::keyEnter)
-    menubarActions(mevent);
 }
 
 void MainWindow::menubarActions(MouseEvent * mevent)
@@ -2320,6 +2317,7 @@ std::string MainWindow::handleMouseEvent(MouseEvent * mevent)
 {
   int ymin1, xmin1, ymax1, xmax1;
   int ymin2, xmin2, ymax2, xmax2;
+  int xmin3, xmax3;
   std::string action;
 
   // Determine what was clicked
@@ -2332,6 +2330,7 @@ std::string MainWindow::handleMouseEvent(MouseEvent * mevent)
   ymax1 += ymin1;   // absolute coordinates
   xmax2 += xmin2;
   ymax2 += ymin2;
+  _menubar.bounds(xmin3, xmax3);
 
   // Category list box
 
@@ -2371,6 +2370,20 @@ std::string MainWindow::handleMouseEvent(MouseEvent * mevent)
       tagSelectedSlackBuild();
   }
 
+  // Menubar
+
+  else if ( (mevent->y() == 0) && (mevent->x() >= xmin3) &&
+            (mevent->x() <= xmax3) )
+  {
+    activateMenubar();
+    action = _menubar.handleMouseEvent(mevent);
+    deactivateMenubar();
+    if (action == signals::keyEnter)
+      menubarActions(mevent);
+    else if (action == signals::mouseEvent)
+      handleMouseEvent(mevent);
+  }
+
   return action;
 }
 
@@ -2397,7 +2410,7 @@ Displays the main window
 *******************************************************************************/
 std::string MainWindow::exec(MouseEvent * mevent)
 {
-  std::string selection;
+  std::string selection, action;
   bool getting_input;
   int check_quit;
 
@@ -2495,7 +2508,15 @@ std::string MainWindow::exec(MouseEvent * mevent)
     else if ( (selection.size() == 1) && (selection[0] == 0x13) )  // Ctrl-s
       quickSearch(); 
     else if (selection == signals::keyF9)
-      activateMenubar(mevent);
+    {
+      activateMenubar();
+      action = _menubar.exec(mevent);
+      deactivateMenubar();
+      if (action == signals::keyEnter)
+        menubarActions(mevent);
+      else if (action == signals::mouseEvent)
+        handleMouseEvent(mevent);
+    }
     else if ( (selection.size() == 1) && (selection[0] == 0x15) )  // Ctrl-u
       upgradeAll(mevent);
   }
