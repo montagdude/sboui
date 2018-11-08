@@ -282,15 +282,13 @@ int MainWindow::readLists(MouseEvent * mevent)
 
 /*******************************************************************************
 
-Rebuilds lists after applying changes
+Clears tags
 
 *******************************************************************************/
-void MainWindow::rebuild(MouseEvent * mevent)
+void MainWindow::clearTags()
 {
-  unsigned int k, ncategories, list_highlight, prev_activated;
+  unsigned int k, ncategories;
   int ntagged;
-  std::vector<std::string> pkg_errors, missing_info;
-  std::string errmsg, category;
   BuildListItem *build;
 
   // Clear tags
@@ -310,6 +308,22 @@ void MainWindow::rebuild(MouseEvent * mevent)
   {
     _clistbox.itemByIdx(k)->setBoolProp("tagged", false);
   }
+}
+
+/*******************************************************************************
+
+Rebuilds lists after applying changes
+
+*******************************************************************************/
+void MainWindow::rebuild(MouseEvent * mevent)
+{
+  unsigned int list_highlight, prev_activated;
+  std::vector<std::string> pkg_errors, missing_info;
+  std::string errmsg, category;
+
+  // Clear tags
+
+  clearTags();
 
   // Save original highlight info
 
@@ -1689,7 +1703,7 @@ void MainWindow::menubarActions(MouseEvent * mevent)
 
       filterBuildOptions();
     }
-    draw(true);
+    redrawWindows(true);
   }
   else if (list == "Tagged")
   {
@@ -1697,6 +1711,11 @@ void MainWindow::menubarActions(MouseEvent * mevent)
     else if (entry == "Upgrade") { applyTags("Upgrade", mevent); }
     else if (entry == "Remove") { applyTags("Remove", mevent); }
     else if (entry == "Reinstall") { applyTags("Reinstall", mevent); }
+    else if (entry == "Clear tags")
+    {
+      clearTags();
+      redrawWindows(true);
+    }
   }
   else if (list == "Help")
   {
@@ -1862,6 +1881,7 @@ MainWindow::MainWindow(const std::string & version)
   _menubar.addListItem("Tagged", "Upgrade", "u", 0);
   _menubar.addListItem("Tagged", "Remove", "r", 0);
   _menubar.addListItem("Tagged", "Reinstall", "e", 1);
+  _menubar.addListItem("Tagged", "Clear tags", "", 3);
 
   _menubar.addList("Help", 0);
   _menubar.addListItem("Help", "About", "", 0);
@@ -2256,26 +2276,11 @@ Filters by upgradable, tags, and then upgrades tags
 *******************************************************************************/
 void MainWindow::upgradeAll(MouseEvent * mevent)
 {
-  unsigned int k, ntagged, ncategories;
-  BuildListItem * build;
+  unsigned int k, ncategories;
 
   // Clear tags
 
-  ntagged = _taglist.numTagged();
-  for ( k = 0; k < ntagged; k++ )
-  {
-    build = static_cast<BuildListItem *>(_taglist.taggedByIdx(k));
-    build->setBoolProp("tagged", false);
-  }
-  _taglist.clearList();
-
-  // Un-tag all categories
-
-  ncategories = _clistbox.numItems();
-  for ( k = 0; k < ncategories; k++ )
-  {
-    _clistbox.itemByIdx(k)->setBoolProp("tagged", false);
-  }
+  clearTags();
 
   // Tag all upgradable and upgrade
 

@@ -57,6 +57,7 @@ class MainWindow: public CursesWidget {
 
     void clearData();
     int readLists(MouseEvent * mevent=NULL);
+    void clearTags();
     void rebuild(MouseEvent * mevent=NULL);
 
     /* Asks for confirmation and quits */
