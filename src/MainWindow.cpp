@@ -2044,6 +2044,7 @@ void MainWindow::search(MouseEvent * mevent)
 
   // Get search term from user
 
+  _searchbox.clearSearch();
   getting_input = true;
   while (getting_input)
   {
