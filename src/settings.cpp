@@ -99,11 +99,9 @@ Reads settings from configuration file
 *******************************************************************************/
 int read_config(const std::string & conf_file)
 {
-  int check;
   Config cfg;
   std::string my_conf_file, home, response;
   char *env_home, *env_editor, *env_viewer;
-  ColorTheme default_theme;
 
   // Determine config file to read
 
@@ -318,24 +316,6 @@ int read_config(const std::string & conf_file)
   if (! cfg.lookupValue("color_theme", color_theme))
     color_theme = "default (dark)";
 
-  // Set up color themes
-
-  color_themes.clear();
-  default_theme.setDefaultColors();
-  color_themes.push_back(default_theme);
-  apply_color_theme("default (dark)");
-  get_color_themes(); 
-  if (enable_color)
-  {
-    check = activate_color(color_theme);
-    if (check != 0) 
-    {
-      std::cout << "Press Enter to continue ...";
-      std::getline(std::cin, response);
-    }
-  }
-  else { deactivate_color(); }
-
   return 0;
 }
 
@@ -402,6 +382,37 @@ int write_config(const std::string & conf_file)
   try { cfg.write(fp); }
   catch(const FileIOException & fioex) { return 2; }
   fclose(fp);
+
+  return 0;
+}
+
+/*******************************************************************************
+
+Sets up and applies color themes
+
+*******************************************************************************/
+int setup_color()
+{
+  int check;
+  std::string response;
+  ColorTheme default_theme;
+
+  color_themes.clear();
+  default_theme.setDefaultColors();
+  color_themes.push_back(default_theme);
+  apply_color_theme("default (dark)");
+  get_color_themes(); 
+  if (enable_color)
+  {
+    check = activate_color(color_theme);
+    if (check != 0) 
+    {
+      std::cout << "Press Enter to continue ...";
+      std::getline(std::cin, response);
+      return check;
+    }
+  }
+  else { deactivate_color(); }
 
   return 0;
 }

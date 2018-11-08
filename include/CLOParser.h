@@ -14,6 +14,8 @@ class CLOParser {
 
     std::vector<std::string> _argv_str;
     std::string _input_file;
+    bool _sync;
+    bool _upgrade_all;
 
     /* Converts CLOs to vector of strings */
 
@@ -39,4 +41,9 @@ class CLOParser {
 
     bool requestInputFile() const;
     const std::string & inputFile() const;
+
+    /* Query other possible inputs */
+
+    bool sync() const;
+    bool upgradeAll() const;
 };

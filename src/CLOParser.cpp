@@ -29,6 +29,8 @@ CLOParser::CLOParser()
 {
   _argv_str.resize(0);
   _input_file = "";
+  _sync = false;
+  _upgrade_all = false;
 }
 
 /*******************************************************************************
@@ -65,12 +67,22 @@ int CLOParser::checkCLOs(int argc, char *argv[], const std::string & version)
         return 1;
       }
     }
-    else if (_argv_str[i] == "--help")
+    else if ( (_argv_str[i] == "-s") || (_argv_str[i] == "--sync") )
+    {
+      _sync = true;
+      i += 1;
+    }
+    else if ( (_argv_str[i] == "-u") || (_argv_str[i] == "--upgrade-all") )
+    {
+      _upgrade_all = true;
+      i += 1;
+    }
+    else if ( (_argv_str[i] == "-h") || (_argv_str[i] == "--help") )
     {
       printHelp();
       return -1;
     }
-    else if (_argv_str[i] == "--version")
+    else if ( (_argv_str[i] == "-v") || (_argv_str[i] == "--version") )
     {
       printVersion(version);
       return -1;
@@ -113,11 +125,15 @@ void CLOParser::printHelp() const
   std::cout << "Usage: sboui [OPTION]" << std::endl;
   std::cout << std::endl;
   std::cout << "Options:" << std::endl;
-  std::cout << "  -f, --file FILE  Specify a custom configuration file"
+  std::cout << "  -f, --file FILE    Specify a custom configuration file"
             << std::endl;
-  std::cout << "  --help           Display usage information and exit"
+  std::cout << "  -s, --sync         Sync (update) local SBo repository and exit"
             << std::endl;
-  std::cout << "  --version        Display version number of sboui and exit"
+  std::cout << "  -u, --upgrade-all  Tag and interactively upgrade all packages"
+            << std::endl;
+  std::cout << "  -h, --help         Display usage information and exit"
+            << std::endl;
+  std::cout << "  -v, --version      Display version number of sboui and exit"
             << std::endl;
   std::cout << std::endl;
   std::cout << "sboui home page: https://github.com/montagdude/sboui"
@@ -138,3 +154,11 @@ bool CLOParser::requestInputFile() const
 }
 
 const std::string & CLOParser::inputFile() const { return _input_file; }
+
+/*******************************************************************************
+
+Other possible inputs
+
+*******************************************************************************/
+bool CLOParser::sync() const { return _sync; }
+bool CLOParser::upgradeAll() const { return _upgrade_all; }

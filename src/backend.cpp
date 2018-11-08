@@ -584,14 +584,17 @@ int view_file(const std::string & path)
 Syncs/updates SlackBuilds repository
 
 *******************************************************************************/
-int sync_repo() 
+int sync_repo(bool interactive)
 { 
   int retval;
   std::string response;
 
   retval = run_command(sync_cmd);
-  std::cout << "Press Enter to return to main window ...";
-  std::getline(std::cin, response);
+  if (interactive)
+  {
+    std::cout << "Press Enter to return to main window ...";
+    std::getline(std::cin, response);
+  }
 
   return retval;
 }

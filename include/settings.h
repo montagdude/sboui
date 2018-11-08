@@ -28,6 +28,7 @@ extern std::vector<ColorTheme> color_themes;
 
 int read_config(const std::string & conf_file="");
 int write_config(const std::string & conf_file="");
+int setup_color();
 int apply_color_theme(const std::string & theme);
 int activate_color(const std::string & theme);
 void deactivate_color();
