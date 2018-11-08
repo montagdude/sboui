@@ -5,16 +5,16 @@
 
 /*******************************************************************************
 
-Mouse help window: lists mouse bindings
+Key help window: lists keyboard shortcuts
 
 *******************************************************************************/
-class MouseHelpWindow: public HelpWindow {
+class KeyHelpWindow: public HelpWindow {
 
   public:
 
     /* Constructor */
 
-    MouseHelpWindow();
+    KeyHelpWindow();
 
     /* Constructs list to display */
  

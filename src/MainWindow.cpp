@@ -752,7 +752,6 @@ int MainWindow::showHelp(MouseEvent * mevent, bool mouse_help)
 
   help->setWindow(helpwin);
   help->placeWindow();
-  help->createList();
 
   getting_input = true;
   while (getting_input)

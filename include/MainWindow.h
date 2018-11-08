@@ -14,7 +14,7 @@
 #include "InputBox.h"
 #include "TagList.h"
 #include "OptionsWindow.h"
-#include "HelpWindow.h"
+#include "KeyHelpWindow.h"
 #include "MouseHelpWindow.h"
 #include "Menubar.h"
 #include "MouseEvent.h"
@@ -37,7 +37,7 @@ class MainWindow: public CursesWidget {
     SearchBox _searchbox;
     TagList _taglist;
     OptionsWindow _options;
-    HelpWindow _help;
+    KeyHelpWindow _help;
     MouseHelpWindow _mousehelp;
     Menubar _menubar;
     std::string _filter, _info, _status;

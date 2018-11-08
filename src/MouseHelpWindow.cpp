@@ -1,4 +1,3 @@
-#include <vector>
 #include <string>
 #include "HelpItem.h"
 #include "MouseHelpWindow.h"
@@ -12,6 +11,7 @@ MouseHelpWindow::MouseHelpWindow()
 {
   _name = "Mouse bindings";
   setLabels("Action", "Binding");
+  createList();
 }
 
 /*******************************************************************************

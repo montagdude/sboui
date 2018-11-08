@@ -8,7 +8,7 @@
 
 /*******************************************************************************
 
-Help window: lists keyboard shortcuts
+Help window: lists keyboard shortcuts (abstract version)
 
 *******************************************************************************/
 class HelpWindow: public ScrollBox {
@@ -50,5 +50,5 @@ class HelpWindow: public ScrollBox {
 
     /* Constructs list to display */
  
-    virtual void createList();
+    virtual void createList() = 0;
 };
