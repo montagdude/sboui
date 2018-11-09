@@ -27,14 +27,19 @@ int main(int argc, char *argv[])
   if (clos.requestInputFile()) { check = read_config(clos.inputFile()); }
   else { check = read_config(); }
 
-  // If --sync option was passed, do that now and exit
-
-  if (clos.sync())
-    return sync_repo(false);
-
   // Read blacklist
 
   package_blacklist.read("/etc/sboui/package_blacklist"); 
+
+  // Handle non-interactive CLOs
+
+  if (clos.sync())
+    return sync_repo(false);
+  else if (clos.upgradable())
+  {
+    MainWindow mainwindow(PACKAGE_VERSION);
+    return mainwindow.listUpgradable();
+  }
 
   // Set up ncurses (needed because we set colors while reading config file)
 

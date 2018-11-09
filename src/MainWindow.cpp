@@ -221,7 +221,7 @@ void MainWindow::clearData()
 Creates master list of SlackBuilds
 
 *******************************************************************************/
-int MainWindow::readLists(MouseEvent * mevent)
+int MainWindow::readLists(MouseEvent * mevent, bool interactive)
 {
   int check;
   unsigned int i, ncategories, npkgerr, nmissing; 
@@ -263,7 +263,10 @@ int MainWindow::readLists(MouseEvent * mevent)
     for ( i = 0; i < npkgerr; i++ ) { errmsg += "\n" + pkg_errors[i]; }
     errmsg += "\n\nThis warning may be disabled by setting "
            +  std::string("warn_invalid_pkgnames = false.");
-    displayError(errmsg, true, "Warning", "Ok", mevent);
+    if (interactive)
+      displayError(errmsg, true, "Warning", "Ok", mevent);
+    else
+      std::cout << "Error: " << errmsg << std::endl;
   }
 
   // Warning for missing info files
@@ -274,7 +277,10 @@ int MainWindow::readLists(MouseEvent * mevent)
     errmsg = "The following installed SlackBuilds are missing .info files:\n";
     for ( i = 0; i < nmissing; i++ ) { errmsg += "\n" + missing_info[i]; }
     errmsg += "\n\nYou should run the sync command to fix this problem.";
-    displayError(errmsg, true, "Error", "Ok", mevent);
+    if (interactive)
+      displayError(errmsg, true, "Error", "Ok", mevent);
+    else
+      std::cout << "Error: " << errmsg << std::endl;
   }
 
   return 0;
@@ -2303,6 +2309,71 @@ void MainWindow::upgradeAll(MouseEvent * mevent)
     filterAll(mevent);
     displayMessage("Nothing to upgrade.", true, "Information", "Ok", mevent);
   }
+}
+
+/*******************************************************************************
+
+Lists upgradable SlackBuilds (non-interactive)
+
+*******************************************************************************/
+int MainWindow::listUpgradable()
+{
+  BuildListBox initlistbox;
+  int retval;
+  unsigned int i, j, ncategories, nbuilds, nupgradable;
+  BuildListItem *build;
+
+  _clistbox.clearList();
+  _clistbox.setActivated(true);
+  _clistbox.setName("Groups");
+  initlistbox.setActivated(false);
+  initlistbox.setName("SlackBuilds");
+  _blistboxes.push_back(initlistbox);
+
+  // Read SlackBuilds repository
+
+  retval = readLists(NULL, false);
+
+  if (retval != 0)
+  {
+    std::cout << "Error reading SlackBuilds repository. Please make sure that "
+              << "you have set repo_dir correctly in sboui.conf." << std::endl;
+  }
+  else
+  {
+    // Filter upgradable and list
+
+    filterUpgradable();
+    ncategories = _clistbox.numItems();
+    if (ncategories == 0)
+      std::cout << "No upgradable SlackBuilds." << std::endl;
+    else
+    {
+      nupgradable = 0;
+      for ( i = 0; i < ncategories; i++ )
+      {
+        nupgradable += _blistboxes[i].numItems();
+      }
+      if (nupgradable == 1)
+        std::cout << "1 upgradable SlackBuild.";
+      else
+      {
+        std::cout << int_to_string(nupgradable) + " upgradable SlackBuilds."
+                  << std::endl;
+      }
+      for ( i = 0; i < ncategories; i++ )
+      {
+        nbuilds = _blistboxes[i].numItems();
+        for ( j = 0; j < nbuilds; j++ )
+        {
+          build = static_cast<BuildListItem *>(_blistboxes[i].itemByIdx(j));
+          std::cout << build->name() << std::endl;
+        }
+      }
+    }
+  }
+
+  return retval;
 }
 
 /*******************************************************************************

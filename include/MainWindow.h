@@ -56,7 +56,7 @@ class MainWindow: public CursesWidget {
     /* Clearing and setting up lists, etc. */
 
     void clearData();
-    int readLists(MouseEvent * mevent=NULL);
+    int readLists(MouseEvent * mevent=NULL, bool interactive=true);
     void clearTags();
     void rebuild(MouseEvent * mevent=NULL);
 
@@ -177,6 +177,10 @@ class MainWindow: public CursesWidget {
     /* Upgrade all */
 
     void upgradeAll(MouseEvent * mevent=NULL);
+
+    /* List upgradable (non-interactive) */
+
+    int listUpgradable();
 
     /* Not used, but needed for MainWindow to be derived from CursesWidget */
 

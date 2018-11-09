@@ -14,8 +14,8 @@ class CLOParser {
 
     std::vector<std::string> _argv_str;
     std::string _input_file;
-    bool _sync;
-    bool _upgrade_all;
+    bool _sync, _upgrade_all, _upgradable;
+
 
     /* Converts CLOs to vector of strings */
 
@@ -46,4 +46,5 @@ class CLOParser {
 
     bool sync() const;
     bool upgradeAll() const;
+    bool upgradable() const;
 };

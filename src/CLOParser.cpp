@@ -31,6 +31,7 @@ CLOParser::CLOParser()
   _input_file = "";
   _sync = false;
   _upgrade_all = false;
+  _upgradable = false;
 }
 
 /*******************************************************************************
@@ -75,6 +76,11 @@ int CLOParser::checkCLOs(int argc, char *argv[], const std::string & version)
     else if ( (_argv_str[i] == "-u") || (_argv_str[i] == "--upgrade-all") )
     {
       _upgrade_all = true;
+      i += 1;
+    }
+    else if ( (_argv_str[i] == "-p") || (_argv_str[i] == "--upgradable") )
+    {
+      _upgradable = true;
       i += 1;
     }
     else if ( (_argv_str[i] == "-h") || (_argv_str[i] == "--help") )
@@ -131,6 +137,8 @@ void CLOParser::printHelp() const
             << std::endl;
   std::cout << "  -u, --upgrade-all  Tag and interactively upgrade all packages"
             << std::endl;
+  std::cout << "  -p, --upgradable   List upgradable SlackBuilds and exit"
+            << std::endl;
   std::cout << "  -h, --help         Display usage information and exit"
             << std::endl;
   std::cout << "  -v, --version      Display version number of sboui and exit"
@@ -162,3 +170,4 @@ Other possible inputs
 *******************************************************************************/
 bool CLOParser::sync() const { return _sync; }
 bool CLOParser::upgradeAll() const { return _upgrade_all; }
+bool CLOParser::upgradable() const { return _upgradable; }
