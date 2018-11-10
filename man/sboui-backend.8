@@ -145,6 +145,18 @@ Configuration file to read.
 By default, it is
 .IR /etc/sboui/sboui-backend.conf ,
 but this environment variable can be set to read a different file instead.
+.TP
+.B OUTPUT
+.br
+Directory to drop built package.
+By default, it is
+.IR /tmp .
+.TP
+.B TMP
+.br
+Directory where temporary source and package directories are placed.
+By default, it is
+.IR /tmp/SBo .
 .SH FILES
 .TP
 .I /etc/sboui/sboui-backend.conf
@@ -155,7 +167,8 @@ See
 .BR sboui-backend.conf (5)
 for more information about the entries in this file.
 .SH BUGS
-None known, but please report any to the address below.
+Please report bugs to the email address below or on the issue tracker for sboui's project page,
+.IR https://github.com/montagdude/sboui .
 .SH SEE ALSO
 .BR sboui-backend.conf (5),
 .BR sboui (8),
