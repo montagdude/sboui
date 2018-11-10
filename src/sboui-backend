@@ -5,6 +5,9 @@
 CONF=${CONF:-/etc/sboui/sboui-backend.conf}
 . $CONF
 
+# Build location
+TMP=${TMP:-/tmp/SBo}
+
 # Where to drop completed package
 OUTPUT=${OUTPUT:-/tmp}
 
@@ -409,7 +412,7 @@ function install_slackbuild ()
 
   # Create file to mark time
   if [ "$CLEAN_TMP" == "yes" ]; then
-    touch $TMPDIR/sboui.timemarker
+    touch /tmp/sboui.timemarker
   fi
 
   # Download and check MD5SUMs
@@ -494,9 +497,10 @@ function install_slackbuild ()
   if [ "$CLEAN_PACKAGE" == "yes" ]; then
     rm $PKG
   fi
-  if [ "$CLEAN_TMP" == "yes" ]; then
-    find $TMPDIR -mindepth 1 -maxdepth 1 -type d -cnewer $TMPDIR/sboui.timemarker -exec rm -rf {} \;
-    rm $TMPDIR/sboui.timemarker
+  if [[ "$CLEAN_TMP" == "yes" && -f /tmp/sboui.timemarker ]]; then
+    find $TMP -mindepth 1 -maxdepth 1 -type d \
+              -cnewer /tmp/sboui.timemarker -exec rm -rf {} \;
+    rm /tmp/sboui.timemarker
   fi
   if [[ $SOURCEOPT -eq 0 || "$(readlink -f $SOURCEDIR)" != "$REPO_DIR" ]]; then
     remove_sources $SOURCES
