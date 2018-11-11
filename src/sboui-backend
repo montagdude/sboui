@@ -479,8 +479,7 @@ function install_slackbuild ()
     local PKGNAME BUILDNAME
     for PKG in $PKGLIST
     do
-      PKG=$(basename "$PKG")
-      PKGNAME=${PKG%*.*}
+      PKGNAME=$(basename ${PKG%*.*})
       BUILDNAME=$(get_installed_name "$PKGNAME")
       if [ "$BUILDNAME" == "$BUILD" ]; then
         FOUND=1
