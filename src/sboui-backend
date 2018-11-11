@@ -373,13 +373,6 @@ function install_slackbuild ()
   # Go to SlackBuild directory
   cd $BUILDPATH
 
-  # Remove any package in $OUTPUT with $BUILD in the name (could mess up
-  # installation later)
-  local PKG=$(find "$OUTPUT" -maxdepth 1 -name "$BUILD*.t?z")
-  if [ -n "$PKG" ]; then
-    rm $PKG
-  fi
-
   # Determine source download strings
   local SOURCES=$(sources_from_info "$BUILD".info)
 
@@ -475,12 +468,35 @@ function install_slackbuild ()
   chmod +x $BUILD.SlackBuild
   ./$BUILD.SlackBuild
 
-  # Exit if not successful
-  PKG=$(find "$OUTPUT" -maxdepth 1 -name "$BUILD*.t?z")
-  if [ -z "$PKG" ]; then
+  # Check if package was built successfully
+  local PKGLIST=$(find "$OUTPUT" -maxdepth 1 -name "$BUILD*.t?z")
+  local PKGERR=0
+  local PKG
+  if [ -z "$PKGLIST" ]; then
+    PKGERR=1
+  else
+    local FOUND=0
+    local PKGNAME BUILDNAME
+    for PKG in $PKGLIST
+    do
+      PKG=$(basename "$PKG")
+      PKGNAME=${PKG%*.*}
+      BUILDNAME=$(get_installed_name "$PKGNAME")
+      if [ "$BUILDNAME" == "$BUILD" ]; then
+        FOUND=1
+        break
+      fi
+    done
+    if [ $FOUND -eq 0 ]; then
+      PKGERR=1
+    fi
+  fi
+
+  # Exit on error
+  if [ $PKGERR -eq 1 ]; then
     echo "Error: build failed."
 
-    # Remove source code
+    # Remove source tarballs
     if [[ $SOURCEOPT -eq 0 || "$(readlink -f $SOURCEDIR)" != "$REPO_DIR" ]]; then
       remove_sources $SOURCES
   
