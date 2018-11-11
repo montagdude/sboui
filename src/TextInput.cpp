@@ -94,6 +94,7 @@ void TextInput::setLabel(const std::string & label)
 {
   _label = label;
   _labellen = _label.size();
+  determineFirstText();
 }
 
 void TextInput::removeLabel()
