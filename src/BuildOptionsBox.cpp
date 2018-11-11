@@ -23,15 +23,16 @@ void BuildOptionsBox::setUp()
   unsigned int i, nentries;
 
   clear();
-  addItem(&_addlbl);
   nentries = _entries.size();
   for ( i = 0; i < nentries; i++ )
   {
     addItem(&_entries[i]);
     _entries[i].setWidth(30);      // Gets resized later in draw()
-    _entries[i].setPosition(3+2*(i+1),1);
+    _entries[i].setPosition(3+2*i,1);
     _entries[i].setLabel(int_to_string(i+1) + ". ");
   }
+  addItem(&_addlbl);
+  _addlbl.setPosition(3+2*nentries,1);
   if (nentries > 0)
   {
     addItem(&_removelbl);
@@ -46,6 +47,11 @@ void BuildOptionsBox::setUp()
     _items[numItems()-1]->setPosition(3+2*(nentries+1)-1,1);
     _items[numItems()-1]->setWidth(30); // Gets resized later in draw()
   }
+
+  // Highlight the +Add button
+
+  _prevhighlight = 0;
+  _highlight = nentries;
 }
 
 /*******************************************************************************
@@ -75,8 +81,6 @@ Constructor
 *******************************************************************************/
 BuildOptionsBox::BuildOptionsBox()
 {
-  TextInput first_entry;
-
   _addlbl.setSelectable(true);
   _addlbl.setName("+ Add (press space)");
   _addlbl.setPosition(3,1);
@@ -85,9 +89,7 @@ BuildOptionsBox::BuildOptionsBox()
   _removelbl.setName("- Remove last (press space)");
   _removelbl.setColor(colors.getPair("header_popup", "bg_popup"));
   _entries.clear();
-  _entries.push_back(first_entry);
   setUp();
-  setHighlight(1);
 }
 
 /*******************************************************************************
@@ -190,13 +192,14 @@ void BuildOptionsBox::draw(bool force)
   int rows, cols;
   unsigned int i, nitems;
 
-  getmaxyx(_win, rows, cols);
   if (force) { _redraw_type = "all"; }
 
   // Set width of everything
 
   if (_redraw_type == "all")
   {
+    determineFirstPrint();
+    getmaxyx(_win, rows, cols);
     nitems = numItems();
     for ( i = 0; i < nitems; i++ )
     {
