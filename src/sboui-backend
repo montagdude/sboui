@@ -57,9 +57,9 @@ function get_current_version ()
 function check_ponce_repo ()
 {
   if [ "$REPO" == "git://github.com/Ponce/slackbuilds.git" ]; then
-    echo true
+    echo 1
   else
-    echo false
+    echo 0
   fi
 }
 
@@ -117,7 +117,7 @@ function update ()
     if [ $CHECK -ne 0 ]; then
       exit $CHECK
     fi
-    if ! $PONCEREPO; then
+    if [ $PONCEREPO -eq 0 ]; then
       cd $BASEDIR
       CHECK=$(checkout_git_branch $BRANCH)
       if [ $CHECK -ne 0 ]; then
@@ -128,7 +128,7 @@ function update ()
   # Master branch can just use git pull, but Ponce's must be re-downloaded
   # http://www.linuxquestions.org/questions/slackware-14/what-is-the-correct-url-and-command-to-git-clone-slackbuilds-current-4175578557/#post5537842
   else
-    if ! $PONCEREPO; then
+    if [ $PONCEREPO -eq 0 ]; then
       cd $REPO_DIR
       CHECK=$(checkout_git_branch $BRANCH)
       if [ $CHECK -ne 0 ]; then
@@ -159,7 +159,7 @@ function check_installed ()
 {
   local BUILD=$1
   local PKGLIST=$(find /var/log/packages -maxdepth 1 -name "$BUILD*")
-  local INSTALLED=false
+  local INSTALLED=0
   local PKG BUILDNAME
 
   # There can be multiple packages fitting the pattern, so loop through them
@@ -170,13 +170,13 @@ function check_installed ()
       PKG=$(basename "$PKG")
       BUILDNAME=$(get_installed_name "$PKG")
       if [ "$BUILDNAME" == "$BUILD" ]; then
-        INSTALLED=true
+        INSTALLED=1
         break
       fi
     done
   fi
 
-  if $INSTALLED; then
+  if [ $INSTALLED -eq 1 ]; then
     echo $PKG
   else
     echo "Not installed"
@@ -191,17 +191,17 @@ function user_choice ()
   local __CHOICE=$2
   local TEMPCHOICE
 
-  local VALIDCHOICE=false
-  while ! $VALIDCHOICE
+  local VALIDCHOICE=0
+  while [ $VALIDCHOICE -eq 0 ]
   do
     echo -ne "$__MSG (y/n): "
     read TEMPCHOICE
     if [[ "$TEMPCHOICE" == "y" || "$TEMPCHOICE" == "Y" ]]; then
       TEMPCHOICE="y"
-      VALIDCHOICE=true
+      VALIDCHOICE=1
     elif [[ "$TEMPCHOICE" == "n" || "$TEMPCHOICE" == "N" ]]; then
       TEMPCHOICE="n"
-      VALIDCHOICE=true
+      VALIDCHOICE=1
     else
      echo "Please enter y or n."
     fi
