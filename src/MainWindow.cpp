@@ -1933,7 +1933,9 @@ int MainWindow::initialize(MouseEvent * mevent)
   { 
     clearStatus();
     displayError("Error reading SlackBuilds repository. Please make sure that "
-                + std::string("you have set repo_dir correctly in sboui.conf."),
+                + std::string("you have set repo_dir correctly in sboui.conf. ")
+                + std::string("If this is the first time sboui has been run, ")
+                + std::string("type 's' to sync the local repository."),
                  true, "Error", "Ok", mevent);
   }
   else 
