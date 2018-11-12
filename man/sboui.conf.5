@@ -201,6 +201,10 @@ When there is an error, the command should exit with an error code other than 0.
 This setting is only required for a
 \fBcustom package_manager\fB.
 .IP
+Using the built-in
+.BR package_manager ,
+the default value of this setting is \fBsboui-backend install -f\fR.
+.IP
 If
 .B sbopkg
 is used as the
@@ -262,7 +266,7 @@ keyboard shortcut or in the options window.
 .TP
 .B package_manager
 .br
-\fBsbopkg\fR|\fBsbotools\fR|\fBcustom\fR
+\fBbuilt-in\fR|\fBsbopkg\fR|\fBsbotools\fR|\fBcustom\fR
 .br
 default: [none]
 .br
@@ -282,7 +286,8 @@ and
 Requirements for each of these commands are given in their respective entries in this manual.
 .IP
 If
-.B sbopkg
+.BR built-in ,
+.BR sbopkg ,
 or
 .B sbotools
 is used as the
@@ -346,6 +351,10 @@ The considerations described in the
 entry regarding the package manager's dependency resolution and notification settings also apply here.
 This setting is only required for a
 \fBcustom package_manager\fB.
+.IP
+Using the built-in
+.BR package_manager ,
+the default value of this setting is \fBsboui-backend install -f\fR.
 .IP
 If
 .B sbopkg
@@ -486,6 +495,10 @@ When there is an error, the command should exit with an error code other than 0.
 This setting is only required for a
 \fBcustom package_manager\fB.
 .IP
+Using the built-in
+.BR package_manager ,
+the default value of this setting is \fBsboui-backend update\fR.
+.IP
 If
 .B sbopkg
 is used as the
@@ -554,6 +567,10 @@ entry regarding the package manager's dependency resolution and notification set
 This setting is only required for a
 \fBcustom package_manager\fB.
 .IP
+Using the built-in
+.BR package_manager ,
+the default value of this setting is \fBsboui-backend install -f\fR.
+.IP
 If
 .B sbopkg
 is used as the
@@ -574,11 +591,10 @@ no default value is set, and
 will exit with an error if this setting is not present.
 .IP
 .BR WARNING :
-sboui will execute whatever is written in this command (most likely as root) without trying to determine whether it is harmful or not.
-\fBDO NOT\fR set this variable or any of the related variables (\fBupgrade_vars\fR or \fBupgrade_clos\fR) to any command that may damage your system.
-Neither
-.B sboui
-nor the author(s) are responsible for any damaged caused to your system by setting this command in a harmful way.
+The warnings for
+.B install_cmd
+apply here also.
+Please do not change this variable to something that will cause harm to your system when executed.
 .TP
 .B upgrade_vars
 .br
@@ -632,28 +648,6 @@ System-wide configuration file for
 Per-user override of
 .IR /etc/sboui/sboui.conf .
 Note: this file is overwritten when settings are changed in the Options window of the user interface.
-.TP
-Color theme files
-.br
-Files defining colors for different UI elements.
-System color themes are stored in
-.IR /usr/share/sboui/themes .
-Users can also add their own color themes in
-.IR $HOME/.local/share/sboui/themes.
-If not present, default color settings will be used.
-.TP
-Build options files
-.br
-Files containing build options for SlackBuilds.
-There is one file per SlackBuild, with the naming convention {SlackBuild name}.buildopts.
-They are stored in
-.IR /var/lib/sboui/buildopts .
-.IP
-These files are automatically created by
-.B sboui
-when build options are set through the user interface and
-.B save_buildopts
-is enabled, but they can also be created manually if desired.
 .SH NOTES
 .B sboui
 uses the

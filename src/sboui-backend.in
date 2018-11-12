@@ -2,7 +2,7 @@
 #
 # Load configuration
 #
-CONF=${CONF:-/etc/sboui/sboui-backend.conf}
+CONF=${CONF:-@CONFDIR@/sboui-backend.conf}
 . $CONF
 
 # Build location
@@ -22,7 +22,7 @@ function remove_quotes ()
 }
 
 ################################################################################
-# Gets SlackBuild name from installed package name in /var/log/packages
+# Gets SlackBuild name from installed package name
 function get_installed_name ()
 {
   local PKG=$1
@@ -158,7 +158,7 @@ function update ()
 function check_installed ()
 {
   local BUILD=$1
-  local PKGLIST=$(find /var/log/packages -maxdepth 1 -name "$BUILD*")
+  local PKGLIST=$(find @PACKAGEDIR@ -maxdepth 1 -name "$BUILD*")
   local INSTALLED=0
   local PKG BUILDNAME
 

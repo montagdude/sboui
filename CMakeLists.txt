@@ -32,6 +32,7 @@ set(PACKAGEDIR /var/log/packages
 
 # Preprocessor definitions
 add_definitions(-DPACKAGE_VERSION=\"${SBOUI_VERSION}\")
+add_definitions(-DCONFDIR=\"${CONFDIR}\")
 add_definitions(-DPACKAGE_DIR=\"${PACKAGEDIR}\")
 add_definitions(-DDATADIR=\"${DATADIR}\")
 
@@ -51,9 +52,12 @@ if (LIBCONFIG++_FOUND)
   target_link_libraries(sboui ${LIBCONFIG++_LIBRARY})
 endif (LIBCONFIG++_FOUND)
 
+# Configure sboui-backend
+configure_file(src/sboui-backend.in sboui-backend @ONLY)
+
 # Install rules
 install(TARGETS sboui DESTINATION sbin)
-install(FILES src/sboui-backend
+install(FILES ${CMAKE_BINARY_DIR}/sboui-backend
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
                     GROUP_READ             GROUP_EXECUTE
                     WORLD_READ             WORLD_EXECUTE

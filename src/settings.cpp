@@ -14,6 +14,10 @@
   #define DATADIR "/usr/share/sboui"
 #endif
 
+#ifndef CONFDIR
+  #define CONFDIR "/etc/sboui"
+#endif
+
 namespace settings
 {
   std::string repo_dir, repo_tag;
@@ -39,7 +43,7 @@ std::vector<ColorTheme> color_themes;
 using namespace settings;
 using namespace libconfig;
 
-const std::string default_conf_file = "/etc/sboui/sboui.conf";
+const std::string default_conf_file = CONFDIR "/sboui.conf";
 
 /*******************************************************************************
 
