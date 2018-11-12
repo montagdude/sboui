@@ -2357,7 +2357,7 @@ int MainWindow::listUpgradable()
         nupgradable += _blistboxes[i].numItems();
       }
       if (nupgradable == 1)
-        std::cout << "1 upgradable SlackBuild.";
+        std::cout << "1 upgradable SlackBuild." << std::endl;
       else
       {
         std::cout << int_to_string(nupgradable) + " upgradable SlackBuilds."
