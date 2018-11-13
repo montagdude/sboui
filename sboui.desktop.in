@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Exec=${GRAPHICAL_SU_CMD} "${TERMINAL_EMULATOR} -e ${BASH_SBOUI_CMD}"
+Name=sboui
+GenericName=SBo interactive package manager
+Comment=Install, upgrade, or remove SBo packages
+Icon=package-manager-icon
+Terminal=false
+Categories=PackageManager;System;
+StartupNotify=true
+Type=Application
