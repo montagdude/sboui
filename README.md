@@ -1,129 +1,94 @@
 Overview
 ================================================================================
-sboui is an ncurses-based user interface for sbopkg, sbotools, and similar tools
-to build and install software from SlackBuild scripts hosted at SlackBuilds.org
-(SBo). Unlike many Slackware system administration tools with dialog-based user
-interfaces, sboui is written in C++ utilizing low-level ncurses library calls.
-This approach allows much greater flexibility in the design of the user
-interface and also makes it very fast. The main features of sboui include:
+sboui is a package management tool for SlackBuilds.org (SBo). It features an
+ncurses user interface that combines the user-friendliness typically found in
+a GUI with the efficiency, light weight, and portability of a text interface.
+It can function as a stand-alone package manager or serve as a front-end to
+sbopkg, sbotools, or custom package managers. Its main features include:
 
-* Two-pane browsable listing of software groups and names
-* Filters: all, installed, upgradable, tagged, blacklisted, non-dependencies,
-  and build options set
-* Search the repository, including searching in READMEs
-* Dependency resolution: forward and inverse mode
-* View and edit files in the repository
-* Tag multiple packages (or entire groups) to apply batch changes
-* Blacklist installed packages by name or regex pattern
-* Manage build options for SlackBuilds and remember them across sessions
-* Automatically rebuild inverse dependencies (optional)
-* Comes with several built-in color themes and supports custom themes
-* Designed for and tested to work flawlessly with sbopkg and sbotools, but it is
-  easy to set it up to work with your own custom package manager
-* Includes a built-in package manager, sboui-backend, that can be used instead
-  of sbopkg or sbotools
+* Efficient operation with the keyboard, and full mouse support
+* Forward and inverse dependency resolution
+* Automatic rebuilding of inverse dependencies (optional)
+* Blacklisting
+* Storing build options for individual SlackBuild scripts
+* "Tagging" to operate on multiple SlackBuilds
+* Searching the repository by name or by content in READMEs
+* A menu bar, buttons, drop-downs, and other elements typically found in GUI
 
 Installation
 ================================================================================
-sboui is available from SlackBuilds.org, so you can install it from there using
-the SlackBuild script or your favorite package manager. libconfig is one (the
-only) dependency outside of a standard Slackware install. If you want to do a
-custom build, see the instructions in the included file called INSTALL. 
+sboui is available from SlackBuilds.org, which is the recommended method for
+obtaining it. Of course, custom and local builds are also possible; see the
+INSTALL file for more information.
 
-Use
+Operation
 ================================================================================
-The basic concept of sboui is to browse software from SlackBuilds.org using a 
-two-pane listing organized by groups. Switch between the right and left panes
-with the arrow keys or Tab, and navigate within a pane using the arrow keys,
-Home, End or PageUp/PageDown.
+The interface and operation of sboui was inspired by Midnight Commander, a
+two-pane file manager with a text-based interface. If you are familiar with
+that application, sboui should be very easy to pick up. 
 
-The first thing you normally will want to do after starting sboui is to sync the
-local repository with the official remote SlackBuilds.org repository. This
-ensures that sboui has the latest information about available software and
-versions. The s key performs the sync operation, displays the result on the
-screen, and then lets you return to the main window.
+On first-time use, you may first need to set up the repository. You can do this
+with the sync command, which can be found under Actions in the menu bar, using
+the 's' keyboard shortcut, or from the command line using the --sync command
+line option. You should also run the sync command regularly to check for
+updates.
 
-After you have highlighted the name of some software of interest in the right
-pane, use the Enter key to see possible actions (e.g., view the README, install,
-upgrade, remove, compute the build order, or browse files). Choose an action by
-highlighting the desired entry and pressing Enter, or use a hotkey. When you
-choose any action that modifies installed software on your computer, sboui
-computes the dependencies recursively in the proper order to build it and lets
-you choose whether to take action on each one. Building something with lots of
-dependencies is easy; just select it, choose "Install," and press Enter to build
-and install it and all its dependencies. You can also interactively choose to
-skip some dependencies or turn off dependency resolution completely if desired.
+If you already have a local repository set up (for example, if you are using
+sboui as a front-end to sbopkg or sbotools), then make sure that repo_dir is set
+correctly in the config file. All settings can also be edited interactively in
+the Options window (under File in the menu bar or using the 'o' keyboard
+shortcut). sboui can also automatically set the relevant config variables when
+changing the package manager from the Options window.
 
-sboui also provides filters to display only a subset of software in the two
-panes. When you start the program, all SlackBuilds in the repository will be
-listed. The f key allows you to select from several filters to show only those
-SlackBuilds meeting certain criteria (e.g., installed, upgradable, tagged, and
-others). You can also filter by a search criterion with the / key.
+To install a package, browse for it in the main window or use a search to locate
+it. Search can be found under Actions in the menu bar, or using the '/' keyboard
+shortcut. Select the desired package in the right pane and click Enter or
+double-click with the mouse. This will bring up a list of actions that can be
+performed for that package, including viewing the README, browsing the files for
+the SlackBuild in the repository, installing, etc. When a package is installed,
+upgraded, reinstalled, or removed, sboui automatically computes the build order
+and offers suggestions for each package in the build order. If you do not wish
+to perform the suggested action for each of these packages, you can toggle it by
+left-clicking in the box or using the space bar.
 
-It's often desired to apply changes in batch. For example, you may want to
-upgrade everything on your system that you have installed from SlackBuilds.org.
-In sboui, this is done by "tagging." Press t to tag the highlighted software
-or the entire group (if done in the left pane). Then, use keyboard shortcuts to
-apply some action to everything that is tagged. For example, "i" installs
-everything that is tagged, and "u" upgrades everything that is tagged. sboui is
-smart enough to only apply the action when possible -- it will not try to
-upgrade something that you have tagged which is not upgradable, for example.
+To upgrade all, you can use the Ctrl-u keyboard combination, look in the menu
+bar under Actions, or use the --upgrade-all command line option. This action is
+a convenience method which does the following: filter by upgradable SlackBuilds,
+tag all, and then upgrade tagged. The same can be done manually if desired.
+To tag, use the 't' keyboard shortcut with any SlackBuild highlighted in most
+display lists in sboui, or, alternatively, right-click with the mouse. Entire
+groups can be tagged by tagging an entry in the Groups list. Filters can be
+selected in the menu bar or with the 'f' keyboard shortcut.
 
-This is just a brief overview of how to use sboui, but there is much more that
-it can do. Take a look at the available keyboard shortcuts (by pressing the ?
-key) and have fun!
-
-Built-in package manager
-================================================================================
-sboui comes with a built-in package manager, sboui-backend, that can be used
-instead of sbopkg or sbotools. It can also be run standalone from the command
-line. Please see the man pages for sboui-backend and sboui-backend.conf for more
-information.
+This has been a brief introduction to sboui's capabilities and usage. Please
+take a look at the keyboard and mouse shortcuts under Help in the menu as well
+well as the man pages, and have fun!
 
 Using sboui with custom package managers
 ================================================================================
-sboui is designed for and tested to work with sbopkg, sbotools, and
-sboui-backend, but it is also easy to use it with custom package managers or
-scripts. These requirements need to be met:
+sboui can be used with custom SBo package management tools, instead of the
+built-in package manager (sboui-backend), sbopkg, or sbotools. The process is
+fairly simple, but there are a few requirements:
 
-* The package manager must store a local copy of the SlackBuilds.org repository
-  with a directory structure as follows: top level (includes subdirectories for
-  each group) -> group (includes subdirectories for each software entry in the
-  group) -> software (includes the SlackBuild script and related files to
-  download and build the software).
-* The package manager must implement a sync command (sync_cmd) to sync the local
-  repository with the official SlackBuilds.org repository.
-* The package manager must implement an install command (install_cmd) to build
-  and install the software package. sboui issues the install command in the
-  following form: `install_vars build_options install_cmd {software name}
-  install_clos`, where install_vars are global environment variables passed to
-  the package manager, build_options are per-SlackBuild environment variables
-  set within the UI, and install_clos are additional user-specified
-  command-line options. For example, for sbopkg, install_cmd is "sbopkg -B -i"
-  by default. If the package manager normally resolves dependencies, the install
-  command should disable this behavior, because sboui resolves dependencies
-  natively. The install command should build and install *only* the software
-  identified by {software name}.
-* The package manager must implement an upgrade command to build and upgrade
-  the software package. In general, this command has the same requirements as
-  the install command, and the two commands can actually be the same (such is
-  the case with sbopkg), unless the package manager doesn't permit the install
-  command to also be used for upgrades.
-* The package manager must implement a reinstall command to build and reinstall
-  the software package. This can be the same as the upgrade and install
-  commands depending on how they are implemented.
+* The package manager must store a local copy of the SlackBuilds.org repository.
+  Use the repo_dir config variable to point to the top level.
+* It must implement a sync / update command, referenced by sync_cmd.
+* It must implement install, upgrade, and reinstall commands. In general, these
+  can all actually be the same command, as long as it handles all these use
+  cases. These commands should not resolve dependencies, because sboui handles
+  that part. sboui will tack on the name of the package to be installed at the
+  end of these commands (install_cmd, upgrade_cmd, and reinstall_cmd). For
+  example, install_cmd for sbopkg is "sbopkg -B -i".
 
-In addition to what is listed above, each of the above commands should ideally
-do the following for the best user experience:
+In addition to the above, the following are recommended for optimal user
+experience:
 
-* When there is an error, the package manager should exit with an error code
-  (something other than 0). This allows sboui to know that the command failed
-  and display an error message. Otherwise, sboui may indicate the command
-  succeeded when it actually did not.
-* These commands should not present the user with any prompts or questions. (If
-  they do by default, this behavior should be disabled in the specification of
-  sync_cmd, install_cmd, upgrade_cmd, and reinstall_cmd when used with sboui.) =
-  Otherwise, there will be duplicate prompts from sboui and the package manager.
+* When there is an error, the package manager should exit with a return value
+  other than 0. Otherwise, sboui will indicate that the command succeeded when
+  it actually failed.
+* No prompts or questions should be presented to the user by any of these
+  commands, because sboui will do the same, resulting in tedious duplicated
+  prompts.
 
 Screenshots
 ================================================================================
