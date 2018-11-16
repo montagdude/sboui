@@ -4,50 +4,40 @@ sboui \- ncurses user interface for SlackBuilds.org package managers
 .SH SYNOPSIS
 .B sboui
 [\fB\-f\fR, \fB\-\-file\fR \fIFILE\fR] 
+.PP
+.B sboui
+[\fB\-s\fR, \fB\-\-sync\fR] 
+.PP
+.B sboui
+[\fB\-u\fR, \fB\-\-upgrade-all\fR] 
+.PP
+.B sboui
+[\fB\-p\fR, \fB\-\-upgradable\fR] 
 .SH DESCRIPTION
 .B sboui
-is an ncurses-based user interface for
+is a package management tool for SlackBuilds.org (SBo).
+It features an ncurses user interface that combines the user-friendliness typically found in a GUI with the efficiency, light weight, and portability of a text interface.
+It can function as a stand-alone package manager or serve as a front-end to
 .BR sbopkg ,
 .BR sbotools ,
-and similar tools to build and install software from SlackBuild scripts hosted at SlackBuilds.org (SBo).
-Unlike many Slackware system administration tools with 
-.BR dialog -based
-user interfaces,
-.B sboui
-is written in C++ utilizing low-level ncurses library calls.
-This approach allows much greater flexibility in the design of the user interface and also makes it very fast.
-The main features of
-.B sboui
-include:
+or custom SBo package managers.
+Its main features include:
 .IP \(bu
-Two-pane browsable listing of software groups and names
+Efficient operation with the keyboard, and full mouse support
 .IP \(bu
-Filters: all, installed, upgradable, tagged, blacklisted, and non-dependencies
+Forward and inverse dependency resolution
 .IP \(bu
-Search the repository, including searching in READMEs
+Automatic rebuilding of inverse dependencies (optional)
 .IP \(bu
-Dependency resolution: forward and inverse mode
+Blacklisting
 .IP \(bu
-View and edit files in the repository
+Storing build options for individual SlackBuild scripts
 .IP \(bu
-Tag multiple packages (or groups) to apply batch changes
+"Tagging" to operate on multiple SlackBuilds
 .IP \(bu
-Blacklist installed packages by name or regex pattern
+Searching the repository by name or by content in READMEs
 .IP \(bu
-Comes with several built-in color themes and supports custom themes
-.IP \(bu
-Designed for and tested to work flawlessly with
-.B sbopkg
-and 
-.BR sbotools ,
-but it is easy to set it up to work with your own custom package manager
-.IP \(bu
-Includes a built-in package manager,
-.BR sboui-backend ,
-that can be used instead of
-.B sbopkg
-or
-.BR sbotools .
+A menu bar, buttons, drop-downs, and other elements typically found in a GUI
 .PP
 .B Instructions
 .PP
@@ -67,11 +57,13 @@ that the user can choose to merge with or replace the original.
 See
 .BR sboui.conf (5)
 for more information about the configuration file.
-Note also that all options can be changed at runtime in the options dialog window, and doing so will overwrite
+Note also that all options can be changed interactively in the Options window, and doing so will overwrite
 .IR ~/.sboui.conf .
 .PP
 .B sboui
-is a keyboard-driven program.
+can be operated most efficiently with the keyboard.
+See the Help menu for a full list of shortcuts.
+Full mouse support is also implemented for those who prefer to use the mouse.
 To switch the active pane, use the
 .I Tab
 key or the
@@ -92,13 +84,11 @@ and
 to navigate lists and dialog boxes.
 When the right (or bottom, if using the vertical layout) list is active, press
 .I Enter
-to display possible actions for the highlighted software package.
+or double-click to display possible actions for the highlighted software package.
 The
 .I q 
 key quits the program.
-The 
-.I ?
-key displays the full list of keyboard shortcuts.
+Please see the Operation section in README.md for more information on typical workflows.
 .SH OPTIONS
 Command-line options for
 .B sboui
@@ -111,15 +101,29 @@ Specify a configuration file other than
 or
 .IR ~/.sboui.conf .
 .TP
-.BR \-\-help
+.BR \-s ", " \-\-sync
 .br
-Output a usage message and exit.
+Sync (update) the local repository non-interactively.
 .TP
-.BR \-\-version
+.BR \-u ", " \-\-upgrade-all
 .br
-Output the version number of
+Open
 .B sboui
-and exit.
+interactively with all upgradable SlackBuilds tagged for upgrade.
+.TP
+.BR \-p ", " \-\-upgradable
+.br
+Print the number of upgradable SlackBuilds and the list to stdout.
+.TP
+.BR \-h ", " \-\-help
+.br
+Print a summary of command line options to stdout.
+.TP
+.BR \-v ", " \-\-version
+.br
+Print version information for
+.B sboui
+to stdout.
 .SH EXIT STATUS
 The exit status is 0 if the command line options are valid and the configuration file was successfully read.
 If invalid command line options are specified, the configuration file could not be read, or the configuration file contains errors, the exit status is 1.
@@ -163,7 +167,7 @@ Regex patterns are allowed.
 .IP
 The package_blacklist is used to prevent software from being upgraded, reinstalled, or removed, but not from being installed in the first place. 
 These three actions will not be available for blacklisted packages.
-They will also be excluded from the ``upgradable`` filter and included in the ``blacklisted`` filter.
+Blacklisted packages will also be excluded from the Upgradable filter and included in the Blacklisted filter.
 .TP
 .I /etc/sboui/sboui-backend.conf
 .br
@@ -193,7 +197,6 @@ Files containing build options for SlackBuilds.
 There is one file per SlackBuild, with the naming convention {SlackBuild name}.buildopts.
 They are stored in
 .IR /var/lib/sboui/buildopts .
-.IP
 These files are automatically created by
 .B sboui
 when build options are set through the user interface and
