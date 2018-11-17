@@ -720,7 +720,7 @@ int MainWindow::showOptions(MouseEvent * mevent)
     {
       if (settings::repo_dir != old_repo_dir)
         msg = "Settings were successfully applied.\n\nSince repo_dir was "
-            + std::string("changed, please sync the repo using the s key ")
+            + std::string("changed, please sync the repo using the 's' key ")
             + std::string("before continuing.");
       else
         msg = "Settings were successfully applied.";
