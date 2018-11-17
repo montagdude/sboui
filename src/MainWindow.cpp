@@ -1905,6 +1905,7 @@ int MainWindow::initialize(MouseEvent * mevent)
 {
   BuildListBox initlistbox;
   int retval;
+  std::string msg;
 
   // Create windows (note: geometry gets set in redrawWindows);
 
@@ -1929,16 +1930,7 @@ int MainWindow::initialize(MouseEvent * mevent)
 
   // Set filter
 
-  if (retval != 0) 
-  { 
-    clearStatus();
-    displayError("Error reading SlackBuilds repository. Please make sure that "
-                + std::string("you have set repo_dir correctly in sboui.conf. ")
-                + std::string("If this is the first time sboui has been run, ")
-                + std::string("type 's' to sync the local repository."),
-                 true, "Error", "Ok", mevent);
-  }
-  else 
+  if (retval == 0)
   { 
     if (_filter == "installed SlackBuilds") { filterInstalled(); }
     else if (_filter == "upgradable SlackBuilds") { filterUpgradable(); }
@@ -1948,6 +1940,18 @@ int MainWindow::initialize(MouseEvent * mevent)
     else if (_filter == "SlackBuilds with build options set")
       filterBuildOptions();
     else { filterAll(mevent); }
+  }
+  else
+  { 
+    clearStatus();
+    if (retval == 1)
+      msg = "Error reading SlackBuilds repository.";
+    else
+      msg = "SlackBuilds repository is empty.";
+    msg += "Please make sure that you have set repo_dir correctly ";
+    msg += "in sboui.conf. If this is the first time sboui has been run, ";
+    msg += "type 's' to sync the local repository.";
+    displayError(msg, true, "Error", "Ok", mevent);
   }
   draw(true);
 

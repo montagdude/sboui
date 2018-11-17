@@ -27,7 +27,7 @@ Blacklist package_blacklist;
 /*******************************************************************************
 
 Gets list of SlackBuilds by reading repo directory. Returns 0 if successful,
-1 if directory cannot be read.
+1 if directory cannot be read, 2 if directory is empty.
 
 *******************************************************************************/
 int read_repo(std::vector<std::vector<BuildListItem> > & slackbuilds)
@@ -46,6 +46,7 @@ int read_repo(std::vector<std::vector<BuildListItem> > & slackbuilds)
 
   slackbuilds.resize(0); 
   ncategories = top_dir.size();
+  if (ncategories == 0) { return 2; }
   for ( i = 0; i < ncategories; i++ )
   {
     cat_entry = top_dir(i);

@@ -108,7 +108,7 @@ function update ()
   local CHECK=0
   
   # Create local git directory if needed
-  if [ ! -d "$REPO_DIR" ]; then
+  if [ ! -d "$REPO_DIR"/.git ]; then
     mkdir -p $REPO_DIR
     cd $REPO_DIR/../
     rm -rf $BASEDIR
