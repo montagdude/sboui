@@ -333,9 +333,7 @@ std::string TagList::exec(MouseEvent * mevent)
       retval = " ";
       _items[_highlight]->setBoolProp("marked", 
                                  (! _items[_highlight]->getBoolProp("marked")));
-      check_redraw = highlightNext();
-      if (check_redraw == 1) { _redraw_type = "all"; }
-      else { _redraw_type = "changed"; }
+      _redraw_type = "changed";
       break;
 
     // Mouse
