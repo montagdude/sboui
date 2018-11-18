@@ -47,6 +47,11 @@ class Color {
     int getPair(const std::string & fg_label,
                 const std::string & bg_label) const;
 
+    /* Bold / blink properties */
+
+    bool pairIsBold(int vec_idx) const;
+    bool pairBlinks(int vec_idx) const;
+
     /* Turn color setting on or off in window */
 
     int turnOn(WINDOW *win, const std::string & fg_label,

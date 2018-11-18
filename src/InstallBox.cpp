@@ -34,9 +34,11 @@ void InstallBox::redrawFrame()
   left = std::floor(mid - double(namelen)/2.0);
   right = left + namelen;
   wmove(_win, 0, left);
-  colors.turnOn(_win, "fg_title", "bg_title");
+  if (colors.turnOn(_win, "fg_title", "bg_title") != 0)
+    wattron(_win, A_BOLD);
   wprintw(_win, _name.c_str());
-  colors.turnOff(_win);
+  if (colors.turnOff(_win) != 0)
+    wattroff(_win, A_BOLD);
 
   // Corners
 

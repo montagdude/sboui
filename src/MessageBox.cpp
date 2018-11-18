@@ -31,12 +31,13 @@ void MessageBox::redrawFrame()
   left = std::floor(mid - double(namelen)/2.0) + 1;
   wmove(_win, 1, 1);
   wclrtoeol(_win);
-  if (_header_colorize) { colors.turnOn(_win, "fg_title", "bg_title"); }
-  else { wattron(_win, A_BOLD); }
+  if ( (! _header_colorize) ||
+       (colors.turnOn(_win, "fg_title", "bg_title") != 0) )
+    wattron(_win, A_BOLD);
   printSpaces(left-1);
   printToEol(_name);
-  if (_header_colorize) { colors.turnOff(_win); }
-  else { wattroff(_win, A_BOLD); }
+  if ( (! _header_colorize) || (colors.turnOff(_win) != 0) )
+    wattroff(_win, A_BOLD);
 
   // Corners
 

@@ -16,6 +16,7 @@ class Label: public InputItem {
 
     int _color_idx;
     bool _hline;
+    bool _bold;
 
   public:
 
@@ -30,6 +31,9 @@ class Label: public InputItem {
     void setColor(int color_idx);
     void setSelectable(bool selectable);
     void setHLine(bool hline);
+    void setBold(bool bold);    // Note: if color is available, it is preferred
+                                // to do this with a bold ("bright") fg color
+                                // instead
 
     /* User interaction */
 

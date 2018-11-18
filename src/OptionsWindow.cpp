@@ -101,6 +101,7 @@ OptionsWindow::OptionsWindow()
   // UI settings
 
   _ui_settings.setColor(colors.getPair("header", "bg_normal"));
+  _ui_settings.setBold(true);
   addItem(&_ui_settings);
   _items[count]->setName("User interface settings");
   _items[count]->setPosition(line,1);
@@ -154,6 +155,7 @@ OptionsWindow::OptionsWindow()
   // Color settings
 
   _color_settings.setColor(colors.getPair("header", "bg_normal"));
+  _color_settings.setBold(true);
   addItem(&_color_settings);  
   _items[count]->setName("Color settings");
   _items[count]->setPosition(line,1);
@@ -189,6 +191,7 @@ OptionsWindow::OptionsWindow()
   // Package manager settings
 
   _pm_settings.setColor(colors.getPair("header", "bg_normal"));
+  _pm_settings.setBold(true);
   addItem(&_pm_settings);  
   _items[count]->setName("Package manager settings");
   _items[count]->setPosition(line,1);

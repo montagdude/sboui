@@ -19,6 +19,7 @@ Label::Label()
   _color_idx = -1;
   _selectable = false;
   _hline = false;
+  _bold = false;
 }
 
 Label::Label(bool selectable)
@@ -28,6 +29,7 @@ Label::Label(bool selectable)
   _color_idx = -1;
   _selectable = selectable;
   _hline = false;
+  _bold = false;
 }
 
 Label::Label(bool selectable, bool hline)
@@ -37,6 +39,7 @@ Label::Label(bool selectable, bool hline)
   _color_idx = -1;
   _selectable = selectable;
   _hline = hline;
+  _bold = false;
 }
 
 /*******************************************************************************
@@ -47,6 +50,7 @@ Set attributes
 void Label::setColor(int color_idx) { _color_idx = color_idx; }
 void Label::setSelectable(bool selectable) { _selectable = selectable; }
 void Label::setHLine(bool hline) { _hline = hline; }
+void Label::setBold(bool bold) { _bold = bold; }
 
 /*******************************************************************************
 
@@ -96,6 +100,9 @@ void Label::draw(int y_offset, bool force, bool highlight)
   }
   else { colors.turnOn(_win, _color_idx); }
 
+  if ( (_bold) && (! colors.pairIsBold(_color_idx)) )
+    wattron(_win, A_BOLD);
+
   if (_hline)
     for ( i = 0; i < _width; i++ ) { waddch(_win, ACS_HLINE); }
   else
@@ -105,6 +112,10 @@ void Label::draw(int y_offset, bool force, bool highlight)
   {
     if (highlight && _selectable) { wattroff(_win, A_REVERSE); }
   }
+
+  if ( (_bold) && (! colors.pairIsBold(_color_idx)) )
+    wattroff(_win, A_BOLD);
+
   wrefresh(_win);
 }
 

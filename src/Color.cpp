@@ -147,6 +147,35 @@ int Color::getPair(const std::string & fg_label,
 
 /*******************************************************************************
 
+Bold / blink properties. Return false for invalid pair.
+
+*******************************************************************************/
+bool Color::pairIsBold(int vec_idx) const
+{
+  color_pair mypair;
+
+  // Get color pair
+
+  if ( (vec_idx == -1) || (vec_idx >= int(_colors.size())) ) { return false; }
+  mypair = _colors[vec_idx];
+
+  return mypair.use_bold;
+}
+
+bool Color::pairBlinks(int vec_idx) const
+{
+  color_pair mypair;
+
+  // Get color pair
+
+  if ( (vec_idx == -1) || (vec_idx >= int(_colors.size())) ) { return false; }
+  mypair = _colors[vec_idx];
+
+  return mypair.use_blink;
+}
+
+/*******************************************************************************
+
 Turn color on or off
 
 *******************************************************************************/

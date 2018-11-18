@@ -302,10 +302,12 @@ void InputBox::redrawFrame()
   left = std::floor(mid - double(msglen)/2.0) + 1;
   wmove(_win, 1, 1);
   wclrtoeol(_win);
-  colors.turnOn(_win, "fg_title", "bg_title");
+  if (colors.turnOn(_win, "fg_title", "bg_title") != 0)
+    wattron(_win, A_BOLD);
   printSpaces(left-1);
   printToEol(_msg);
-  colors.turnOff(_win);
+  if (colors.turnOff(_win) != 0)
+    wattroff(_win, A_BOLD);
 
   // Corners
 
