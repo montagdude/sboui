@@ -152,6 +152,7 @@ int InputBox::highlightPreviousPage()
   {
     if ( (_items[i]->posy() >= _firstprint) && (_items[i]->selectable()) )
     {
+      _prevhighlight = _highlight;
       _highlight = i;
       highlight_found = true;
       break;
@@ -201,6 +202,7 @@ int InputBox::highlightNextPage()
   {
     if ( (_items[i]->posy() >= _firstprint) && (_items[i]->selectable()) )
     {
+      _prevhighlight = _highlight;
       _highlight = i;
       highlight_found = true;
       break;
