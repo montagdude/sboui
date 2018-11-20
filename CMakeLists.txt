@@ -94,4 +94,6 @@ install(FILES man/sboui.8 man/sboui-backend.8 DESTINATION ${MANDIR}/man8)
 install(FILES man/sboui.conf.5 man/sboui-backend.conf.5
         DESTINATION ${MANDIR}/man5)
 install(FILES ${CMAKE_BINARY_DIR}/sboui.desktop
-       DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)
+install(FILES icons/sboui.png
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps)
