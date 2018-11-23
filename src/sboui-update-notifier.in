@@ -9,7 +9,7 @@ def sbo_updates_available():
   proc = subprocess.Popen(['${CMAKE_INSTALL_PREFIX}/sbin/sboui', '-p'],
                           stdout=subprocess.PIPE)
   for line in iter(proc.stdout.readline,''):
-    if line.find("upgradable SlackBuilds") != -1:
+    if line.find("upgradable SlackBuild") != -1:
       if line.startswith("No"):
         return False
       else:
