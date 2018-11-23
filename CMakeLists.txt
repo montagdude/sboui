@@ -30,11 +30,19 @@ set(PACKAGEDIR /var/log/packages
     CACHE PATH "Location of installed packages list."
 )
 
+set(CRONDIR /etc/cron.hourly
+    CACHE PATH "Directory for sboui --sync cronjob (only if INSTALL_SYSTRAY_NOTIFIER is enabled)."
+)
+
 # Variables related to the Exec command in the desktop launcher
 set(GRAPHICAL_SU kdesu
     CACHE STRING "Graphical frontend for su (for desktop launcher)")
 set(TERMINAL_EMULATOR xterm
     CACHE STRING "Terminal emulator (for desktop launcher)")
+
+# Whether to install --sync cronjob and systray update notifier
+set(INSTALL_SYSTRAY_NOTIFIER FALSE
+    CACHE BOOL "Whether to install --sync cronjob and systray update notifier")
 
 # kdesu requires -c to before command
 if (${GRAPHICAL_SU} STREQUAL "kdesu")
@@ -42,16 +50,6 @@ if (${GRAPHICAL_SU} STREQUAL "kdesu")
 else (${GRAPHICAL_SU} STREQUAL "kdesu")
     set(GRAPHICAL_SU_CMD "${GRAPHICAL_SU}")
 endif (${GRAPHICAL_SU} STREQUAL "kdesu")
-
-# rxvt and urxvt do not work with inner quotes
-if (${TERMINAL_EMULATOR} STREQUAL "rxvt" OR
-    ${TERMINAL_EMULATOR} STREQUAL "urxvt")
-    set(BASH_SBOUI_CMD "/bin/bash -l -c /usr/sbin/sboui")
-else (${TERMINAL_EMULATOR} STREQUAL "rxvt" OR
-      ${TERMINAL_EMULATOR} STREQUAL "urxvt")
-    set(BASH_SBOUI_CMD "'/bin/bash -l -c /usr/sbin/sboui'")
-endif (${TERMINAL_EMULATOR} STREQUAL "rxvt" OR
-       ${TERMINAL_EMULATOR} STREQUAL "urxvt")
 
 # Preprocessor definitions
 add_definitions(-DPACKAGE_VERSION=\"${SBOUI_VERSION}\")
@@ -75,9 +73,13 @@ if (LIBCONFIG++_FOUND)
   target_link_libraries(sboui ${LIBCONFIG++_LIBRARY})
 endif (LIBCONFIG++_FOUND)
 
-# Configure sboui-backend and desktop launcher
+# Configure files
 configure_file(src/sboui-backend.in sboui-backend @ONLY)
+configure_file(src/sboui_launch.in sboui_launch @ONLY)
+configure_file(src/sboui_update_launch.in sboui_update_launch @ONLY)
+configure_file(src/sboui-update-notifier.in sboui-update-notifier)
 configure_file(sboui.desktop.in sboui.desktop)
+configure_file(etc/sboui-sync.cron.in sboui-sync.cron @ONLY)
 
 # Install rules
 install(TARGETS sboui DESTINATION sbin)
@@ -86,6 +88,16 @@ install(FILES ${CMAKE_BINARY_DIR}/sboui-backend
                     GROUP_READ             GROUP_EXECUTE
                     WORLD_READ             WORLD_EXECUTE
         DESTINATION sbin)
+install(FILES ${CMAKE_BINARY_DIR}/sboui_launch
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                    GROUP_READ             GROUP_EXECUTE
+                    WORLD_READ             WORLD_EXECUTE
+        DESTINATION libexec/sboui)
+install(FILES ${CMAKE_BINARY_DIR}/sboui_update_launch
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                    GROUP_READ             GROUP_EXECUTE
+                    WORLD_READ             WORLD_EXECUTE
+        DESTINATION libexec/sboui)
 install(FILES etc/sboui.conf etc/sboui-backend.conf etc/package_blacklist
         DESTINATION ${CONFDIR})
 file(GLOB COLOR_THEMES etc/colors.*)
@@ -95,5 +107,26 @@ install(FILES man/sboui.conf.5 man/sboui-backend.conf.5
         DESTINATION ${MANDIR}/man5)
 install(FILES ${CMAKE_BINARY_DIR}/sboui.desktop
         DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)
-install(FILES icons/sboui.png
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps)
+install(FILES icons/sboui.svg
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps)
+
+# The following are only installed if INSTALL_SYSTRAY_NOTIFIER is enabled
+if(INSTALL_SYSTRAY_NOTIFIER)
+    install(FILES ${CMAKE_BINARY_DIR}/sboui-update-notifier
+            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                        GROUP_READ             GROUP_EXECUTE
+                        WORLD_READ             WORLD_EXECUTE
+            DESTINATION bin)
+    install(FILES src/sboui-systray.py
+            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                        GROUP_READ             GROUP_EXECUTE
+                        WORLD_READ             WORLD_EXECUTE
+            DESTINATION libexec/sboui)
+    install(FILES ${CMAKE_BINARY_DIR}/sboui-sync.cron
+            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                        GROUP_READ             GROUP_EXECUTE
+                        WORLD_READ             WORLD_EXECUTE
+            DESTINATION ${CRONDIR})
+    install(FILES man/sboui-update-notifier.1
+            DESTINATION ${MANDIR}/man1)
+endif(INSTALL_SYSTRAY_NOTIFIER)

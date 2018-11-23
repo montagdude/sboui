@@ -1,0 +1,5 @@
+#!/bin/sh
+#
+# This script automatically syncs the SBo local repo using cron
+
+@CMAKE_INSTALL_PREFIX@/sbin/sboui -s

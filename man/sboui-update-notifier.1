@@ -1,0 +1,48 @@
+.TH SBOUI-UPDATE-NOTIFIER 1
+.SH NAME
+sboui-update-notifier \- system tray notifier for SBo package updates
+.SH SYNOPSIS
+.B sboui-update-notifier
+[\fBINTERVAL\fR] 
+.SH DESCRIPTION
+.B sboui-update-notifier
+checks whether SBo updates are available, notifies the user via a system tray icon, and optionally launches
+.B sboui
+to perform the upgrades.
+.PP
+.B Instructions
+.PP
+.B sboui-update-notifier
+is intended to be run as a startup script for the user's desktop environment or window manager to receive automatic update notifications for SBo packages.
+It is only installed when
+.B sboui
+is configured with
+.I INSTALL_SYSTRAY_NOTIFIER
+enabled.
+In that case, an hourly cronjob is also installed to automatically keep the local SBo repository up-to-date.
+.B sboui-update-notifier
+checks whether updates are available at a regular interval, and, if so, places the
+.B sboui
+icon in the system tray.
+When clicked,
+.B sboui
+is launched to perform the upgrades.
+.SH OPTIONS
+.B sboui-update-notifier
+accepts one optional command-line option:
+.TP
+.B \fBINTERVAL\fR
+.br
+Specify the period of time, in seconds, to wait between checks for updates.
+The default is 3600 seconds, or 1 hour.
+Note that this option does not affect the frequency at which the cronjob runs.
+To change that interval, move the cronjob from /etc/cron.hourly to another location, such as /etc/cron.daily.
+.SH BUGS
+Please report bugs to the email address below or on the issue tracker for sboui's project page,
+.IR https://github.com/montagdude/sboui .
+.SH SEE ALSO
+.BR sboui.conf (5),
+.BR sboui-backend (8),
+.BR sboui-backend.conf (5)
+.SH AUTHORS
+Daniel Prosser <dpross1100@msn.com>

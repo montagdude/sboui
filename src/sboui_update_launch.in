@@ -1,0 +1,3 @@
+#!/bin/bash -l
+
+@CMAKE_INSTALL_PREFIX@/sbin/sboui -u

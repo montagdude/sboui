@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
-Exec=${GRAPHICAL_SU_CMD} "${TERMINAL_EMULATOR} -e ${BASH_SBOUI_CMD}"
+TryExec=${CMAKE_INSTALL_PREFIX}/sbin/sboui
+Exec=${GRAPHICAL_SU_CMD} "${TERMINAL_EMULATOR} -e ${CMAKE_INSTALL_PREFIX}/libexec/sboui/sboui_launch"
 Name=sboui
 GenericName=SBo interactive package manager
 Comment=Install, upgrade, or remove SBo packages
