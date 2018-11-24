@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys
+import argparse
 from time import sleep
 import subprocess
 
@@ -8,26 +8,27 @@ def sbo_updates_available():
 
   proc = subprocess.Popen(['${CMAKE_INSTALL_PREFIX}/sbin/sboui', '-p'],
                           stdout=subprocess.PIPE)
+  retval = False
   for line in iter(proc.stdout.readline,''):
     if line.find("upgradable SlackBuild") != -1:
       if line.startswith("No"):
-        return False
+        break
       else:
-        return True
+        retval = True
+        break
+  proc.wait()
 
-  return False
+  return retval
 
 if __name__ == "__main__":
 
   # Sleep time in seconds
 
-  if len(sys.argv) > 1:
-    try:
-      interval = int(sys.argv[1])
-    except ValueError:
-      interval = 3600
-  else:
-    interval = 3600
+  parser = argparse.ArgumentParser(description='System tray notifier for SBo \
+                                   package updates.')
+  parser.add_argument('interval', nargs='?', default=3600, type=int,
+                      help='seconds of wait time between checks (default 3600)')
+  args = parser.parse_args()
 
   # Set update command (kdesu requires -c argument, others like gksu and ktsuss
   # don't)
@@ -53,4 +54,4 @@ if __name__ == "__main__":
       elif retval == 2:
         break
 
-    sleep(interval)
+    sleep(args.interval)
