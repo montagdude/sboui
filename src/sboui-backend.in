@@ -405,7 +405,7 @@ function install_slackbuild ()
 
   # Create file to mark time
   if [ "$CLEAN_TMP" == "yes" ]; then
-    touch /tmp/sboui.timemarker
+    local TMPFILE=$(mktemp /tmp/sboui.XXXXXX)
   fi
 
   # Download and check MD5SUMs
@@ -512,10 +512,10 @@ function install_slackbuild ()
   if [ "$CLEAN_PACKAGE" == "yes" ]; then
     rm $PKG
   fi
-  if [[ "$CLEAN_TMP" == "yes" && -f /tmp/sboui.timemarker ]]; then
+  if [[ "$CLEAN_TMP" == "yes" && -f $TMPFILE ]]; then
     find $TMP -mindepth 1 -maxdepth 1 -type d \
-              -cnewer /tmp/sboui.timemarker -exec rm -rf {} \;
-    rm /tmp/sboui.timemarker
+              -cnewer $TMPFILE -exec rm -rf {} \;
+    rm $TMPFILE
   fi
   if [[ $SOURCEOPT -eq 0 || "$(readlink -f $SOURCEDIR)" != "$REPO_DIR" ]]; then
     remove_sources $SOURCES
