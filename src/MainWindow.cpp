@@ -815,10 +815,10 @@ bool MainWindow::modifyPackage(BuildListItem & build,
                                MouseEvent * mevent)
 {
   WINDOW *installerwin;
-  int check, nchanged_orig, nchanged_new, response;
+  int check, nchanged_orig, nchanged_new, response, ndeps;
   std::string selection, msg, choice, deptxt, invdeptxt;
   bool getting_input, needs_rebuild;
-  unsigned int i, ndeps, ninvdeps, nforeign;
+  unsigned int i, ninvdeps, nforeign;
   std::vector<const BuildListItem *> foreign;
   InstallBox installer;
   BuildListItem *subbuild;
