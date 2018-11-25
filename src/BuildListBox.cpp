@@ -279,8 +279,10 @@ unsigned int BuildListBox::tagAll()
     for ( i = 0; i < nitems; i++ ) 
     { 
       if (_items[i]->getBoolProp("tagged")) 
+      {
         _items[i]->setBoolProp("tagged", false); 
         _taglist->removeItem(_items[i]);
+      }
     }
     retval = 1;
   }
