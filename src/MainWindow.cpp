@@ -1306,6 +1306,7 @@ void MainWindow::applyTags(const std::string & action, MouseEvent * mevent)
   int ninstalled, nupgraded, nreinstalled, nremoved;
   bool getting_input, cancel_all, apply_changes, any_modified, needs_rebuild;
   std::string selection;
+  std::vector<bool> marked_list;
   BuildListItem *build;
 
   ndisplay = _taglist.getDisplayList(action);
@@ -1353,6 +1354,17 @@ void MainWindow::applyTags(const std::string & action, MouseEvent * mevent)
   delwin(tagwin);
   draw(true);
 
+  // Store a list of user selections, because in some cases modifyPackage
+  // may change the "marked" property of a build prior to its turn in the
+  // Apply changes loop below
+
+  marked_list.resize(ndisplay);
+  for ( i = 0; i < ndisplay; i++ )
+  {
+    build = static_cast<BuildListItem *>(_taglist.itemByIdx(i));
+    marked_list[i] = build->getBoolProp("marked");
+  }
+
   // Apply changes
 
   needs_rebuild = false;
@@ -1365,7 +1377,8 @@ void MainWindow::applyTags(const std::string & action, MouseEvent * mevent)
     for ( i = 0; i < ndisplay; i++ ) 
     {
       build = static_cast<BuildListItem *>(_taglist.itemByIdx(i));
-      if (build->getBoolProp("marked"))
+      build->setBoolProp("marked", marked_list[i]);
+      if (marked_list[i])
       { 
         any_modified = modifyPackage(*build, action, ninstalled, nupgraded,
                                      nreinstalled, nremoved, cancel_all, true,
