@@ -30,7 +30,7 @@ set(PACKAGEDIR /var/log/packages
     CACHE PATH "Location of installed packages list."
 )
 
-set(CRONDIR /etc/cron.daily
+set(CRONDIR /etc/cron.hourly
     CACHE PATH "Directory for sboui --sync cronjob (only if INSTALL_SYSTRAY_NOTIFIER is enabled)."
 )
 
