@@ -14,6 +14,8 @@ sbopkg, sbotools, or custom package managers. Its main features include:
 * "Tagging" to operate on multiple SlackBuilds
 * Searching the repository by name or by content in READMEs
 * A menu bar, buttons, drop-downs, and other elements typically found in GUI
+* For desktop users, a system tray notifier for SBo updates (optional) and a
+  .desktop file
 
 Installation
 ================================================================================
