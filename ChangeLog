@@ -1,28 +1,35 @@
-2018-11-16   Daniel Prosser <dpross1100@msn.com>
+2018-11-26   Daniel Prosser <dpross1100@msn.com>
 
         version 2.0
+
+        Enhancements
         * Implement a menu bar
         * Add full mouse support
         * Implement "buttons" on all dialog boxes
         * Add a desktop launcher file
+        * Add an optional system tray notifier for available updates and
+          --sync cronjob
         * Make built-in package manager (sboui-backend) the default
-        * Implement upgrade all action (shortcut that filters by upgradable,
-          tags all, and then upgrades tagged)
+        * Implement upgrade all action
         * Implement clear tags action
         * New command line options: --sync, --upgrade-all, and --upgradable
-        * Startup speed improvements (multi-threading, more efficient search
-          in list item properties)
+        * Startup speed improvements
         * Include 1/4 page buffer when scrolling up and down in lists
         * More reliable arrow drawing (requires UTF-8)
         * Add About and mouse bindings dialogs (under Help in menu bar)
         * Some refactoring to minimize code duplication
         * Minor changes to color themes to work better with the menu bar
-        * Fix a segfault occurring if repo_dir existed but was not valid
-        * Fix a minor highlighting / redraw issue with right pane
-        * Fix bug in sboui-backend when $OUTPUT is not /tmp
+        * Some other minor improvements and fixes
         * Remove TMPDIR config variable for sboui-backend; use $TMP environment
           variable instead to be consistent with SlackBuild scripts.
-        * Some other minor improvements and fixes
+
+        Bug fixes
+        * Fix a segfault occurring if repo_dir existed but was not valid
+        * Fix a minor highlighting / redraw issue with right pane
+        * Fix a bug with operating on tagged SlackBuilds when one or more was
+          a dependency of another -- could inadvertently become unmarked and
+          therefore skipped
+        * Fix bug in sboui-backend when $OUTPUT is not /tmp
 
 2018-05-08   Daniel Prosser <dpross1100@msn.com>
 
