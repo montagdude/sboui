@@ -22,16 +22,32 @@ function remove_quotes ()
 }
 
 ################################################################################
-# Gets SlackBuild name from installed package name
-function get_installed_name ()
+# Determines number of elements in a list. Note that the input list must be
+# in quotes for this to work properly (otherwise it will only return 1 or 0).
+function listlen ()
+{
+  local LIST=$1
+  local LEN=0
+  local ELEM=""
+
+  for ELEM in $LIST; do
+    let "LEN+=1"
+  done
+
+  echo $LEN
+}
+
+################################################################################
+# Gets name of package
+function get_package_name ()
 {
   local PKG=$1
 
   # Get rid of trailing stuff
-  local BUILD=${PKG%*-*} # Build number / tag
-  BUILD=${BUILD%*-*}     # Architecture-number
-  BUILD=${BUILD%*-*}     # Version
-  echo $BUILD
+  local NAME=${PKG%*-*} # Remove build number / tag
+  NAME=${NAME%*-*}      # Remove arch
+  NAME=${NAME%*-*}      # Remove version
+  echo $NAME
 }
 
 ################################################################################
@@ -168,7 +184,7 @@ function check_installed ()
     for PKG in $PKGLIST
     do
       PKG=$(basename "$PKG")
-      BUILDNAME=$(get_installed_name "$PKG")
+      BUILDNAME=$(get_package_name "$PKG")
       if [ "$BUILDNAME" == "$BUILD" ]; then
         INSTALLED=1
         break
@@ -352,8 +368,8 @@ function install_slackbuild ()
   local INSTALLEDPKG=$(check_installed "$BUILD")
 
   # Offer reinstallation if it is already installed
+  local CURRENTVERSION=$(get_current_version "$BUILD")
   if [ "$INSTALLEDPKG" != "Not installed" ]; then
-    local CURRENTVERSION=$(get_current_version "$BUILD")
 
     # Ask about reinstallation
     echo "$BUILD is already installed."
@@ -404,9 +420,7 @@ function install_slackbuild ()
   remove_sources $SOURCES
 
   # Create file to mark time
-  if [ "$CLEAN_TMP" == "yes" ]; then
-    local TMPFILE=$(mktemp /tmp/sboui.XXXXXX)
-  fi
+  local TMPFILE=$(mktemp /tmp/sboui.XXXXXX)
 
   # Download and check MD5SUMs
   local SOURCERR=0
@@ -468,32 +482,31 @@ function install_slackbuild ()
   chmod +x $BUILD.SlackBuild
   ./$BUILD.SlackBuild
 
-  # Check if package was built successfully
-  local PKGLIST=$(find "$OUTPUT" -maxdepth 1 -name "$BUILD*.t?z")
-  local PKGERR=0
-  local PKG
-  if [ -z "$PKGLIST" ]; then
-    PKGERR=1
+  # Check if package was built successfully. Note version string can contain
+  # trailing stuff like the kernel version.
+  if [ -f $TMPFILE ]; then
+    local PKG=$(find "$OUTPUT" -maxdepth 1 -cnewer $TMPFILE -name "${BUILD}-${CURRENTVERSION}*.t?z")
   else
-    local FOUND=0
-    local PKGNAME BUILDNAME
-    for PKG in $PKGLIST
-    do
-      PKGNAME=$(basename ${PKG%*.*})
-      BUILDNAME=$(get_installed_name "$PKGNAME")
-      if [ "$BUILDNAME" == "$BUILD" ]; then
-        FOUND=1
-        break
-      fi
-    done
-    if [ $FOUND -eq 0 ]; then
-      PKGERR=1
-    fi
+    local PKG=$(find "$OUTPUT" -maxdepth 1 -name "${BUILD}-${CURRENTVERSION}*.t?z")
+  fi
+  local NPKG=$(listlen "$PKG")
+
+  if [ $NPKG -eq 0 ]; then
+    echo "Error: build failed."
+    local PKGERR=1
+
+  elif [ $NPKG -gt 1 ]; then
+    # This is very unlikely to happen if $TMPFILE exists
+    echo "Error: more than one package in $OUTPUT matching ${BUILD}-${CURRENTVERSION} pattern."
+    echo "Please remove unneeded packages and try again."
+    local PKGERR=2
+
+  else
+    local PKGERR=0
   fi
 
   # Exit on error
-  if [ $PKGERR -eq 1 ]; then
-    echo "Error: build failed."
+  if [ $PKGERR -ne 0 ]; then
 
     # Remove source tarballs
     if [[ $SOURCEOPT -eq 0 || "$(readlink -f $SOURCEDIR)" != "$REPO_DIR" ]]; then

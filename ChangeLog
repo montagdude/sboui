@@ -1,4 +1,4 @@
-2018-11-26   Daniel Prosser <dpross1100@msn.com>
+2018-11-29   Daniel Prosser <dpross1100@msn.com>
 
         version 2.0
 
@@ -30,6 +30,9 @@
           a dependency of another -- could inadvertently become unmarked and
           therefore skipped
         * Fix bug in sboui-backend when $OUTPUT is not /tmp
+        * In some cases, sboui-backend could install the wrong package if
+          there were multiple with the same name sitting in $OUTPUT. This has
+          been fixed.
 
 2018-05-08   Daniel Prosser <dpross1100@msn.com>
 
