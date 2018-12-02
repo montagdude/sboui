@@ -7,6 +7,7 @@
 #include <algorithm>  // sort
 #include <fstream>
 #include <atomic>
+#include <ctime>      // strftime
 #include "DirListing.h"
 #include "ListItem.h"
 #include "BuildListItem.h"
@@ -591,6 +592,37 @@ int sync_repo(bool interactive)
   std::string response;
 
   retval = run_command(sync_cmd);
+
+  // Record update time
+
+  if (retval == 0)
+  {
+    DirListing listing;
+    unsigned int stat;
+    std::ofstream file;
+
+    stat = listing.createFromPath("/var/lib/sboui");
+    file.open("/var/lib/sboui/last-sync.txt");
+    if ( (stat == 0) && file.is_open() )
+    {
+      time_t raw_time;
+      struct tm * timeinfo;
+      char buffer[100];
+
+      time(&raw_time);
+      timeinfo = gmtime(&raw_time);
+      strftime(buffer,sizeof(buffer),"%a, %d %b %Y %H:%M:%S %Z", timeinfo);
+      std::string timestr(buffer);
+      file << timestr << std::endl;
+      file.close();
+    }
+    else
+    {
+      std::cout << "Warning: unable to save update time to "
+                << "/var/lib/sboui/last-sync.txt." << std::endl;
+    }
+  }
+
   if (interactive)
   {
     std::cout << "Press Enter to return to main window ...";

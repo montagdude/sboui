@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+#
+# This script checks the SBo RSS feed for updates. If an update has been posted,
+# it runs sboui --sync to sync the local repository. This is intended to be run
+# regularly (say, hourly or daily) by root as a cronjob.
+
+import subprocess
+import requests
+from datetime import datetime
+
+def last_rss_update():
+
+    # Download only the first 2 kB of the RSS feed
+
+    response = requests.get('http://slackbuilds.org/rss/ChangeLog.rss',
+                            headers={'Range': 'bytes=0-2000'})
+
+    return datetime.strptime(response.headers['Last-Modified'],
+                             '%a, %d %b %Y %H:%M:%S %Z')
+
+def last_local_update():
+
+    try:
+        f = open('/var/lib/sboui/last-sync.txt')
+    except IOError:
+        return datetime(1900, 1, 1, 0, 0, 0)
+
+    try:
+        last_update = datetime.strptime(f.readline().strip(),
+                                        '%a, %d %b %Y %H:%M:%S %Z')
+    except ValueError:
+        return datetime(1900, 1, 1, 0, 0, 0)
+
+    f.close()
+    return last_update
+
+if __name__ == "__main__":
+
+    # Sync local repository if RSS feed has been updated 
+
+    if last_rss_update() > last_local_update():
+        subprocess.call(['${CMAKE_INSTALL_PREFIX}/sbin/sboui', '-s'])
+    else:
+        print('Already up-to-date; not syncing.')

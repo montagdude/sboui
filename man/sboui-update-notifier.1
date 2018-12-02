@@ -27,6 +27,9 @@ icon in the system tray.
 When clicked,
 .B sboui
 is launched to perform the upgrades.
+.PP
+Note that the hourly cronjob uses the RSS feed to detect updates (only downloading the first 2 kB), and a full sync is only performed if indicated by the RSS feed.
+This procedure ensures that undue load is not placed on the SBo server every hour.
 .SH OPTIONS
 .B sboui-update-notifier
 accepts one optional command-line option:

@@ -79,7 +79,7 @@ configure_file(src/sboui_launch.in sboui_launch @ONLY)
 configure_file(src/sboui_update_launch.in sboui_update_launch @ONLY)
 configure_file(src/sboui-update-notifier.in sboui-update-notifier)
 configure_file(sboui.desktop.in sboui.desktop)
-configure_file(etc/sboui-sync.cron.in sboui-sync.cron @ONLY)
+configure_file(etc/sboui-sync.py.in sboui-sync.py)
 
 # Install rules
 install(TARGETS sboui DESTINATION sbin)
@@ -122,7 +122,7 @@ if(INSTALL_SYSTRAY_NOTIFIER)
                         GROUP_READ             GROUP_EXECUTE
                         WORLD_READ             WORLD_EXECUTE
             DESTINATION libexec/sboui)
-    install(FILES ${CMAKE_BINARY_DIR}/sboui-sync.cron
+    install(FILES ${CMAKE_BINARY_DIR}/sboui-sync.py
             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
                         GROUP_READ             GROUP_EXECUTE
                         WORLD_READ             WORLD_EXECUTE
