@@ -4,16 +4,25 @@
 # it runs sboui --sync to sync the local repository. This is intended to be run
 # regularly (say, hourly or daily) by root as a cronjob.
 
+import sys
 import subprocess
 import requests
 from datetime import datetime
 
 def last_rss_update():
 
-    # Download only the first 2 kB of the RSS feed
+    # Download only the headers of the RSS feed to check last modified date
 
-    response = requests.get('http://slackbuilds.org/rss/ChangeLog.rss',
-                            headers={'Range': 'bytes=0-2000'})
+    try:
+        response = requests.head('http://slackbuilds.org/rss/ChangeLog.rss')
+    except requests.exceptions.ConnectionError:
+        sys.stderr.write("Unable to download ChangeLog.rss: no connection.\n")
+        sys.exit(1)
+
+    if response.status_code != requests.codes.ok:
+        sys.stderr.write(("Unable to download ChangeLog.rss: " +
+                          "got response {}.\n".format(response.status_code)))
+        sys.exit(1)
 
     return datetime.strptime(response.headers['Last-Modified'],
                              '%a, %d %b %Y %H:%M:%S %Z')
