@@ -1,3 +1,12 @@
+2018-12-03   Daniel Prosser <dpross1100@msn.com>
+
+        version 2.0.1
+        * Sync cronjob for systray notifier: check RSS feed for updates first
+          and only do a sync if an update is actually available. Should avoid
+          placing unnecessary load on the SBo server.
+        * Record time and date to /var/lib/sboui/last-sync.txt whenever a sync
+          occurs
+
 2018-11-29   Daniel Prosser <dpross1100@msn.com>
 
         version 2.0
