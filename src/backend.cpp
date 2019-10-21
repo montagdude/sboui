@@ -18,7 +18,7 @@
 #include "backend.h"
 
 #ifndef PACKAGE_DIR
-  #define PACKAGE_DIR "/var/log/packages"
+  #define PACKAGE_DIR "/var/lib/pkgtools/packages"
 #endif
 
 using namespace settings;

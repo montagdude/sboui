@@ -26,7 +26,7 @@ set(DATADIR ${CMAKE_INSTALL_PREFIX}/share/sboui
 set(MANDIR ${CMAKE_INSTALL_PREFIX}/man
     CACHE PATH "Base directory to install manuals."
 )
-set(PACKAGEDIR /var/log/packages
+set(PACKAGEDIR /var/lib/pkgtools/packages"
     CACHE PATH "Location of installed packages list."
 )
 
