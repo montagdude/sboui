@@ -1,7 +1,4 @@
 - Add sub-action to list inverse deps
 - Ability to add custom notes for each SlackBuild
-- sboui-update-notifier keeps running after logout (I'm not sure why), so add
-  something to check if there is already a running process (use psutil) and
-  bail out if so. That way we don't get duplicates.
 - Fixed behavior of sboinstall --reinstall -r (https://github.com/pink-mist/sbotools/issues/72)
 - gnucash picking up wrong build options
