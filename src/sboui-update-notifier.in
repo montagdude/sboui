@@ -3,6 +3,9 @@
 import argparse
 from time import sleep
 import subprocess
+import psutil
+import os
+import sys
 
 def sbo_updates_available():
 
@@ -21,6 +24,24 @@ def sbo_updates_available():
   return retval
 
 if __name__ == "__main__":
+
+  # Bail if already running for this user
+
+  username = os.environ['USER']
+  this_pid = os.getpid()
+  for proc in psutil.process_iter():
+    cmdline = proc.cmdline()
+    proc_username = proc.username()
+    if proc.pid == this_pid:
+      continue
+    if proc_username != username:
+        continue
+    if len(cmdline) != 2:
+        continue
+    if cmdline[0].find('python') != -1 and \
+       cmdline[1].find('sboui-update-notifier') != -1:
+      print('sboui-update-notifier is already running. Exiting.')
+      sys.exit(0)
 
   # Sleep time in seconds
 
