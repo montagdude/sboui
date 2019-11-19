@@ -833,10 +833,8 @@ bool MainWindow::modifyPackage(BuildListItem & build,
   { 
     clearStatus();
     displayError("Unable to find one or more dependencies of " + build.name() +
-                 std::string(" in repository. Disable dependency resolution ") +
-                 std::string("to ignore this error."), true, "Error", "Ok",
-                 mevent);
-    return false;
+                 std::string(" in repository. Build order may be incomplete."),
+                 true, "Warning", "Ok", mevent);
   }
   else if (check == 2)
   { 
@@ -1069,7 +1067,7 @@ void MainWindow::showBuildOrder(BuildListItem & build, const std::string & mode,
   { 
     clearStatus();
     displayError("Unable to find one or more dependencies of " + build.name() +
-                 std::string(" in repository. Build order will be incomplete."),
+                 std::string(" in repository. Build order may be incomplete."),
                  true, "Warning", "Ok", mevent);
   }
   else if (check == 2)

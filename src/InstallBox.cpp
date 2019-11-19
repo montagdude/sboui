@@ -351,13 +351,12 @@ int InstallBox::create(BuildListItem & build,
 
   // Get list of reqs and/or add requested SlackBuild to list
 
+  check = 0;
   _ndeps = 0;
   reqlist.resize(0);
   if (resolve_deps)
-  {
     check = compute_reqs_order(build, reqlist, slackbuilds);
-    if (check != 0) { return check; }
-  }
+
   _ndeps = reqlist.size();
   reqlist.push_back(&build);
 
@@ -507,7 +506,7 @@ int InstallBox::create(BuildListItem & build,
     }
   }
 
-  return 0;
+  return check;
 }
 
 /*******************************************************************************
