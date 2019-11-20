@@ -67,7 +67,7 @@ int DefaultOptionsBox::setPackageManager(const std::string & pkg_mgr)
     _sync_cmd = "sbosnap update";
     _install_cmd = "sboinstall -r";
     _upgrade_cmd = "sboupgrade -r";
-    _reinstall_cmd = "sboinstall --reinstall";
+    _reinstall_cmd = "sboinstall --reinstall -r";
   }
   else if (pkg_mgr == "built-in")
   {

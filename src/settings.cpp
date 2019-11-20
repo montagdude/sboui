@@ -299,11 +299,10 @@ int read_config(const std::string & conf_file)
 
   if (! cfg.lookupValue("reinstall_cmd", reinstall_cmd))
   {
-//FIXME: Add -r to sbotools reinstall command if he fixes issue #72 on GitHub
     if (package_manager == "sbopkg")
       reinstall_cmd = "sbopkg -B -i";
     else if (package_manager == "sbotools")
-      reinstall_cmd = "sboinstall --reinstall";
+      reinstall_cmd = "sboinstall --reinstall -r";
     else if (package_manager == "built-in")
       reinstall_cmd = "sboui-backend install -f";
     else

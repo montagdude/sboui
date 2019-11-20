@@ -1,4 +1,3 @@
 - Add sub-action to list inverse deps
 - Ability to add custom notes for each SlackBuild
-- Fixed behavior of sboinstall --reinstall -r (https://github.com/pink-mist/sbotools/issues/72)
 - gnucash picking up wrong build options
