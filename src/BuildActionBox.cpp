@@ -57,40 +57,41 @@ void BuildActionBox::create(BuildListItem & build, bool limited_actions)
   _items[count]->setHotKey(1);
    count++;
 
-  if (limited_actions) { return; }
-
-  if (! build.getBoolProp("installed"))
-  { 
-    addItem(new ListItem("Install")); 
-    _items[count]->setHotKey(0);
-    count++;
-  }
-
-  else
+  if (! limited_actions)
   {
-    if (! build.getBoolProp("blacklisted"))
-    {
-      addItem(new ListItem ("Remove"));
+    if (! build.getBoolProp("installed"))
+    { 
+      addItem(new ListItem("Install")); 
       _items[count]->setHotKey(0);
       count++;
-
-      if (build.getBoolProp("upgradable"))
-      {
-        addItem(new ListItem("Upgrade"));
-        _items[count]->setHotKey(0);
-      }
-      else
-      {
-        addItem(new ListItem ("Reinstall"));
-        _items[count]->setHotKey(1);
-      }
-      count++;
     }
-  }
 
-  addItem(new ListItem("Compute build order"));
-  _items[count]->setHotKey(0);
-   count++;
+    else
+    {
+      if (! build.getBoolProp("blacklisted"))
+      {
+        addItem(new ListItem ("Remove"));
+        _items[count]->setHotKey(0);
+        count++;
+
+        if (build.getBoolProp("upgradable"))
+        {
+          addItem(new ListItem("Upgrade"));
+          _items[count]->setHotKey(0);
+        }
+        else
+        {
+          addItem(new ListItem ("Reinstall"));
+          _items[count]->setHotKey(1);
+        }
+        count++;
+      }
+    }
+
+    addItem(new ListItem("Compute build order"));
+    _items[count]->setHotKey(0);
+     count++;
+  }
 
   addItem(new ListItem("List inverse deps"));
   _items[count]->setHotKey(0);

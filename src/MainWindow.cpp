@@ -2164,6 +2164,14 @@ void MainWindow::showBuildActions(BuildListItem & build, bool limited_actions,
       placePopup(&actionbox, actionwin);
       draw(true);
     }
+    else if ( (selected == "List inverse deps") || (selection == "L") )
+    {
+      hideWindow(actionwin);
+      draw(true);
+      showBuildOrder(build, "inverse", mevent);
+      placePopup(&actionbox, actionwin);
+      draw(true);
+    }
     else if (selection == signals::resize)
     {
       placePopup(&actionbox, actionwin);
