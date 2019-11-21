@@ -1,3 +1,20 @@
+2019-11-21   Daniel Prosser <dpross1100@msn.com>
+
+        version 2.1.0
+        * sboui-update-notifier: bail if already running. This prevents
+          multiple instances from being started when a user logs out and back
+          in if sboui-update-notifier is a startup app. This adds psutil as
+          a dependency for sboui-update-notifier.
+        * Allow install to proceed with a warning if deps are missing. This
+          occurs commonly on -current/ponce's repo when things are added to
+          Slackware and removed from the repo but not removed from REQUIRES
+          lines in .info files.
+        * Improved reinstall behavior with sbotools.
+        * Enable action to list inverse deps for SlackBuilds in the build
+          order of another.
+        * Add ability to create custom notes for each SlackBuild. Notes are
+          stored in /var/lib/sboui/notes/pkgname.notes.
+
 2018-12-03   Daniel Prosser <dpross1100@msn.com>
 
         version 2.0.1
