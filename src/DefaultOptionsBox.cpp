@@ -62,7 +62,6 @@ int DefaultOptionsBox::setPackageManager(const std::string & pkg_mgr)
   }
   else if (pkg_mgr == "sbotools")
   {
-//FIXME: Add -r to sbotools reinstall command if he fixes issue #72 on GitHub
     _repo_dir = "/usr/sbo/repo";
     _sync_cmd = "sbosnap update";
     _install_cmd = "sboinstall -r";
