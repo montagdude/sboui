@@ -96,4 +96,8 @@ void BuildActionBox::create(BuildListItem & build, bool limited_actions)
   addItem(new ListItem("List inverse deps"));
   _items[count]->setHotKey(0);
    count++;
+
+  addItem(new ListItem("View/edit notes"));
+  _items[count]->setHotKey(3);
+  count++;
 }

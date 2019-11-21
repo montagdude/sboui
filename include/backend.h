@@ -36,6 +36,7 @@ int reinstall_slackbuild(BuildListItem & build);
 int remove_slackbuild(BuildListItem & build);
 int view_readme(const BuildListItem & build);
 int view_file(const std::string & path);
+int view_notes(const BuildListItem & build);
 int sync_repo(bool interactive=true);
 
 /*******************************************************************************

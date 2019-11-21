@@ -2131,7 +2131,6 @@ void MainWindow::showBuildActions(BuildListItem & build, bool limited_actions,
 
     // Note that upper/lower case checking for hotkeys has already happened in
     // SelectionBox, so just check the actual character here.
-
     if ( (selected == "View README") || (selection == "V") )
     {
       def_prog_mode();
@@ -2170,6 +2169,14 @@ void MainWindow::showBuildActions(BuildListItem & build, bool limited_actions,
       draw(true);
       showBuildOrder(build, "inverse", mevent);
       placePopup(&actionbox, actionwin);
+      draw(true);
+    }
+    else if ( (selected == "View/edit notes") || (selection == "w") )
+    {
+      def_prog_mode();
+      endwin();
+      view_notes(build); 
+      reset_prog_mode();
       draw(true);
     }
     else if (selection == signals::resize)

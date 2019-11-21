@@ -583,6 +583,32 @@ int view_file(const std::string & path)
 
 /*******************************************************************************
 
+Opens notes for a SlackBuild using the editor
+
+*******************************************************************************/
+int view_notes(const BuildListItem & build)
+{
+  int check;
+  DirListing listing;
+  std::string notespath, response, fname;
+
+  notespath = "/var/lib/sboui/notes";
+  check = listing.createFromPath(notespath);
+  if (check != 0)
+  { 
+    std::cout << "Unable to create directory " << notespath << ". "
+              << "Please check permissions." << std::endl;
+    std::cout << "Press Enter to return to main window ...";
+    std::getline(std::cin, response);
+    return 1;
+  } 
+  fname = listing.path() + build.name() + ".notes";
+
+  return view_file(fname);
+}
+
+/*******************************************************************************
+
 Syncs/updates SlackBuilds repository
 
 *******************************************************************************/
