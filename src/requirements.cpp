@@ -1,6 +1,6 @@
 #include <string>
 #include <vector>
-#include <algorithm>       // reverse
+#include <algorithm>       // reverse, max
 #include "BuildListItem.h"
 #include "backend.h"       // get_reqs, find_slackbuild, list_installed
 #include "string_util.h"   // split
@@ -44,7 +44,7 @@ int get_reqs_recursive(const BuildListItem & build,
   unsigned int i, ndeps;
   std::vector<std::string> deplist;
   std::string reqs;
-  int idx0, idx1, check;
+  int idx0, idx1, check, maxcheck;
 
   if (build.getBoolProp("installed")) { deplist = 
                                         split(build.getProp("requires")); }
@@ -55,6 +55,7 @@ int get_reqs_recursive(const BuildListItem & build,
     else { return 2; }
   }
   
+  maxcheck = 0;
   check = 0;
   ndeps = deplist.size();
   for ( i = 0; i < ndeps; i++ )
@@ -62,14 +63,17 @@ int get_reqs_recursive(const BuildListItem & build,
     if (deplist[i] != "%README%")
     { 
       check = find_slackbuild(deplist[i], slackbuilds, idx0, idx1);
-      if (check == 0) { add_req(&slackbuilds[idx0][idx1], reqlist); }
-      else { return 1; }
-      check = get_reqs_recursive(slackbuilds[idx0][idx1], reqlist, slackbuilds); 
-      if (check != 0) { return check; }
+      if (check == 0)
+      {
+        add_req(&slackbuilds[idx0][idx1], reqlist);
+        check = get_reqs_recursive(slackbuilds[idx0][idx1], reqlist, slackbuilds); 
+      }
+      else { check = 1; }
+      maxcheck = std::max(check, maxcheck);
     }
   }
 
-  return check;
+  return maxcheck;
 }
 
 /*******************************************************************************
@@ -86,7 +90,7 @@ int compute_reqs_order(const BuildListItem & build,
 
   reqlist.resize(0);
   check = get_reqs_recursive(build, reqlist, slackbuilds);
-  if (check == 0) { std::reverse(reqlist.begin(), reqlist.end()); }
+  std::reverse(reqlist.begin(), reqlist.end());
 
   return check;
 }  
