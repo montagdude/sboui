@@ -3,5 +3,4 @@
 - When using -f to specify config file and then changing options in the UI, it
   overwrites the default config file instead of the specified one. Fix that.
 - Segfault when using my custom repository with -f /etc/sboui/sboui-custom.conf.  Seems to be caused by buildopts (moving the existing files out fixes it).
-- Option / question to allow build to proceed when MD5sum fails
 - Option in sboui-backend to not remove source tarball

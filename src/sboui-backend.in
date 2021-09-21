@@ -454,8 +454,11 @@ function install_slackbuild ()
     MD5CHK=$(md5sum "$SOURCE")
     MD5CHK=$(echo $MD5CHK | cut -d' ' -f1)
     if [ "$MD5CHK" != "${MD5ARRAY[$COUNT]}" ]; then
-      echo "Error: md5sum check failed on $SOURCE."
-      MD5ERR=1
+      MSG="Error: md5sum check failed on $SOURCE. Continue anyway?"
+      user_choice "$MSG" CHOICE
+      if [ "$CHOICE" == "n" ]; then
+        MD5ERR=1
+      fi
     fi
  
     let "COUNT+=1"
