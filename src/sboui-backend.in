@@ -72,7 +72,7 @@ function get_current_version ()
 # Checks if Ponce's git repo is being used
 function check_ponce_repo ()
 {
-  if [ "$REPO" == "git://github.com/Ponce/slackbuilds.git" ]; then
+  if [ "$REPO" == "https://github.com/Ponce/slackbuilds.git" ]; then
     echo 1
   else
     echo 0
