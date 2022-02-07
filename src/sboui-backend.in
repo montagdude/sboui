@@ -474,9 +474,11 @@ function install_slackbuild ()
     fi
 
     # Remove source code
-    if [[ $SOURCEOPT -eq 0 || "$(readlink -f $SOURCEDIR)" != "$REPO_DIR" ]]; then
-      remove_sources $SOURCES
-      exit 1
+    if [ "$CLEAN_SOURCE" == "yes" ]; then
+      if [[ $SOURCEOPT -eq 0 || "$(readlink -f $SOURCEDIR)" != "$REPO_DIR" ]]; then
+        remove_sources $SOURCES
+        exit 1
+      fi
     fi
   fi
 
@@ -513,7 +515,9 @@ function install_slackbuild ()
 
     # Remove source tarballs
     if [[ $SOURCEOPT -eq 0 || "$(readlink -f $SOURCEDIR)" != "$REPO_DIR" ]]; then
-      remove_sources $SOURCES
+      if [ "$CLEAN_SOURCE" == "yes" ]; then
+        remove_sources $SOURCES
+      fi
   
       # Restore permissions of SlackBuild script and exit
       chmod $PERM $BUILD.SlackBuild
@@ -533,8 +537,10 @@ function install_slackbuild ()
               -cnewer $TMPFILE -exec rm -rf {} \;
     rm $TMPFILE
   fi
-  if [[ $SOURCEOPT -eq 0 || "$(readlink -f $SOURCEDIR)" != "$REPO_DIR" ]]; then
-    remove_sources $SOURCES
+  if [ "$CLEAN_SOURCE" == "yes" ]; then
+    if [[ $SOURCEOPT -eq 0 || "$(readlink -f $SOURCEDIR)" != "$REPO_DIR" ]]; then
+      remove_sources $SOURCES
+    fi
   fi
 
   # Restore original permissions of SlackBuild script
