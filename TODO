@@ -1,3 +1,4 @@
 - gnucash picking up wrong build options (not sure if reproducible)
 - Make blacklist also apply to install
 - Segfault when using my custom repository with -f /etc/sboui/sboui-custom.conf.  Seems to be caused by buildopts (moving the existing files out fixes it).
+- Infinite loop when compiled with clang++ and options window is displayed. I think it applies to any InputBox actually. Seems to get stuck thinking the user is constantly pressing a key when that is not actually the case.
