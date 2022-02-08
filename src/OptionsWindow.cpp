@@ -482,6 +482,7 @@ std::string OptionsWindow::exec(MouseEvent * mevent)
   prev_pkg_mgr = _pmgr_box.choice();
 
   getting_input = true;
+  needs_selection = true;
   while (getting_input)
   {
     // Draw input box elements
