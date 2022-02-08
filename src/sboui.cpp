@@ -70,6 +70,7 @@ int main(int argc, char *argv[])
   // User interaction loop (note: call constructor after setting colors)
 
   MainWindow mainwindow(PACKAGE_VERSION);
+  mainwindow.setConfFile(clos.inputFile());
   mainwindow.initialize(&mevent);
   if (clos.upgradeAll())
     mainwindow.upgradeAll(&mevent);

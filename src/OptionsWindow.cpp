@@ -411,7 +411,8 @@ void OptionsWindow::readSettings()
   _warninval_toggle.setEnabled(warn_invalid_pkgnames);
 }
 
-void OptionsWindow::applySettings(int & check_color, int & check_write) const
+void OptionsWindow::applySettings(int & check_color, int & check_write,
+                                  const std::string & conf_file) const
 {
   check_color = 0;
   check_write = 0;
@@ -440,9 +441,9 @@ void OptionsWindow::applySettings(int & check_color, int & check_write) const
 
   warn_invalid_pkgnames = _warninval_toggle.enabled();
 
-  // Write configuration to ~/.sboui.conf 
+  // Write configuration to appropriate configuration file
 
-  check_write = write_config();
+  check_write = write_config(conf_file);
 }
 
 /*******************************************************************************

@@ -679,7 +679,7 @@ int MainWindow::showOptions(MouseEvent * mevent)
     else if (selection == signals::keyEnter) 
     {
       getting_input = false;
-      _options.applySettings(check_color, check_write);
+      _options.applySettings(check_color, check_write, _conf_file);
     }
   }
 
@@ -1863,6 +1863,7 @@ MainWindow::MainWindow(const std::string & version)
   _filter = "all SlackBuilds";
   _info = "s: Sync | f: Filter | /: Search | o: Options | F9: Menu";
   _status = "";
+  _conf_file = "";
   _category_idx = 0;
   _activated_listbox = 0;
   setWindow(stdscr);
@@ -1975,6 +1976,9 @@ Sets properties
 
 *******************************************************************************/
 void MainWindow::setInfo(const std::string & info) { _info = info; }
+void MainWindow::setConfFile(const std::string & conf_file) {
+  _conf_file = conf_file;
+}
 
 /*******************************************************************************
 

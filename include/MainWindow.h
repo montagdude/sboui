@@ -40,7 +40,7 @@ class MainWindow: public CursesWidget {
     KeyHelpWindow _help;
     MouseHelpWindow _mousehelp;
     Menubar _menubar;
-    std::string _filter, _info, _status;
+    std::string _filter, _info, _status, _conf_file;
     unsigned int _category_idx, _activated_listbox;
 
     void printStatus(const std::string & msg, bool bold=false);
@@ -162,6 +162,7 @@ class MainWindow: public CursesWidget {
     /* Set properties */
 
     void setInfo(const std::string & info);
+    void setConfFile(const std::string & conf_file);
 
     /* Dialogs */
 

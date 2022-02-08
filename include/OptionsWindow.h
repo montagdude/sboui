@@ -39,7 +39,8 @@ class OptionsWindow: public InputBox {
     /* Read/apply settings */
 
     void readSettings();
-    void applySettings(int & check_color, int & check_write) const; 
+    void applySettings(int & check_color, int & check_write,
+                       const std::string & conf_file="") const; 
 
     /* Window sizing and placement */
 
