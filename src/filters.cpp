@@ -107,15 +107,44 @@ std::vector<BuildListItem *> list_nondeps(
 
 /*******************************************************************************
 
-Filters lists by bool function taking BuildListItem as parameter
+Overwrites input lists using the contents of BuildListBoxes and CategoryListBox.
 
 *******************************************************************************/
-void filter_by_func(std::vector<std::vector<BuildListItem> > & slackbuilds,
+void overwrite_lists(std::vector<std::vector<BuildListItem *> > & slackbuilds,
+                     std::vector<CategoryListItem *> & categories,
+                     std::vector<BuildListBox> & blistboxes,
+                     CategoryListBox & clistbox)
+{
+  unsigned int i, j, nbuilds, ncategories;
+
+  categories.clear();
+  slackbuilds.clear();
+  ncategories = clistbox.numItems();
+  categories.resize(ncategories);
+  slackbuilds.resize(ncategories);
+  for ( i = 0; i < ncategories; i++ )
+  {
+    categories[i] = static_cast<CategoryListItem *>(clistbox.itemByIdx(i));
+    nbuilds = blistboxes[i].numItems();
+    slackbuilds[i].resize(nbuilds);
+    for ( j = 0; j < nbuilds; j++ )
+    {
+      slackbuilds[i][j] = static_cast<BuildListItem *>(blistboxes[i].itemByIdx(j));
+    }
+  }
+}
+
+/*******************************************************************************
+
+Filters lists by bool function taking BuildListItem as parameter.
+
+*******************************************************************************/
+void filter_by_func(std::vector<std::vector<BuildListItem *> > & slackbuilds,
                     bool (*func)(const BuildListItem &),
-                    std::vector<CategoryListItem> & categories,
+                    std::vector<CategoryListItem *> & categories,
                     WINDOW *blistboxwin, CategoryListBox & clistbox,
                     std::vector<BuildListBox> & blistboxes,
-                    unsigned int & nfiltered)
+                    unsigned int & nfiltered, bool overwrite)
 {
   unsigned int i, j, ncategories, nbuilds, nfiltered_categories;
   bool category_found;
@@ -134,20 +163,20 @@ void filter_by_func(std::vector<std::vector<BuildListItem> > & slackbuilds,
     nbuilds = slackbuilds[i].size();
     for ( j = 0; j < nbuilds; j++ )
     {
-      if (func(slackbuilds[i][j]))
+      if (func(*slackbuilds[i][j]))
       {
         if (! category_found)
         {
           category_found = true;
-          clistbox.addItem(&categories[i]);
+          clistbox.addItem(categories[i]);
           BuildListBox blistbox;
           blistbox.setWindow(blistboxwin);
-          blistbox.setName(categories[i].name());
+          blistbox.setName(categories[i]->name());
           blistbox.setActivated(false);
           nfiltered_categories++;
           blistboxes.push_back(blistbox);
         }
-        blistboxes[nfiltered_categories-1].addItem(&slackbuilds[i][j]);
+        blistboxes[nfiltered_categories-1].addItem(slackbuilds[i][j]);
         nfiltered++;
       }
     }
@@ -172,32 +201,58 @@ void filter_by_func(std::vector<std::vector<BuildListItem> > & slackbuilds,
     initlistbox.setName("SlackBuilds");
     blistboxes.push_back(initlistbox);
   }
+
+  // Overwrite input lists if requested
+  if (overwrite)
+    overwrite_lists(slackbuilds, categories, blistboxes, clistbox);
 }
 
 /*******************************************************************************
 
-Filters lists by non-dependencies 
+Filters lists by non-dependencies. all_slackbuilds is the list of all
+slackbuilds in the repo; slackbuilds is the input list (which could
+be the same as all_slackbuilds).
 
 *******************************************************************************/
-void filter_nondeps(std::vector<std::vector<BuildListItem> > & slackbuilds,
-                    std::vector<CategoryListItem> & categories,
+void filter_nondeps(std::vector<std::vector<BuildListItem> > & all_slackbuilds,
+                    std::vector<std::vector<BuildListItem *> > & slackbuilds,
+                    std::vector<CategoryListItem *> & categories,
                     WINDOW *blistboxwin, CategoryListBox & clistbox,
                     std::vector<BuildListBox> & blistboxes,
-                    unsigned int & nnondeps)
+                    unsigned int & nnondeps, bool overwrite)
 {
-  unsigned int i, j, ncategories, nfiltered_categories;
+  unsigned int i, j, k, ncategories, nbuilds, nfiltered_categories;
   std::vector<std::string> filtered_categories;
   bool category_found;
   BuildListBox initlistbox;
-  std::vector<BuildListItem *> nondeplist;
+  std::vector<BuildListItem *> allnondeplist, nondeplist;
 
-  nondeplist = list_nondeps(slackbuilds);
-  nnondeps = nondeplist.size();
+  // Get a list of all nondeps
+  allnondeplist = list_nondeps(all_slackbuilds);
+  nnondeps = allnondeplist.size();
   ncategories = categories.size();
   blistboxes.resize(0);
   clistbox.clearList();
   clistbox.setActivated(true);
   filtered_categories.resize(0);
+
+  // Recreate nondeplist based only on slackbuilds in the input list
+  for ( i = 0; i < ncategories; i++ )
+  {
+      nbuilds = slackbuilds[i].size();
+      for ( j = 0; j < nbuilds; j++ )
+      {
+          for ( k = 0; k < nnondeps; k++ )
+          {
+              if (slackbuilds[i][j]->name() == allnondeplist[k]->name())
+              {
+                  nondeplist.push_back(slackbuilds[i][j]);
+                  break;
+              }
+          }
+      }
+  }
+  nnondeps = nondeplist.size();
 
   for ( i = 0; i < nnondeps; i++ )
   {
@@ -216,12 +271,12 @@ void filter_nondeps(std::vector<std::vector<BuildListItem> > & slackbuilds,
     {
       for ( j = 0; j < ncategories; j++ )
       {
-        if ( nondeplist[i]->getProp("category") == categories[j].name())
+        if (nondeplist[i]->getProp("category") == categories[j]->name())
         {
-          clistbox.addItem(&categories[j]);
+          clistbox.addItem(categories[j]);
           BuildListBox blistbox;
           blistbox.setWindow(blistboxwin);
-          blistbox.setName(categories[j].name());
+          blistbox.setName(categories[j]->name());
           blistbox.setActivated(false);
           blistbox.addItem(nondeplist[i]);
           blistboxes.push_back(blistbox);
@@ -252,6 +307,10 @@ void filter_nondeps(std::vector<std::vector<BuildListItem> > & slackbuilds,
     initlistbox.setName("SlackBuilds");
     blistboxes.push_back(initlistbox);
   }
+
+  // Overwrite input lists if requested
+  if (overwrite)
+    overwrite_lists(slackbuilds, categories, blistboxes, clistbox);
 }
 
 /*******************************************************************************
@@ -259,13 +318,13 @@ void filter_nondeps(std::vector<std::vector<BuildListItem> > & slackbuilds,
 Filters lists by search term
 
 *******************************************************************************/
-void filter_search(std::vector<std::vector<BuildListItem> > & slackbuilds,
-                   std::vector<CategoryListItem> & categories,
+void filter_search(std::vector<std::vector<BuildListItem *> > & slackbuilds,
+                   std::vector<CategoryListItem *> & categories,
                    WINDOW *blistboxwin, CategoryListBox & clistbox,
                    std::vector<BuildListBox> & blistboxes,
                    unsigned int & nsearch, const std::string & searchterm,
-                   bool case_sensitive, bool whole_word,
-                   bool search_readmes)
+                   bool case_sensitive, bool whole_word, bool search_readmes,
+                   bool overwrite)
 {
   unsigned int i, j, nbuilds, ncategories, nsearch_categories;
   std::string term, tomatch, readme_file;
@@ -292,8 +351,8 @@ void filter_search(std::vector<std::vector<BuildListItem> > & slackbuilds,
     {
       // Check for search term in SlackBuild name
 
-      if (case_sensitive) { tomatch = slackbuilds[i][j].name(); }
-      else { tomatch = string_to_lower(slackbuilds[i][j].name()); }
+      if (case_sensitive) { tomatch = slackbuilds[i][j]->name(); }
+      else { tomatch = string_to_lower(slackbuilds[i][j]->name()); }
       if (whole_word) { match = (term == tomatch); }
       else { match = (tomatch.find(term) != std::string::npos); }
 
@@ -302,8 +361,8 @@ void filter_search(std::vector<std::vector<BuildListItem> > & slackbuilds,
       if ( (! match) && (search_readmes) )
       {
         readme_file = settings::repo_dir + "/" + 
-                    slackbuilds[i][j].getProp("category") + "/"  +
-                    slackbuilds[i][j].name() + "/README";
+                    slackbuilds[i][j]->getProp("category") + "/"  +
+                    slackbuilds[i][j]->name() + "/README";
         match = find_in_file(searchterm, readme_file, whole_word,
                              case_sensitive);
       }
@@ -313,15 +372,15 @@ void filter_search(std::vector<std::vector<BuildListItem> > & slackbuilds,
       if (! category_found)
       {
         category_found = true;
-        clistbox.addItem(&categories[i]);
+        clistbox.addItem(categories[i]);
         BuildListBox blistbox; 
         blistbox.setWindow(blistboxwin);
-        blistbox.setName(categories[i].name());
+        blistbox.setName(categories[i]->name());
         blistbox.setActivated(false);
         nsearch_categories++;
         blistboxes.push_back(blistbox);
       }
-      blistboxes[nsearch_categories-1].addItem(&slackbuilds[i][j]);
+      blistboxes[nsearch_categories-1].addItem(slackbuilds[i][j]);
       nsearch++;
     } 
   }
@@ -345,4 +404,8 @@ void filter_search(std::vector<std::vector<BuildListItem> > & slackbuilds,
     initlistbox.setName("SlackBuilds");
     blistboxes.push_back(initlistbox);
   }
+
+  // Overwrite input lists if requested
+  if (overwrite)
+    overwrite_lists(slackbuilds, categories, blistboxes, clistbox);
 }

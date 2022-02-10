@@ -121,6 +121,23 @@ Instead, the default marked packages (the selected package and any dependencies 
 This option is useful for processing many tagged operations without requiring user intervention.
 If an error occurs during an operation, the user will still be notified before returning to the main window.
 .TP
+.B cumulative_filters
+.br
+\fBtrue\fR|\fBfalse\fR
+.br
+default:
+.B true
+.br
+required: no
+.IP
+Whether or not filters act cumulatively.
+If
+.BR true ,
+each filter will act only on the current displayed list of SlackBuilds.
+If
+.BR false ,
+all filters will act on the entire list of all SlackBuilds in the repository.
+.TP
 .B enable_color
 .br
 \fBtrue\fR|\fBfalse\fR

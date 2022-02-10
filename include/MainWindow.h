@@ -32,7 +32,9 @@ class MainWindow: public CursesWidget {
     CategoryListBox _clistbox;
     std::vector<BuildListBox> _blistboxes;
     std::vector<std::vector<BuildListItem> > _slackbuilds;
+    std::vector<std::vector<BuildListItem *> > _displayed_slackbuilds;
     std::vector<CategoryListItem> _categories;
+    std::vector<CategoryListItem *> _displayed_categories;
     FilterBox _fbox;
     SearchBox _searchbox;
     TagList _taglist;
@@ -59,6 +61,7 @@ class MainWindow: public CursesWidget {
     int readLists(MouseEvent * mevent=NULL, bool interactive=true);
     void clearTags();
     void rebuild(MouseEvent * mevent=NULL);
+    void resetDisplayedSlackBuilds();
 
     /* Asks for confirmation and quits */
 

@@ -34,7 +34,7 @@ namespace settings
   std::string color_theme;
   std::string layout;
   bool resolve_deps, confirm_changes, enable_color, rebuild_inv_deps;
-  bool save_buildopts, warn_invalid_pkgnames;
+  bool save_buildopts, warn_invalid_pkgnames, cumulative_filters;
 }
 
 Color colors;
@@ -166,6 +166,9 @@ int read_config(const std::string & conf_file)
 
   if (! cfg.lookupValue("warn_invalid_pkgnames", warn_invalid_pkgnames))
     warn_invalid_pkgnames = true;
+
+  if (! cfg.lookupValue("cumulative_filters", cumulative_filters))
+    cumulative_filters = true;
 
   if (! cfg.lookupValue("layout", layout)) { layout = "horizontal"; }
   else if ( (layout != "horizontal") && (layout != "vertical") )
@@ -370,8 +373,8 @@ int write_config(const std::string & conf_file)
   root.add("reinstall_cmd", Setting::TypeString) = reinstall_cmd;
   root.add("enable_color", Setting::TypeBoolean) = enable_color;
   root.add("color_theme", Setting::TypeString) = color_theme;
-  root.add("warn_invalid_pkgnames", Setting::TypeBoolean) =
-                                                          warn_invalid_pkgnames;
+  root.add("warn_invalid_pkgnames", Setting::TypeBoolean) = warn_invalid_pkgnames;
+  root.add("cumulative_filters", Setting::TypeBoolean) = cumulative_filters;
 
   // Overwrite config file
 

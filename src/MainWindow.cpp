@@ -210,7 +210,9 @@ void MainWindow::clearData()
   if (_win2) { delwin(_win2); }
   _blistboxes.resize(0);
   _slackbuilds.resize(0);
+  _displayed_slackbuilds.resize(0);
   _categories.resize(0);
+  _displayed_categories.resize(0);
   _taglist.clearList();
   _category_idx = 0;
   _activated_listbox = 0;
@@ -224,7 +226,7 @@ Creates master list of SlackBuilds
 int MainWindow::readLists(MouseEvent * mevent, bool interactive)
 {
   int check;
-  unsigned int i, ncategories, npkgerr, nmissing; 
+  unsigned int i, ncategories, npkgerr, nmissing;
   std::vector<std::string> pkg_errors, missing_info;
   std::string errmsg;
 
@@ -243,6 +245,10 @@ int MainWindow::readLists(MouseEvent * mevent, bool interactive)
     citem.setProp("category", _slackbuilds[i][0].getProp("category"));
     _categories.push_back(citem);
   }
+
+  // Create filtered list to display
+
+  resetDisplayedSlackBuilds();
 
   // Determine which are installed and get other info
 
@@ -373,6 +379,32 @@ void MainWindow::rebuild(MouseEvent * mevent)
 
 /*******************************************************************************
 
+Resets displayed slackbuilds and categories lists
+
+*******************************************************************************/
+void MainWindow::resetDisplayedSlackBuilds()
+{
+  unsigned int i, j, nbuilds, ncategories;
+
+  _displayed_slackbuilds.clear();
+  _displayed_categories.clear();
+  ncategories = _slackbuilds.size();
+  _displayed_slackbuilds.resize(ncategories);
+  _displayed_categories.resize(ncategories);
+  for ( i = 0; i < ncategories; i++ )
+  {
+    _displayed_categories[i] = &_categories[i];
+    nbuilds = _slackbuilds[i].size();
+    _displayed_slackbuilds[i].resize(nbuilds);
+    for ( j = 0; j < nbuilds; j++ )
+    {
+      _displayed_slackbuilds[i][j] = &_slackbuilds[i][j];
+    }
+  }
+}
+
+/*******************************************************************************
+
 Exit sboui
 
 *******************************************************************************/
@@ -399,9 +431,10 @@ void MainWindow::filterAll(MouseEvent * mevent)
   _activated_listbox = 0;
   _category_idx = 0;
 
+  resetDisplayedSlackBuilds();
   func = &any_build;
-  filter_by_func(_slackbuilds, func, _categories, _win2, _clistbox,
-                 _blistboxes, nbuilds);
+  filter_by_func(_displayed_slackbuilds, func, _displayed_categories, _win2,
+                 _clistbox, _blistboxes, nbuilds, settings::cumulative_filters);
 
   if (nbuilds == 0)
   {
@@ -428,6 +461,7 @@ void MainWindow::filterInstalled()
   unsigned int ninstalled;
   std::vector<std::string> pkg_errors, missing_info;
   bool (*func)(const BuildListItem &);
+  std::string msg;
 
   _filter = "installed SlackBuilds";
   printStatus("Filtering by installed SlackBuilds ...");
@@ -436,15 +470,20 @@ void MainWindow::filterInstalled()
   _category_idx = 0;
 
   func = &build_is_installed;
-  filter_by_func(_slackbuilds, func, _categories, _win2, _clistbox,
-                 _blistboxes, ninstalled);
+  filter_by_func(_displayed_slackbuilds, func, _displayed_categories, _win2,
+                 _clistbox, _blistboxes, ninstalled, settings::cumulative_filters);
 
   if (ninstalled == 0) 
-    printStatus("No installed SlackBuilds.");
+    msg = "No installed SlackBuilds";
   else if (ninstalled == 1) 
-    printStatus("1 installed SlackBuild.");
+    msg = "1 installed SlackBuild";
   else 
-    printStatus(int_to_string(ninstalled) + " installed SlackBuilds.");
+    msg = int_to_string(ninstalled) + " installed SlackBuilds";
+  if (settings::cumulative_filters)
+    msg += " in current list.";
+  else
+    msg += ".";
+  printStatus(msg);
 
   setTagList();
 }
@@ -459,6 +498,7 @@ void MainWindow::filterUpgradable()
   unsigned int nupgradable;
   std::vector<std::string> pkg_errors, missing_info;
   bool (*func)(const BuildListItem &);
+  std::string msg;
 
   _filter = "upgradable SlackBuilds";
   printStatus("Filtering by upgradable SlackBuilds ...");
@@ -468,15 +508,20 @@ void MainWindow::filterUpgradable()
   nupgradable = 0;
 
   func = &build_is_upgradable;
-  filter_by_func(_slackbuilds, func, _categories, _win2, _clistbox,
-                 _blistboxes, nupgradable);
+  filter_by_func(_displayed_slackbuilds, func, _displayed_categories, _win2,
+                 _clistbox, _blistboxes, nupgradable, settings::cumulative_filters);
 
   if (nupgradable == 0) 
-    printStatus("No upgradable SlackBuilds."); 
+    msg = "No upgradable SlackBuilds";
   else if (nupgradable == 1) 
-    printStatus("1 upgradable SlackBuild.");
+    msg = "1 upgradable SlackBuild";
   else 
-    printStatus(int_to_string(nupgradable) + " upgradable SlackBuilds.");
+    msg = int_to_string(nupgradable) + " upgradable SlackBuilds";
+  if (settings::cumulative_filters)
+    msg += " in current list.";
+  else
+    msg += ".";
+  printStatus(msg);
 
   setTagList();
 }
@@ -490,6 +535,7 @@ void MainWindow::filterTagged()
 {
   unsigned int ntagged;
   bool (*func)(const BuildListItem &);
+  std::string msg;
 
   _filter = "tagged SlackBuilds";
   printStatus("Filtering by tagged SlackBuilds ...");
@@ -499,15 +545,20 @@ void MainWindow::filterTagged()
   ntagged = 0;
 
   func = &build_is_tagged;
-  filter_by_func(_slackbuilds, func, _categories, _win2, _clistbox,
-                 _blistboxes, ntagged);
+  filter_by_func(_displayed_slackbuilds, func, _displayed_categories, _win2,
+                 _clistbox, _blistboxes, ntagged, settings::cumulative_filters);
 
   if (ntagged == 0) 
-    printStatus("No tagged SlackBuilds."); 
+    msg = "No tagged SlackBuilds";
   else if (ntagged == 1) 
-    printStatus("1 tagged SlackBuild.");
+    msg = "1 tagged SlackBuild";
   else 
-    printStatus(int_to_string(ntagged) + " tagged SlackBuilds.");
+    msg = int_to_string(ntagged) + " tagged SlackBuilds";
+  if (settings::cumulative_filters)
+    msg += " in current list.";
+  else
+    msg += ".";
+  printStatus(msg);
 
   setTagList();
 }
@@ -521,6 +572,7 @@ void MainWindow::filterBlacklisted()
 {
   unsigned int nblacklisted;
   bool (*func)(const BuildListItem &);
+  std::string msg;
 
   _filter = "blacklisted SlackBuilds";
   printStatus("Filtering by blacklisted SlackBuilds ...");
@@ -530,15 +582,20 @@ void MainWindow::filterBlacklisted()
   nblacklisted = 0;
 
   func = &build_is_blacklisted;
-  filter_by_func(_slackbuilds, func, _categories, _win2, _clistbox,
-                 _blistboxes, nblacklisted);
+  filter_by_func(_displayed_slackbuilds, func, _displayed_categories, _win2,
+                 _clistbox, _blistboxes, nblacklisted, settings::cumulative_filters);
 
   if (nblacklisted == 0) 
-    printStatus("No blacklisted SlackBuilds."); 
+    msg = "No blacklisted SlackBuilds";
   else if (nblacklisted == 1) 
-    printStatus("1 blacklisted SlackBuild.");
+    msg = "1 blacklisted SlackBuild";
   else 
-    printStatus(int_to_string(nblacklisted) + " blacklisted SlackBuilds.");
+    msg = int_to_string(nblacklisted) + " blacklisted SlackBuilds";
+  if (settings::cumulative_filters)
+    msg += " in current list.";
+  else
+    msg += ".";
+  printStatus(msg);
 
   setTagList();
 }
@@ -553,6 +610,7 @@ void MainWindow::filterNonDeps()
 {
   unsigned int nnondeps;
   std::vector<std::string> pkg_errors, missing_info;
+  std::string msg;
 
   _filter = "non-dependencies";
   printStatus("Filtering by non-dependencies ...");
@@ -561,15 +619,20 @@ void MainWindow::filterNonDeps()
   _activated_listbox = 0;
   nnondeps = 0;
 
-  filter_nondeps(_slackbuilds, _categories, _win2, _clistbox, _blistboxes,
-                 nnondeps);
+  filter_nondeps(_slackbuilds, _displayed_slackbuilds, _displayed_categories,
+                 _win2, _clistbox, _blistboxes, nnondeps, settings::cumulative_filters);
 
   if (nnondeps == 0) 
-    printStatus("No non-dependencies."); 
+    msg = "No non-dependencies";
   else if (nnondeps == 1) 
-    printStatus("1 non-dependency.");
+    msg = "1 non-dependency";
   else 
-    printStatus(int_to_string(nnondeps) + " non-dependencies.");
+    msg = int_to_string(nnondeps) + " non-dependencies";
+  if (settings::cumulative_filters)
+    msg += " in current list.";
+  else
+    msg += ".";
+  printStatus(msg);
 
   setTagList();
 }
@@ -583,6 +646,7 @@ void MainWindow::filterBuildOptions()
 {
   unsigned int nbuildsopts;
   bool (*func)(const BuildListItem &);
+  std::string msg;
 
   _filter = "SlackBuilds with build options set";
   printStatus("Filtering by SlackBuilds with build options set ...");
@@ -592,16 +656,20 @@ void MainWindow::filterBuildOptions()
   nbuildsopts = 0;
 
   func = &build_has_buildoptions;
-  filter_by_func(_slackbuilds, func, _categories, _win2, _clistbox,
-                 _blistboxes, nbuildsopts);
+  filter_by_func(_displayed_slackbuilds, func, _displayed_categories, _win2,
+                 _clistbox, _blistboxes, nbuildsopts, settings::cumulative_filters);
 
   if (nbuildsopts == 0) 
-    printStatus("No SlackBuilds with build options set."); 
+    msg = "No SlackBuilds with build options set";
   else if (nbuildsopts == 1) 
-    printStatus("1 SlackBuild with build options set.");
+    msg = "1 SlackBuild with build options set";
   else 
-    printStatus(int_to_string(nbuildsopts) +
-                " SlackBuilds with build options set.");
+    msg = int_to_string(nbuildsopts) + " SlackBuilds with build options set";
+  if (settings::cumulative_filters)
+    msg += " in current list.";
+  else
+    msg += ".";
+  printStatus(msg);
 
   setTagList();
 }
@@ -616,6 +684,7 @@ void MainWindow::filterSearch(const std::string & searchterm,
                               bool search_readmes)
 {
   unsigned int nsearch;
+  std::string msg;
 
   _filter = "search for " + searchterm;
   if (search_readmes)
@@ -627,16 +696,21 @@ void MainWindow::filterSearch(const std::string & searchterm,
   _category_idx = 0;
   nsearch = 0;
 
-  filter_search(_slackbuilds, _categories, _win2, _clistbox, _blistboxes,
-                nsearch, searchterm, case_sensitive, whole_word,
-                search_readmes);
+  filter_search(_displayed_slackbuilds, _displayed_categories, _win2, _clistbox,
+                _blistboxes, nsearch, searchterm, case_sensitive, whole_word,
+                search_readmes, settings::cumulative_filters);
 
-  if (nsearch == 0)
-    printStatus("No matches for " + searchterm + ".");
+  if (nsearch == 0) 
+    msg = "No matches for " + searchterm;
   else if (nsearch == 1) 
-    printStatus("1 match for " + searchterm + ".");
+    msg = "1 match for " + searchterm;
   else 
-    printStatus(int_to_string(nsearch) + " matches for " + searchterm + ".");
+    msg = int_to_string(nsearch) + " matches for " + searchterm;
+  if (settings::cumulative_filters)
+    msg += " in current list.";
+  else
+    msg += ".";
+  printStatus(msg);
 
   setTagList();
 }
@@ -1859,7 +1933,9 @@ MainWindow::MainWindow(const std::string & version)
   _win2 = NULL;
   _blistboxes.resize(0);
   _slackbuilds.resize(0);
+  _displayed_slackbuilds.resize(0);
   _categories.resize(0);
+  _displayed_categories.resize(0);
   _filter = "all SlackBuilds";
   _info = "s: Sync | f: Filter | /: Search | o: Options | F9: Menu";
   _status = "";

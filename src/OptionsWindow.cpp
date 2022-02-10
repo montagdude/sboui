@@ -137,6 +137,13 @@ OptionsWindow::OptionsWindow()
   count++;
   line += 1;
 
+  addItem(&_cumfilt_toggle);
+  _items[count]->setName("Filters are cumulative");
+  _items[count]->setPosition(line,1);
+  _items[count]->setWidth(_items[count]->name().size()+4);
+  count++;
+  line++;
+
   addItem(new Label());
   _items[count]->setName("List layout");
   _items[count]->setPosition(line,1);
@@ -391,6 +398,7 @@ void OptionsWindow::readSettings()
   _rebuild_toggle.setEnabled(rebuild_inv_deps);
   _confirm_toggle.setEnabled(confirm_changes);
   _buildopts_toggle.setEnabled(save_buildopts);
+  _cumfilt_toggle.setEnabled(cumulative_filters);
   _layout_box.setChoice(layout);
 
   _color_toggle.setEnabled(enable_color);
@@ -421,6 +429,7 @@ void OptionsWindow::applySettings(int & check_color, int & check_write,
   rebuild_inv_deps = _rebuild_toggle.enabled();
   confirm_changes = _confirm_toggle.enabled();
   save_buildopts = _buildopts_toggle.enabled();
+  cumulative_filters = _cumfilt_toggle.enabled();
   layout = _layout_box.choice();
 
   color_theme = _color_box.choice();
