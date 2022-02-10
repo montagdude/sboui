@@ -160,43 +160,6 @@ int find_slackbuild(const std::string & name,
 
 /*******************************************************************************
 
-Finds a SlackBuild by name in a list of slackbuilds pointers. Returns 0 if
-found, 1 if not found, and also sets indices in list where it was found.
-Overloaded version of above.
-
-*******************************************************************************/
-int find_slackbuild(const std::string & name,
-                    std::vector<std::vector<BuildListItem *> > & slackbuilds,
-                    int & idx0, int & idx1)
-{
-  int i, ncategories, nbuilds, check, lbound, rbound;
-  std::atomic<bool> found(false);
-
-  ncategories = slackbuilds.size();
-#pragma omp parallel for private(i,nbuilds,lbound,rbound,check)
-  for ( i = 0; i < ncategories; i++ )
-  {
-    if (found)
-      continue;
-    nbuilds = slackbuilds[i].size();
-    lbound = 0;
-    rbound = nbuilds-1;
-    check = find_name_in_list(name, slackbuilds[i], idx1, lbound, rbound);
-    if (check == 0)
-    {
-      idx0 = i;
-      found = true;
-    }
-  }
-
-  if (found)
-    return 0;
-  else
-    return 1;
-}
-
-/*******************************************************************************
-
 Gets basename of a file (removes path)
 
 *******************************************************************************/
