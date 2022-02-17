@@ -98,7 +98,7 @@ install(FILES ${CMAKE_BINARY_DIR}/sboui_update_launch
                     GROUP_READ             GROUP_EXECUTE
                     WORLD_READ             WORLD_EXECUTE
         DESTINATION libexec/sboui)
-install(FILES etc/sboui.conf etc/sboui-backend.conf etc/package_blacklist
+install(FILES etc/sboui.conf etc/sboui-backend.conf etc/blacklist
         DESTINATION ${CONFDIR})
 file(GLOB COLOR_THEMES etc/colors.*)
 install(FILES ${COLOR_THEMES} DESTINATION ${DATADIR}/themes)

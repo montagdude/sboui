@@ -473,8 +473,7 @@ int InstallBox::create(BuildListItem & build,
 
   for ( i = 0; i < nbuilds; i++ )
   {
-    if ( (_builds[i]->getBoolProp("installed")) &&
-         (_builds[i]->getBoolProp("blacklisted")) )
+    if (_builds[i]->getBoolProp("blacklisted"))
     {
       _builds[i]->setBoolProp("marked", false);
       _builds[i]->setProp("action", "(blacklisted)");

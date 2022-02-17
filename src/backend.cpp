@@ -23,7 +23,7 @@
 
 using namespace settings;
 
-Blacklist package_blacklist;
+Blacklist blacklist;
 
 /*******************************************************************************
 
@@ -64,6 +64,9 @@ int read_repo(std::vector<std::vector<BuildListItem> > & slackbuilds)
           BuildListItem build;
           build.setName(build_entry.name);
           build.setProp("category", cat_entry.name);
+          // Check if blacklisted by name at this point
+          build.setBoolProp("blacklisted",
+                            blacklist.nameBlacklisted(build.name()));
           cat_builds.push_back(build);
         }
         else { break; }   // Directories are listed first, so we're done
@@ -385,8 +388,8 @@ void determine_installed(std::vector<std::vector<BuildListItem> > & slackbuilds,
       slackbuilds[i][j].setProp("package_name", installedpkgs[k]);
 
       slackbuilds[i][j].setBoolProp("blacklisted",
-                        package_blacklist.blacklisted(installedpkgs[k], name,
-                                                      version, arch, build));
+                        blacklist.blacklisted(installedpkgs[k], name, version,
+                                              arch, build));
 
       // Read props, set upgradable status, and check for missing .info file
 

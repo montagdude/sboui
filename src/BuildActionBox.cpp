@@ -59,21 +59,19 @@ void BuildActionBox::create(BuildListItem & build, bool limited_actions)
 
   if (! limited_actions)
   {
-    if (! build.getBoolProp("installed"))
-    { 
-      addItem(new ListItem("Install")); 
-      _items[count]->setHotKey(0);
-      count++;
-    }
-
-    else
+    if (! build.getBoolProp("blacklisted"))
     {
-      if (! build.getBoolProp("blacklisted"))
+      if (! build.getBoolProp("installed"))
+      { 
+        addItem(new ListItem("Install")); 
+        _items[count]->setHotKey(0);
+        count++;
+      }
+      else
       {
         addItem(new ListItem ("Remove"));
         _items[count]->setHotKey(0);
         count++;
-
         if (build.getBoolProp("upgradable"))
         {
           addItem(new ListItem("Upgrade"));

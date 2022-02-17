@@ -1,4 +1,3 @@
 - gnucash picking up wrong build options (not sure if reproducible)
-- Make blacklist also apply to install
 - Segfault when using my custom repository with -f /etc/sboui/sboui-custom.conf.  Seems to be caused by buildopts (moving the existing files out fixes it).
 - Change default repository directory/branch for sbopkg (code and default config) once a new release is made.

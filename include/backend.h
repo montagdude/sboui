@@ -6,7 +6,7 @@
 #include "BuildListItem.h"
 #include "Blacklist.h"
 
-extern Blacklist package_blacklist;
+extern Blacklist blacklist;
 
 int read_repo(std::vector<std::vector<BuildListItem> > & slackbuilds);
 int read_buildopts(std::vector<std::vector<BuildListItem> > & slackbuilds);

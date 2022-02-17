@@ -161,22 +161,25 @@ unsigned int TagList::getDisplayList(const std::string & action)
   {
     add_item = false;
     item = static_cast<BuildListItem *>(_tagged[i]);
-    if (action == "Install")
+    if (! item->getBoolProp("blacklisted"))
     {
-      if (! item->getBoolProp("installed")) { add_item = true; }
+      if (action == "Install")
+      {
+        if (! item->getBoolProp("installed"))
+          add_item = true;
+      }
+      else if (action == "Upgrade")
+      {
+        if (item->getBoolProp("upgradable"))
+          add_item = true;
+      }
+      else if ( (action == "Remove") || (action == "Reinstall") )
+      {
+        if (item->getBoolProp("installed"))
+          add_item = true;
+      }
     }
-    else if (action == "Upgrade")
-    {
-      if ( (item->getBoolProp("upgradable")) &&
-           (! item->getBoolProp("blacklisted")) )
-        add_item = true;
-    }
-    else if ( (action == "Remove") || (action == "Reinstall") )
-    {
-      if ( (item->getBoolProp("installed")) &&
-           (! item->getBoolProp("blacklisted")) ) { add_item = true; }
-    }
-       
+
     if (add_item)
     {
       _tagged[i]->setBoolProp("marked", true);

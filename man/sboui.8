@@ -161,14 +161,15 @@ Per-user override of
 .IR /etc/sboui/sboui.conf .
 Note: this file is overwritten when settings are changed in the Options window of the user interface.
 .TP
-.I /etc/sboui/package_blacklist
+.I /etc/sboui/blacklist
 .br
-File used to blacklist installed packages.
+File used to blacklist packages or SlackBuilds.
 Installed packages are searched for matches in the app name, version, arch, build, and complete package name against all patterns listed in this file.
+In addition to installed packages, any SlackBuild matching an entry in the blacklist by name will also be marked.
 Regex patterns are allowed.
 .IP
-The package_blacklist is used to prevent software from being upgraded, reinstalled, or removed, but not from being installed in the first place. 
-These three actions will not be available for blacklisted packages.
+The blacklist file prevents software from being installed, upgraded, reinstalled, or removed by sboui.
+These four actions will not be available for blacklisted items.
 Blacklisted packages will also be excluded from the Upgradable filter and included in the Blacklisted filter.
 .TP
 .I /etc/sboui/sboui-backend.conf

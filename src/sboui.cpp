@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 
   // Read blacklist
 
-  package_blacklist.read("/etc/sboui/package_blacklist"); 
+  blacklist.read("/etc/sboui/blacklist"); 
 
   // Handle non-interactive CLOs
 

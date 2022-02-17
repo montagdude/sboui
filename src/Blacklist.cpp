@@ -15,7 +15,7 @@ Blacklist::Blacklist() { _patterns.resize(0); }
 
 /*******************************************************************************
 
-Reads and stores patterns from package_blacklist file
+Reads and stores patterns from blacklist file
 
 *******************************************************************************/
 int Blacklist::read(const std::string & filename)
@@ -88,6 +88,24 @@ bool Blacklist::blacklisted(const std::string & pkg, const std::string & name,
     if (std::regex_match(arch, _patterns[i])) { return true; }
     if (std::regex_match(build, _patterns[i])) { return true; }
     if (std::regex_match(pkg, _patterns[i])) { return true; }
+  }
+
+  return false;
+}
+
+/*******************************************************************************
+
+Checks for match by name only (used for not-installed SlackBuilds)
+
+*******************************************************************************/
+bool Blacklist::nameBlacklisted(const std::string & name) const
+{
+  unsigned int i, npatterns;
+
+  npatterns = _patterns.size();
+  for ( i = 0; i < npatterns; i++ )
+  {
+    if (std::regex_match(name, _patterns[i])) { return true; }
   }
 
   return false;

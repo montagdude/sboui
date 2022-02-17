@@ -130,7 +130,7 @@ void BuildListItem::readInstalledProps(std::vector<std::string> & installedpkgs)
     setBoolProp("installed", true);
     setProp("installed_version", version);
     setProp("package_name", pkg);
-    setBoolProp("blacklisted", package_blacklist.blacklisted(pkg, _name, 
+    setBoolProp("blacklisted", blacklist.blacklisted(pkg, _name, 
                                version, arch, build));
     parseBuildNum(build);
     if (getProp("available_version") != "")
@@ -141,7 +141,7 @@ void BuildListItem::readInstalledProps(std::vector<std::string> & installedpkgs)
     setBoolProp("installed", false);
     setProp("installed_version", "");
     setProp("package_name", "");
-    setBoolProp("blacklisted", false);
+    setBoolProp("blacklisted", blacklist.nameBlacklisted(_name));
     setBoolProp("upgradable", false);
   }
 }

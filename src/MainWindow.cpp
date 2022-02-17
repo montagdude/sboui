@@ -1247,9 +1247,9 @@ void MainWindow::showPackageInfo(BuildListItem & build, MouseEvent * mevent)
   if (build.getBoolProp("installed"))
   {
     msg += "Package name: " + build.getProp("package_name") + "\n";
-    if (build.getBoolProp("blacklisted")) { msg += "Blacklisted: yes"; }
-    else { msg += "Blacklisted: no"; }
   } 
+  if (build.getBoolProp("blacklisted")) { msg += "Blacklisted: yes"; }
+  else { msg += "Blacklisted: no"; }
 
   // Place message box
 
@@ -1684,7 +1684,13 @@ void MainWindow::printPackageVersion(const BuildListItem & build)
         " (build " + build.getProp("available_buildnum") + ") ";
     printStatus(statusmsg);
   }
-  else { clearStatus(); }
+  else
+  {
+    if (build.getBoolProp("blacklisted"))
+      printStatus(build.name() + " is blacklisted");
+    else
+      clearStatus();
+  }
 }
 
 /*******************************************************************************

@@ -1,9 +1,8 @@
-# This is sboui's blacklist file. It operates only on the names of installed
-# packages, not any SlackBuild name in the repo. That means that any package
-# listed here can be installed, but they cannot be removed, upgraded, or
-# reinstalled.
+# This is sboui's blacklist file. It operates on package names as well as any
+# SlackBuild name in the repo. sboui will not install, remove, upgrade, or
+# reinstall any package or SlackBuild listed here.
  
-# Example blacklisting packages by name:
+# Example blacklisting by name:
 #avl
 #vlc
 #i3
