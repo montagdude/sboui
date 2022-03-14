@@ -54,7 +54,7 @@ int DefaultOptionsBox::setPackageManager(const std::string & pkg_mgr)
 {
   if (pkg_mgr == "sbopkg")
   {
-    _repo_dir = "/var/lib/sbopkg/SBo/14.2";
+    _repo_dir = "/var/lib/sbopkg/SBo/15.0";
     _sync_cmd = "sbopkg -r";
     _install_cmd = "sbopkg -B -i";
     _upgrade_cmd = "sbopkg -B -i";
