@@ -646,7 +646,7 @@ std::string InputBox::handleMouseEvent(MouseEvent * mevent)
   xcurs = mevent->x() - begx;
   rowsavail = rows-_reserved_rows;
 
-  // FIXME: Everything except the "Clicked in the box" section is identical to
+  // TODO: Everything except the "Clicked in the box" section is identical to
   // handleMouseEvent in ListBox.cpp. Maybe it can be abstracted?
 
   if ( (mevent->button() == 1) || (mevent->button() == 3) )
