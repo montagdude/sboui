@@ -1,3 +1,31 @@
+2022-03-16   Daniel Prosser <dpross1100@msn.com>
+
+        version 2.2
+        Enhancements
+        * Add an option for filters to work cumulatively, which is the new
+          default (see cumulative_filters option in sboui.conf).
+        * Make blacklist also apply to non-installed SlackBuilds to prevent them
+          from being installed. The blacklist file, previously named
+          'package_blacklist', has been renamed to 'blacklist'.
+        * Create complete-as-possible build order when deps are missing. This
+          enhancement helps especially for the -current SBo repo, where deps
+          may have been moved to the main Slackware tree but still listed in the
+          SBo .info files.
+        * Add an option to keep source tarballs in the default backend (see
+          CLEAN_SOURCE option in sboui-backend.conf). Source tarballs are
+          retained next to the SlackBuild in the local repo tree.
+        * Add an option to continue with the build when the MD5sum check fails
+          for a source tarball.
+
+        Bug fixes
+        * Make sure the correct configuration file is overwritten when applying
+          settings in the UI options window. Previously, if the configuration
+          file was specified on the command line, the changes would be applied
+          to the user-default file (~/.sboui.conf) instead.
+        * Fix an unitialized variable in OptionsWindow.cpp, which would cause an
+          infinite redraw loop when compiled with clang++.
+        * Fix "List Inverse Deps" popup being displayed twice.
+
 2019-11-21   Daniel Prosser <dpross1100@msn.com>
 
         version 2.1.0
