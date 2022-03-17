@@ -32,7 +32,7 @@ void PackageInfoBox::redrawMessage() const
     left = std::floor(mid - double(len)/2.0) + 1;
     wmove(_win, 3+_margin_v+i, 1);
     if (_centered) { printSpaces(left-1); }
-    wprintw(_win, splitmsg[i].c_str());
+    wprintw(_win, "%s", splitmsg[i].c_str());
   }
 }
 

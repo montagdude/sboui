@@ -36,7 +36,7 @@ void InstallBox::redrawFrame()
   wmove(_win, 0, left);
   if (colors.turnOn(_win, "fg_title", "bg_title") != 0)
     wattron(_win, A_BOLD);
-  wprintw(_win, _name.c_str());
+  wprintw(_win, "%s", _name.c_str());
   if (colors.turnOff(_win) != 0)
     wattroff(_win, A_BOLD);
 
@@ -184,7 +184,7 @@ void InstallBox::redrawSingleItem(unsigned int idx)
   if (_items[idx]->getBoolProp("marked")) { wprintw(_win, "[X] "); }
   else { wprintw(_win, "[ ] "); }
 
-  wprintw(_win, _items[idx]->name().substr(0,printlen).c_str());
+  wprintw(_win, "%s", _items[idx]->name().substr(0,printlen).c_str());
 
   for ( i = 0; int(i) < nspaces; i++ ) { waddch(_win, ' '); }
 

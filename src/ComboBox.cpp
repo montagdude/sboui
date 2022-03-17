@@ -172,7 +172,7 @@ void ComboBox::draw(int y_offset, bool force, bool highlight)
   // Print selection and indicator
 
   wmove(_win, _posy-y_offset, _posx);
-  wprintw(_win, _list.highlightedItem()->name().c_str());
+  wprintw(_win, "%s", _list.highlightedItem()->name().c_str());
   nspaces = _width - _list.highlightedItem()->name().size() - 3;
   printSpaces(nspaces);
   wprintw(_win, "[^]");

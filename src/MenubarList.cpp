@@ -100,11 +100,11 @@ void MenubarList::redrawSingleItem(unsigned int idx)
     {
       colors.turnOff(_win);
       if (colors.turnOn(_win, color_pair2) != 0) { wattron(_win, A_BOLD); }
-      wprintw(_win, _items[idx]->name().substr(i,1).c_str());
+      wprintw(_win, "%s", _items[idx]->name().substr(i,1).c_str());
       if (colors.turnOff(_win) != 0) { wattroff(_win, A_BOLD); }
       colors.turnOn(_win, color_pair1);
     }
-    else { wprintw(_win, _items[idx]->name().substr(i,1).c_str()); }
+    else { wprintw(_win, "%s", _items[idx]->name().substr(i,1).c_str()); }
   }
   for ( i = 0; i < nspaces; i++ ) { waddch(_win, ' '); }
   printToEol(_items[idx]->getProp("shortcut"));

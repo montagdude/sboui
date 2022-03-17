@@ -36,7 +36,7 @@ void OptionsWindow::redrawFrame()
   right = left + namelen;
   wmove(_win, 0, left);
   wattron(_win, A_BOLD);
-  wprintw(_win, _msg.c_str());
+  wprintw(_win, "%s", _msg.c_str());
   wattroff(_win, A_BOLD);
 
   // Corners

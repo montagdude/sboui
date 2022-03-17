@@ -28,7 +28,7 @@ void HelpWindow::redrawFrame()
   right = left + namelen;
   wmove(_win, 0, left);
   wattron(_win, A_BOLD);
-  wprintw(_win, _name.c_str());
+  wprintw(_win, "%s", _name.c_str());
   wattroff(_win, A_BOLD);
 
   // Corners
@@ -66,7 +66,7 @@ void HelpWindow::redrawFrame()
 
   wmove(_win, 1, 1);
   colors.turnOn(_win, "header", "bg_normal");
-  wprintw(_win, _leftlabel.c_str());
+  wprintw(_win, "%s", _leftlabel.c_str());
   colors.turnOff(_win);
 
   vlineloc = cols-2 - _shortcutwidth;
@@ -138,7 +138,7 @@ void HelpWindow::redrawSingleItem(unsigned int idx)
   else
   {
     ndots = vlineloc - _items[idx]->name().size();
-    wprintw(_win, _items[idx]->name().substr(0,printlen).c_str());
+    wprintw(_win, "%s", _items[idx]->name().substr(0,printlen).c_str());
   }
 
   // Turn off bold for header

@@ -26,7 +26,7 @@ void ToggleInput::redrawText(int y_offset) const
   wmove(_win, _posy-y_offset, _posx+4);
   if (_width > int(_name.size())+4) { nspaces = _width - (_name.size()+4); }
   else { nspaces = 0; } 
-  wprintw(_win, _name.c_str());
+  wprintw(_win, "%s", _name.c_str());
   printSpaces(nspaces);
 }
 

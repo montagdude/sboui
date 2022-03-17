@@ -29,7 +29,7 @@ void BuildListBox::redrawFrame()
   right = left + namelen;
   wmove(_win, 0, left);
   wattron(_win, A_BOLD);
-  wprintw(_win, _name.c_str());
+  wprintw(_win, "%s", _name.c_str());
   wattroff(_win, A_BOLD);
 
   // Corners
@@ -163,7 +163,7 @@ void BuildListBox::redrawSingleItem(unsigned int idx)
 
   printlen = std::min(int(_items[idx]->name().size()), vlineloc);
   nspaces = vlineloc - _items[idx]->name().size() - nast;
-  wprintw(_win, _items[idx]->name().substr(0,printlen).c_str());
+  wprintw(_win, "%s", _items[idx]->name().substr(0,printlen).c_str());
   if (nast == 1)
     waddch(_win, '*');
 

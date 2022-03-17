@@ -32,7 +32,7 @@ void BuildOrderBox::redrawFrame()
   wmove(_win, 0, left);
   if (colors.turnOn(_win, "fg_title", "bg_title") != 0)
     wattron(_win, A_BOLD);
-  wprintw(_win, _name.c_str());
+  wprintw(_win, "%s", _name.c_str());
   if (colors.turnOff(_win) != 0)
     wattroff(_win, A_BOLD);
 
@@ -167,7 +167,7 @@ void BuildOrderBox::redrawSingleItem(unsigned int idx)
 
   printlen = std::min(int(_items[idx]->name().size()), vlineloc);
   nspaces = vlineloc - _items[idx]->name().size() - nast;
-  wprintw(_win, _items[idx]->name().substr(0,printlen).c_str());
+  wprintw(_win, "%s", _items[idx]->name().substr(0,printlen).c_str());
   if (nast == 1)
     waddch(_win, '*');
 

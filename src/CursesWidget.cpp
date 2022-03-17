@@ -145,12 +145,12 @@ void CursesWidget::redrawButtons()
       {
         if (colors.turnOn(_win, color_pair) != 0)
           wattron(_win, A_REVERSE);
-        wprintw(_win, _buttons[i].c_str());
+        wprintw(_win, "%s", _buttons[i].c_str());
         if (colors.turnOff(_win) != 0)
           wattroff(_win, A_REVERSE);
       }
       else
-        wprintw(_win, _buttons[i].c_str());
+        wprintw(_win, "%s", _buttons[i].c_str());
     }
   }
 }

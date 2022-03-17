@@ -20,11 +20,12 @@ void InputItem::printToEol(const std::string & msg) const
 
   msglen = msg.size();
   rightspace = _width - (x - _posx);
-  if (msglen > rightspace) { wprintw(_win, msg.substr(0, rightspace).c_str()); }
+  if (msglen > rightspace)
+      wprintw(_win, "%s", msg.substr(0, rightspace).c_str());
   else
   {
     nspaces = std::max(rightspace-msglen, 0);
-    wprintw(_win, msg.c_str());
+    wprintw(_win, "%s", msg.c_str());
     for ( i = 0; i < nspaces; i++ ) { wprintw(_win, " "); }
   }
 }
