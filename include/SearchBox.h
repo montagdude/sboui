@@ -15,7 +15,7 @@ class SearchBox: public InputBox {
   private:
 
     TextInput _entryitem;
-    ToggleInput _caseitem, _wholeitem, _readmeitem;
+    ToggleInput _caseitem, _wholeitem, _readmeitem, _currentlistitem;
 
     /* Drawing */
 
@@ -38,4 +38,5 @@ class SearchBox: public InputBox {
     bool caseSensitive() const;
     bool wholeWord() const;
     bool searchREADMEs() const;
+    bool currentList() const;
 };

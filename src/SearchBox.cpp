@@ -126,6 +126,12 @@ SearchBox::SearchBox()
   _readmeitem.setEnabled(false);
   _readmeitem.setWidth(30);
   _readmeitem.setPosition(8,1);
+
+  addItem(&_currentlistitem);
+  _currentlistitem.setName("Current list only");
+  _currentlistitem.setEnabled(false);
+  _currentlistitem.setWidth(30);
+  _currentlistitem.setPosition(9,1);
 }
 
 SearchBox::~SearchBox() { delete _items[0]; }
@@ -146,3 +152,4 @@ std::string SearchBox::searchString() const { return _entryitem.text(); }
 bool SearchBox::caseSensitive() const { return _caseitem.enabled(); }
 bool SearchBox::wholeWord() const { return _wholeitem.enabled(); }
 bool SearchBox::searchREADMEs() const { return _readmeitem.enabled(); }
+bool SearchBox::currentList() const { return _currentlistitem.enabled(); }

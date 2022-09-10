@@ -1,2 +1,5 @@
 - gnucash picking up wrong build options (not sure if reproducible)
 - Segfault when using my custom repository with -f /etc/sboui/sboui-custom.conf.  Seems to be caused by buildopts (moving the existing files out fixes it).
+- Action to clean /tmp/SBo
+- Build options not removed properly in sub-actions dialog
+- Make search operate on entire repository by default, but add option in search window to only operate on current list instead
