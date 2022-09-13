@@ -706,10 +706,10 @@ void MainWindow::filterSearch(const std::string & searchterm,
     msg = "1 match for " + searchterm;
   else 
     msg = int_to_string(nsearch) + " matches for " + searchterm;
-  if (settings::cumulative_filters)
+  if (_searchbox.currentList())
     msg += " in current list.";
   else
-    msg += ".";
+    msg += " in repository.";
   printStatus(msg);
 
   setTagList();
@@ -2169,6 +2169,10 @@ void MainWindow::search(MouseEvent * mevent)
       getting_input = false;
       if (_searchbox.searchString().size() > 0)
       {
+        // Reset filter to All unless otherwise selected
+        if (! _searchbox.currentList()) filterAll(mevent);
+
+        // Now do the search
         filterSearch(_searchbox.searchString(), _searchbox.caseSensitive(),
                      _searchbox.wholeWord(), _searchbox.searchREADMEs());
       }
