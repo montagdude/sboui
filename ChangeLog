@@ -1,3 +1,11 @@
+2022-09-13   Daniel Prosser <dpross1100@msn.com>
+
+        version 2.3
+        Enhancements
+        * Make the search operate on entire repository by default again, as it
+          did prior to version 2.2, and add an option in the search box to
+          operate on the current list only instead.
+
 2022-03-16   Daniel Prosser <dpross1100@msn.com>
 
         version 2.2
