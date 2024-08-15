@@ -31,6 +31,10 @@ int main(int argc, char *argv[])
 
   blacklist.read("/etc/sboui/blacklist"); 
 
+  // Read ignore_versions file
+
+  ignore_versions.read("/etc/sboui/ignore_versions");
+
   // Handle non-interactive CLOs
 
   if (clos.sync())

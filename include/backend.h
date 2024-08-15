@@ -5,8 +5,10 @@
 #include <cmath>   // floor
 #include "BuildListItem.h"
 #include "Blacklist.h"
+#include "IgnoreVersions.h"
 
 extern Blacklist blacklist;
+extern IgnoreVersions ignore_versions;
 
 int read_repo(std::vector<std::vector<BuildListItem> > & slackbuilds);
 int read_buildopts(std::vector<std::vector<BuildListItem> > & slackbuilds);

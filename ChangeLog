@@ -1,3 +1,14 @@
+{date}   Daniel Prosser <dpross1100@msn.com>
+
+        version 2.4
+        Enhancements
+        * Add capability to ignore specific versions of SlackBuilds when
+          checking which are upgradable. This is useful, for example, if you
+          have already upgraded a SlackBuild beyond what is available from
+          SlackBuilds.org, and you don't want sboui to mark it as upgradable
+          until a newer version is available. See the manpage and comments in
+          /etc/sboui/ignore_versions
+
 2022-09-13   Daniel Prosser <dpross1100@msn.com>
 
         version 2.3

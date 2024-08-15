@@ -1,4 +1,8 @@
+- Add slpkg (see forum post 6/5/23)
+- psutil split into python2 and python3 versions - fix optional dependency name
+- Change update notifier to python3
 - gnucash picking up wrong build options (not sure if reproducible)
 - Segfault when using my custom repository with -f /etc/sboui/sboui-custom.conf.  Seems to be caused by buildopts (moving the existing files out fixes it).
 - Action to clean /tmp/SBo
 - Build options not removed properly in sub-actions dialog
+- Add ignore_versions documentation to manpages

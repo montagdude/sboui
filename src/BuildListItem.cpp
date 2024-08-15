@@ -84,6 +84,13 @@ bool BuildListItem::upgradable() const
       test_buildnum = true;
   }
 
+  // Check if available version is listed in the ignore_version file.
+  // We'll still let it be upgradable if the build number is different.
+  if (_ignore_versions->ignoreVersion(_name, available_version))
+  {
+    test_version = false;
+  }
+
   return (test_version || test_buildnum);
 }
 
@@ -112,6 +119,16 @@ BuildListItem::BuildListItem()
   addProp("available_version", "");
   addProp("available_buildnum", "");
   addProp("action", "");
+}
+
+/*******************************************************************************
+
+Sets ignore_versions pointer
+
+*******************************************************************************/
+void BuildListItem::setIgnoreVersions(IgnoreVersions * ignore_versions)
+{
+  _ignore_versions = ignore_versions;
 }
 
 /*******************************************************************************
@@ -162,7 +179,10 @@ int BuildListItem::readPropsFromRepo()
     setProp("available_version", available_version);
     setProp("requires", reqs);
     setProp("available_buildnum", available_buildnum);
-    if (getBoolProp("installed")) { setBoolProp("upgradable", upgradable()); }
+    if (getBoolProp("installed"))
+    {
+      setBoolProp("upgradable", upgradable());
+    }
   }
 
   return check;

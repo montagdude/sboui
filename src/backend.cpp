@@ -15,6 +15,7 @@
 #include "ShellReader.h"
 #include "settings.h"
 #include "Blacklist.h"
+#include "IgnoreVersions.h"
 #include "backend.h"
 
 #ifndef PACKAGE_DIR
@@ -24,6 +25,7 @@
 using namespace settings;
 
 Blacklist blacklist;
+IgnoreVersions ignore_versions;
 
 /*******************************************************************************
 
@@ -64,6 +66,8 @@ int read_repo(std::vector<std::vector<BuildListItem> > & slackbuilds)
           BuildListItem build;
           build.setName(build_entry.name);
           build.setProp("category", cat_entry.name);
+          // Set ignore_versions point
+          build.setIgnoreVersions(&ignore_versions);
           // Check if blacklisted by name at this point
           build.setBoolProp("blacklisted",
                             blacklist.nameBlacklisted(build.name()));
