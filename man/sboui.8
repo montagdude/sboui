@@ -31,6 +31,8 @@ Automatic rebuilding of inverse dependencies (optional)
 .IP \(bu
 Blacklisting
 .IP \(bu
+Ignoring specific versions of SlackBuilds when upgrading
+.IP \(bu
 Storing build options for individual SlackBuild scripts
 .IP \(bu
 "Tagging" to operate on multiple SlackBuilds
@@ -181,6 +183,15 @@ See
 and
 .BR sboui-backend.conf (5)
 for more information.
+.TP
+.I /etc/sboui/ignore_versions
+.br
+File used to specify versions of SlackBuilds to ignore when checking for upgrades.
+This feature is useful, for example, if you have upgraded a SlackBuild beyond the version available on SlackBuilds.org, and you don't want
+.BR sboui
+to show it as upgradable, because that would actually be a downgrade.
+The file contains name:version pairs, one per line.
+The same SlackBuild name can be listed more than once, paired with different versions, to ignore more than one version.
 .TP
 Color theme files
 .br
