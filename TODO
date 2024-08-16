@@ -5,4 +5,3 @@
 - Segfault when using my custom repository with -f /etc/sboui/sboui-custom.conf.  Seems to be caused by buildopts (moving the existing files out fixes it).
 - Action to clean /tmp/SBo
 - Build options not removed properly in sub-actions dialog
-- Add ignore_versions documentation to manpages
