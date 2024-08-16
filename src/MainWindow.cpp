@@ -1703,7 +1703,7 @@ void MainWindow::showAbout(MouseEvent * mevent)
   std::string msg;
 
   msg = "sboui " + std::string(PACKAGE_VERSION)
-      + "\nCopyright 2016-2022\nDaniel Prosser";
+      + "\nCopyright 2016-2024\nDaniel Prosser";
   displayMessage(msg, true, "About", "Ok", mevent);
 }
 
