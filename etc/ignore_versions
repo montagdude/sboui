@@ -1,0 +1,8 @@
+# This file lists versions of SlackBuilds to ignore when checking which are
+# upgradable. This can be useful if you have upgraded a SlackBuild beyond the
+# version on SlackBuilds.org and don't want it to be tagged as upgradable.
+# Multiple versions can be listed for a single SlackBuild if desired.
+# e.g.:
+#jdk11:11.0.22
+#jdk11:11.0.23
+#libreoffice:24.2.5
