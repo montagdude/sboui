@@ -66,7 +66,7 @@ int read_repo(std::vector<std::vector<BuildListItem> > & slackbuilds)
           BuildListItem build;
           build.setName(build_entry.name);
           build.setProp("category", cat_entry.name);
-          // Set ignore_versions point
+          // Set ignore_versions pointer
           build.setIgnoreVersions(&ignore_versions);
           // Check if blacklisted by name at this point
           build.setBoolProp("blacklisted",
