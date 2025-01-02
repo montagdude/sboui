@@ -13,8 +13,12 @@ def sbo_updates_available():
                           stdout=subprocess.PIPE)
   retval = False
   for line in iter(proc.stdout.readline,''):
-    if line.find("upgradable SlackBuild") != -1:
-      if line.startswith("No"):
+    if sys.version_info[0] < 3:
+        dcdline = line
+    else:
+        dcdline = line.decode()
+    if dcdline.find("upgradable SlackBuild") != -1:
+      if dcdline.startswith("No"):
         break
       else:
         retval = True

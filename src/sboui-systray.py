@@ -3,8 +3,14 @@
 # System tray notifier for sboui updates. Source code adapted from
 # salix-update-notifier by George Vlahavas (gapan).
 
-import gtk
 import sys
+if sys.version_info[0] < 3:
+    import gtk
+else:
+    import gi
+    # Note: see deprecation note near the bottom.
+    gi.require_version('Gtk', '3.0')
+    from gi.repository import Gtk as gtk
 
 def accept(data=None):
     sys.exit(0)
@@ -51,7 +57,12 @@ def on_left_click(event):
     accept()
 
 if __name__ == '__main__':
-    icon = gtk.status_icon_new_from_icon_name("sboui")
+    if sys.version_info[0] < 3:
+        icon = gtk.status_icon_new_from_icon_name("sboui")
+    else:
+        # Note: this is deprecated in Gtk+3 and removed in Gtk+4. Will
+        # eventually need to find a replacement.
+        icon = gtk.StatusIcon().new_from_icon_name("sboui")
     icon.set_tooltip_text('SBo updates are available')
     icon.connect('popup-menu', on_right_click)
     icon.connect('activate', on_left_click)
