@@ -121,8 +121,8 @@ int read_buildopts(std::vector<std::vector<BuildListItem> > & slackbuilds)
       else { buildopts += ";"; }
     }
     buildname = listing(k).name.substr(0,ext_idx);
-    find_slackbuild(buildname, slackbuilds, i, j);
-    slackbuilds[i][j].setProp("build_options", buildopts);
+    if (find_slackbuild(buildname, slackbuilds, i, j) == 0)
+      slackbuilds[i][j].setProp("build_options", buildopts);
     file.close();
   }
 
